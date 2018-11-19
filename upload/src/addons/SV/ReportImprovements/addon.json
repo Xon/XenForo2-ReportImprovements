@@ -13,5 +13,9 @@
         "XF": [2001070, "XenForo 2.0.10+"],
         "php": ["5.6.0","PHP 5.6.0+"]
     },
+    "soft-require": {
+        "SV/WarningImprovements": ["2000005", "Warning Improvements 2.0.0+"],
+        "SV/WarningAcknowledgement": ["2000000", "Warning Acknowledgement 2.0.0+"]
+    },
     "icon": ""
 }
