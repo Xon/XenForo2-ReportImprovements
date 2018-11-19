@@ -1,0 +1,1 @@
+Default length when a reply-ban is issued from a warning

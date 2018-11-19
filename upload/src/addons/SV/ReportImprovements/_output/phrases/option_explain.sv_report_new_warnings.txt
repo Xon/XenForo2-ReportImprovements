@@ -1,0 +1,1 @@
+Automatically create Reports for Warnings on content without an associated report

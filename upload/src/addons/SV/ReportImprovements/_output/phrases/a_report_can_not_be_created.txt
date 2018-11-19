@@ -1,0 +1,1 @@
+A report can not be created for the content type: {content_type}.

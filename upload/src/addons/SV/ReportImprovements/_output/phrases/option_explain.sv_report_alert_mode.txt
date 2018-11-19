@@ -1,0 +1,1 @@
+Changes the selection criteria for alerts when a report comment is created.

@@ -1,0 +1,1 @@
+If enabled, report comments will be displayed in reverse order (from newest to oldest).

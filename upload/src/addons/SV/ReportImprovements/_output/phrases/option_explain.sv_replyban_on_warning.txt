@@ -1,0 +1,1 @@
+Default settings for triggering a reply ban when a user is warned from a post

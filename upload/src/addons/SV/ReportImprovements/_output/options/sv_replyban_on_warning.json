@@ -1,0 +1,12 @@
+{
+    "edit_format": "radio",
+    "edit_format_params": "none={xen:phrase none}\npermanent={xen:phrase permanent}\ntemporary={xen:phrase temporary}",
+    "data_type": "string",
+    "sub_options": [],
+    "validation_class": "",
+    "validation_method": "",
+    "default_value": "none",
+    "relations": {
+        "sv_report_improvements": 120
+    }
+}

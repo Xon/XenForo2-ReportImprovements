@@ -1,0 +1,1 @@
+Only allow moderators to see reports from forums they can see

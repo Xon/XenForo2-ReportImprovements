@@ -1,0 +1,15 @@
+{
+    "edit_format": "template",
+    "edit_format_params": "option_sv_warning_replyban",
+    "data_type": "array",
+    "sub_options": [
+        "value",
+        "unit"
+    ],
+    "validation_class": "",
+    "validation_method": "",
+    "default_value": "{\"value\":8,\"unit\":\"hours\"}",
+    "relations": {
+        "sv_report_improvements": 120
+    }
+}

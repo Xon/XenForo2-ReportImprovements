@@ -1,0 +1,12 @@
+{
+    "edit_format": "select",
+    "edit_format_params": "always_alert={xen:phrase sv_reports_alert_moderators_always}\nmoderators_new_alert={xen:phrase sv_reports_alert_moderators_new}\nwatchers={xen:phrase sv_reports_alert_watchers}",
+    "data_type": "string",
+    "sub_options": [],
+    "validation_class": "",
+    "validation_method": "",
+    "default_value": "watchers",
+    "relations": {
+        "sv_report_improvements": 230
+    }
+}
