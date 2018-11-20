@@ -2,9 +2,6 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
-use XF\Mvc\Entity\Entity;
-use XF\Mvc\Entity\Structure;
-
 /**
  * Class User
  * 
@@ -19,7 +16,7 @@ class User extends XFCP_User
      *
      * @return bool
      */
-    public function canViewReports(&$error = null)
+    public function canViewReports(/** @noinspection PhpUnusedParameterInspection */&$error = null)
     {
         $visitor = \XF::visitor();
 
@@ -36,7 +33,7 @@ class User extends XFCP_User
      *
      * @return bool
      */
-    public function canViewConversationMessageReport(&$error = null)
+    public function canViewConversationMessageReport(/** @noinspection PhpUnusedParameterInspection */&$error = null)
     {
         $visitor = \XF::visitor();
 
@@ -53,7 +50,7 @@ class User extends XFCP_User
      *
      * @return bool
      */
-    public function canViewProfilePostReport(&$error = null)
+    public function canViewProfilePostReport(/** @noinspection PhpUnusedParameterInspection */&$error = null)
     {
         $visitor = \XF::visitor();
 
@@ -80,7 +77,7 @@ class User extends XFCP_User
      *
      * @return bool
      */
-    public function canViewUserReport(&$error = null)
+    public function canViewUserReport(/** @noinspection PhpUnusedParameterInspection */&$error = null)
     {
         $visitor = \XF::visitor();
 
