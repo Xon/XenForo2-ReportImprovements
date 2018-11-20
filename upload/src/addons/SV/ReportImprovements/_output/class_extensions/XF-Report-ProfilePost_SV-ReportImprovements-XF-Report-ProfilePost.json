@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Report\\ProfilePost",
+    "to_class": "SV\\ReportImprovements\\XF\\Report\\ProfilePost",
+    "execute_order": 10,
+    "active": true
+}
