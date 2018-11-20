@@ -53,7 +53,7 @@ class ReportComment extends XFCP_ReportComment
 
         if ($this->isInsert())
         {
-            $this->Report->fastUpdate('last_modified_id', $this->Report->report_id);
+            $this->Report->fastUpdate('last_modified_id', $this->report_comment_id);
         }
     }
 
