@@ -4,7 +4,7 @@ namespace SV\ReportImprovements\XF\Entity;
 
 /**
  * Class User
- * 
+ *
  * Extends \XF\Entity\User
  *
  * @package SV\ReportImprovements\XF\Entity
@@ -16,7 +16,8 @@ class User extends XFCP_User
      *
      * @return bool
      */
-    public function canViewReports(/** @noinspection PhpUnusedParameterInspection */&$error = null)
+    public function canViewReports(/** @noinspection PhpUnusedParameterInspection */
+        &$error = null)
     {
         $visitor = \XF::visitor();
 
@@ -33,7 +34,8 @@ class User extends XFCP_User
      *
      * @return bool
      */
-    public function canViewConversationMessageReport(/** @noinspection PhpUnusedParameterInspection */&$error = null)
+    public function canViewConversationMessageReport(/** @noinspection PhpUnusedParameterInspection */
+        &$error = null)
     {
         $visitor = \XF::visitor();
 
@@ -43,23 +45,6 @@ class User extends XFCP_User
         }
 
         return $visitor->hasPermission('general', 'viewReportConversation');
-    }
-
-    /**
-     * @param null $error
-     *
-     * @return bool
-     */
-    public function canViewProfilePostReport(/** @noinspection PhpUnusedParameterInspection */&$error = null)
-    {
-        $visitor = \XF::visitor();
-
-        if (!$visitor->user_id)
-        {
-            return false;
-        }
-
-        return $visitor->hasPermission('general', 'viewReportProfilePost');
     }
 
     /**
@@ -77,7 +62,26 @@ class User extends XFCP_User
      *
      * @return bool
      */
-    public function canViewUserReport(/** @noinspection PhpUnusedParameterInspection */&$error = null)
+    public function canViewProfilePostReport(/** @noinspection PhpUnusedParameterInspection */
+        &$error = null)
+    {
+        $visitor = \XF::visitor();
+
+        if (!$visitor->user_id)
+        {
+            return false;
+        }
+
+        return $visitor->hasPermission('general', 'viewReportProfilePost');
+    }
+
+    /**
+     * @param null $error
+     *
+     * @return bool
+     */
+    public function canViewUserReport(/** @noinspection PhpUnusedParameterInspection */
+        &$error = null)
     {
         $visitor = \XF::visitor();
 

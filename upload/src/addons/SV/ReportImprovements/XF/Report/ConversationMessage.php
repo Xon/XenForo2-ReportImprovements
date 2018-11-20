@@ -6,7 +6,7 @@ use XF\Entity\Report;
 
 /**
  * Class ConversationMessage
- * 
+ *
  * Extends \XF\Report\ConversationMessage
  *
  * @package SV\ReportImprovements\XF\Report

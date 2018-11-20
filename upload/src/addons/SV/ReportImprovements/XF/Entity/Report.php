@@ -4,7 +4,7 @@ namespace SV\ReportImprovements\XF\Entity;
 
 /**
  * Class Report
- * 
+ *
  * Extends \XF\Entity\Report
  *
  * @package SV\ReportImprovements\XF\Entity
@@ -16,7 +16,8 @@ class Report extends XFCP_Report
      *
      * @return bool
      */
-    public function canReply(/** @noinspection PhpUnusedParameterInspection */&$error = null)
+    public function canReply(/** @noinspection PhpUnusedParameterInspection */
+        &$error = null)
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
@@ -39,7 +40,8 @@ class Report extends XFCP_Report
      *
      * @return bool
      */
-    public function canUpdate(/** @noinspection PhpUnusedParameterInspection */&$error = null)
+    public function canUpdate(/** @noinspection PhpUnusedParameterInspection */
+        &$error = null)
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
@@ -57,7 +59,8 @@ class Report extends XFCP_Report
      *
      * @return bool
      */
-    public function canAssign(/** @noinspection PhpUnusedParameterInspection */&$error = null)
+    public function canAssign(/** @noinspection PhpUnusedParameterInspection */
+        &$error = null)
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
@@ -75,7 +78,8 @@ class Report extends XFCP_Report
      *
      * @return bool
      */
-    public function canViewReporter(/** @noinspection PhpUnusedParameterInspection */&$error = null)
+    public function canViewReporter(/** @noinspection PhpUnusedParameterInspection */
+        &$error = null)
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();

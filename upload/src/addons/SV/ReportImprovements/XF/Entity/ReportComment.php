@@ -6,7 +6,7 @@ use XF\Mvc\Entity\Structure;
 
 /**
  * Class ReportComment
- * 
+ *
  * Extends \XF\Entity\ReportComment
  *
  * @package SV\ReportImprovements\XF\Entity
@@ -20,6 +20,30 @@ use XF\Mvc\Entity\Structure;
  */
 class ReportComment extends XFCP_ReportComment
 {
+    /**
+     * @param Structure $structure
+     *
+     * @return Structure
+     */
+    public static function getStructure(Structure $structure)
+    {
+        $structure = parent::getStructure($structure);
+
+        $structure->behaviors['XF:Likeable'] = [];
+        $structure->relations['Likes'] = [
+            'entity' => 'XF:LikedContent',
+            'type' => self::TO_MANY,
+            'conditions' => [
+                ['content_type', '=', 'report_comment'],
+                ['content_id', '=', '$report_comment_id']
+            ],
+            'key' => 'like_user_id',
+            'order' => 'like_date'
+        ];
+
+        return $structure;
+    }
+
     /**
      * @param null $error
      *
@@ -45,29 +69,5 @@ class ReportComment extends XFCP_ReportComment
         }
 
         return $visitor->hasPermission('general', 'reportLike');
-    }
-
-    /**
-     * @param Structure $structure
-     *
-     * @return Structure
-     */
-    public static function getStructure(Structure $structure)
-    {
-        $structure = parent::getStructure($structure);
-
-        $structure->behaviors['XF:Likeable'] = [];
-        $structure->relations['Likes'] = [
-            'entity' => 'XF:LikedContent',
-            'type' => self::TO_MANY,
-            'conditions' => [
-                ['content_type', '=', 'report_comment'],
-                ['content_id', '=', '$report_comment_id']
-            ],
-            'key' => 'like_user_id',
-            'order' => 'like_date'
-        ];
-    
-        return $structure;
     }
 }

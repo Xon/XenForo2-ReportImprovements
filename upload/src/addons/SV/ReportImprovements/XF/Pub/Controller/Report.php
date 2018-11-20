@@ -6,7 +6,7 @@ use XF\Mvc\ParameterBag;
 
 /**
  * Class Report
- * 
+ *
  * Extends \XF\Pub\Controller\Report
  *
  * @package SV\ReportImprovements\XF\Pub\Controller
