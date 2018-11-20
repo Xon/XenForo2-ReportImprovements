@@ -10,6 +10,11 @@ use XF\AddOn\StepRunnerUpgradeTrait;
 use XF\Db\Schema\Alter;
 use XF\Db\Schema\Create;
 
+/**
+ * Class Setup
+ *
+ * @package SV\ReportImprovements
+ */
 class Setup extends AbstractSetup
 {
     use InstallerHelper;
@@ -286,9 +291,9 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'warning_definition_id', 'int');
             $this->addOrChangeColumn($table, 'title', 'varchar', 255);
             $this->addOrChangeColumn($table, 'notes', 'text');
-            $this->addOrChangeColumn($table, 'points', 'shortint');
+            $this->addOrChangeColumn($table, 'points', 'smallint');
             $this->addOrChangeColumn($table, 'expiry_date', 'int');
-            $this->addOrChangeColumn($table, 'is_expired', 'tinyint');
+            $this->addOrChangeColumn($table, 'is_expired', 'tinyint', 3);
             $this->addOrChangeColumn($table, 'extra_user_group_ids', 'varbinary', 255);
             $this->addOrChangeColumn($table, 'sv_acknowledgement', 'enum')->values(['not_required', 'pending', 'completed']);
             $this->addOrChangeColumn($table, 'sv_acknowledgement_date', 'int')->setDefault(0);
