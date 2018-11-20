@@ -30,6 +30,10 @@ use XF\Mvc\Entity\Structure;
  * @property int reply_ban_thread_id
  * @property int reply_ban_post_id
  * @property int sv_suppress_notices
+ *
+ * RELATIONS
+ * @property \XF\Entity\Warning Warning
+ * @property \XF\Entity\User User
  */
 class WarningLog extends Entity
 {
@@ -66,6 +70,20 @@ class WarningLog extends Entity
             'reply_ban_thread_id'     => ['type' => self::UINT, 'default' => 0],
             'reply_ban_post_id'       => ['type' => self::UINT, 'default' => 0],
             'sv_suppress_notices'     => ['type' => self::UINT, 'maxLength' => 255, 'default' => 1],
+        ];
+        $structure->relations = [
+            'Warning' => [
+                'entity' => 'XF:Warning',
+                'type' => self::TO_ONE,
+                'conditions' => 'warning_id',
+                'primary' => true
+            ],
+            'User' => [
+                'entity' => 'XF:User',
+                'type' => self::TO_ONE,
+                'conditions' => 'user_id',
+                'primary' => true
+            ]
         ];
 
         return $structure;
