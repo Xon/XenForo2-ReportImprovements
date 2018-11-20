@@ -2,13 +2,20 @@
 
 namespace SV\ReportImprovements\XF\Repository;
 
-
-
 /**
+ * Class Report
+ *
  * Extends \XF\Repository\Report
+ *
+ * @package SV\ReportImprovements\XF\Repository
  */
 class Report extends XFCP_Report
 {
+    /**
+     * @param \XF\Mvc\Entity\ArrayCollection $reports
+     *
+     * @return \XF\Mvc\Entity\ArrayCollection
+     */
     public function filterViewableReports($reports)
     {
         $em = $this->app()->em();
