@@ -117,7 +117,7 @@ class Report extends XFCP_Report
      */
     public function getViewableUser()
     {
-        if (!$this->canViewReporter($error))
+        if ($this->canViewReporter($error))
         {
             return $this->User;
         }
