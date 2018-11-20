@@ -86,4 +86,24 @@ class Report extends XFCP_Report
 
         return parent::setupReportComment($report);
     }
+
+    /**
+     * @param ParameterBag $params
+     *
+     * @return \XF\Mvc\Reply\Error|\XF\Mvc\Reply\Redirect
+     * @throws \XF\Mvc\Reply\Exception
+     */
+    public function actionReassign(ParameterBag $params)
+    {
+        $this->assertPostOnly();
+
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        $report = $this->assertViewableReport($params->report_id);
+        if (!$report->canAssign($error))
+        {
+            return $this->noPermission($error);
+        }
+
+        return parent::actionReassign($params);
+    }
 }

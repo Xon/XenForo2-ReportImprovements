@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Hides reassign tab if the user doesn't have permission to reassign",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#<a class=\"tabs-tab\" .*? aria-controls=\"{{ unique_id\\('reportReassign'\\) }}\">.*?<\\/a>#si",
+    "replace": ""
+}
