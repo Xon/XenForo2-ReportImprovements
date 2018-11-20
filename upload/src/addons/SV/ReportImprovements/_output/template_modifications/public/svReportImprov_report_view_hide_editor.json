@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Hides comment editor if user does not have permission to comment",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#<xf:editorrow name=\"message\".*?<\\/xf:editorrow>#si",
+    "replace": "<xf:if is=\"$report.canComment()\">\n\t$0\n</xf:if>"
+}

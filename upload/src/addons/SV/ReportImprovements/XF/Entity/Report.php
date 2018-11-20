@@ -28,7 +28,7 @@ class Report extends XFCP_Report
      *
      * @return bool
      */
-    public function canReply(/** @noinspection PhpUnusedParameterInspection */
+    public function canComment(/** @noinspection PhpUnusedParameterInspection */
         &$error = null)
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
