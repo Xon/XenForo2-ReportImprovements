@@ -6,7 +6,7 @@ use XF\Entity\Report;
 
 /**
  * Class User
- * 
+ *
  * Extends \XF\Report\User
  *
  * @package SV\ReportImprovements\XF\Report
@@ -22,11 +22,7 @@ class User extends XFCP_User
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
-        if (!$visitor->canViewUserReport($error))
-        {
-            return false;
-        }
 
-        return parent::canView($report);
+        return $visitor->canViewUserReport();
     }
 }

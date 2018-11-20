@@ -23,3 +23,8 @@ namespace SV\ReportImprovements\XF\Report
 	class XFCP_ProfilePostComment extends \XF\Report\ProfilePostComment {}
 	class XFCP_User extends \XF\Report\User {}
 }
+
+namespace SV\ReportImprovements\XF\Repository
+{
+	class XFCP_Report extends \XF\Repository\Report {}
+}

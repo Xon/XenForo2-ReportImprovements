@@ -92,4 +92,30 @@ class User extends XFCP_User
 
         return $visitor->hasPermission('general', 'viewReportUser');
     }
+
+    /**
+     * @param int  $nodeId
+     * @param null $error
+     * @return bool
+     */
+    public function canViewPostReport($nodeId,/** @noinspection PhpUnusedParameterInspection */
+        &$error = null)
+    {
+        if (!$this->hasNodePermission($nodeId, 'viewReportPost'))
+        {
+            return false;
+        }
+
+        if (\XF::options()->sv_moderators_respect_view_node)
+        {
+            /** @var \XF\Entity\Forum $forum */
+            $forum = \XF::app()->find('XF:Forum', $nodeId);
+            if ($forum && !$forum->canView())
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
