@@ -6,7 +6,7 @@ use XF\Entity\Report;
 
 /**
  * Class ProfilePostComment
- * 
+ *
  * Extends \XF\Report\ProfilePostComment
  *
  * @package SV\ReportImprovements\XF\Report
@@ -22,11 +22,7 @@ class ProfilePostComment extends XFCP_ProfilePostComment
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
-        if (!$visitor->canViewProfilePostCommentReport($error))
-        {
-            return false;
-        }
 
-        return parent::canView($report);
+        return $visitor->canViewProfilePostCommentReport();
     }
 }

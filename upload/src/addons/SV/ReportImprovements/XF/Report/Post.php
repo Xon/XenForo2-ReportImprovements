@@ -6,7 +6,7 @@ use XF\Entity\Report;
 
 /**
  * Class Post
- * 
+ *
  * Extends \XF\Report\Post
  *
  * @package SV\ReportImprovements\XF\Report
@@ -22,13 +22,9 @@ class Post extends XFCP_Post
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
-        $nodeId = $report->content_info['node_id'];
+        // avoid N+1 look up behaviour, just cache all node perms
+        $visitor->cacheNodePermissions();
 
-        if (!$visitor->hasNodePermission($nodeId, 'viewReportPost'))
-        {
-            return false;
-        }
-
-        return parent::canView($report);
+        return $visitor->canViewPostReport($report->content_info['node_id']);
     }
 }

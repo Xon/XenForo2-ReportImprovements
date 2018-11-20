@@ -23,11 +23,6 @@ class ConversationMessage extends XFCP_ConversationMessage
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
 
-        if (!$visitor->canViewConversationMessageReport($error))
-        {
-            return false;
-        }
-
-        return parent::canView($report);
+        return $visitor->canViewConversationMessageReport();
     }
 }
