@@ -30,7 +30,9 @@ class ReportComment extends XFCP_ReportComment
         $structure = parent::getStructure($structure);
 
         $structure->contentType = 'report_comment';
+
         $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
+
         $structure->relations['Likes'] = [
             'entity' => 'XF:LikedContent',
             'type' => self::TO_MANY,
@@ -43,6 +45,35 @@ class ReportComment extends XFCP_ReportComment
         ];
 
         return $structure;
+    }
+
+    protected function _postSave()
+    {
+        parent::_postSave();
+
+        if ($this->isInsert())
+        {
+            $this->Report->fastUpdate('last_modified_id', $this->Report->report_id);
+        }
+    }
+
+    protected function _postDelete()
+    {
+        parent::_postDelete();
+
+        if ($this->Report)
+        {
+            $lastReportCommentFinder = $this->finder('XF:ReportComment');
+            $lastReportCommentFinder->where('report_id', $this->report_id);
+            $lastReportCommentFinder->order('comment_date', 'DESC');
+
+            /** @var \SV\ReportImprovements\XF\Entity\ReportComment $lastReportComment */
+            $lastReportComment = $lastReportCommentFinder->fetchOne();
+            if ($lastReportComment)
+            {
+                $this->Report->fastUpdate('last_modified_id', $lastReportComment->report_comment_id);
+            }
+        }
     }
 
     /**

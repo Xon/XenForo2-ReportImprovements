@@ -11,9 +11,15 @@ use XF\Mvc\Entity\Structure;
  *
  * @package SV\ReportImprovements\XF\Entity
  *
+ * COLUMNS
+ * @property int last_modified_id
+ *
  * GETTERS
  * @property \SV\ReportImprovements\XF\Entity\User ViewableUsername
  * @property \SV\ReportImprovements\XF\Entity\User ViewableUser
+ *
+ * RELATIONS
+ * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified
  */
 class Report extends XFCP_Report
 {
@@ -122,6 +128,42 @@ class Report extends XFCP_Report
     }
 
     /**
+     * @return array
+     */
+    public function getLastModifiedCache()
+    {
+        $return = parent::getLastModifiedCache();
+
+        $return['modified_id'] = $this->last_modified_id;
+
+        return $return;
+    }
+
+    /**
+     * @return ReportComment
+     */
+    public function getLastModified()
+    {
+        if ($this->last_modified_id === 0)
+        {
+            $reportCommentFinder = $this->finder('XF:ReportComment');
+            $reportCommentFinder->where('report_id', $this->report_id);
+            $reportCommentFinder->order('comment_date', 'DESC');
+
+            /** @var ReportComment $reportComment */
+            $reportComment = $reportCommentFinder->fetchOne();
+
+            if ($reportComment)
+            {
+                $this->fastUpdate('last_modified_id', $reportComment->report_comment_id);
+                $this->hydrateRelation('LastModified', $reportComment);
+            }
+        }
+
+        return $this->getRelation('LastModified');
+    }
+
+    /**
      * @param Structure $structure
      *
      * @return Structure
@@ -130,8 +172,20 @@ class Report extends XFCP_Report
     {
         $structure = parent::getStructure($structure);
 
+        $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
+
         $structure->getters['ViewableUsername'] = true;
         $structure->getters['ViewableUser'] = true;
+        $structure->getters['LastModified'] = true;
+
+        $structure->relations['LastModified'] = [
+            'entity' => 'XF:ReportComment',
+            'type' => self::TO_ONE,
+            'conditions' => [
+                ['report_comment_id', '=', '$last_modified_id']
+            ],
+            'primary' => true
+        ];
 
         return $structure;
     }

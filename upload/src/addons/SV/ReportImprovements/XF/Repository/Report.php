@@ -53,7 +53,6 @@ class Report extends XFCP_Report
             }
         }
 
-
         foreach($userIds as $userId => $null)
         {
             if ($em->findCached('XF:User', $userId))
