@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "#<li role=\"tabpanel\" id=\"{{ unique_id\\('reportReassign'\\) }}\".*?>.*?<\\/li>#si",
-    "replace": "<xf:if is=\"$report.canAssign()\">\n\t$0\n\t<xf:else />\n</xf:if>"
+    "replace": "<xf:if is=\"$report.canAssign()\">\n\t$0\n</xf:if>"
 }
