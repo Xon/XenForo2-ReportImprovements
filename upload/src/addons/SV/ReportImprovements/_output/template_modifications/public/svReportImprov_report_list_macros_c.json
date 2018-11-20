@@ -1,0 +1,9 @@
+{
+    "template": "report_list_macros",
+    "description": "Show \"Content reporter\" if the user has no permission to view reporter in reports list #2",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:username user=\"{$report.LastModifiedUser}\" defaultname=\"{$report.last_modified_username}\" />",
+    "replace": "<xf:if is=\"$report.LastModifiedUser.user_id === $report.User.user_id\">\n\t<xf:username user=\"{$report.ViewableUser}\" defaultname=\"{$report.ViewableUsername}\" />\n<xf:else />\n\t<xf:username user=\"{$report.LastModifiedUser}\" defaultname=\"{$report.last_modified_username}\" />\n</xf:if>"
+}

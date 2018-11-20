@@ -1,0 +1,9 @@
+{
+    "template": "report_list_macros",
+    "description": "XF 2.0.10 bug-fix",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:username user=\"{$report.last_modified_cache}\" />",
+    "replace": "<xf:username user=\"{$report.LastModifiedUser}\" defaultname=\"{$report.last_modified_username}\" />"
+}

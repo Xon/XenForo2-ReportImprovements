@@ -1,0 +1,9 @@
+{
+    "template": "report_list_macros",
+    "description": "Show \"Content reporter\" if the user has no permission to view reporter in reports list #1",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "$report.User",
+    "replace": "$report.ViewableUser"
+}

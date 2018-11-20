@@ -29,7 +29,8 @@ class ReportComment extends XFCP_ReportComment
     {
         $structure = parent::getStructure($structure);
 
-        $structure->behaviors['XF:Likeable'] = [];
+        $structure->contentType = 'report_comment';
+        $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
         $structure->relations['Likes'] = [
             'entity' => 'XF:LikedContent',
             'type' => self::TO_MANY,
