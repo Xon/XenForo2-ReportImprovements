@@ -1,0 +1,11 @@
+<xf:if is="$report">
+	<xf:css src="svReportImprov_member_warn_content_report.less" />
+	
+	<h2 class="block-formSectionHeader"><span class="block-formSectionHeader-aligner">{{ phrase('report') }}</span></h2>
+
+	<div class="block-body">
+		<xf:formrow rowtype="reportItem">
+			<xf:macro template="report_list_macros" name="item" arg-report="{$report}" />
+		</xf:formrow>
+	</div>
+</xf:if>

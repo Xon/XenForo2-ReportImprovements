@@ -1,0 +1,5 @@
+<xf:if is="$warning.Report">
+	<xf:formrow label="{{ phrase('report') }}">
+		<a href="{{ link('reports', $warning.Report) }}">{{ phrase('svReportImprov_view_report:') }} {$warning.Report.title}</a>
+	</xf:formrow>
+</xf:if>

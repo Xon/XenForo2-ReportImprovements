@@ -1,0 +1,9 @@
+{
+    "template": "member_warn",
+    "description": "Show report for the content if there is any",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#<h2 class=\".*?block-formSectionHeader.*?\">.*?phrase\\('member_notification'\\).*<\\/h2>#siU",
+    "replace": "<xf:include template=\"svReportImprov_member_warn_content_report\" />\n\n$0"
+}

@@ -1,0 +1,9 @@
+{
+    "template": "warning_info",
+    "description": "Show report for the content if there is any",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:formrow label=\"{{ phrase('details_of_warning') }}\">",
+    "replace": "<xf:include template=\"svReportImprov_warning_info_show_content_report\" />\n$0"
+}
