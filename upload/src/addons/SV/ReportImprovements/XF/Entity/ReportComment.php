@@ -32,6 +32,9 @@ class ReportComment extends XFCP_ReportComment
         $structure->contentType = 'report_comment';
 
         $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
+        $structure->behaviors['XF:Indexable'] = [
+            'checkForUpdates' => ['message', 'user_id', 'report_id', 'comment_date', 'state_change', 'is_report']
+        ];
 
         $structure->relations['Likes'] = [
             'entity' => 'XF:LikedContent',

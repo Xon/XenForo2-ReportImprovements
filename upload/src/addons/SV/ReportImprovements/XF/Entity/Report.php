@@ -15,10 +15,9 @@ use XF\Mvc\Entity\Structure;
  * @property int last_modified_id
  *
  * GETTERS
+ * @property array comment_ids
  * @property \SV\ReportImprovements\XF\Entity\User ViewableUsername
  * @property \SV\ReportImprovements\XF\Entity\User ViewableUser
- *
- * RELATIONS
  * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified
  */
 class Report extends XFCP_Report
@@ -164,6 +163,19 @@ class Report extends XFCP_Report
     }
 
     /**
+     * @return array
+     */
+    public function getCommentIds()
+    {
+        return $this->db()->fetchAllColumn('
+			SELECT report_comment_id
+			FROM xf_report_comment
+			WHERE report_id = ?
+			ORDER BY comment_date
+		', $this->report_id);
+    }
+
+    /**
      * @param Structure $structure
      *
      * @return Structure
@@ -174,6 +186,7 @@ class Report extends XFCP_Report
 
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
+        $structure->getters['comment_ids'];
         $structure->getters['ViewableUsername'] = true;
         $structure->getters['ViewableUser'] = true;
         $structure->getters['LastModified'] = true;
