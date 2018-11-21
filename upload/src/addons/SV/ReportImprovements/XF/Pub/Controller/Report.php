@@ -51,7 +51,8 @@ class Report extends XFCP_Report
             }
         }
 
-        if ($this->filter('self_assign_unassign', 'bool'))
+        $selfAssignUnassign = $this->filter('self_assign_unassign', 'bool');
+        if ($selfAssignUnassign)
         {
             /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
             $visitor = \XF::visitor();
@@ -77,7 +78,7 @@ class Report extends XFCP_Report
             throw $this->exception($this->noPermission($error));
         }
 
-        if (!$report->canComment() && !$report->canUpdate())
+        if (!$selfAssignUnassign && !$report->canComment() && !$report->canUpdate())
         {
             throw $this->exception(
                 $this->error(\XF::phrase('svReportImprov_please_assign_or_unassign_the_report_item'))
