@@ -26,7 +26,7 @@ class Warning extends XFCP_Warning
             /** @var \XF\Entity\Post $content */
             $content = $this->Content;
 
-            if ($replyOnWarning = $this->app()->options()->sv_replyban_on_warning)
+            /*if ($replyOnWarning = $this->app()->options()->sv_replyban_on_warning)
             {
                 $reason = $this->title;
                 if (!empty($replyOnWarning['reason_reply_ban']))
@@ -44,10 +44,10 @@ class Warning extends XFCP_Warning
                         pow(2, 32) - 1,
                         strtotime("+{$replyOnWarning['ban_length_value']} {$replyOnWarning['ban_length_unit']}")
                     );
-                }
+                }*/
 
                 /** @var \XF\Service\Thread\ReplyBan $replyBanSvc */
-                $replyBanSvc = $this->app()->service('XF\Service:Thread\ReplyBan', $content->Thread, $this->User);
+                /*$replyBanSvc = $this->app()->service('XF\Service:Thread\ReplyBan', $content->Thread, $this->User);
                 $replyBanSvc->setReason($reason);
                 $replyBanSvc->setExpiryDate($expiryDate);
                 $replyBanSvc->setSendAlert($replyOnWarning['send_alert']);
@@ -55,7 +55,7 @@ class Warning extends XFCP_Warning
                 {
                     $replyBanSvc->save();
                 }
-            }
+            }*/
         }
     }
 

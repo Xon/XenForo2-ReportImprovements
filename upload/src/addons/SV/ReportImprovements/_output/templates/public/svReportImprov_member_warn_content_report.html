@@ -8,4 +8,14 @@
 			<xf:macro template="report_list_macros" name="item" arg-report="{$report}" />
 		</xf:formrow>
 	</div>
+	
+	<xf:if is="!$report.isClosed() && $report.canUpdate()">
+		<h2 class="block-formSectionHeader"><span class="block-formSectionHeader-aligner">{{ phrase('svReportImprov_report_action') }}</span></h2>
+
+		<div class="block-body">
+			<xf:checkboxrow>
+				<xf:option name="resolve_report" label="{{ phrase('svReportImprov_resolve_report') }}" />
+			</xf:checkboxrow>
+		</div>
+	</xf:if>
 </xf:if>

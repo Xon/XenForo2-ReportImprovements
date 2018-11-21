@@ -62,6 +62,11 @@ class Report extends XFCP_Report
             return false;
         }
 
+        if ($this->assigned_user_id === $visitor->user_id)
+        {
+            return true;
+        }
+
         return $visitor->hasPermission('general', 'updateReport');
     }
 

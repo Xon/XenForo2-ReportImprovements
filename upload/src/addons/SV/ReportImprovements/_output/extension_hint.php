@@ -36,3 +36,8 @@ namespace SV\ReportImprovements\XF\Repository
 {
 	class XFCP_Report extends \XF\Repository\Report {}
 }
+
+namespace SV\ReportImprovements\XF\Service\User
+{
+	class XFCP_Warn extends \XF\Service\User\Warn {}
+}
