@@ -186,7 +186,7 @@ class Report extends XFCP_Report
 
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
-        $structure->getters['comment_ids'];
+        $structure->getters['comment_ids'] = true;
         $structure->getters['ViewableUsername'] = true;
         $structure->getters['ViewableUser'] = true;
         $structure->getters['LastModified'] = true;
