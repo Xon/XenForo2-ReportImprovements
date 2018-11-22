@@ -44,27 +44,24 @@ class Notifier extends XFCP_Notifier
      */
     public function notify()
     {
-        if (!Globals::$disableDefaultReportNotificationSvc)
+        parent::notify();
+
+        $notifiableUsers = $this->getUsersForCommentInsertNotification();
+        $commenterUsers = $this->getNotifyCommenterUserIds();
+
+        foreach ($commenterUsers AS $k => $userId)
         {
-            $notifiableUsers = $this->getUsersForCommentInsertNotification();
-
-            $commenterUsers = $this->getNotifyCommenterUserIds();
-            foreach ($commenterUsers AS $k => $userId)
+            if (isset($notifiableUsers[$userId]))
             {
-                if (isset($notifiableUsers[$userId]))
+                $user = $notifiableUsers[$userId];
+                if (\XF::asVisitor($user, function() { return $this->report->canView(); }))
                 {
-                    $user = $notifiableUsers[$userId];
-                    if (\XF::asVisitor($user, function() { return $this->report->canView(); }))
-                    {
-                        $this->sendCommentNotification($user);
-                    }
+                    $this->sendCommentNotification($user);
                 }
-                unset($commenterUsers[$k]);
             }
-            $this->notifyCommenterUserIds = [];
-
-            parent::notify();
+            unset($commenterUsers[$k]);
         }
+        $this->notifyCommenterUserIds = [];
     }
 
     /**

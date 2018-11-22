@@ -2,7 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Service\Report;
 
-use SV\ReportImprovements\Globals;
+
 use SV\ReportImprovements\XF\Entity\Report;
 
 /**
@@ -21,21 +21,18 @@ class Commenter extends XFCP_Commenter
      */
     public function sendNotifications()
     {
-        Globals::$disableDefaultReportNotificationSvc = true;
+        parent::sendNotifications();
 
-        try
-        {
-            parent::sendNotifications();
-        }
-        finally
-        {
-            Globals::$disableDefaultReportNotificationSvc = null;
-        }
+        $comment = $this->comment;
+
+        /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+        $reportRepo = $this->repository('XF:Report');
+        $usersToAlert = $reportRepo->findUsersToAlertForSvReportImprov($comment);
+        $userIdsToAlert = $usersToAlert->keys();
 
         /** @var \SV\ReportImprovements\XF\Service\Report\Notifier $notifier */
-        $notifier = $this->service('XF:Report\Notifier', $this->report, $this->comment);
-        $notifier->setCommentersUserIds($this->report->commenter_user_ids);
-        $notifier->setNotifyMentioned($this->commentPreparer->getMentionedUserIds());
+        $notifier = $this->service('XF:Report\Notifier', $this->report, $comment);
+        $notifier->setCommentersUserIds($userIdsToAlert);
         $notifier->notify();
     }
 }
