@@ -1,6 +1,6 @@
 {
     "edit_format": "radio",
-    "edit_format_params": "none={xen:phrase none}\npermanent={xen:phrase permanent}\ntemporary={xen:phrase temporary}",
+    "edit_format_params": "none={{ phrase('none') }}\npermanent={{ phrase('permanent') }}\ntemporary={{ phrase('temporary') }}",
     "data_type": "string",
     "sub_options": [],
     "validation_class": "",

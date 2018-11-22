@@ -68,4 +68,6 @@ class Report extends XFCP_Report
 
         return $reports;
     }
+
+
 }

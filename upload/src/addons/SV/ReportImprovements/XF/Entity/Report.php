@@ -15,6 +15,7 @@ use XF\Mvc\Entity\Structure;
  * @property int last_modified_id
  *
  * GETTERS
+ * @property array commenter_user_ids
  * @property array comment_ids
  * @property \SV\ReportImprovements\XF\Entity\User ViewableUsername
  * @property \SV\ReportImprovements\XF\Entity\User ViewableUser
@@ -181,6 +182,20 @@ class Report extends XFCP_Report
     }
 
     /**
+     * @return array
+     */
+    public function getCommenterUserIds()
+    {
+        return array_keys(
+            $this->db()->fetchAllKeyed('
+              SELECT DISTINCT user_id
+              FROM xf_report_comment AS report_comment
+              WHERE report_comment.report_id = ?
+        ', 'user_id', $this->report_id)
+        );
+    }
+
+    /**
      * @param Structure $structure
      *
      * @return Structure
@@ -191,6 +206,7 @@ class Report extends XFCP_Report
 
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
+        $structure->getters['commenter_user_ids'] = true;
         $structure->getters['comment_ids'] = true;
         $structure->getters['ViewableUsername'] = true;
         $structure->getters['ViewableUser'] = true;
