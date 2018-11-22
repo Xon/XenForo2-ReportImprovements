@@ -99,6 +99,7 @@ class Report extends XFCP_Report
         $this->assertPostOnly();
 
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @noinspection PhpUndefinedFieldInspection */
         $report = $this->assertViewableReport($params->report_id);
         if (!$report->canAssign($error))
         {

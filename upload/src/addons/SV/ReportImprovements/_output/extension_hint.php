@@ -12,7 +12,6 @@ namespace SV\ReportImprovements\XF\Entity
 {
 	class XFCP_Report extends \XF\Entity\Report {}
 	class XFCP_ReportComment extends \XF\Entity\ReportComment {}
-	class XFCP_ThreadReplyBan extends \XF\Entity\ThreadReplyBan {}
 	class XFCP_User extends \XF\Entity\User {}
 	class XFCP_Warning extends \XF\Entity\Warning {}
 }

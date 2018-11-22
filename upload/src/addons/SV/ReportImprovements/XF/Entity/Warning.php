@@ -2,7 +2,6 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
-use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -23,39 +22,7 @@ class Warning extends XFCP_Warning
 
         if ($this->content_type === 'post')
         {
-            /** @var \XF\Entity\Post $content */
-            $content = $this->Content;
 
-            /*if ($replyOnWarning = $this->app()->options()->sv_replyban_on_warning)
-            {
-                $reason = $this->title;
-                if (!empty($replyOnWarning['reason_reply_ban']))
-                {
-                    $reason = $replyOnWarning['reason_reply_ban'];
-                }
-
-                if ($replyOnWarning['ban_length'] === 'permanent')
-                {
-                    $expiryDate = null;
-                }
-                else
-                {
-                    $expiryDate = min(
-                        pow(2, 32) - 1,
-                        strtotime("+{$replyOnWarning['ban_length_value']} {$replyOnWarning['ban_length_unit']}")
-                    );
-                }*/
-
-                /** @var \XF\Service\Thread\ReplyBan $replyBanSvc */
-                /*$replyBanSvc = $this->app()->service('XF\Service:Thread\ReplyBan', $content->Thread, $this->User);
-                $replyBanSvc->setReason($reason);
-                $replyBanSvc->setExpiryDate($expiryDate);
-                $replyBanSvc->setSendAlert($replyOnWarning['send_alert']);
-                if ($replyBanSvc->validate($errors))
-                {
-                    $replyBanSvc->save();
-                }
-            }*/
         }
     }
 

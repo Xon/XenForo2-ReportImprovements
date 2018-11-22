@@ -4,7 +4,6 @@ namespace SV\ReportImprovements\XF\Service\User;
 
 use XF\Entity\User;
 use XF\Entity\Warning;
-use XF\Entity\WarningDefinition;
 use XF\Mvc\Entity\Entity;
 
 /**
