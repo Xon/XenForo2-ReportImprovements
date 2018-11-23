@@ -14,6 +14,8 @@ use XF\Mvc\Entity\Structure;
  * COLUMNS
  * @property int likes
  * @property array like_users
+ * @property bool alertSent
+ * @property string alertComment
  *
  * RELATIONS
  * @property \XF\Entity\LikedContent[] Likes
@@ -30,6 +32,9 @@ class ReportComment extends XFCP_ReportComment
         $structure = parent::getStructure($structure);
 
         $structure->contentType = 'report_comment';
+
+        $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => null, 'nullable' => null];
+        $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => null];
 
         $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
         $structure->behaviors['XF:Indexable'] = [

@@ -2,8 +2,8 @@
 
 namespace SV\ReportImprovements\XF\Service\Report;
 
-
 use SV\ReportImprovements\XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\ReportComment;
 
 /**
  * Class Commenter
@@ -13,9 +13,20 @@ use SV\ReportImprovements\XF\Entity\Report;
  * @package SV\ReportImprovements\XF\Service\Report
  *
  * @property Report $report
+ * @property ReportComment $comment
  */
 class Commenter extends XFCP_Commenter
 {
+    protected function finalSetup()
+    {
+        //parent::finalSetup();
+        if ($this->sendAlert)
+        {
+            $this->comment->alertSent = true;
+            $this->comment->alertComment = $this->alertComment;
+        }
+    }
+
     /**
      * @throws \Exception
      */

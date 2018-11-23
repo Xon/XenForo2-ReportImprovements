@@ -15,6 +15,17 @@ use XF\Search\IndexRecord;
 class ReportComment extends AbstractData
 {
     /**
+     * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
+     * @param null   $error
+     *
+     * @return bool
+     */
+    public function canViewContent(Entity $entity, &$error = null)
+    {
+        return $entity->Report->canView();
+    }
+
+    /**
      * @param bool $forView
      *
      * @return array
@@ -46,8 +57,9 @@ class ReportComment extends AbstractData
             return null;
         }
 
-        return IndexRecord::create('report', $entity->report_id, [
-            'message' => '',
+        return IndexRecord::create('report_comment', $entity->report_comment_id, [
+            'title' => $entity->Report->title,
+            'message' => $entity->message,
             'date' => $entity->comment_date,
             'user_id' => $entity->user_id,
             'discussion_id' => 0,
@@ -66,6 +78,7 @@ class ReportComment extends AbstractData
             'report' => $entity->report_id,
             'report_state' => $entity->Report->report_state,
             'is_report' => $entity->is_report,
+            'content_type' => $entity->Report->content_type
         ];
     }
 
@@ -85,6 +98,14 @@ class ReportComment extends AbstractData
     }
 
     /**
+     * @return array
+     */
+    public function getSearchableContentTypes()
+    {
+        return ['report_comment'];
+    }
+
+    /**
      * @param MetadataStructure $structure
      */
     public function setupMetadataStructure(MetadataStructure $structure)
@@ -92,5 +113,6 @@ class ReportComment extends AbstractData
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('report_state', MetadataStructure::STR);
         $structure->addField('is_report', MetadataStructure::INT);
+        $structure->addField('report_content_type', MetadataStructure::STR);
     }
 }

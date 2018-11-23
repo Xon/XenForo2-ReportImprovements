@@ -16,6 +16,17 @@ class Report extends AbstractData
 {
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
+     * @param null   $error
+     *
+     * @return bool
+     */
+    public function canViewContent(Entity $entity, &$error = null)
+    {
+        return $entity->canView();
+    }
+
+    /**
+     * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
      *
      * @return int
      */
@@ -36,8 +47,14 @@ class Report extends AbstractData
             return null;
         }
 
+        if (!$handler = $entity->getHandler())
+        {
+            return null;
+        }
+
         return IndexRecord::create('report', $entity->report_id, [
-            'message' => '',
+            'title' => $handler->getContentTitle($entity),
+            'message' => $handler->getContentMessage($entity),
             'date' => $entity->first_report_date,
             'user_id' => $entity->content_user_id,
             'discussion_id' => 0,
@@ -57,6 +74,7 @@ class Report extends AbstractData
             'report_state' => $entity->report_state,
             'assigned_user' => $entity->assigned_user_id,
             'is_report' => 2,
+            'content_type' => $entity->content_type
         ];
     }
 

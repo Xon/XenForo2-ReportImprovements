@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Entity\\ThreadReplyBan",
+    "to_class": "SV\\ReportImprovements\\XF\\Entity\\ThreadReplyBan",
+    "execute_order": 10,
+    "active": true
+}

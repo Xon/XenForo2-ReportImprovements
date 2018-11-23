@@ -20,6 +20,7 @@ use XF\Mvc\Entity\Structure;
  * @property array comment_ids
  * @property \SV\ReportImprovements\XF\Entity\User ViewableUsername
  * @property \SV\ReportImprovements\XF\Entity\User ViewableUser
+ * @property \SV\ReportImprovements\XF\Entity\ReportComment FirstReportComment
  * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified
  */
 class Report extends XFCP_Report
@@ -245,6 +246,18 @@ class Report extends XFCP_Report
     }
 
     /**
+     * @return \XF\Mvc\Entity\Entity|null|\SV\ReportImprovements\XF\Entity\ReportComment
+     */
+    public function getFirstReportComment()
+    {
+        return $this->finder('XF:ReportComment')
+            ->where('is_report', true)
+            ->where('report_id', $this->report_id)
+            ->order('report_comment_id', 'ASC')
+            ->fetchOne();
+    }
+
+    /**
      * @param Structure $structure
      *
      * @return Structure
@@ -253,6 +266,17 @@ class Report extends XFCP_Report
     {
         $structure = parent::getStructure($structure);
 
+        $structure->contentType = 'report';
+
+        $structure->behaviors['XF:Indexable'] = [
+            'checkForUpdates' => ['content_user_id', 'content_info', 'first_report_date', 'report_state']
+        ];
+        $structure->behaviors['XF:IndexableContainer'] = [
+            'childContentType' => 'report_comment',
+            'childIds' => function($report) { return $report->comment_ids; },
+            'checkForUpdates' => ['report_id', 'is_report']
+        ];
+
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
         $structure->getters['Comments'] = true;
@@ -260,6 +284,7 @@ class Report extends XFCP_Report
         $structure->getters['comment_ids'] = true;
         $structure->getters['ViewableUsername'] = true;
         $structure->getters['ViewableUser'] = true;
+        $structure->getters['FirstReportComment'] = true;
         $structure->getters['LastModified'] = true;
 
         $structure->relations['LastModified'] = [
