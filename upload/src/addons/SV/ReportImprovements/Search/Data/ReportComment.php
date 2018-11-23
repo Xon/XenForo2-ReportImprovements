@@ -159,15 +159,15 @@ class ReportComment extends AbstractData
     public function applyTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
         $constraints = $request->filter([
-            'type' => [
+            'type'           => [
                 'report_comment' => [
                     'include_report_contents' => 'bool',
                     'include_report_comments' => 'bool',
-                    'include_user_reports' => 'bool'
+                    'include_user_reports'    => 'bool'
                 ]
             ],
             'warning_points' => [
-                'lower' => 'uint',
+                'lower'  => 'uint',
                 'higher' => 'uint'
             ]
         ]);
@@ -193,34 +193,40 @@ class ReportComment extends AbstractData
             $query->withMetadata('is_report', $isReport);
         }
 
-        if ($constraints['warning_points']['lower'])
+        $addOns = \XF::app()->container('addon.cache');
+        if (isset($addOns['SV/SearchImprovements']))
         {
-            $query->withSql(new \XF\Search\Query\SqlConstraint(
-                'warning_log.points >= %s',
-                $constraints['warning_points']['lower'],
-                $this->getWarningLogQueryTableReference()
-            ));
-        }
+            // do not simplify these imports! Otherwise it will convert the soft-dependency into a hard dependency
+            if ($constraints['warning_points']['lower'])
+            {
+                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('warning_log.points', $constraints['warning_points']['lower'],
+                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReferencse()));
+            }
 
-        if ($constraints['warning_points']['higher'])
-        {
-            $query->withSql(new \XF\Search\Query\SqlConstraint(
-                'warning_log.points <= %s',
-                $constraints['warning_points']['lower'],
-                $this->getWarningLogQueryTableReference()
-            ));
+            if ($constraints['warning_points']['higher'])
+            {
+                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('warning_log.points', $constraints['warning_points']['lower'],
+                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReferencse()));
+            }
         }
     }
 
     /**
-     * @return \XF\Search\Query\TableReference
+     * @return \XF\Search\Query\TableReference[]
      */
-    protected function getWarningLogQueryTableReference()
+    protected function getWarningLogQueryTableReferencse()
     {
-        return new \XF\Search\Query\TableReference(
-            'warning_log',
-            'xf_sv_warning_log',
-            'warning_log.report_comment_id = search_index.content_id'
-        );
+        return [
+            new \XF\Search\Query\TableReference(
+                'report_comment',
+                'xf_report_comment',
+                'report_comment.report_comment_id = search_index.content_id'
+            ),
+            new \XF\Search\Query\TableReference(
+                'warning_log',
+                'xf_sv_warning_log',
+                'warning_log.warning_log_id = report_comment.warning_log_id'
+            )
+        ];
     }
 }

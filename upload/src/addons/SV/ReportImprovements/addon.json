@@ -14,6 +14,7 @@
         "php": ["5.6.0","PHP 5.6.0+"]
     },
     "soft-require": {
+        "SV/SearchImprovements": ["2000000", "Search Improvements 2.0.0+"],
         "SV/WarningImprovements": ["2000005", "Warning Improvements 2.0.0+"],
         "SV/WarningAcknowledgement": ["2000000", "Warning Acknowledgement 2.0.0+"]
     },
