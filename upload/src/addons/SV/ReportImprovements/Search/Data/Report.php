@@ -74,7 +74,7 @@ class Report extends AbstractData
             'report_state' => $entity->report_state,
             'assigned_user' => $entity->assigned_user_id,
             'is_report' => 2,
-            'content_type' => $entity->content_type
+            'report_content_type' => $entity->content_type
         ];
     }
 
@@ -99,8 +99,10 @@ class Report extends AbstractData
     {
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('report_state', MetadataStructure::STR);
-        $structure->addField('assigned_user_id', MetadataStructure::INT);
-        $structure->addField('is_report', MetadataStructure::INT); // not bool?????
+        $structure->addField('report_content_type', MetadataStructure::STR);
+        $structure->addField('assigned_user', MetadataStructure::INT);
+        // must be an int, as ElasticSearch single index has this all mapped to the same type
+        $structure->addField('is_report', MetadataStructure::INT);
     }
 
     /**

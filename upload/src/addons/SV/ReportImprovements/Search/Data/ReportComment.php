@@ -76,9 +76,8 @@ class ReportComment extends AbstractData
     {
         $metaData = [
             'report' => $entity->report_id,
-            'report_state' => $entity->Report->report_state,
-            'is_report' => $entity->is_report,
-            'report_content_type' => $entity->Report->content_type
+            'state_change' => $entity->state_change ?: '',
+            'is_report' => $entity->is_report ? 1 : 0, // must be an int
         ];
 
         if ($warningLog = $entity->WarningLog)
@@ -141,9 +140,10 @@ class ReportComment extends AbstractData
     public function setupMetadataStructure(MetadataStructure $structure)
     {
         $structure->addField('report', MetadataStructure::INT);
-        $structure->addField('report_state', MetadataStructure::STR);
+        $structure->addField('state_change', MetadataStructure::STR);
+        // must be an int, as ElasticSearch single index has this all mapped to the same type
         $structure->addField('is_report', MetadataStructure::INT);
-        $structure->addField('report_content_type', MetadataStructure::STR);
+        // warning bits
         $structure->addField('points', MetadataStructure::INT);
         $structure->addField('expiry_date', MetadataStructure::INT);
         $structure->addField('warned_user', MetadataStructure::INT);
