@@ -3,7 +3,6 @@
 namespace SV\ReportImprovements\Service\WarningLog;
 
 use SV\ReportImprovements\Entity\WarningLog;
-use SV\ReportImprovements\Globals;
 use XF\Entity\ThreadReplyBan;
 use XF\Entity\Warning;
 use XF\Mvc\Entity\Entity;
@@ -217,7 +216,7 @@ class Creator extends AbstractService
         $errors = array_merge($warningLogErrors, $reportCreatorErrors, $reportCommenterErrors);
         foreach ($errors AS $error)
         {
-            \XF::dumpSimple($error->render('raw'));
+            //@TODO: show errors to user if there is any?
         }
 
         return array_merge($warningLogErrors, $reportCreatorErrors, $reportCommenterErrors);

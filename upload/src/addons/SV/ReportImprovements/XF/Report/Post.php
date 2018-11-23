@@ -22,6 +22,7 @@ class Post extends XFCP_Post
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
+
         // avoid N+1 look up behaviour, just cache all node perms
         $visitor->cacheNodePermissions();
 

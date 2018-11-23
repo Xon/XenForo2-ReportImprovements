@@ -2,7 +2,6 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
-use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**

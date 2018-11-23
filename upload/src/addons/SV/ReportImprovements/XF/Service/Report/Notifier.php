@@ -2,8 +2,6 @@
 
 namespace SV\ReportImprovements\XF\Service\Report;
 
-use SV\ReportImprovements\Globals;
-
 /**
  * Class Notifier
  * 

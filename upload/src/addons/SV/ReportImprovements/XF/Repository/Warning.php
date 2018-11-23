@@ -2,8 +2,6 @@
 
 namespace SV\ReportImprovements\XF\Repository;
 
-use XF\Entity\ThreadReplyBan;
-
 /**
  * Class Warning
  * 
