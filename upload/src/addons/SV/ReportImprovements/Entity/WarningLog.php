@@ -47,7 +47,7 @@ class WarningLog extends Entity
         $structure->shortName = 'SV\ReportImprovements:WarningLog';
         $structure->primaryKey = 'warning_log_id';
         $structure->columns = [
-            'warning_log_id'          => ['type' => self::UINT, 'autoIncrement' => true, 'required' => true],
+            'warning_log_id'          => ['type' => self::UINT, 'autoIncrement' => true, 'nullable' => true],
             'warning_edit_date'       => ['type' => self::UINT, 'required' => true],
             'operation_type'          => ['type' => self::STR, 'allowedValues' => ['new', 'edit', 'expire', 'delete', 'acknowledge'], 'required' => true],
             'warning_id'              => ['type' => self::UINT, 'required' => true],
@@ -58,12 +58,16 @@ class WarningLog extends Entity
             'warning_date'            => ['type' => self::UINT, 'required' => true],
             'warning_user_id'         => ['type' => self::UINT, 'required' => true],
             'warning_definition_id'   => ['type' => self::UINT, 'required' => true],
-            'title'                   => ['type' => self::STR, 'maxLength' => 255, 'required' => true],
-            'notes'                   => ['type' => self::STR, 'maxLength' => 65535, 'required' => true],
-            'points'                  => ['type' => self::UINT, 'maxLength' => 65536, 'required' => true],
-            'expiry_date'             => ['type' => self::UINT, 'required' => true],
-            'is_expired'              => ['type' => self::UINT, 'maxLength' => 255, 'required' => true],
-            'extra_user_group_ids'    => ['type' => self::BINARY, 'maxLength' => 255, 'required' => true],
+            'title' => ['type' => self::STR, 'maxLength' => 255,
+                'required' => 'please_enter_valid_title'
+            ],
+            'notes' => ['type' => self::STR, 'default' => ''],
+            'points' => ['type' => self::UINT, 'max' => 65535, 'required' => true],
+            'expiry_date' => ['type' => self::UINT, 'default' => 0],
+            'is_expired' => ['type' => self::BOOL, 'default' => false],
+            'extra_user_group_ids' => ['type' => self::LIST_COMMA, 'default' => [],
+                'list' => ['type' => 'posint', 'unique' => true, 'sort' => SORT_NUMERIC]
+            ],
             'sv_acknowledgement'      => ['type' => self::STR, 'allowedValues' => ['not_required', 'pending', 'completed'], 'default' => 'not_required'],
             'sv_acknowledgement_date' => ['type' => self::UINT, 'default' => 0],
             'sv_user_note'            => ['type' => self::STR, 'maxLength' => 10000, 'default' => ''],

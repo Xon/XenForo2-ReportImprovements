@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -228,6 +229,22 @@ class Report extends XFCP_Report
     }
 
     /**
+     * @return \XF\Mvc\Entity\ArrayCollection|\SV\ReportImprovements\XF\Entity\ReportComment[]
+     */
+    public function getComments()
+    {
+        if ($this->app()->options()->sv_reverse_report_comment_order)
+        {
+            return $this->finder('XF:ReportComment')
+                ->where('report_id', $this->report_id)
+                ->order('comment_date', 'DESC')
+                ->fetch();
+        }
+
+        return $this->getRelation('Comments');
+    }
+
+    /**
      * @param Structure $structure
      *
      * @return Structure
@@ -238,6 +255,7 @@ class Report extends XFCP_Report
 
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
+        $structure->getters['Comments'] = true;
         $structure->getters['commenter_user_ids'] = true;
         $structure->getters['comment_ids'] = true;
         $structure->getters['ViewableUsername'] = true;

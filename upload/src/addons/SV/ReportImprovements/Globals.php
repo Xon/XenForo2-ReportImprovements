@@ -9,5 +9,8 @@ namespace SV\ReportImprovements;
  */
 class Globals
 {
-    public static $disableDefaultReportNotificationSvc;
+    /**
+     * @var null|bool
+     */
+    public static $expiringFromCron;
 }

@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -20,10 +21,38 @@ class Warning extends XFCP_Warning
     {
         parent::_postSave();
 
-        if ($this->content_type === 'post')
+        if ($this->isUpdate())
         {
+            $type = 'edit';
+            if (!$this->getExistingValue('is_expired') && $this->is_expired)
+            {
+                $type = 'expire';
+            }
 
+            if (Globals::$expiringFromCron === true && $type === 'expire' && $this->app()->options()->sv_ri_log_to_report_natural_warning_expire)
+            {
+                return;
+            }
+
+            /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
+            $warningRepo = $this->repository('XF:Warning');
+            $warningRepo->logOperation($this, $type);
         }
+        else if ($this->isInsert())
+        {
+            /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
+            $warningRepo = $this->repository('XF:Warning');
+            $warningRepo->logOperation($this, 'new');
+        }
+    }
+
+    protected function _postDelete()
+    {
+        parent::_postDelete();
+
+        /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
+        $warningRepo = $this->repository('XF:Warning');
+        $warningRepo->logOperation($this, 'delete');
     }
 
     /**

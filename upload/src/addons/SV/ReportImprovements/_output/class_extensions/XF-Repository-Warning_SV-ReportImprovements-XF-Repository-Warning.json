@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Repository\\Warning",
+    "to_class": "SV\\ReportImprovements\\XF\\Repository\\Warning",
+    "execute_order": 10,
+    "active": true
+}

@@ -8,6 +8,11 @@ namespace SV\ReportImprovements\XF\ControllerPlugin
 	class XFCP_Warn extends \XF\ControllerPlugin\Warn {}
 }
 
+namespace SV\ReportImprovements\XF\Cron
+{
+	class XFCP_Warnings extends \XF\Cron\Warnings {}
+}
+
 namespace SV\ReportImprovements\XF\Entity
 {
 	class XFCP_Report extends \XF\Entity\Report {}
@@ -34,6 +39,7 @@ namespace SV\ReportImprovements\XF\Report
 namespace SV\ReportImprovements\XF\Repository
 {
 	class XFCP_Report extends \XF\Repository\Report {}
+	class XFCP_Warning extends \XF\Repository\Warning {}
 }
 
 namespace SV\ReportImprovements\XF\Service\Report
