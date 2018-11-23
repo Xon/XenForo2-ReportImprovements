@@ -55,7 +55,7 @@ class ReportComment extends XFCP_ReportComment
         $structure->relations['WarningLog'] = [
             'entity' => 'SV\ReportImprovements:WarningLog',
             'type' => self::TO_ONE,
-            'condition' => 'warning_log_id',
+            'conditions' => 'warning_log_id',
             'primary' => true
         ];
 

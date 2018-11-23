@@ -150,4 +150,77 @@ class ReportComment extends AbstractData
         $structure->addField('thread_reply_ban', MetadataStructure::INT);
         $structure->addField('post_reply_ban', MetadataStructure::INT);
     }
+
+    /**
+     * @param \XF\Search\Query\Query $query
+     * @param \XF\Http\Request       $request
+     * @param array                  $urlConstraints
+     */
+    public function applyTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array &$urlConstraints)
+    {
+        $constraints = $request->filter([
+            'type' => [
+                'report_comment' => [
+                    'include_report_contents' => 'bool',
+                    'include_report_comments' => 'bool',
+                    'include_user_reports' => 'bool'
+                ]
+            ],
+            'warning_points' => [
+                'lower' => 'uint',
+                'higher' => 'uint'
+            ]
+        ]);
+
+        $isReport = [];
+        if ($constraints['type']['report_comment']['include_report_comments'])
+        {
+            $isReport[] = 0;
+        }
+
+        if ($constraints['type']['report_comment']['include_user_reports'])
+        {
+            $isReport[] = 1;
+        }
+
+        if ($constraints['type']['report_comment']['include_report_contents'])
+        {
+            $isReport[] = 2;
+        }
+
+        if (\count($isReport))
+        {
+            $query->withMetadata('is_report', $isReport);
+        }
+
+        if ($constraints['warning_points']['lower'])
+        {
+            $query->withSql(new \XF\Search\Query\SqlConstraint(
+                'warning_log.points >= %s',
+                $constraints['warning_points']['lower'],
+                $this->getWarningLogQueryTableReference()
+            ));
+        }
+
+        if ($constraints['warning_points']['higher'])
+        {
+            $query->withSql(new \XF\Search\Query\SqlConstraint(
+                'warning_log.points <= %s',
+                $constraints['warning_points']['lower'],
+                $this->getWarningLogQueryTableReference()
+            ));
+        }
+    }
+
+    /**
+     * @return \XF\Search\Query\TableReference
+     */
+    protected function getWarningLogQueryTableReference()
+    {
+        return new \XF\Search\Query\TableReference(
+            'warning_log',
+            'xf_sv_warning_log',
+            'warning_log.report_comment_id = search_index.content_id'
+        );
+    }
 }

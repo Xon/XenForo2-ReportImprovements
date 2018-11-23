@@ -3,27 +3,27 @@
 <xf:macro template="search_form_macros" name="date" arg-input="{$input}" />
 
 <xf:checkboxrow>
-	<xf:option name="type[report_comment][include_report_contents]"
+	<xf:option name="c[type][report_comment][include_report_contents]"
 			   label="{{ phrase('svReportImprov_include_reported_content') }}"
 			   value="{$input.c.type.report_comment.include_report_contents}" />
 	
-	<xf:option name="type[report_comment][include_report_comments]"
+	<xf:option name="c[type][report_comment][include_report_comments]"
 			   label="{{ phrase('svReportImprov_include_report_comments') }}"
 			   value="{$input.c.type.report_comment.include_report_comments}"/>
 	
-	<xf:option name="type[report_comment][include_user_reports]"
+	<xf:option name="c[type][report_comment][include_user_reports]"
 			   label="{{ phrase('svReportImprov_include_user_reports') }}"
 			   value="{$input.c.type.report_comment.include_user_reports}"/>
 </xf:checkboxrow>
 
 <xf:formrow label="{{ phrase('warning_points') }}">
 	<div class="inputGroup">
-		<xf:numberbox name="warning_points[lower]" value="{$input.c.warning_points.lower}" size="5" min="0" step="1" />
+		<xf:numberbox name="c[warning_points][lower]" value="{$input.c.warning_points.lower}" size="5" min="0" step="1" />
 
 		<span class="inputGroup-text">-</span>
 
 		<span class="inputGroup" dir="ltr">
-			<xf:numberbox name="warning_points[upper]" value="{$input.c.warning_points.upper}" size="5" min="0" step="1" />
+			<xf:numberbox name="c[warning_points][upper]" value="{$input.c.warning_points.upper}" size="5" min="0" step="1" />
 		</span>
 	</div>
 </xf:formrow>
