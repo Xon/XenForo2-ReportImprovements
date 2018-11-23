@@ -54,22 +54,36 @@ class Setup extends AbstractSetup
         $this->applyDefaultPermissions();
     }
 
-    public function upgrade2000000Step1()
+    public function upgrade2000001Step1()
     {
         $this->installStep1();
     }
 
-    public function upgrade2000000Step2()
+    public function upgrade2000001Step2()
     {
         $this->installStep2();
     }
 
-    public function upgrade2000000Step3()
+    public function upgrade2000001Step3()
     {
         $this->db()->query('
           update xf_report_comment
           set warning_log_id = null
-          where warning_log_id= 0
+          where warning_log_id = 0
+        ');
+    }
+
+    public function upgrade2000001Step4()
+    {
+        /** @noinspection SqlResolve */
+        $this->db()->query('
+          update xf_report
+          set last_modified_id = coalesce((select report_comment_id 
+                                  from xf_report_comment 
+                                  where xf_report_comment.report_id = xf_report.report_id
+                                  order by comment_date desc
+                                  limit 1), 0)
+          where last_modified_id = 0
         ');
     }
 
@@ -320,6 +334,10 @@ class Setup extends AbstractSetup
     {
         $tables = [];
 
+        $tables['xf_report'] = function (Alter $table) {
+            $this->addOrChangeColumn($table, 'last_modified_id', 'int')->setDefault(0);
+        };
+
         $tables['xf_report_comment'] = function (Alter $table) {
             $this->addOrChangeColumn($table, 'warning_log_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'likes', 'int')->setDefault(0);
@@ -338,6 +356,10 @@ class Setup extends AbstractSetup
     protected function getRemoveAlterTables()
     {
         $tables = [];
+
+        $tables['xf_report'] = function (Alter $table) {
+            $table->dropColumns(['last_modified_id']);
+        };
 
         $tables['xf_report_comment'] = function (Alter $table) {
             $table->dropColumns(['warning_log_id', 'likes', 'like_users', 'alertSent', 'alertComment']);
