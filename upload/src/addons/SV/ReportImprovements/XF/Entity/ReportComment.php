@@ -14,11 +14,13 @@ use XF\Mvc\Entity\Structure;
  * COLUMNS
  * @property int likes
  * @property array like_users
+ * @property int warning_log_id
  * @property bool alertSent
  * @property string alertComment
  *
  * RELATIONS
  * @property \XF\Entity\LikedContent[] Likes
+ * @property \SV\ReportImprovements\Entity\WarningLog WarningLog
  */
 class ReportComment extends XFCP_ReportComment
 {
@@ -33,14 +35,13 @@ class ReportComment extends XFCP_ReportComment
 
         $structure->contentType = 'report_comment';
 
-        $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => null, 'nullable' => null];
-        $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => null];
-
+        $structure->columns['warning_log_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
+        $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => null, 'nullable' => true];
+        $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => true];
         $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
         $structure->behaviors['XF:Indexable'] = [
             'checkForUpdates' => ['message', 'user_id', 'report_id', 'comment_date', 'state_change', 'is_report']
         ];
-
         $structure->relations['Likes'] = [
             'entity' => 'XF:LikedContent',
             'type' => self::TO_MANY,
@@ -50,6 +51,12 @@ class ReportComment extends XFCP_ReportComment
             ],
             'key' => 'like_user_id',
             'order' => 'like_date'
+        ];
+        $structure->relations['WarningLog'] = [
+            'entity' => 'SV\ReportImprovements:WarningLog',
+            'type' => self::TO_ONE,
+            'condition' => 'warning_log_id',
+            'primary' => true
         ];
 
         return $structure;

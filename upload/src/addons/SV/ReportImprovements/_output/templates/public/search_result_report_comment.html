@@ -1,0 +1,22 @@
+<li class="block-row block-row--separated" data-author="{{ $reportComment.User.username ?: $reportComment.username }}">
+	<div class="contentRow">
+		<span class="contentRow-figure">
+			<xf:avatar user="{$reportComment.User}" size="s" defaultname="{$reportComment.username}" />
+		</span>
+		<div class="contentRow-main">
+			<h3 class="contentRow-title">
+				<a href="{{ link('reports', $report) }}#report-comment-{$reportComment.report_comment_id}">{$report.title}</a>
+			</h3>
+
+			<div class="contentRow-snippet">{{ snippet($reportComment.message, 300, {'term': $options.term, 'stripPlainTag': true}) }}</div>
+
+			<div class="contentRow-minor contentRow-minor--hideLinks">
+				<ul class="listInline listInline--bullet">
+					<li><xf:username user="{$reportComment.User}" defaultname="{$reportComment.username}" /></li>
+					<li>{{ phrase('svReportImprov_report_comment') }}</li>
+					<li><xf:date time="{$reportComment.comment_date}" /></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</li>

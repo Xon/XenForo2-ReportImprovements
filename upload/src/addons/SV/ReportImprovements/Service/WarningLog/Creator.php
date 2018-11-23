@@ -258,6 +258,7 @@ class Creator extends AbstractService
 
                     if ($report->LastModified)
                     {
+                        $report->LastModified->warning_log_id = $this->warningLog->warning_log_id;
                         $report->LastModified->state_change = '';
                     }
 
@@ -269,6 +270,7 @@ class Creator extends AbstractService
                 /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
                 if ($reportComment = $this->reportCommenter->save())
                 {
+                    $reportComment->warning_log_id = $this->warningLog->warning_log_id;
                     $reportComment->state_change = '';
                     $reportComment->delete();
                 }
