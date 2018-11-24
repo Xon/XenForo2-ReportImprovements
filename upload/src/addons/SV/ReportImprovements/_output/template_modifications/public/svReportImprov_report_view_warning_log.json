@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "If the report comment has warning log attached to it, show it instead of the message",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(<xf:if is=\"(\\$comment\\.message.*?)\">)(.*?)(<\\/xf:if>)#si",
+    "replace": "<xf:if is=\"$comment.WarningLog\">\n\t<article class=\"message-body\">\n\t\t<xf:include template=\"svReportImprov_report_view_warning_log\" />\n\t</article>\n<xf:else if=\"$2\" />\n\t$3\n</xf:if>"
+}

@@ -1,0 +1,59 @@
+<dl class="pairs pairs--justified fauxBlockLink">
+	<dt>{{ phrase('svReportImprov_operation_type') }}</dt>
+	<dd class="warning_{$comment.WarningLog.operation_type}">{{ $comment.WarningLog.OperationTypePhrase }}</dd>
+</dl>
+
+<dl class="pairs pairs--justified fauxBlockLink">
+	<dt>{{ phrase('warning') }}</dt>
+	<dd>{$comment.WarningLog.title}</dd>
+</dl>
+
+<dl class="pairs pairs--justified fauxBlockLink">
+	<dt>{{ phrase('points') }}</dt>
+	<dd>{$comment.WarningLog.points|number}</dd>
+</dl>
+
+<dl class="pairs pairs--justified fauxBlockLink">
+	<dt>{{ phrase('expiry') }}</dt>
+	<dd>
+		<xf:if is="$comment.WarningLog.expiry_date">
+			<xf:date time="$comment.WarningLog.expiry_date" />
+		<xf:else />
+			{{ phrase('n_a') }}
+		</xf:if>
+	</dd>
+</dl>
+
+<xf:if is="$comment.WarningLog.Warning">
+	<dl class="pairs pairs--justified fauxBlockLink">
+		<dt>{{ phrase('warning') }}</dt>
+		<dd><a href="{{ link('warnings', {'warning_id': $comment.WarningLog.warning_id}) }}">{{ phrase('view') }}</a></dd>
+	</dl>
+</xf:if>
+
+<xf:if is="$comment.WarningLog.reply_ban_thread_id">
+	<dl class="pairs pairs--justified fauxBlockLink">
+		<dt>{{ phrase('svReportImprov_reply_ban_thread') }}</dt>
+		<dd>
+			<a href="{xen:if '{$comment.reply_ban_link}', '{$comment.reply_ban_link}', '{xen:link 'threads', $comment.reply_ban_thread_id}'}" class="secondaryContent">{xen:phrase view}</a>
+		</dd>
+	</dl>
+</xf:if>
+
+<xf:if is="$comment.WarningLog.reply_ban_post_id">
+	<dl class="pairs pairs--justified fauxBlockLink">
+		<dt>{{ phrase('svReportImprov_reply_ban') }}</dt>
+		<dd>
+			<xf:button href="{xen:link 'threads/reply-bans', {'thread_reply_ban_id': $comment.WarningLog.reply_ban_thread_id}} {{ link('threads/reply-bans', $comment.WarningLog.reply_ban_thread_id) }}"
+					   icon="edit"
+					   overlay="true" />
+		</dd>
+	</dl>
+</xf:if>
+
+<xf:if is="$comment.WarningLog.notes">
+	<dl class="pairs pairs--justified fauxBlockLink">
+		<dt>{{ phrase('svReportImprov_note') }}</dt>
+		<dd>{{ structured_text($comment.WarningLog.notes) }}</dd>
+	</dl>
+</xf:if>

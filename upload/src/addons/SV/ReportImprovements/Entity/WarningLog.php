@@ -38,6 +38,14 @@ use XF\Mvc\Entity\Structure;
 class WarningLog extends Entity
 {
     /**
+     * @return \XF\Phrase
+     */
+    public function getOperationTypePhrase()
+    {
+        return \XF::phrase('svReportImprov_operation_type.' . $this->operation_type);
+    }
+
+    /**
      * @param Structure $structure
      * @return Structure
      */
@@ -87,7 +95,17 @@ class WarningLog extends Entity
                 'type' => self::TO_ONE,
                 'conditions' => 'user_id',
                 'primary' => true
+            ],
+            'ThreadReplyBan' => [
+                'entity' => 'XF:ThreadReplyBan',
+                'type' => self::TO_ONE,
+                'conditions' => [
+                    ['thread_reply_ban_id', '=', '$reply_ban_thread_id']
+                ]
             ]
+        ];
+        $structure->getters = [
+            'OperationTypePhrase' => true
         ];
 
         return $structure;
