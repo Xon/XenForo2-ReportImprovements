@@ -106,14 +106,6 @@ class Report extends AbstractData
     }
 
     /**
-     * @return array
-     */
-    public function getSearchableContentTypes()
-    {
-        return ['report', 'report_comment'];
-    }
-
-    /**
      * @return array|null
      */
     public function getSearchFormTab()

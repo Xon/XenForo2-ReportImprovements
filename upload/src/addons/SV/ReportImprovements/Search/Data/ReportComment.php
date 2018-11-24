@@ -134,7 +134,7 @@ class ReportComment extends AbstractData
      */
     public function getSearchableContentTypes()
     {
-        return ['report_comment'];
+        return ['report_comment', 'report'];
     }
 
     /**
