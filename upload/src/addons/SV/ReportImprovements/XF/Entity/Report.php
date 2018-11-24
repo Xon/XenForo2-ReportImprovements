@@ -96,18 +96,12 @@ class Report extends XFCP_Report
      *
      * @return bool
      */
-    public function canViewReporter(/** @noinspection PhpUnusedParameterInspection */
-        &$error = null)
+    public function canViewReporter(&$error = null)
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
 
-        if (!$visitor->user_id)
-        {
-            return false;
-        }
-
-        return $visitor->hasPermission('general', 'viewReporterUsername');
+        return $visitor->canViewReporter($error);
     }
 
     /**

@@ -118,4 +118,20 @@ class User extends XFCP_User
 
         return true;
     }
+
+    /**
+     * @param null $error
+     *
+     * @return bool
+     */
+    public function canViewReporter(/** @noinspection PhpUnusedParameterInspection */
+        &$error = null)
+    {
+        if (!$this->user_id)
+        {
+            return false;
+        }
+
+        return $this->hasPermission('general', 'viewReporterUsername');
+    }
 }

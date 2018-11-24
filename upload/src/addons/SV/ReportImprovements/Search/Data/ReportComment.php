@@ -6,6 +6,9 @@ use XF\Search\Data\AbstractData;
 use XF\Mvc\Entity\Entity;
 use XF\Search\MetadataStructure;
 use XF\Search\IndexRecord;
+use XF\Search\Query\MetadataConstraint;
+use XF\Search\Query\Query;
+use XF\Search\Query\TableReference;
 
 /**
  * Class ReportComment
@@ -63,7 +66,7 @@ class ReportComment extends AbstractData
             'date' => $entity->comment_date,
             'user_id' => $entity->user_id,
             'discussion_id' => 0,
-            'metadata' => $this->getMetaData($entity)
+            'metadata' => $this->getMetaData($entity),
         ]);
     }
 
@@ -122,7 +125,7 @@ class ReportComment extends AbstractData
         return [
             'report' => $entity->Report,
             'reportComment' => $entity,
-            'options' => $options
+            'options' => $options,
         ];
     }
 
@@ -152,24 +155,24 @@ class ReportComment extends AbstractData
     }
 
     /**
-     * @param \XF\Search\Query\Query $query
+     * @param Query $query
      * @param \XF\Http\Request       $request
      * @param array                  $urlConstraints
      */
-    public function applyTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array &$urlConstraints)
+    public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
         $constraints = $request->filter([
             'type'           => [
                 'report_comment' => [
                     'include_report_contents' => 'bool',
                     'include_report_comments' => 'bool',
-                    'include_user_reports'    => 'bool'
-                ]
+                    'include_user_reports'    => 'bool',
+                ],
             ],
             'warning_points' => [
                 'lower'  => 'uint',
-                'higher' => 'uint'
-            ]
+                'higher' => 'uint',
+            ],
         ]);
 
         $isReport = [];
@@ -200,33 +203,63 @@ class ReportComment extends AbstractData
             if ($constraints['warning_points']['lower'])
             {
                 $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('warning_log.points', $constraints['warning_points']['lower'],
-                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReferencse()));
+                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference()));
             }
 
             if ($constraints['warning_points']['higher'])
             {
                 $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('warning_log.points', $constraints['warning_points']['lower'],
-                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReferencse()));
+                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference()));
             }
         }
     }
 
     /**
-     * @return \XF\Search\Query\TableReference[]
+     * This allows you to specify constraints to avoid including search results that will ultimately be filtered
+     * out due to permissions.In most cases, the query should not generally be modified. It is passed in to allow inspection.
+     *
+     * Note that your returned constraints may not be applied only to results of the relevant types. If possible, you
+     * should only return "none" constraints using metadata keys that are unique to the involved content types.
+     *
+     * $isOnlyType will be true when the search is specific to this type. This allows different constraints to be applied
+     * when searching within the type. For example, this could implicitly disable searching of a content type unless targeted.
+     *
+     * @param Query $query $query
+     * @param bool $isOnlyType Will be true if the search is specifically limited to this type.
+     *
+     * @return MetadataConstraint[] Only an array of metadata constraints may be returned.
      */
-    protected function getWarningLogQueryTableReferencse()
+    public function getTypePermissionConstraints(Query $query, $isOnlyType)
+    {
+        // if a visitor can't view the username of a reporter, just prevent searching for reports by users
+        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        $visitor = \XF::visitor();
+        if (!$visitor->canViewReporter())
+        {
+            return [
+                new MetadataConstraint('is_report', [1], 'none')
+            ];
+        }
+
+        return [];
+    }
+
+    /**
+     * @return TableReference[]
+     */
+    protected function getWarningLogQueryTableReference()
     {
         return [
-            new \XF\Search\Query\TableReference(
+            new TableReference(
                 'report_comment',
                 'xf_report_comment',
                 'report_comment.report_comment_id = search_index.content_id'
             ),
-            new \XF\Search\Query\TableReference(
+            new TableReference(
                 'warning_log',
                 'xf_sv_warning_log',
                 'warning_log.warning_log_id = report_comment.warning_log_id'
-            )
+            ),
         ];
     }
 }
