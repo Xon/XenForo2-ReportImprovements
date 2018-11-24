@@ -223,22 +223,6 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @return \XF\Mvc\Entity\ArrayCollection|\SV\ReportImprovements\XF\Entity\ReportComment[]
-     */
-    public function getComments()
-    {
-        if ($this->app()->options()->sv_reverse_report_comment_order)
-        {
-            return $this->finder('XF:ReportComment')
-                ->where('report_id', $this->report_id)
-                ->order('comment_date', 'DESC')
-                ->fetch();
-        }
-
-        return $this->getRelation('Comments');
-    }
-
-    /**
      * @return \XF\Mvc\Entity\Entity|null|\SV\ReportImprovements\XF\Entity\ReportComment
      */
     public function getFirstReportComment()
@@ -261,6 +245,11 @@ class Report extends XFCP_Report
 
         $structure->contentType = 'report';
 
+        if (\XF::app()->options()->sv_reverse_report_comment_order)
+        {
+            $structure->relations['Comments']['order'] = 'comment_date';
+        }
+
         $structure->behaviors['XF:Indexable'] = [
             'checkForUpdates' => ['content_user_id', 'content_info', 'first_report_date', 'report_state']
         ];
@@ -272,7 +261,6 @@ class Report extends XFCP_Report
 
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
-        $structure->getters['Comments'] = true;
         $structure->getters['commenter_user_ids'] = true;
         $structure->getters['comment_ids'] = true;
         $structure->getters['ViewableUsername'] = true;
