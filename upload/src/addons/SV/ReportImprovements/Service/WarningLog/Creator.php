@@ -271,7 +271,7 @@ class Creator extends AbstractService
                 {
                     $reportComment->warning_log_id = $this->warningLog->warning_log_id;
                     $reportComment->state_change = '';
-                    $reportComment->delete();
+                    $reportComment->save();
                 }
             }
         });
