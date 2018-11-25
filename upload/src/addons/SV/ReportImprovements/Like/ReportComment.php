@@ -19,6 +19,6 @@ class ReportComment extends AbstractHandler
      */
     public function likesCounted(Entity $entity)
     {
-        return !$entity->Report->isClosed();
+        return true;
     }
 }
