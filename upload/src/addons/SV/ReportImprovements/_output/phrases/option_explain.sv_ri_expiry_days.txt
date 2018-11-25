@@ -1,0 +1,1 @@
+Reports will be automatically resolved if they have not received a comment after this many days. Set this to 0 to disable.

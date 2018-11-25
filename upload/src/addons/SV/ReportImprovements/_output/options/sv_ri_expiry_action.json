@@ -1,0 +1,12 @@
+{
+    "edit_format": "radio",
+    "edit_format_params": "resolved={{ phrase('report_state.resolved') }}\nrejected={{ phrase('report_state.rejected') }}",
+    "data_type": "string",
+    "sub_options": [],
+    "validation_class": "",
+    "validation_method": "",
+    "default_value": "resolved",
+    "relations": {
+        "sv_report_improvements": 140
+    }
+}
