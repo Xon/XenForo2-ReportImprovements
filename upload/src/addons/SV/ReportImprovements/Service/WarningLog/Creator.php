@@ -39,12 +39,12 @@ class Creator extends AbstractService
     protected $warningLog;
 
     /**
-     * @var \SV\ReportImprovements\XF\Service\Report\Creator
+     * @var \XF\Service\Report\Creator|\SV\ReportImprovements\XF\Service\Report\Creator
      */
     protected $reportCreator;
 
     /**
-     * @var \SV\ReportImprovements\XF\Service\Report\Commenter
+     * @var \XF\Service\Report\Commenter|\SV\ReportImprovements\XF\Service\Report\Commenter
      */
     protected $reportCommenter;
 
@@ -156,23 +156,20 @@ class Creator extends AbstractService
             $this->warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render();
             $this->warningLog->notes = $this->threadReplyBan->reason;
 
-            \XF::asVisitor($this->threadReplyBan->User, function ()
+            if (!$this->threadReplyBan->Report)
             {
-                if (!$this->threadReplyBan->Report)
+                $this->reportCreator = $this->service('XF:Report\Creator', 'user', $this->threadReplyBan->User);
+                $this->reportCreator->setMessage($this->threadReplyBan->reason);
+            }
+            else if ($this->threadReplyBan->Report)
+            {
+                $this->reportCommenter = $this->service('XF:Report\Commenter', $this->threadReplyBan->Report);
+                $this->reportCommenter->setMessage($this->threadReplyBan->reason);
+                if ($this->warningLog->operation_type === 'new')
                 {
-                    $this->reportCreator = $this->service('XF:Report\Creator', 'user', $this->threadReplyBan->User);
-                    $this->reportCreator->setMessage($this->threadReplyBan->reason);
+                    $this->reportCommenter->setReportState('resolved');
                 }
-                else if ($this->threadReplyBan->Report)
-                {
-                    $this->reportCommenter = $this->service('XF:Report\Commenter', $this->threadReplyBan->Report);
-                    $this->reportCommenter->setMessage($this->threadReplyBan->reason);
-                    if ($this->warningLog->operation_type === 'new')
-                    {
-                        $this->reportCommenter->setReportState('resolved');
-                    }
-                }
-            });
+            }
         }
     }
 
