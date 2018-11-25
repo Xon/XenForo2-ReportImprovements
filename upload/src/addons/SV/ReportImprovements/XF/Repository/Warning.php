@@ -28,6 +28,14 @@ class Warning extends XFCP_Warning
             {
                 $reporter = $this->app()->find('XF:User', 1);
             }
+            if (!$reporter && $warning->User)
+            {
+                $reporter = $warning->User;
+            }
+            if (!$reporter && $warning->WarnedBy)
+            {
+                $reporter = $warning->WarnedBy;
+            }
             if (!$reporter)
             {
                 $reporter = \XF::visitor();
