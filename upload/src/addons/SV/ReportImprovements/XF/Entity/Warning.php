@@ -7,7 +7,7 @@ use XF\Mvc\Entity\Structure;
 
 /**
  * Class Warning
- * 
+ *
  * Extends \XF\Entity\Warning
  *
  * @package SV\ReportImprovements\XF\Entity
@@ -29,7 +29,8 @@ class Warning extends XFCP_Warning
                 $type = 'expire';
             }
 
-            if (Globals::$expiringFromCron === true && $type === 'expire' && $this->app()->options()->sv_ri_log_to_report_natural_warning_expire)
+
+            if (Globals::$expiringFromCron === true && $type === 'expire' && !$this->app()->options()->sv_ri_log_to_report_natural_warning_expire)
             {
                 return;
             }
@@ -72,7 +73,7 @@ class Warning extends XFCP_Warning
                 ['content_id', '=', '$content_id']
             ]
         ];
-    
+
         return $structure;
     }
 }
