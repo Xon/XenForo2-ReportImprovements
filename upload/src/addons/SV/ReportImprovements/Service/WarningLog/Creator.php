@@ -126,23 +126,20 @@ class Creator extends AbstractService
                 $reportMessage .= "\r\n" . $this->warning->notes;
             }
 
-            \XF::asVisitor($this->warning->WarnedBy, function () use($reportMessage)
+            if (!$this->warning->Report && $this->app->options()->sv_report_new_warnings)
             {
-                if (!$this->warning->Report && $this->app->options()->sv_report_new_warnings)
+                $this->reportCreator = $this->service('XF:Report\Creator', $this->warning->content_type, $this->warning->Content);
+                $this->reportCreator->setMessage($reportMessage);
+            }
+            else if ($this->warning->Report)
+            {
+                $this->reportCommenter = $this->service('XF:Report\Commenter', $this->warning->Report);
+                $this->reportCommenter->setMessage($reportMessage);
+                if ($this->warningLog->operation_type === 'new')
                 {
-                    $this->reportCreator = $this->service('XF:Report\Creator', $this->warning->content_type, $this->warning->Content);
-                    $this->reportCreator->setMessage($reportMessage);
+                    $this->reportCommenter->setReportState('resolved');
                 }
-                else if ($this->warning->Report)
-                {
-                    $this->reportCommenter = $this->service('XF:Report\Commenter', $this->warning->Report);
-                    $this->reportCommenter->setMessage($reportMessage);
-                    if ($this->warningLog->operation_type === 'new')
-                    {
-                        $this->reportCommenter->setReportState('resolved');
-                    }
-                }
-            });
+            }
         }
         else if ($this->threadReplyBan)
         {
