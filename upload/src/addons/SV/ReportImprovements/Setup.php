@@ -54,6 +54,32 @@ class Setup extends AbstractSetup
         $this->applyDefaultPermissions();
     }
 
+    public function installStep4()
+    {
+        $this->upgrade1090100Step1();
+    }
+
+    public function installStep5()
+    {
+        $this->upgrade1090200Step1();
+    }
+
+    public function upgrade1090100Step1()
+    {
+        $this->app->jobManager()->enqueueUnique(
+            'svRIUpgrade1090100Step1',
+            'SV\ReportImprovements:Upgrades\Upgrade1090100Step1'
+        );
+    }
+
+    public function upgrade1090200Step1()
+    {
+        $this->app->jobManager()->enqueueUnique(
+            'svRIUpgrade1090200Step1',
+            'SV\ReportImprovements:Upgrades\Upgrade1090100Step1'
+        );
+    }
+
     public function upgrade2000001Step1()
     {
         $this->installStep1();
