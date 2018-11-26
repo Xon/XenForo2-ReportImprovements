@@ -1,0 +1,9 @@
+{
+    "template": "warning_info",
+    "description": "Allow content report to be resolved (content)",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#<li role=\"tabpanel\" id=\"{{ unique_id\\('warningUpdate'\\) }}\".*?<\\/li>#si",
+    "replace": "$0\n\n<xf:include template=\"svReportImprov_warning_info_resolve_report_content\" />"
+}
