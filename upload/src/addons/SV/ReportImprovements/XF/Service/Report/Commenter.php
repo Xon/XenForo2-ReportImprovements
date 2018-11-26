@@ -7,7 +7,7 @@ use SV\ReportImprovements\XF\Entity\ReportComment;
 
 /**
  * Class Commenter
- * 
+ *
  * Extends \XF\Service\Report\Commenter
  *
  * @package SV\ReportImprovements\XF\Service\Report
@@ -19,12 +19,18 @@ class Commenter extends XFCP_Commenter
 {
     protected function finalSetup()
     {
-        //parent::finalSetup();
-        if ($this->sendAlert)
+        $sendAlert = $this->sendAlert;
+        $this->sendAlert = false;
+
+        if ($sendAlert)
         {
             $this->comment->alertSent = true;
             $this->comment->alertComment = $this->alertComment;
         }
+
+        parent::finalSetup();
+
+        $this->sendAlert = $sendAlert;
     }
 
     /**
