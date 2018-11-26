@@ -31,9 +31,14 @@ use XF\Mvc\Entity\Structure;
  * @property int reply_ban_post_id
  * @property int sv_suppress_notices
  *
+ * GETTERS
+ * @property \XF\Entity\ThreadReplyBan ReplyBan
+ *
  * RELATIONS
  * @property \XF\Entity\Warning Warning
  * @property \XF\Entity\User User
+ * @property \XF\Entity\Thread ReplyBanThread
+ * @property \XF\Entity\Post ReplyBanPost
  */
 class WarningLog extends Entity
 {
@@ -43,6 +48,37 @@ class WarningLog extends Entity
     public function getOperationTypePhrase()
     {
         return \XF::phrase('svReportImprov_operation_type.' . $this->operation_type);
+    }
+
+    /**
+     * @return \XF\Entity\ThreadReplyBan|null
+     */
+    public function getReplyBan()
+    {
+        if (!$this->ReplyBanThread)
+        {
+            return null;
+        }
+
+        return $this->ReplyBanThread->ReplyBans[$this->user_id];
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getReplyBanLink()
+    {
+        if ($this->ReplyBanThread)
+        {
+            return $this->app()->router('public')->buildLink('posts', $this->ReplyBanPost);
+        }
+
+        if ($this->ReplyBanThread)
+        {
+            return $this->app()->router('public')->buildLink('threads', $this->ReplyBanThread);
+        }
+
+        return null;
     }
 
     /**
@@ -96,16 +132,27 @@ class WarningLog extends Entity
                 'conditions' => 'user_id',
                 'primary' => true
             ],
-            'ThreadReplyBan' => [
-                'entity' => 'XF:ThreadReplyBan',
+            'ReplyBanThread' => [
+                'entity' => 'XF:Thread',
                 'type' => self::TO_ONE,
                 'conditions' => [
-                    ['thread_reply_ban_id', '=', '$reply_ban_thread_id']
-                ]
+                    ['thread_id', '=', '$reply_ban_thread_id']
+                ],
+                'primary' => true
+            ],
+            'ReplyBanPost' => [
+                'entity' => 'XF:Post',
+                'type' => self::TO_ONE,
+                'conditions' => [
+                    ['post_id', '=', '$reply_ban_post_id']
+                ],
+                'primary' => true
             ]
         ];
         $structure->getters = [
-            'OperationTypePhrase' => true
+            'OperationTypePhrase' => true,
+            'ReplyBan' => true,
+            'ReplyBanLink' => true
         ];
 
         return $structure;

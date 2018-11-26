@@ -31,29 +31,23 @@
 	</dl>
 </xf:if>
 
-<xf:if is="$comment.WarningLog.reply_ban_thread_id">
+<xf:if is="$comment.WarningLog.ReplyBanLink">
 	<dl class="pairs pairs--justified fauxBlockLink">
-		<dt>{{ phrase('svReportImprov_reply_ban_thread') }}</dt>
-		<dd>
-			<a href="{xen:if '{$comment.reply_ban_link}', '{$comment.reply_ban_link}', '{xen:link 'threads', $comment.reply_ban_thread_id}'}" class="secondaryContent">{xen:phrase view}</a>
-		</dd>
+		<dt>{{ phrase('thread') }}</dt>
+		<dd><a href="{$comment.WarningLog.ReplyBanLink}">{{ phrase('view') }}</a>
 	</dl>
 </xf:if>
 
-<xf:if is="$comment.WarningLog.reply_ban_post_id">
+<xf:if is="$comment.WarningLog.ReplyBan">
 	<dl class="pairs pairs--justified fauxBlockLink">
 		<dt>{{ phrase('svReportImprov_reply_ban') }}</dt>
-		<dd>
-			<xf:button href="{xen:link 'threads/reply-bans', {'thread_reply_ban_id': $comment.WarningLog.reply_ban_thread_id}} {{ link('threads/reply-bans', $comment.WarningLog.reply_ban_thread_id) }}"
-					   icon="edit"
-					   overlay="true" />
-		</dd>
+		<dd><a href="{{ link('threads/reply-bans', $comment.WarningLog.ReplyBanThread) }}" data-xf-click="overlay">{{ phrase('edit') }}</a></dd>
 	</dl>
 </xf:if>
 
 <xf:if is="$comment.WarningLog.notes">
 	<dl class="pairs pairs--justified fauxBlockLink">
-		<dt>{{ phrase('svReportImprov_note') }}</dt>
+		<dt>{{ phrase('note') }}</dt>
 		<dd>{{ structured_text($comment.WarningLog.notes) }}</dd>
 	</dl>
 </xf:if>

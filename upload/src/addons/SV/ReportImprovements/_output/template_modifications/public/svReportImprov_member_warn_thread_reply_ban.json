@@ -1,0 +1,9 @@
+{
+    "template": "member_warn",
+    "description": "Allow thread reply banning",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:submitrow submit=\"{{ phrase('warn') }}\" sticky=\"true\" />",
+    "replace": "<xf:include template=\"svReportImprov_member_warn_thread_reply_ban\" />\n\n$0"
+}

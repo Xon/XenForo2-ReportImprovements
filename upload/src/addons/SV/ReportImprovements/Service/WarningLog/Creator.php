@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Service\WarningLog;
 
 use SV\ReportImprovements\Entity\WarningLog;
+use SV\ReportImprovements\Globals;
 use XF\Entity\ThreadReplyBan;
 use XF\Entity\Warning;
 use XF\Mvc\Entity\Entity;
@@ -163,23 +164,48 @@ class Creator extends AbstractService
         else if ($this->threadReplyBan)
         {
             $this->warningLog->warning_date = \XF::$time;
-            $this->warningLog->content_type = 'user';
-            $this->warningLog->content_id = $this->threadReplyBan->user_id;
-            $this->warningLog->content_title = $this->threadReplyBan->User->username;
+            $report = null;
+
+            if (Globals::$postIdForWarningLog)
+            {
+                /** @var \XF\Finder\Report $reportFinder */
+                $reportFinder = $this->finder('XF:Report');
+                $reportFinder->where('content_type', 'post');
+                $reportFinder->where('content_id', Globals::$postIdForWarningLog);
+                $report = $reportFinder->fetchOne();
+
+                $this->warningLog->content_type = 'post';
+                $this->warningLog->content_id = Globals::$postIdForWarningLog;
+                $this->warningLog->content_title = \XF::phrase('post_in_thread_x', [
+                    'title' => Globals::$threadTitleForWarningLog]
+                );
+                $this->warningLog->reply_ban_post_id = Globals::$postIdForWarningLog;
+            }
+            else
+            {
+                $report = $this->threadReplyBan->Report;
+
+                $this->warningLog->content_type = 'user';
+                $this->warningLog->content_id = $this->threadReplyBan->user_id;
+                $this->warningLog->content_title = $this->threadReplyBan->User->username;
+            }
+
+            $this->warningLog->reply_ban_thread_id = $this->threadReplyBan->thread_id;
             $this->warningLog->user_id = $this->threadReplyBan->user_id;
             $this->warningLog->warning_user_id = \XF::visitor()->user_id;
             $this->warningLog->warning_definition_id = null;
             $this->warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render();
             $this->warningLog->notes = $this->threadReplyBan->reason;
 
-            if (!$this->threadReplyBan->Report)
+
+            if (!$report)
             {
                 $this->reportCreator = $this->service('XF:Report\Creator', 'user', $this->threadReplyBan->User);
                 $this->reportCreator->setMessage($this->threadReplyBan->reason);
             }
-            else if ($this->threadReplyBan->Report)
+            else if ($report)
             {
-                $this->reportCommenter = $this->service('XF:Report\Commenter', $this->threadReplyBan->Report);
+                $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
                 $this->reportCommenter->setMessage($this->threadReplyBan->reason);
                 if ($this->autoResolve)
                 {
@@ -257,6 +283,9 @@ class Creator extends AbstractService
         return $this->warningLog;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function sendNotifications()
     {
         if ($this->reportCreator)

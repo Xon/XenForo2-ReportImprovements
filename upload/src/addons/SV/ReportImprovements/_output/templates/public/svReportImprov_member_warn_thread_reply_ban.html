@@ -1,0 +1,43 @@
+<xf:if is="$contentType === 'post'">
+	<xf:css src="svReportImprov_member_warn_thread_reply_ban.less" />
+
+	<xf:formrow label="{{ phrase('svReportImprov_thread_reply_ban') }}">
+		<ul class="inputChoices threadReplyBan">
+			<li class="inputChoices-choice">
+				<div>{{ phrase('ban_length:') }}</div>
+				<xf:radio name="ban_length">
+					<xf:option value="" label="{{ phrase('none') }}" selected="true" />
+					<xf:option value="permanent" label="{{ phrase('permanent') }}" />
+					<xf:option value="temporary" label="{{ phrase('temporary:') }}">
+
+						<xf:dependent>
+							<div class="inputGroup inputGroup--auto">
+								<xf:textbox name="ban_length_value" value="7" />
+								<span class="inputGroup-splitter"></span>
+								<xf:select name="ban_length_unit">
+									<xf:option value="hours">{{ phrase('hours') }}</xf:option>
+									<xf:option value="days" selected="true">{{ phrase('days') }}</xf:option>
+									<xf:option value="weeks">{{ phrase('weeks') }}</xf:option>
+									<xf:option value="months">{{ phrase('months') }}</xf:option>
+								</xf:select>
+							</div>
+						</xf:dependent>
+					</xf:option>
+				</xf:radio>
+			</li>
+
+			<li class="inputChoices-choice">
+				<div>{{ phrase('reason:') }}:</div>
+				<xf:textbox name="reply_ban_reason" maxlength="{{ max_length('XF:ThreadReplyBan', 'reason') }}" />
+				<dfn class="inputChoices-explain">{{ phrase('this_will_be_shown_to_user_if_you_choose_to_notify_them') }}</dfn>
+			</li>
+
+			<li class="inputChoices-choice">
+				<div>{{ phrase('ban_length') }}:</div>
+				<xf:checkbox>
+					<xf:option name="reply_ban_send_alert">{{ phrase('notify_user_of_this_action') }}</xf:option>
+				</xf:checkbox>
+			</li>
+		</ul>
+	</xf:formrow>
+</xf:if>

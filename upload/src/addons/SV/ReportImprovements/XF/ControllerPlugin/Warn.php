@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\ControllerPlugin;
 
+use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\View;
 
@@ -21,12 +22,24 @@ class Warn extends XFCP_Warn
     {
         $warningSubmitInput = parent::getWarnSubmitInput();
 
+        $inputData = [];
+
         if ($this->request->exists('resolve_report'))
         {
-            $warningSubmitInput['resolve_report'] = $this->filter('resolve_report', 'bool');
+            $inputData['resolve_report'] = 'bool';
         }
 
-        return $warningSubmitInput;
+        if ($this->request->exists('ban_length'))
+        {
+            $inputData['ban_length'] = 'str';
+            $inputData['ban_length_value'] = 'uint';
+            $inputData['ban_length_unit'] = 'str';
+
+            $inputData['reply_ban_send_alert'] = 'bool';
+            $inputData['reply_ban_reason'] = 'str';
+        }
+
+        return array_merge($warningSubmitInput, $this->filter($inputData));
     }
 
     /**
@@ -41,7 +54,11 @@ class Warn extends XFCP_Warn
      */
     protected function setupWarnService(\XF\Warning\AbstractHandler $warningHandler, \XF\Entity\User $user, $contentType, Entity $content, array $input)
     {
+        /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
+
+        Globals::$postIdForWarningLog = $content->post_id;
+        Globals::$threadTitleForWarningLog = $content->Thread->title;
 
         if (isset($input['resolve_report']) && $input['resolve_report'])
         {
@@ -67,11 +84,37 @@ class Warn extends XFCP_Warn
             /** @var \XF\Service\Report\Commenter $reportCommenter */
             $reportCommenter = $this->service('XF:Report\Commenter', $report);
             $reportCommenter->setReportState('resolved', $visitor);
-            if (!$reportCommenter->validate($errors))
+            $warnService->setReportCommenter($reportCommenter);
+        }
+
+        if ($contentType === 'post' && isset($input['ban_length']) && $input['ban_length'] !== '')
+        {
+            /** @var \XF\Entity\Post $content */
+            if (!$content->Thread)
             {
-                throw $this->exception($this->error($errors));
+                throw $this->exception($this->notFound(\XF::phrase('requested_thread_not_found')));
             }
-            $reportCommenter->save();
+
+            if (!$content->Thread->canReplyBan($error))
+            {
+                throw $this->exception($this->noPermission($error));
+            }
+
+            /** @var \SV\ReportImprovements\XF\Service\Thread\ReplyBan $replyBanService */
+            $replyBanService = $this->service('XF:Thread\ReplyBan', $content->Thread, $user);
+
+            if ($input['ban_length'] === 'temporary')
+            {
+                $replyBanService->setExpiryDate($input['ban_length_unit'], $input['ban_length_value']);
+            }
+            else
+            {
+                $replyBanService->setExpiryDate(0);
+            }
+
+            $replyBanService->setSendAlert($input['reply_ban_send_alert']);
+            $replyBanService->setReason($input['reply_ban_reason']);
+            $warnService->setThreadReplyBanCreator($replyBanService);
         }
 
         return $warnService;
@@ -98,7 +141,11 @@ class Warn extends XFCP_Warn
                 ->with(['LastModified', 'LastModifiedUser'])
                 ->fetchOne();
 
-            $response->setParam('report', $contentReport);
+            $response->setParams([
+                'report' => $contentReport,
+                'contentType' => $contentType,
+                'contentId' => $content->getEntityId()
+            ]);
         }
 
         return $response;

@@ -1,4 +1,4 @@
-<xf:if is="$report">
+<xf:if is="$report && $report.canView()">
 	<xf:css src="svReportImprov_member_warn_content_report.less" />
 	
 	<h2 class="block-formSectionHeader"><span class="block-formSectionHeader-aligner">{{ phrase('report') }}</span></h2>
