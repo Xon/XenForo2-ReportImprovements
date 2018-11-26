@@ -47,6 +47,8 @@ class Creator extends AbstractService
      * @var \XF\Service\Report\Commenter|\SV\ReportImprovements\XF\Service\Report\Commenter
      */
     protected $reportCommenter;
+    /** @var bool */
+    protected $autoResolve;
 
     /**
      * Creator constructor.
@@ -76,6 +78,14 @@ class Creator extends AbstractService
 
         $this->operationType = $operationType;
         $this->setupDefaults();
+    }
+
+    /**
+     * @param bool $autoResolve
+     */
+    public function setAutoResolve($autoResolve)
+    {
+        $this->autoResolve = (bool)$autoResolve;
     }
 
     /**
@@ -144,7 +154,7 @@ class Creator extends AbstractService
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $this->warning->Report);
                 $this->reportCommenter->setMessage($reportMessage);
-                if ($this->warningLog->operation_type === 'new')
+                if ($this->autoResolve)
                 {
                     $this->reportCommenter->setReportState('resolved');
                 }
@@ -171,7 +181,7 @@ class Creator extends AbstractService
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $this->threadReplyBan->Report);
                 $this->reportCommenter->setMessage($this->threadReplyBan->reason);
-                if ($this->warningLog->operation_type === 'new')
+                if ($this->autoResolve)
                 {
                     $this->reportCommenter->setReportState('resolved');
                 }
@@ -219,27 +229,22 @@ class Creator extends AbstractService
         $this->warningLog->save();
         if ($this->reportCreator)
         {
-            $report = $this->reportCreator->save();
-            /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-            if ($report instanceof \XF\Entity\Report)
-            {
-                $report->report_state = 'resolved';
+            /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
+            $comment = $this->reportCreator->getCommentPreparer()->getComment();
+            $comment->bulkSet([
+                'warning_log_id' => $this->warningLog->warning_log_id,
+                'is_report' => false,
+                'state_change' => $this->autoResolve ? 'resolved' : ''
+            ], ['forceSet' => true]);
 
-                if ($report->LastModified)
-                {
-                    $report->LastModified->warning_log_id = $this->warningLog->warning_log_id;
-                    $report->LastModified->state_change = '';
-                }
-
-                $report->save();
-            }
+            $this->reportCreator->save();
         }
         else if ($this->reportCommenter)
         {
             /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
             $reportComment = $this->reportCommenter->getComment();
             $reportComment->warning_log_id = $this->warningLog->warning_log_id;
-            $reportComment->state_change = '';
+            $reportComment->is_report = false;
 
             $this->reportCommenter->save();
         }
