@@ -45,7 +45,7 @@ class Warning extends XFCP_Warning
 
         if (!$report->canUpdate($error) || $report->isClosed())
         {
-            return $this->noPermission($error);
+            throw $this->exception($this->noPermission($error));
         }
 
         if ($this->filter('resolve', 'bool'))
@@ -55,8 +55,9 @@ class Warning extends XFCP_Warning
             $commenter->setReportState('resolved');
             if (!$commenter->validate($errors))
             {
-                return $this->error($errors);
+                throw $this->exception($this->error($errors));
             }
+            $commenter->save();
             $commenter->sendNotifications();
 
             $report = $commenter->getReport();
