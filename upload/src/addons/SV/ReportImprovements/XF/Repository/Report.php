@@ -122,4 +122,61 @@ class Report extends XFCP_Report
 
         return new ArrayCollection($users);
     }
+	
+	protected $userReportCountCache = null;
+
+    /**
+     * @param User $user
+     * @param int $daysLimit
+     * @param string $state
+     *
+     * @return mixed
+     */
+    public function countReportsByUser(User $user, $daysLimit, $state = '')
+    {
+        if ($this->userReportCountCache === null)
+        {
+            $this->userReportCountCache = [];
+        }
+
+        if (!isset($this->userReportCountCache[$user->user_id][$state][$daysLimit]))
+        {
+            $db = $this->db();
+
+            $params = [$user->user_id];
+            $additionalWhere = '';
+            if ($daysLimit)
+            {
+                $params[] = \XF::$time - (86400 * $daysLimit);
+                $additionalWhere = 'AND report_comment.comment_date ?';
+            }
+
+            $reportStats = $db->fetchAll(
+                "SELECT report.report_state, COUNT(*) AS total
+                FROM xf_report_comment AS report_comment
+                INNER JOIN xf_report AS report
+                  ON (report.report_id = report_comment.report_id)
+                WHERE report_comment.is_report = 1
+                  AND report_comment.user_id = ?
+                  {$additionalWhere}"
+                , $params);
+
+            $stats = [];
+            $total = 0;
+            foreach ($reportStats AS $reportStat)
+            {
+                $total += $reportStat['total'];
+                $stats[$reportStat['report_state']] = $reportStat['count'];
+            }
+            $stats[''] = $total;
+            $this->userReportCountCache[$user->user_id][$daysLimit] = $stats;
+        }
+
+        if (isset($this->userReportCountCache[$user->user_id][$state][$daysLimit]))
+        {
+            return $this->userReportCountCache[$user->user_id][$state][$daysLimit];
+        }
+
+        return 0;
+    }
 }
