@@ -189,20 +189,6 @@ class Creator extends AbstractService
         $warningLogErrors = $this->warningLog->getErrors();
         $reportCreatorErrors = [];
         $reportCommenterErrors = [];
-        $asUser = null;
-
-        if ($this->warning)
-        {
-            $asUser = $this->warning->User;
-        }
-        else if ($this->threadReplyBan)
-        {
-            $asUser = $this->threadReplyBan->User;
-        }
-        else
-        {
-            throw new \LogicException('User not available for warning or thread reply ban.');
-        }
 
         if ($this->reportCreator)
         {
