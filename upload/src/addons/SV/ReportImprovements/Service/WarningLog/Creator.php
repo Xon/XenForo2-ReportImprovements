@@ -204,18 +204,14 @@ class Creator extends AbstractService
             throw new \LogicException('User not available for warning or thread reply ban.');
         }
 
-        \XF::asVisitor($asUser, function ()
+        if ($this->reportCreator)
         {
-            if ($this->reportCreator)
-            {
-                $this->reportCreator->validate($reportCreatorErrors);
-            }
-            else
-            {
-                $this->reportCommenter->validate($reportCommenterErrors);
-            }
-        });
-
+            $this->reportCreator->validate($reportCreatorErrors);
+        }
+        else
+        {
+            $this->reportCommenter->validate($reportCommenterErrors);
+        }
         $errors = array_merge($warningLogErrors, $reportCreatorErrors, $reportCommenterErrors);
         foreach ($errors AS $error)
         {
@@ -232,52 +228,38 @@ class Creator extends AbstractService
      */
     protected function _save()
     {
+        $this->db()->beginTransaction();
+
         $this->warningLog->save();
 
-        $asUser = null;
-
-        if ($this->warning)
+        if ($this->reportCreator)
         {
-            $asUser = $this->warning->User;
-        }
-        else if ($this->threadReplyBan)
-        {
-            $asUser = $this->threadReplyBan->User;
-        }
-        else
-        {
-            throw new \LogicException('User not available for warning or thread reply ban.');
-        }
-
-        \XF::asVisitor($asUser, function ()
-        {
-            if ($this->reportCreator)
+            /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+            if ($report = $this->reportCreator->save())
             {
-                /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-                if ($report = $this->reportCreator->save())
+                $report->report_state = 'resolved';
+
+                if ($report->LastModified)
                 {
-                    $report->report_state = 'resolved';
-
-                    if ($report->LastModified)
-                    {
-                        $report->LastModified->warning_log_id = $this->warningLog->warning_log_id;
-                        $report->LastModified->state_change = '';
-                    }
-
-                    $report->save();
+                    $report->LastModified->warning_log_id = $this->warningLog->warning_log_id;
+                    $report->LastModified->state_change = '';
                 }
+
+                $report->save();
             }
-            else if ($this->reportCommenter)
+        }
+        else if ($this->reportCommenter)
+        {
+            /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
+            if ($reportComment = $this->reportCommenter->save())
             {
-                /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
-                if ($reportComment = $this->reportCommenter->save())
-                {
-                    $reportComment->warning_log_id = $this->warningLog->warning_log_id;
-                    $reportComment->state_change = '';
-                    $reportComment->save();
-                }
+                $reportComment->warning_log_id = $this->warningLog->warning_log_id;
+                $reportComment->state_change = '';
+                $reportComment->save();
             }
-        });
+        }
+
+        $this->db()->commit();
 
         return $this->warningLog;
     }
