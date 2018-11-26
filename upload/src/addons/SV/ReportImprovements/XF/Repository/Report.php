@@ -126,13 +126,13 @@ class Report extends XFCP_Report
 	protected $userReportCountCache = null;
 
     /**
-     * @param User $user
+     * @param \XF\Entity\User|\SV\ReportImprovements\XF\Entity\User $user
      * @param int $daysLimit
      * @param string $state
      *
      * @return mixed
      */
-    public function countReportsByUser(User $user, $daysLimit, $state = '')
+    public function countReportsByUser(\XF\Entity\User $user, $daysLimit, $state = '')
     {
         if ($this->userReportCountCache === null)
         {
