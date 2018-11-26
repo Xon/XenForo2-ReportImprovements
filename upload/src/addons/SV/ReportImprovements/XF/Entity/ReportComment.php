@@ -36,7 +36,7 @@ class ReportComment extends XFCP_ReportComment
         $structure->contentType = 'report_comment';
 
         $structure->columns['warning_log_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
-        $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => null, 'nullable' => true];
+        $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => false];
         $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => true];
         $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
         $structure->behaviors['XF:Indexable'] = [
