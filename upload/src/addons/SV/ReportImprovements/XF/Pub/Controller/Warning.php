@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
+use SV\ReportImprovements\Globals;
 use XF\Mvc\ParameterBag;
 
 /**
@@ -27,47 +28,85 @@ class Warning extends XFCP_Warning
     }
 
     /**
-     * @param ParameterBag $parameterBag
+     * @param ParameterBag $params
      *
-     * @return \XF\Mvc\Reply\Error|\XF\Mvc\Reply\Redirect|\XF\Mvc\Reply\Reroute
+     * @return \XF\Mvc\Reply\Redirect|\XF\Mvc\Reply\Reroute
      * @throws \XF\Mvc\Reply\Exception
      */
-    public function actionResolveReport(ParameterBag $parameterBag)
+    public function actionDelete(ParameterBag $params)
     {
-        $this->assertPostOnly();
-
         /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
-        $warning = $this->assertViewableWarning($parameterBag->warning_id);
-        if (!$report = $warning->Report)
-        {
-            throw $this->exception($this->notFound(\XF::phrase('requested_report_not_found')));
-        }
+        $warning = $this->assertViewableWarning($params->warning_id);
+        $report = $warning->Report;
 
-        if (!$report->canUpdate($error) || $report->isClosed())
-        {
-            throw $this->exception($this->noPermission($error));
-        }
+        $response = parent::actionDelete($params);
 
-        if ($this->filter('resolve', 'bool'))
+        if ($response instanceof \XF\Mvc\Reply\Redirect)
         {
-            /** @var \XF\Service\Report\Commenter $commenter */
-            $commenter = $this->service('XF:Report\Commenter', $report);
-            $commenter->setReportState('resolved');
-            if (!$commenter->validate($errors))
+            if ($this->request()->exists('resolve_report') && $this->filter('resolve_report', 'bool') === true)
             {
-                throw $this->exception($this->error($errors));
+                if (!$report->canUpdate($error) || $report->isClosed())
+                {
+                    throw $this->exception($this->noPermission($error));
+                }
+
+                $this->resolveReport($report);
             }
-            $commenter->save();
-            $commenter->sendNotifications();
-
-            $report = $commenter->getReport();
-            $report->draft_comment->delete();
-
-            $this->session()->reportLastRead = \XF::$time;
-
-            return $this->redirect($this->getDynamicRedirect());
         }
 
-        return $this->rerouteController('XF:Warning', 'index', $parameterBag->params());
+        return $response;
+    }
+
+    /**
+     * @param ParameterBag $params
+     *
+     * @return \XF\Mvc\Reply\Redirect
+     * @throws \XF\Mvc\Reply\Exception
+     */
+    public function actionExpire(ParameterBag $params)
+    {
+        /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
+        $warning = $this->assertViewableWarning($params->warning_id);
+        $report = $warning->Report;
+
+        $response = parent::actionDelete($params);
+
+        if ($response instanceof \XF\Mvc\Reply\Reroute)
+        {
+            if ($this->request()->exists('resolve_report') && $this->filter('resolve_report', 'bool') === true)
+            {
+                if (!$report->canUpdate($error) || $report->isClosed())
+                {
+                    throw $this->exception($this->noPermission($error));
+                }
+
+                $this->resolveReport($report);
+            }
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param \XF\Entity\Report $report
+     *
+     * @throws \XF\Mvc\Reply\Exception
+     */
+    protected function resolveReport(\XF\Entity\Report $report)
+    {
+        /** @var \XF\Service\Report\Commenter $commenter */
+        $commenter = $this->service('XF:Report\Commenter', $report);
+        $commenter->setReportState('resolved');
+        if (!$commenter->validate($errors))
+        {
+            throw $this->exception($this->error($errors));
+        }
+        $commenter->save();
+        $commenter->sendNotifications();
+
+        $report = $commenter->getReport();
+        $report->draft_comment->delete();
+
+        $this->session()->reportLastRead = \XF::$time;
     }
 }

@@ -1,9 +1,0 @@
-{
-    "template": "warning_info",
-    "description": "Allow content report to be resolved (tab)",
-    "execution_order": 10,
-    "enabled": true,
-    "action": "str_replace",
-    "find": "<a class=\"tabs-tab is-active\" role=\"tab\" tabindex=\"0\" aria-controls=\"{{ unique_id('warningUpdate') }}\">{{ phrase('update_warning') }}</a>",
-    "replace": "$0\n\n<xf:if is=\"$warning.Report && !$warning.Report.isClosed()\">\n\t<a class=\"tabs-tab is-active\" role=\"tab\" tabindex=\"0\" aria-controls=\"{{ unique_id('resolveReport') }}\">{{ phrase('svReportImprov_resolve_report') }}</a>\n</xf:if>"
-}

@@ -1,0 +1,9 @@
+{
+    "template": "warning_info",
+    "description": "Allow content report to be resolved",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(<xf:form action=\".*?\">)(.*?)(<\\/xf:form>)#si",
+    "replace": "$1\n<xf:if is=\"$warning.Report && !$warning.Report.isClosed()\">\n\t<xf:checkboxrow>\n\t\t<xf:option name=\"resolve_report\" label=\"{{ phrase('svReportImprov_resolve_report') }}\" />\n\t</xf:checkboxrow>\n</xf:if>\n$2\n$3"
+}
