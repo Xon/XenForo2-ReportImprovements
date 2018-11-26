@@ -42,13 +42,18 @@ class Warning extends XFCP_Warning
             }
         }
 
-        \XF::asVisitor($reporter, function () use ($warning, $type) {
+        \XF::asVisitor($reporter, function () use ($reporter, $warning, $type) {
             /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
             $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $warning, $type);
             if ($warningLogCreator->validate($errors))
             {
                 $warningLogCreator->save();
             }
+            \XF::runLater(function() use($warningLogCreator, $reporter) {
+                \XF::asVisitor($reporter, function () use ($warningLogCreator) {
+                    $warningLogCreator->sendNotifications();
+                });
+            });
         });
     }
 }

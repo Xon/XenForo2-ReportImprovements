@@ -79,6 +79,29 @@ class Creator extends AbstractService
     }
 
     /**
+     * @return string[]
+     */
+    protected function getFieldsToLog()
+    {
+        return [
+            'content_type',
+            'content_id',
+            'content_title',
+            'user_id',
+            'warning_id',
+            'warning_date',
+            'warning_user_id',
+            'warning_definition_id',
+            'title',
+            'notes',
+            'points',
+            'expiry_date',
+            'is_expired',
+            'extra_user_group_ids',
+        ];
+    }
+
+    /**
      * @throws \Exception
      */
     protected function setupDefaults()
@@ -97,27 +120,13 @@ class Creator extends AbstractService
 
         if ($this->warning)
         {
-            $fieldsToCopy = [
-                'content_type',
-                'content_id',
-                'content_title',
-                'user_id',
-                'warning_id',
-                'warning_date',
-                'warning_user_id',
-                'warning_definition_id',
-                'title',
-                'notes',
-                'points',
-                'expiry_date',
-                'is_expired',
-                'extra_user_group_ids'
-            ];
-
-            foreach ($fieldsToCopy AS $field)
+            foreach ($this->getFieldsToLog() AS $field)
             {
-                $fieldValue = $this->warning->get($field);
-                $this->warningLog->set($field, $fieldValue);
+                if ($this->warning->offsetExists($field))
+                {
+                    $fieldValue = $this->warning->get($field);
+                    $this->warningLog->set($field, $fieldValue);
+                }
             }
 
             $reportMessage = $this->warning->title;
@@ -271,5 +280,17 @@ class Creator extends AbstractService
         });
 
         return $this->warningLog;
+    }
+
+    public function sendNotifications()
+    {
+        if ($this->reportCreator)
+        {
+            $this->reportCreator->sendNotifications();
+        }
+        else if ($this->reportCommenter)
+        {
+            $this->reportCommenter->sendNotifications();
+        }
     }
 }
