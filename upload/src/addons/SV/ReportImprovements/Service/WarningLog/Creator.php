@@ -217,11 +217,11 @@ class Creator extends AbstractService
         $this->db()->beginTransaction();
 
         $this->warningLog->save();
-
         if ($this->reportCreator)
         {
+            $report = $this->reportCreator->save();
             /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-            if ($report = $this->reportCreator->save())
+            if ($report instanceof \XF\Entity\Report)
             {
                 $report->report_state = 'resolved';
 
