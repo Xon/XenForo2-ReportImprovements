@@ -73,7 +73,7 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param Entity $entity
+     * @param Entity|\XF\Entity\Report|\XF\Entity\ReportComment $entity
      *
      * @return ArrayCollection
      */

@@ -237,12 +237,11 @@ class Creator extends AbstractService
         else if ($this->reportCommenter)
         {
             /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
-            if ($reportComment = $this->reportCommenter->save())
-            {
-                $reportComment->warning_log_id = $this->warningLog->warning_log_id;
-                $reportComment->state_change = '';
-                $reportComment->save();
-            }
+            $reportComment = $this->reportCommenter->getComment();
+            $reportComment->warning_log_id = $this->warningLog->warning_log_id;
+            $reportComment->state_change = '';
+
+            $this->reportCommenter->save();
         }
 
         $this->db()->commit();

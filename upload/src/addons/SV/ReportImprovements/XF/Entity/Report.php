@@ -191,38 +191,6 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @throws \Exception
-     */
-    protected function _postSave()
-    {
-        parent::_postSave();
-
-        if ($this->isInsert())
-        {
-            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
-            $reportRepo = $this->repository('XF:Report');
-            $usersToAlert = $reportRepo->findUsersToAlertForSvReportImprov($this);
-
-            if ($usersToAlert->count())
-            {
-                /** @var \XF\Repository\UserAlert $userAlertRepo */
-                $userAlertRepo = $this->repository('XF:UserAlert');
-
-                foreach ($usersToAlert AS $user)
-                {
-                    $userAlertRepo->alertFromUser(
-                        $user,
-                        $this->User,
-                        'report',
-                        $this->report_id,
-                        'insert'
-                    );
-                }
-            }
-        }
-    }
-
-    /**
      * @return \XF\Mvc\Entity\Entity|null|\SV\ReportImprovements\XF\Entity\ReportComment
      */
     public function getFirstReportComment()
