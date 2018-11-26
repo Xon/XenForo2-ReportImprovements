@@ -1,5 +1,7 @@
 <xf:if is="$warning.Report && $warning.Report.canView()">
+	<xf:css src="svReportImprov_warning_info_show_content_report.less" />
+	
 	<xf:formrow label="{{ phrase('report') }}">
-		<a href="{{ link('reports', $warning.Report) }}">{{ phrase('svReportImprov_view_report:') }} {$warning.Report.title}</a>
+		<xf:macro template="report_list_macros" name="item" arg-report="{{ $warning.Report }}" />
 	</xf:formrow>
 </xf:if>
