@@ -119,6 +119,7 @@ class Notifier extends XFCP_Notifier
             /** @var \XF\Repository\UserAlert $alertRepo */
             $alertRepo = $this->app->repository('XF:UserAlert');
             if ($alertRepo->alert($user, $comment->user_id, $comment->username, 'report', $comment->report_id, 'comment', [
+                'report_comment_id' => $comment->report_comment_id
             ]))
             {
                 $this->usersAlertedForInsert[$user->user_id] = true;
