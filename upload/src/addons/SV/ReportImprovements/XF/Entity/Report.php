@@ -157,7 +157,7 @@ class Report extends XFCP_Report
             $reportCommentFinder = $this->finder('XF:ReportComment');
             $reportCommentFinder->where('report_id', $this->report_id);
             $reportCommentFinder->order('comment_date', 'DESC');
-
+            $reportCommentFinder->with($this->getCommentWith());
             /** @var ReportComment $reportComment */
             $reportComment = $reportCommentFinder->fetchOne();
 
@@ -167,8 +167,14 @@ class Report extends XFCP_Report
                 $this->hydrateRelation('LastModified', $reportComment);
             }
         }
+        else
+        {
+            $finder = $this->getRelationFinder('LastModified');
+            $finder->with($this->getCommentWith());
+            $reportComment = $finder->fetchOne();
+        }
 
-        return $this->getRelation('LastModified');
+        return $reportComment;
     }
 
     /**
@@ -300,6 +306,7 @@ class Report extends XFCP_Report
         $structure->getters['ViewableUser'] = true;
         $structure->getters['LastModified'] = true;
         $structure->getters['Comments'] = true;
+        $structure->getters['LastModified'] = true;
 
         $structure->relations['LastModified'] = [
             'entity' => 'XF:ReportComment',
