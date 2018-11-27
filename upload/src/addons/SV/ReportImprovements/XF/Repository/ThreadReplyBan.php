@@ -2,6 +2,8 @@
 
 namespace SV\ReportImprovements\XF\Repository;
 
+use SV\ReportImprovements\Globals;
+
 /**
  * Class ThreadReplyBan
  * 
@@ -19,6 +21,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
     {
         /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
         $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $threadReplyBan, $type);
+        $warningLogCreator->setAutoResolve(Globals::$resolveThreadReplyBanReport);
         if ($warningLogCreator->validate($errors))
         {
             $warningLogCreator->save();

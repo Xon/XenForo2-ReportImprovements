@@ -15,6 +15,7 @@ namespace SV\ReportImprovements\XF\Cron
 
 namespace SV\ReportImprovements\XF\Entity
 {
+	class XFCP_Post extends \XF\Entity\Post {}
 	class XFCP_Report extends \XF\Entity\Report {}
 	class XFCP_ReportComment extends \XF\Entity\ReportComment {}
 	class XFCP_ThreadReplyBan extends \XF\Entity\ThreadReplyBan {}
@@ -25,6 +26,7 @@ namespace SV\ReportImprovements\XF\Entity
 namespace SV\ReportImprovements\XF\Pub\Controller
 {
 	class XFCP_Report extends \XF\Pub\Controller\Report {}
+	class XFCP_Thread extends \XF\Pub\Controller\Thread {}
 	class XFCP_Warning extends \XF\Pub\Controller\Warning {}
 }
 

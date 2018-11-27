@@ -13,11 +13,5 @@ use SV\ReportImprovements\Globals;
  */
 class ReplyBan extends XFCP_ReplyBan
 {
-    /**
-     * @param $postId
-     */
-    public function setPostIdForWarningLog($postId)
-    {
-        Globals::$warningLogReplyBanPostId = $postId;
-    }
+
 }
