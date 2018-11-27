@@ -14,6 +14,54 @@ use XF\Mvc\Entity\Entity;
  */
 class Report extends XFCP_Report
 {
+    public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
+    {
+        $nodeId = null;
+        if (isset($report->content_info['node_id']))
+        {
+            $nodeId = $report->content_info['node_id'];
+            $this->app()->em()->find('XF:Forum', $nodeId);
+        }
+
+        $handler = $report->getHandler();
+
+        /** @var \XF\Repository\Moderator $moderatorRepo */
+        $moderatorRepo = $this->repository('XF:Moderator');
+
+        $moderators = $moderatorRepo->findModeratorsForList()->fetch();
+
+        if ($moderators->count())
+        {
+            /**
+             * @var int $id
+             * @var \XF\Entity\Moderator $moderator
+             */
+            if ($nodeId)
+            {
+                $permCombinationIds = [];
+                foreach ($moderators AS $id => $moderator)
+                {
+                    $id = $moderator->User->permission_combination_id;
+                    $permCombinationIds[$id] = $id;
+                }
+                $this->app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'node', $nodeId);
+            }
+
+            foreach ($moderators AS $id => $moderator)
+            {
+                $canView = \XF::asVisitor($moderator->User,
+                    function() use ($handler, $report) { return $handler->canView($report); }
+                );
+                if (!$canView)
+                {
+                    unset($moderators[$id]);
+                }
+            }
+        }
+
+        return $moderators;
+    }
+
     /**
      * @param \XF\Mvc\Entity\ArrayCollection $reports
      *
@@ -53,10 +101,6 @@ class Report extends XFCP_Report
             $userIds[$report->content_user_id] = true;
             $userIds[$report->assigned_user_id] = true;
             $userIds[$report->last_modified_user_id] = true;
-            if (isset($report->content_info['node_id']))
-            {
-                $nodeIds[$report->content_info['node_id']] = true;
-            }
         }
 
         foreach($userIds as $userId => $null)
