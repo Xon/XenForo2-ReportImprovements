@@ -41,6 +41,9 @@ class Report extends XFCP_Report
             $em->findByIds('XF:Forum', array_keys($nodeIds));
         }
 
+        // avoid N+1 look up behaviour, just cache all node perms
+        \XF::visitor()->cacheNodePermissions();
+
         $reports = parent::filterViewableReports($reports);
 
         $userIds = [];
@@ -122,7 +125,7 @@ class Report extends XFCP_Report
 
         return new ArrayCollection($users);
     }
-	
+
 	protected $userReportCountCache = null;
 
     /**
