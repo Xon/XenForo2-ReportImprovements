@@ -5,7 +5,7 @@
 		</span>
 		<div class="contentRow-main">
 			<h3 class="contentRow-title">
-				<a href="{{ link('reports', $report) }}#report-comment-{$reportComment.report_comment_id}">{$report.title}</a>
+				<a href="{{ link('reports', $report) }}#report-comment-{$reportComment.report_comment_id}">{{ snippet($report.title, 100, {'term': $options.term, 'fromStart': true, 'stripPlainTag': true}) }}</a>
 			</h3>
 
 			<div class="contentRow-snippet">{{ snippet($reportComment.message, 300, {'term': $options.term, 'stripPlainTag': true}) }}</div>

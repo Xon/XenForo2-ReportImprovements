@@ -1,0 +1,22 @@
+<li class="block-row block-row--separated" data-author="{{ $report.User.username ?: $report.username }}">
+	<div class="contentRow">
+		<span class="contentRow-figure">
+			<xf:avatar user="{$report.ViewableUser}" size="s" defaultname="{$report.ViewableUser.username}" />
+		</span>
+		<div class="contentRow-main">
+			<h3 class="contentRow-title">
+				<a href="{{ link('reports', $report) }}">{{ snippet($report.title, 100, {'term': $options.term, 'fromStart': true, 'stripPlainTag': true}) }}</a>
+			</h3>
+
+			<div class="contentRow-snippet">{{ snippet($report.message, 300, {'term': $options.term, 'stripPlainTag': true}) }}</div>
+
+			<div class="contentRow-minor contentRow-minor--hideLinks">
+				<ul class="listInline listInline--bullet">
+					<li><xf:username user="{$report.ViewableUser}" defaultname="{$report.ViewableUser.username}" /></li>
+					<li>{{ phrase('report') }}</li>
+					<li><xf:date time="{$report.first_report_date}" /></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</li>
