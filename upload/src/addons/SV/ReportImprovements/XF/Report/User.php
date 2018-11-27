@@ -25,4 +25,32 @@ class User extends XFCP_User
 
         return $visitor->canViewUserReport();
     }
+
+
+    public function getContentTitle(Report $report)
+    {
+        if (\XF::$versionId > 2001170 && \XF::$versionId < 2010000 || \XF::$versionId > 2010032)
+        {
+            return parent::getContentTitle($report);
+        }
+        // patch an XF2.0.12 bug
+        $content = $report->content_info;
+
+        if (isset($content['username']))
+        {
+            $name = $content['username'];
+        }
+        else if (isset($content['user']['username']))
+        {
+            $name = $content['user']['username'];
+        }
+        else
+        {
+            $name = '';
+        }
+
+        return \XF::phrase('member_x', [
+            'username' => $name
+        ]);
+    }
 }
