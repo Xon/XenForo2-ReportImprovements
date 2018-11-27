@@ -198,6 +198,34 @@ class Report extends XFCP_Report
         );
     }
 
+    protected function getCommentWith()
+    {
+        $with = ['User', 'User.Profile', 'User.Privacy'];
+        if ($userId = \XF::visitor()->user_id)
+        {
+            if (\XF::options()->showMessageOnlineStatus)
+            {
+                $with[] = 'User.Activity';
+            }
+
+            $with[] = 'Likes|' . $userId;
+        }
+        return $with;
+    }
+
+    public function getComments()
+    {
+        $direction = \XF::app()->options()->sv_reverse_report_comment_order ? 'ASC' : 'DESC';
+
+        $finder = $this->finder('XF:ReportComment')
+                       ->where('report_id', $this->report_id)
+                       ->order('comment_date', $direction);
+
+        $finder->with($this->getCommentWith());
+
+        return $finder->fetch();
+    }
+
     /**
      * @return \XF\Mvc\Entity\Entity|null|\SV\ReportImprovements\XF\Entity\ReportComment
      */
@@ -271,17 +299,7 @@ class Report extends XFCP_Report
         $structure->getters['ViewableUsername'] = true;
         $structure->getters['ViewableUser'] = true;
         $structure->getters['LastModified'] = true;
-
-        $commentsWith = ['User', 'User.Profile', 'User.Privacy'];
-        if ($userId = \XF::visitor()->user_id)
-        {
-            if (\XF::options()->showMessageOnlineStatus)
-            {
-                $commentsWith[] = 'User.Activity';
-            }
-
-            $commentsWith[] = 'Likes|' . $userId;
-        }
+        $structure->getters['Comments'] = true;
 
         $structure->relations['LastModified'] = [
             'entity' => 'XF:ReportComment',
@@ -290,7 +308,6 @@ class Report extends XFCP_Report
                 ['report_comment_id', '=', '$last_modified_id']
             ],
             'primary' => true,
-            'with' => $commentsWith
         ];
 
         return $structure;
