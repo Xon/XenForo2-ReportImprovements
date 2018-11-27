@@ -76,6 +76,9 @@ class ReportComment extends XFCP_ReportComment
             'primary' => true
         ];
 
+        $structure->defaultWith[] = 'WarningLog';
+        $structure->defaultWith[] = 'WarningLog.Warning';
+
         return $structure;
     }
 

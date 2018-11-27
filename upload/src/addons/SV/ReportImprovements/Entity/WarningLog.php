@@ -149,6 +149,7 @@ class WarningLog extends Entity
                 'primary' => true
             ]
         ];
+        $structure->defaultWith[] = 'Warning';
         $structure->getters = [
             'OperationTypePhrase' => true,
             'ReplyBan' => true,
