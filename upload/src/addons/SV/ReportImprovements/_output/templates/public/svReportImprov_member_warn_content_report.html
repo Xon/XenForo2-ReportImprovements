@@ -9,7 +9,7 @@
 		</xf:formrow>
 	</div>
 
-	<xf:if is="!$report.isClosed() && $report.canUpdate()">
+	<xf:if is="$report.canUpdate()">
 		<h2 class="block-formSectionHeader"><span class="block-formSectionHeader-aligner">{{ phrase('svReportImprov_report_action') }}</span></h2>
 
 		<div class="block-body">
