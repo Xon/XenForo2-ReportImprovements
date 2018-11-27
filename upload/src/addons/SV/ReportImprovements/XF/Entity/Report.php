@@ -19,7 +19,6 @@ use XF\Mvc\Entity\Structure;
  * @property array comment_ids
  * @property \SV\ReportImprovements\XF\Entity\User ViewableUsername
  * @property \SV\ReportImprovements\XF\Entity\User ViewableUser
- * @property \SV\ReportImprovements\XF\Entity\ReportComment FirstReportComment
  * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified
  */
 class Report extends XFCP_Report
@@ -284,26 +283,6 @@ class Report extends XFCP_Report
             $commentsWith[] = 'Likes|' . $userId;
         }
 
-        $structure->relations['FirstReportComment'] = [
-            'entity' => 'XF:ReportComment',
-            'type' => self::TO_ONE,
-            'conditions' => [
-                ['report_id', '=', '$report_id'],
-                ['is_report', '=', true]
-            ],
-            'order' => ['report_comment_id', 'ASC'],
-            'with' => $commentsWith
-        ];
-        $structure->relations['LastReportComment'] = [
-            'entity' => 'XF:ReportComment',
-            'type' => self::TO_ONE,
-            'conditions' => [
-                ['report_id', '=', '$report_id'],
-                ['is_report', '=', true]
-            ],
-            'order' => ['report_comment_id', 'DESC'],
-            'with' => $commentsWith
-        ];
         $structure->relations['LastModified'] = [
             'entity' => 'XF:ReportComment',
             'type' => self::TO_ONE,
