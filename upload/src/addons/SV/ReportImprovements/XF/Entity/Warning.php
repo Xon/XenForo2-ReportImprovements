@@ -17,6 +17,9 @@ use XF\Mvc\Entity\Structure;
  */
 class Warning extends XFCP_Warning
 {
+    /**
+     * @throws \Exception
+     */
     protected function _postSave()
     {
         parent::_postSave();
@@ -47,6 +50,9 @@ class Warning extends XFCP_Warning
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function _postDelete()
     {
         parent::_postDelete();
