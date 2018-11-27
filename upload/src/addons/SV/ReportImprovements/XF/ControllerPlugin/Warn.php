@@ -57,9 +57,6 @@ class Warn extends XFCP_Warn
         /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
 
-        Globals::$postIdForWarningLog = $content->post_id;
-        Globals::$threadTitleForWarningLog = $content->Thread->title;
-
         if (isset($input['resolve_report']) && $input['resolve_report'])
         {
             /** @var \SV\ReportImprovements\XF\Entity\Report $report */
@@ -83,8 +80,12 @@ class Warn extends XFCP_Warn
 
             /** @var \XF\Service\Report\Commenter $reportCommenter */
             $reportCommenter = $this->service('XF:Report\Commenter', $report);
-            $reportCommenter->setReportState('resolved', $visitor);
-            $warnService->setReportCommenter($reportCommenter);
+            $reportCommenter->setReportState('rejected', $visitor);
+            if (!$reportCommenter->validate($errors))
+            {
+                throw $this->exception($this->error($errors));
+            }
+            $reportCommenter->save();
         }
 
         if ($contentType === 'post' && isset($input['ban_length']) && $input['ban_length'] !== '')
@@ -112,9 +113,14 @@ class Warn extends XFCP_Warn
                 $replyBanService->setExpiryDate(0);
             }
 
+            $replyBanService->setPostIdForWarning($content->post_id, $content->Thread->title);
             $replyBanService->setSendAlert($input['reply_ban_send_alert']);
             $replyBanService->setReason($input['reply_ban_reason']);
-            $warnService->setThreadReplyBanCreator($replyBanService);
+            if (!$replyBanService->validate($errors))
+            {
+                throw $this->exception($this->error($errors));
+            }
+            $replyBanService->save();
         }
 
         return $warnService;

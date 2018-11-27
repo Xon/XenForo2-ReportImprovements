@@ -48,6 +48,7 @@ class Creator extends AbstractService
      * @var \XF\Service\Report\Commenter|\SV\ReportImprovements\XF\Service\Report\Commenter
      */
     protected $reportCommenter;
+
     /** @var bool */
     protected $autoResolve;
 
@@ -173,6 +174,12 @@ class Creator extends AbstractService
                 $reportFinder->where('content_type', 'post');
                 $reportFinder->where('content_id', Globals::$postIdForWarningLog);
                 $report = $reportFinder->fetchOne();
+                if (!$report)
+                {
+                    $reportContent = $this->finder('XF:Post')
+                        ->where('post_id', Globals::$postIdForWarningLog)
+                        ->fetchOne();
+                }
 
                 $this->warningLog->content_type = 'post';
                 $this->warningLog->content_id = Globals::$postIdForWarningLog;
@@ -184,6 +191,7 @@ class Creator extends AbstractService
             else
             {
                 $report = $this->threadReplyBan->Report;
+                $reportContent = $this->threadReplyBan->User;
 
                 $this->warningLog->content_type = 'user';
                 $this->warningLog->content_id = $this->threadReplyBan->user_id;
@@ -197,16 +205,20 @@ class Creator extends AbstractService
             $this->warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render();
             $this->warningLog->notes = $this->threadReplyBan->reason;
 
-
+            $threadReplyBanReason = $this->threadReplyBan->reason ?: \XF::phrase('n_a')->render();
             if (!$report)
             {
-                $this->reportCreator = $this->service('XF:Report\Creator', 'user', $this->threadReplyBan->User);
-                $this->reportCreator->setMessage($this->threadReplyBan->reason);
+                $this->reportCreator = $this->service(
+                    'XF:Report\Creator',
+                    $reportContent->getEntityContentType(),
+                    $reportContent
+                );
+                $this->reportCreator->setMessage($threadReplyBanReason);
             }
             else if ($report)
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
-                $this->reportCommenter->setMessage($this->threadReplyBan->reason);
+                $this->reportCommenter->setMessage($threadReplyBanReason);
                 if ($this->autoResolve)
                 {
                     $this->reportCommenter->setReportState('resolved');
@@ -237,7 +249,8 @@ class Creator extends AbstractService
         $errors = array_merge($warningLogErrors, $reportCreatorErrors, $reportCommenterErrors);
         foreach ($errors AS $error)
         {
-            //@TODO: show errors to user if there is any?
+            // @TODO: show errors
+            //\XF::dumpSimple($error->render());
         }
 
         return array_merge($warningLogErrors, $reportCreatorErrors, $reportCommenterErrors);
@@ -272,7 +285,7 @@ class Creator extends AbstractService
             $reportComment->bulkSet([
                 'warning_log_id' => $this->warningLog->warning_log_id,
                 'is_report' => false,
-                //'state_change' => $this->autoResolve ? 'resolved' : ''
+                'state_change' => $this->autoResolve ? 'resolved' : ''
             ], ['forceSet' => true]);
 
             $this->reportCommenter->save();

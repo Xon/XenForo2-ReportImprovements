@@ -13,9 +13,10 @@ use SV\ReportImprovements\Globals;
 class Warning extends XFCP_Warning
 {
     /**
-     * @noinspection PhpDocMissingThrowsInspection
      * @param \XF\Entity\Warning $warning
-     * @param string             $type
+     * @param                    $type
+     *
+     * @throws \Exception
      */
     public function logOperation(\XF\Entity\Warning $warning, $type)
     {
