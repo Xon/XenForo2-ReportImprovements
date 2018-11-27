@@ -1,0 +1,17 @@
+<xf:formrow name="{$inputName}"
+			value="{$option.option_value}"
+			label="{$option.title}"
+			hint="{$hintHtml}"
+			explain="{$explainHtml}"
+			finalhtml="{$listedHtml}">
+	<div class="inputGroup inputGroup--auto">
+		<xf:numberbox name="{$inputName}[value]" value="{$option.option_value.value}" min="1" />
+		<span class="inputGroup-splitter"></span>
+		<xf:select name="{$inputName}[unit]">
+			<xf:option selected="{{ $option.option_value.unit === 'hours' }}" value="hours">{{ phrase('hours') }}</xf:option>
+			<xf:option selected="{{ $option.option_value.unit === 'days' }}" value="days">{{ phrase('days') }}</xf:option>
+			<xf:option selected="{{ $option.option_value.unit === 'weeks' }}" value="weeks">{{ phrase('weeks') }}</xf:option>
+			<xf:option selected="{{ $option.option_value.unit === 'months' }}" value="months">{{ phrase('months') }}</xf:option>
+		</xf:select>
+	</div>
+</xf:formrow>

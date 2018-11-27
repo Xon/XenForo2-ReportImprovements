@@ -1,6 +1,6 @@
 {
     "edit_format": "template",
-    "edit_format_params": "option_sv_warning_replyban",
+    "edit_format_params": "option_svReportImprov_replyban_on_warning_len",
     "data_type": "array",
     "sub_options": [
         "value",

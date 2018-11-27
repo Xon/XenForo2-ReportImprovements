@@ -38,6 +38,9 @@ class ReportComment extends AbstractHandler
         return true;
     }
 
+    /**
+     * @return array
+     */
     public function getEntityWith()
     {
         return ['Report'];
