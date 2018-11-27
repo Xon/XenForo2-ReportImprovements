@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Add \".js-reportComment\" class to every report comment",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(<article.*?class=\".*?message--simple)(.*?)(\">)#s",
+    "replace": "$1$2 js-reportComment$3"
+}

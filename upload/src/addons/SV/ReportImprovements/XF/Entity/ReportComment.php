@@ -25,6 +25,20 @@ use XF\Mvc\Entity\Structure;
 class ReportComment extends XFCP_ReportComment
 {
     /**
+     * @return bool
+     */
+    public function isLiked()
+    {
+        $visitor = \XF::visitor();
+        if (!$visitor->user_id)
+        {
+            return false;
+        }
+
+        return isset($this->Likes[$visitor->user_id]);
+    }
+
+    /**
      * @param Structure $structure
      *
      * @return Structure
@@ -38,6 +52,9 @@ class ReportComment extends XFCP_ReportComment
         $structure->columns['warning_log_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
         $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => false];
         $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => true];
+        $structure->columns['likes'] = ['type' => self::UINT, 'forced' => true, 'default' => 0];
+        $structure->columns['like_users'] = ['type' => self::SERIALIZED_ARRAY, 'default' => []];
+
         $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
         $structure->behaviors['XF:Indexable'] = [
             'checkForUpdates' => ['message', 'user_id', 'report_id', 'comment_date', 'state_change', 'is_report']

@@ -1,0 +1,21 @@
+<footer class="message-footer">
+	<xf:if contentcheck="true">
+		<div class="message-actionBar actionBar">
+			<xf:contentcheck>
+				<xf:if contentcheck="true">
+					<div class="actionBar-set actionBar-set--external">
+						<xf:contentcheck>
+							<xf:if is="$comment.canLike()">
+								<a href="{{ link('reports/like', $report, {'report_comment_id': $comment.report_comment_id}) }}" class="actionBar-action actionBar-action--like" data-xf-click="like" data-like-list="< .js-reportComment | .js-likeList"><xf:if is="$comment.isLiked()">{{ phrase('unlike') }}<xf:else />{{ phrase('like') }}</xf:if></a>
+							</xf:if>
+						</xf:contentcheck>
+					</div>
+				</xf:if>
+			</xf:contentcheck>
+		</div>
+	</xf:if>
+
+	<div class="likesBar js-likeList {{ $comment.likes ? 'is-active' : '' }}">
+		<xf:likes content="{$comment}" url="{{ link('reports/likes', {'report_comment_id': $comment.report_comment_id}) }}" />
+	</div>
+</footer>

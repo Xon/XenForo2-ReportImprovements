@@ -108,4 +108,50 @@ class Report extends XFCP_Report
 
         return parent::actionReassign($params);
     }
+
+    public function actionLike(ParameterBag $params)
+    {
+        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
+        if (!$reportComment->canLike($error))
+        {
+            return $this->noPermission($error);
+        }
+
+        $likeLinkParams = ['report_comment_id' => $reportComment->report_comment_id];
+
+        /** @var \XF\ControllerPlugin\Like $likePlugin */
+        $likePlugin = $this->plugin('XF:Like');
+        return $likePlugin->actionToggleLike(
+            $reportComment,
+            $this->buildLink('reports/like', $reportComment->Report, $likeLinkParams),
+            $this->buildLink('reports', $reportComment->Report, $likeLinkParams),
+            $this->buildLink('reports/likes', $reportComment->Report, $likeLinkParams)
+        );
+    }
+
+    /**
+     * @param       $reportCommentId
+     * @param array $extraWith
+     *
+     * @return \SV\ReportImprovements\XF\Entity\ReportComment
+     * @throws \XF\Mvc\Reply\Exception
+     */
+    protected function assertViewableReportComment($reportCommentId, array $extraWith = [])
+    {
+        $extraWith[] = 'Report';
+
+        /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
+        $reportComment = $this->em()->find('XF:ReportComment', $reportCommentId, $extraWith);
+        if (!$reportComment)
+        {
+            throw $this->exception($this->notFound(\XF::phrase('requested_report_comment_not_found')));
+        }
+
+        if (!$reportComment->Report || !$reportComment->Report->canView())
+        {
+            throw $this->exception($this->noPermission());
+        }
+
+        return $reportComment;
+    }
 }
