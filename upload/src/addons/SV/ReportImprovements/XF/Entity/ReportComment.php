@@ -124,11 +124,6 @@ class ReportComment extends XFCP_ReportComment
             return false;
         }
 
-        if ($this->Report->isClosed())
-        {
-            return false;
-        }
-
         if ($this->user_id === $visitor->user_id)
         {
             $error = \XF::phraseDeferred('liking_own_content_cheating');
