@@ -202,6 +202,34 @@ class Report extends XFCP_Report
             ->fetchOne();
     }
 
+    protected function getCommentWith()
+    {
+        $with = ['User', 'User.Profile', 'User.Privacy'];
+        if ($userId = \XF::visitor()->user_id)
+        {
+            if (\XF::options()->showMessageOnlineStatus)
+            {
+                $with[] = 'User.Activity';
+            }
+
+            $with[] = 'Likes|' . $userId;
+        }
+        return $with;
+    }
+
+    public function getComments()
+    {
+        $direction = \XF::app()->options()->sv_reverse_report_comment_order ? 'ASC' : 'DESC';
+
+        $finder = $this->finder('XF:ReportComment')
+                       ->where('report_id', $this->report_id)
+                       ->order('comment_date', $direction);
+
+        $finder->with($this->getCommentWith());
+
+        return $finder->fetch();
+    }
+
     /**
      * @param Structure $structure
      *
@@ -235,6 +263,7 @@ class Report extends XFCP_Report
         $structure->getters['ViewableUser'] = true;
         $structure->getters['FirstReportComment'] = true;
         $structure->getters['LastModified'] = true;
+        $structure->getters['Comments'] = true;
 
         $structure->relations['LastModified'] = [
             'entity' => 'XF:ReportComment',
