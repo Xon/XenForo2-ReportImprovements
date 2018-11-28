@@ -50,7 +50,7 @@ class Warning extends XFCP_Warning
                     throw $this->exception($this->noPermission($error));
                 }
 
-                $this->resolveReport($report);
+                Globals::$resolveWarningReport = true;
             }
         }
 
@@ -80,32 +80,10 @@ class Warning extends XFCP_Warning
                     throw $this->exception($this->noPermission($error));
                 }
 
-                $this->resolveReport($report);
+                Globals::$resolveWarningReport = true;
             }
         }
 
         return $response;
-    }
-
-    /**
-     * @param \XF\Entity\Report $report
-     *
-     * @throws \XF\Mvc\Reply\Exception
-     */
-    protected function resolveReport(\XF\Entity\Report $report)
-    {
-        /** @var \XF\Service\Report\Commenter $commenter */
-        $commenter = $this->service('XF:Report\Commenter', $report);
-        $commenter->setReportState('resolved');
-        if (!$commenter->validate($errors))
-        {
-            throw $this->exception($this->error($errors));
-        }
-        $commenter->save();
-        $commenter->sendNotifications();
-
-        $commenter->getReport();
-
-        $this->session()->reportLastRead = \XF::$time;
     }
 }

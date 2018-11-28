@@ -288,7 +288,12 @@ class Creator extends AbstractService
                 'state_change' => $this->autoResolve ? 'resolved' : ''
             ], ['forceSet' => true]);
 
-            $this->reportCommenter->save();
+            $reportComment = $this->reportCommenter->save();
+
+            if ($reportComment && $reportComment->Report && $this->autoResolve)
+            {
+                $reportComment->Report->fastUpdate('report_state', 'resolved');
+            }
         }
 
         $this->db()->commit();

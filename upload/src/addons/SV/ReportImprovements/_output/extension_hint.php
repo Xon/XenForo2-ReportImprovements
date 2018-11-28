@@ -57,8 +57,3 @@ namespace SV\ReportImprovements\XF\Service\Thread
 {
 	class XFCP_ReplyBan extends \XF\Service\Thread\ReplyBan {}
 }
-
-namespace SV\ReportImprovements\XF\Service\User
-{
-	class XFCP_Warn extends \XF\Service\User\Warn {}
-}

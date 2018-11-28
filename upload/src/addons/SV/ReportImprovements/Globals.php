@@ -28,4 +28,6 @@ class Globals
      * @var null|null
      */
     public static $resolveThreadReplyBanReport;
+
+    public static $resolveWarningReport;
 }

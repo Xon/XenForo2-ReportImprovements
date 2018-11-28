@@ -46,6 +46,7 @@ class Warning extends XFCP_Warning
         \XF::asVisitor($reporter, function () use ($reporter, $warning, $type) {
             /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
             $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $warning, $type);
+            $warningLogCreator->setAutoResolve(Globals::$resolveWarningReport);
             if ($warningLogCreator->validate($errors))
             {
                 $warningLogCreator->save();

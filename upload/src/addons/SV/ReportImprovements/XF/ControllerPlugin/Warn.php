@@ -54,10 +54,9 @@ class Warn extends XFCP_Warn
      */
     protected function setupWarnService(\XF\Warning\AbstractHandler $warningHandler, \XF\Entity\User $user, $contentType, Entity $content, array $input)
     {
-        /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
 
-        if (isset($input['resolve_report']) && $input['resolve_report'])
+        if (isset($input['resolve_report']))
         {
             /** @var \SV\ReportImprovements\XF\Entity\Report $report */
             $report = $this->finder('XF:Report')
@@ -65,27 +64,15 @@ class Warn extends XFCP_Warn
                 ->where('content_id', $content->getEntityId())
                 ->fetchOne();
 
-            if (!$report)
-            {
-                throw $this->exception($this->notFound(\XF::phrase('requested_warning_not_found')));
-            }
-
-            /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
-            $visitor = \XF::visitor();
-
-            if (!$report->canUpdate($error))
+            if ($report && !$report->canUpdate($error))
             {
                 throw $this->exception($this->noPermission($error));
             }
 
-            /** @var \XF\Service\Report\Commenter $reportCommenter */
-            $reportCommenter = $this->service('XF:Report\Commenter', $report);
-            $reportCommenter->setReportState('rejected', $visitor);
-            if (!$reportCommenter->validate($errors))
+            if ($contentType !== 'post')
             {
-                throw $this->exception($this->error($errors));
+                Globals::$resolveWarningReport = $input['resolve_report'];
             }
-            $reportCommenter->save();
         }
 
         if ($contentType === 'post' && isset($input['ban_length']) && $input['ban_length'] !== '')
@@ -111,6 +98,11 @@ class Warn extends XFCP_Warn
             else
             {
                 $replyBanService->setExpiryDate(0);
+            }
+
+            if (isset($input['resolve_report']))
+            {
+                Globals::$resolveThreadReplyBanReport = true;
             }
 
             $replyBanService->setPostIdForWarning($content->post_id, $content->Thread->title);
