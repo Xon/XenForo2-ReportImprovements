@@ -69,9 +69,9 @@ class Warning extends XFCP_Warning
         $warning = $this->assertViewableWarning($params->warning_id);
         $report = $warning->Report;
 
-        $response = parent::actionDelete($params);
+        $response = parent::actionExpire($params);
 
-        if ($response instanceof \XF\Mvc\Reply\Reroute)
+        if ($response instanceof \XF\Mvc\Reply\Redirect)
         {
             if ($this->request()->exists('resolve_report') && $this->filter('resolve_report', 'bool') === true)
             {
@@ -104,8 +104,7 @@ class Warning extends XFCP_Warning
         $commenter->save();
         $commenter->sendNotifications();
 
-        $report = $commenter->getReport();
-        $report->draft_comment->delete();
+        $commenter->getReport();
 
         $this->session()->reportLastRead = \XF::$time;
     }
