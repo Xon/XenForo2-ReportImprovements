@@ -113,6 +113,14 @@ class Setup extends AbstractSetup
         ');
     }
 
+    public function upgrade2000001Step5()
+    {
+        $this->app->jobManager()->enqueueUnique(
+            'svRIUpgrade2000001Step5',
+            'SV\ReportImprovements:Upgrades\Upgrade2000001Step5'
+        );
+    }
+
     /**
      * Drops add-on tables.
      */

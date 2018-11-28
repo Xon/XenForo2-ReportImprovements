@@ -2,7 +2,9 @@
 
 namespace SV\ReportImprovements\XF\Report;
 
+use SV\ReportImprovements\Report\ContentInterface;
 use XF\Entity\Report;
+use XF\Mvc\Entity\Entity;
 
 /**
  * Class ConversationMessage
@@ -11,7 +13,7 @@ use XF\Entity\Report;
  *
  * @package SV\ReportImprovements\XF\Report
  */
-class ConversationMessage extends XFCP_ConversationMessage
+class ConversationMessage extends XFCP_ConversationMessage implements ContentInterface
 {
     /**
      * @param Report $report
@@ -24,5 +26,28 @@ class ConversationMessage extends XFCP_ConversationMessage
         $visitor = \XF::visitor();
 
         return $visitor->canViewConversationMessageReport();
+    }
+
+    /**
+     * @param Report $report
+     * @param Entity|\XF\Entity\ConversationMessage $content
+     */
+    public function setupReportEntityContent(Report $report, Entity $content)
+    {
+        parent::setupReportEntityContent($report, $content);
+
+        $contentInfo = $report->content_info;
+        $contentInfo['message_date'] = $content->message_date;
+        $report->content_info = $contentInfo;
+    }
+
+    /**
+     * @param Report $report
+     *
+     * @return int
+     */
+    public function getContentDate(Report $report)
+    {
+        return $report->content_info['message_date'];
     }
 }

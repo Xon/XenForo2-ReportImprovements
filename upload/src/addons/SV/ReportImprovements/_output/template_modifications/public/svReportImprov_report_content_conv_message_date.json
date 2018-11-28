@@ -1,0 +1,9 @@
+{
+    "template": "report_content_conversation_message",
+    "description": "Show conversation message date",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#<div class=\".*?\".*?>.*?<\\/div>#si",
+    "replace": "$0\n<div class=\"block-row block-row--separated block-row--minor\">\n\t<dl class=\"pairs pairs--inline\">\n\t\t<dt>{{ phrase('svReportImprov_content_date') }}</dt>\n\t\t<dd><xf:date time=\"$report.content_date\" /></dd>\n\t</dl>\n</div>"
+}

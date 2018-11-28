@@ -104,6 +104,21 @@ class Report extends XFCP_Report
     }
 
     /**
+     * @return int|null
+     */
+    public function getContentDate()
+    {
+        $handler = $this->Handler;
+
+        if (!$handler instanceof \SV\ReportImprovements\Report\ContentInterface)
+        {
+            return 0;
+        }
+
+        return $handler ? $handler->getContentDate($this) : 0;
+    }
+
+    /**
      * @return string
      */
     public function getMessage()
@@ -299,6 +314,7 @@ class Report extends XFCP_Report
 
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
+        $structure->getters['content_date'] = true;
         $structure->getters['message'] = true;
         $structure->getters['commenter_user_ids'] = true;
         $structure->getters['comment_ids'] = true;

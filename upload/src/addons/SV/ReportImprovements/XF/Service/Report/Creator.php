@@ -2,8 +2,6 @@
 
 namespace SV\ReportImprovements\XF\Service\Report;
 
-
-
 /**
  * Extends \XF\Service\Report\Creator
  */

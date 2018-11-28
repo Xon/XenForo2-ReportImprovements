@@ -1,0 +1,9 @@
+{
+    "template": "report_content_post",
+    "description": "Show post date",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(<div class=\"block-row block-row--separated block-row--minor.*?\".*?>)(.*?)(<\\/div>)#s",
+    "replace": "$1$2\n\t<dl class=\"pairs pairs--inline\">\n\t\t<dt>{{ phrase('svReportImprov_content_date') }}</dt>\n\t\t<dd><xf:date time=\"$report.content_date\" /></dd>\n\t</dl>\n$3"
+}
