@@ -1,13 +1,13 @@
 <?php
 
-namespace SV\ContentRatings\Job\Upgrades;
+namespace SV\ReportImprovements\Job\Upgrades;
 
 use XF\Job\AbstractRebuildJob;
 
 /**
  * Class Upgrade1090200Step1
  *
- * @package SV\ContentRatings\Job\Upgrades
+ * @package SV\ReportImprovements\Job\Upgrades
  */
 class Upgrade1090200Step1 extends AbstractRebuildJob
 {
