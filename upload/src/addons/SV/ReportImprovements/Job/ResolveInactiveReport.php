@@ -49,7 +49,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
         {
             /** @var \SV\ReportImprovements\XF\Service\Report\Commenter $commenterService */
             $commenterService = $this->app->service('XF:Report\Commenter', $report);
-            $commenterService->setReportState('resolved');
+            $commenterService->setReportState($this->app->options()->sv_ri_expiry_action);
             if ($commenterService->validate($errors))
             {
                 $commenterService->save();
