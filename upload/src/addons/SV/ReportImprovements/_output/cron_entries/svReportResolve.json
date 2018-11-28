@@ -1,0 +1,17 @@
+{
+    "cron_class": "SV\\ReportImprovements\\Cron\\Report",
+    "cron_method": "resolveInactiveReports",
+    "run_rules": {
+        "day_type": "dom",
+        "dom": [
+            -1
+        ],
+        "hours": [
+            -1
+        ],
+        "minutes": [
+            20
+        ]
+    },
+    "active": true
+}
