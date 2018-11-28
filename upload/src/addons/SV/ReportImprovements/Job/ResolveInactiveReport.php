@@ -26,14 +26,17 @@ class ResolveInactiveReport extends AbstractRebuildJob
         }
 
         $db = $this->app->db();
+
         return $db->fetchAllColumn($db->limit(
             '
-            SELECT report_id
-            FROM xf_report
-            WHERE report_state = ' . $db->quote('open') . '
-                  AND last_modified_date <= ' . (int) \XF::$time - (60 * 60 * 24 * $daysLimit) . '
+				SELECT report_id
+				FROM xf_report
+				WHERE report_id > ?
+				  AND report_state = ?
+				  AND last_modified_date <= ?
+				ORDER BY report_id
 			', $batch
-        ), $start);
+        ), [$start, 'open', \XF::$time - (60 * 60 * 24 * $daysLimit)]);
     }
 
     /**
