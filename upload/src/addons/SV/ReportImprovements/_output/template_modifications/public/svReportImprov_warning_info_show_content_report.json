@@ -4,6 +4,6 @@
     "execution_order": 10,
     "enabled": true,
     "action": "str_replace",
-    "find": "<xf:formrow label=\"{{ phrase('details_of_warning') }}\">",
+    "find": "<xf:if is=\"$warning.canDelete() AND $warning.canEditExpiry()\">",
     "replace": "<xf:include template=\"svReportImprov_warning_info_show_content_report\" />\n$0"
 }
