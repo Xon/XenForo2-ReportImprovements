@@ -57,22 +57,4 @@ class Warning extends XFCP_Warning
             });
         });
     }
-
-    public function resolveReport(\XF\Entity\Warning $warning)
-    {
-        /** @var \XF\Service\Report\Commenter $commenter */
-        $commenter = $this->app()->service('XF:Report\Commenter', $this->Report);
-        $commenter->setReportState('resolved');
-        if (!$commenter->validate($errors))
-        {
-            throw $this->exception($this->error($errors));
-        }
-        $commenter->save();
-        $commenter->sendNotifications();
-
-        $report = $commenter->getReport();
-        $report->draft_comment->delete();
-
-        $this->app()->session()->reportLastRead = \XF::$time;
-    }
 }
