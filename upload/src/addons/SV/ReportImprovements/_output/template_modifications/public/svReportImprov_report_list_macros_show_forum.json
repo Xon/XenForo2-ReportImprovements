@@ -1,0 +1,9 @@
+{
+    "template": "report_list_macros",
+    "description": "Show forum if the content is a post",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(<ul class=\"structItem-parts.*?\">)(.*?)(<\\/ul>)#s",
+    "replace": "$1$2\n<xf:if is=\"$report.content_type === 'post' && $report.content_info.node_id\">\n\t<li class=\"structItem-forum\"><a href=\"{{ link('forums', {'node_id': $report.content_info.node_id}) }}\" rel=\"nofollow\">{{ $report.content_info.node_title ?: phrase('forum')  }}</a></li>\n</xf:if>\n$3"
+}
