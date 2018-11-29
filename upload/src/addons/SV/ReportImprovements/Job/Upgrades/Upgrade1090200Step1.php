@@ -24,7 +24,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
             '
             SELECT report_comment_id
             FROM xf_report_comment 
-            WHERE message LIKE \'%http%\' and message NOT LIKE \'%[URL=%http%\' and message NOT LIKE \'%[URL]http%\'
+            WHERE (message LIKE \'%http:%\' OR message LIKE \'%https:%\') and message NOT LIKE \'%[URL=%http%\' and message NOT LIKE \'%[URL]http%\'
               AND report_comment_id > ?
             ORDER BY report_comment_id
 			', $batch
