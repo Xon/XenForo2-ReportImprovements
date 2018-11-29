@@ -262,4 +262,23 @@ class ReportComment extends AbstractData
             ),
         ];
     }
+
+    /**
+     * @return array|null
+     */
+    public function getSearchFormTab()
+    {
+        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        $visitor = \XF::visitor();
+
+        if (!method_exists($visitor, 'canViewReports') || !$visitor->canViewReports($error))
+        {
+            return null;
+        }
+
+        return [
+            'title' => \XF::phrase('svReportImprov_search_reports'),
+            'order' => 250
+        ];
+    }
 }

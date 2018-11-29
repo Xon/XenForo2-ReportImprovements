@@ -104,23 +104,4 @@ class Report extends AbstractData
         // must be an int, as ElasticSearch single index has this all mapped to the same type
         $structure->addField('is_report', MetadataStructure::INT);
     }
-
-    /**
-     * @return array|null
-     */
-    public function getSearchFormTab()
-    {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
-        $visitor = \XF::visitor();
-
-        if (!method_exists($visitor, 'canViewReports') || !$visitor->canViewReports($error))
-        {
-            return null;
-        }
-
-        return [
-            'title' => \XF::phrase('svReportImprov_search_reports'),
-            'order' => 250
-        ];
-    }
 }
