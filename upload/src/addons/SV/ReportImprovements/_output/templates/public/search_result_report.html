@@ -1,7 +1,7 @@
 <li class="block-row block-row--separated" data-author="{{ $report.User.username ?: $report.username }}">
 	<div class="contentRow">
 		<span class="contentRow-figure">
-			<xf:avatar user="{$report.ViewableUser}" size="s" defaultname="{$report.ViewableUser.username}" />
+			<xf:avatar user="{$report.User}" size="s" defaultname="{{ phrase('guest') }}" />
 		</span>
 		<div class="contentRow-main">
 			<h3 class="contentRow-title">
@@ -12,7 +12,7 @@
 
 			<div class="contentRow-minor contentRow-minor--hideLinks">
 				<ul class="listInline listInline--bullet">
-					<li><xf:username user="{$report.ViewableUser}" defaultname="{$report.ViewableUser.username}" /></li>
+					<li><xf:username user="{$report.User}" defaultname="{{ phrase('guest') }}" /></li>
 					<li>{{ phrase('report') }}</li>
 					<li><xf:date time="{$report.first_report_date}" /></li>
 				</ul>

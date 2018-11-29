@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:username user=\"{$report.LastModifiedUser}\" defaultname=\"{$report.last_modified_username}\" />",
-    "replace": "<xf:if is=\"$report.LastModified && $report.LastModified.is_report\">\n\t<xf:username user=\"{$report.ViewableUser}\" defaultname=\"{$report.ViewableUsername}\" />\n<xf:else />\n\t<xf:username user=\"{$report.LastModifiedUser}\" defaultname=\"{$report.last_modified_username}\" />\n</xf:if>"
+    "replace": "<xf:if is=\"$report.LastModified && $report.LastModified.is_report\">\n\t<xf:username user=\"{$report.LastModified.ViewableUser}\" defaultname=\"{$report.last_modified_username}\" />\n<xf:else />\n\t$0\n</xf:if>"
 }

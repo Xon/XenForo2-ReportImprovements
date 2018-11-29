@@ -18,9 +18,14 @@ use XF\Mvc\Entity\Structure;
  * @property bool alertSent
  * @property string alertComment
  *
+ * GETTERS
+ * @property \SV\ReportImprovements\XF\Entity\User ViewableUsername
+ * @property \SV\ReportImprovements\XF\Entity\User ViewableUser
+ *
  * RELATIONS
  * @property \XF\Entity\LikedContent[] Likes
  * @property \SV\ReportImprovements\Entity\WarningLog WarningLog
+ * @property \SV\ReportImprovements\XF\Entity\Report Report
  */
 class ReportComment extends XFCP_ReportComment
 {
@@ -36,6 +41,34 @@ class ReportComment extends XFCP_ReportComment
         }
 
         return isset($this->Likes[$visitor->user_id]);
+    }
+
+    /**
+     * @return mixed|string|string[]|null
+     */
+    public function getViewableUsername()
+    {
+        return \XF::phrase('svReportImprov_content_reporter')->render();
+    }
+
+    /**
+     * @return \XF\Entity\User|\SV\ReportImprovements\XF\Entity\User
+     */
+    public function getViewableUser()
+    {
+        if (!$this->is_report)
+        {
+            return $this->User;
+        }
+
+        if ($this->Report->canViewReporter($error))
+        {
+            return $this->User;
+        }
+
+        /** @var \XF\Repository\User $userRepo */
+        $userRepo = $this->repository('XF:User');
+        return $userRepo->getGuestUser($this->ViewableUsername);
     }
 
     /**
@@ -59,6 +92,8 @@ class ReportComment extends XFCP_ReportComment
         $structure->behaviors['XF:Indexable'] = [
             'checkForUpdates' => ['message', 'user_id', 'report_id', 'comment_date', 'state_change', 'is_report']
         ];
+        $structure->getters['ViewableUsername'] = true;
+        $structure->getters['ViewableUser'] = true;
         $structure->relations['Likes'] = [
             'entity' => 'XF:LikedContent',
             'type' => self::TO_MANY,

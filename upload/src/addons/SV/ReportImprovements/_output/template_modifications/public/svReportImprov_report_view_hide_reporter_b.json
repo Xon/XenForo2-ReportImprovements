@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:macro template=\"message_macros\" name=\"user_info_simple\" arg-user=\"{$comment.User}\"  arg-fallbackName=\"{$comment.username}\" />",
-    "replace": "<xf:if is=\"$comment.is_report\">\n\t<xf:macro template=\"message_macros\" name=\"user_info_simple\" arg-user=\"{$report.ViewableUser}\" arg-fallbackName=\"{$report.ViewableUsername}\" />\n<xf:else />\n\t$0\n</xf:if>"
+    "replace": "<xf:if is=\"$comment.is_report\">\n\t<xf:macro template=\"message_macros\" name=\"user_info_simple\" arg-user=\"{$comment.ViewableUser}\" arg-fallbackName=\"{$comment.ViewableUsername}\" />\n<xf:else />\n\t$0\n</xf:if>"
 }

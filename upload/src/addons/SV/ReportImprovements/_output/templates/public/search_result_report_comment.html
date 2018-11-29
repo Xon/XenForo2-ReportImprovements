@@ -22,7 +22,7 @@
 
 			<div class="contentRow-minor contentRow-minor--hideLinks">
 				<ul class="listInline listInline--bullet">
-					<li><xf:username user="{$reportComment.User}" defaultname="{$reportComment.username}" /></li>
+					<li><xf:username user="{$reportComment.ViewableUser}" defaultname="{$reportComment.ViewableUsername}" /></li>
 					<li><xf:trim>
 						<xf:if is="$reportComment.is_report">
 							{{ phrase('svReportImprov_user_report') }}

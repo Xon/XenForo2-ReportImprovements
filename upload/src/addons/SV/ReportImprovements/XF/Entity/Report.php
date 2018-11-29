@@ -17,8 +17,6 @@ use XF\Mvc\Entity\Structure;
  * GETTERS
  * @property array commenter_user_ids
  * @property array comment_ids
- * @property \SV\ReportImprovements\XF\Entity\User ViewableUsername
- * @property \SV\ReportImprovements\XF\Entity\User ViewableUser
  * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified
  */
 class Report extends XFCP_Report
@@ -125,29 +123,6 @@ class Report extends XFCP_Report
     {
         $handler = $this->Handler;
         return $handler ? $handler->getContentMessage($this) : $this->title;
-    }
-
-    /**
-     * @return mixed|string|string[]|null
-     */
-    public function getViewableUsername()
-    {
-        return \XF::phrase('svReportImprov_content_reporter')->render();
-    }
-
-    /**
-     * @return \XF\Entity\User|\SV\ReportImprovements\XF\Entity\User
-     */
-    public function getViewableUser()
-    {
-        if ($this->canViewReporter($error))
-        {
-            return $this->User;
-        }
-
-        /** @var \XF\Repository\User $userRepo */
-        $userRepo = $this->repository('XF:User');
-        return $userRepo->getGuestUser($this->ViewableUsername);
     }
 
     /**
@@ -318,8 +293,6 @@ class Report extends XFCP_Report
         $structure->getters['message'] = true;
         $structure->getters['commenter_user_ids'] = true;
         $structure->getters['comment_ids'] = true;
-        $structure->getters['ViewableUsername'] = true;
-        $structure->getters['ViewableUser'] = true;
         $structure->getters['LastModified'] = true;
         $structure->getters['Comments'] = true;
         $structure->getters['LastModified'] = true;
