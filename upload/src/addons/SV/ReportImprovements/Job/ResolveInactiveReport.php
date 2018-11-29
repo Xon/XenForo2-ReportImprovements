@@ -19,8 +19,9 @@ class ResolveInactiveReport extends AbstractRebuildJob
      */
     protected function getNextIds($start, $batch)
     {
-        $daysLimit = (int) $this->app->options()->sv_ri_expiry_days;
-        if ($daysLimit === 0)
+        $options = $this->app->options();
+        $daysLimit = (int) $options->sv_ri_expiry_days;
+        if ($daysLimit <= 0 || !$options->sv_ri_expiry_action)
         {
             return null;
         }
