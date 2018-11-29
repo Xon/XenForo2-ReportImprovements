@@ -21,13 +21,36 @@ class Report extends XFCP_Report
      */
     protected function preDispatchController($action, ParameterBag $params)
     {
-        parent::preDispatchController($action, $params);
-
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
         if (!$visitor->canViewReports($error))
         {
             throw $this->exception($this->noPermission($error));
+        }
+
+        $is_moderator = $visitor->is_moderator;
+        $wasReadonly = $visitor->getReadOnly();
+        if (!$is_moderator)
+        {
+            $visitor->setReadOnly(false);
+            $visitor->is_moderator = true;
+            $visitor->setReadOnly(true);
+        }
+        try
+        {
+            parent::preDispatchController($action, $params);
+        }
+        finally
+        {
+            if (!$is_moderator)
+            {
+                $visitor->setReadOnly(false);
+                $visitor->is_moderator = false;
+                if ($wasReadonly)
+                {
+                    $visitor->setReadOnly($wasReadonly);
+                }
+            }
         }
     }
 
