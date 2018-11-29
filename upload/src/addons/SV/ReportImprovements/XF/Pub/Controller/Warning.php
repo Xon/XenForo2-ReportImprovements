@@ -7,7 +7,7 @@ use XF\Mvc\ParameterBag;
 
 /**
  * Class Warning
- * 
+ *
  * Extends \XF\Pub\Controller\Warning
  *
  * @package SV\ReportImprovements\XF\Pub\Controller
@@ -39,22 +39,13 @@ class Warning extends XFCP_Warning
         $warning = $this->assertViewableWarning($params->warning_id);
         $report = $warning->Report;
 
-        $response = parent::actionDelete($params);
-
-        if ($response instanceof \XF\Mvc\Reply\Redirect)
+        if ($this->request()->exists('resolve_report') &&
+            $this->filter('resolve_report', 'bool'))
         {
-            if ($this->request()->exists('resolve_report') && $this->filter('resolve_report', 'bool') === true)
-            {
-                if (!$report->canUpdate($error) || $report->isClosed())
-                {
-                    throw $this->exception($this->noPermission($error));
-                }
-
-                Globals::$resolveWarningReport = true;
-            }
+            Globals::$resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
         }
 
-        return $response;
+        return parent::actionDelete($params);
     }
 
     /**
@@ -69,21 +60,11 @@ class Warning extends XFCP_Warning
         $warning = $this->assertViewableWarning($params->warning_id);
         $report = $warning->Report;
 
-        $response = parent::actionExpire($params);
-
-        if ($response instanceof \XF\Mvc\Reply\Redirect)
+        if ($this->request()->exists('resolve_report') &&
+            $this->filter('resolve_report', 'bool'))
         {
-            if ($this->request()->exists('resolve_report') && $this->filter('resolve_report', 'bool') === true)
-            {
-                if (!$report->canUpdate($error) || $report->isClosed())
-                {
-                    throw $this->exception($this->noPermission($error));
-                }
-
-                Globals::$resolveWarningReport = true;
-            }
+            Globals::$resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
         }
-
-        return $response;
+        return parent::actionExpire($params);
     }
 }
