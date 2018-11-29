@@ -8,6 +8,14 @@ namespace SV\ReportImprovements\XF\Service\Report;
 class Creator extends XFCP_Creator
 {
     /**
+     * @return \XF\Entity\Report
+     */
+    public function getReport()
+    {
+        return $this->report;
+    }
+
+    /**
      * @throws \Exception
      */
     public function sendNotifications()
