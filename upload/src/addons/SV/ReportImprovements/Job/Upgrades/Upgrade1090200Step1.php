@@ -22,7 +22,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
 
         return $db->fetchAllColumn($db->limit(
             '
-            SELECT MAX(report_comment_id) AS max_report_comment_id
+            SELECT report_comment_id
             FROM xf_report_comment 
             WHERE message LIKE \'%http%\' and message NOT LIKE \'%[URL=%http%\' and message NOT LIKE \'%[URL]http%\'
               AND report_comment_id > ?
@@ -37,8 +37,6 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        $db = \XF::db();
-
         /** @var \XF\Entity\ReportComment $comment */
         $comment = \XF::app()->find('XF:ReportComment', $id);
         if ($comment)

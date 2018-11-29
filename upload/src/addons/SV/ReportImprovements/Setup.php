@@ -76,21 +76,11 @@ class Setup extends AbstractSetup
     {
         $this->app->jobManager()->enqueueUnique(
             'svRIUpgrade1090200Step1',
-            'SV\ReportImprovements:Upgrades\Upgrade1090100Step1'
+            'SV\ReportImprovements:Upgrades\Upgrade1090200Step1'
         );
     }
 
     public function upgrade2000001Step1()
-    {
-        $this->installStep1();
-    }
-
-    public function upgrade2000001Step2()
-    {
-        $this->installStep2();
-    }
-
-    public function upgrade2000001Step3()
     {
         $this->db()->query('
           update xf_report_comment
@@ -99,7 +89,17 @@ class Setup extends AbstractSetup
         ');
     }
 
-    public function upgrade2000001Step4()
+    public function upgrade2000002Step1()
+    {
+        $this->installStep1();
+    }
+
+    public function upgrade2000002Step2()
+    {
+        $this->installStep2();
+    }
+
+    public function upgrade2000002Step3()
     {
         /** @noinspection SqlResolve */
         $this->db()->query('
@@ -111,14 +111,6 @@ class Setup extends AbstractSetup
                                   limit 1), 0)
           where last_modified_id = 0
         ');
-    }
-
-    public function upgrade2000001Step5()
-    {
-        $this->app->jobManager()->enqueueUnique(
-            'svRIUpgrade2000001Step5',
-            'SV\ReportImprovements:Upgrades\Upgrade2000001Step5'
-        );
     }
 
     /**

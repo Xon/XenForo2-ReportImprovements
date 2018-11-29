@@ -22,7 +22,7 @@ class Upgrade1090100Step1 extends AbstractRebuildJob
 
         return $db->fetchAllColumn($db->limit(
             '
-            SELECT MAX(report_comment_id) AS max_report_comment_id
+            SELECT report_comment_id
             FROM xf_report_comment 
             WHERE message LIKE \'%@[%:%]%\' 
               AND report_comment_id > ?
@@ -44,8 +44,6 @@ class Upgrade1090100Step1 extends AbstractRebuildJob
             FROM xf_report_comment 
             WHERE message LIKE '%@[%:%]%'
             AND report_comment_id = ?
-            ORDER BY report_comment_id
-            LIMIT ?
         ", [$id]);
         if ($comment)
         {
