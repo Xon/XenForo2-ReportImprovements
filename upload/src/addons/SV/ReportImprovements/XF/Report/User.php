@@ -52,7 +52,7 @@ class User extends XFCP_User
         }
         else
         {
-            $name = \XF::phrase('unknown_user');
+            $name = \XF::phrase('guest');
         }
 
         return \XF::phrase('member_x', [
