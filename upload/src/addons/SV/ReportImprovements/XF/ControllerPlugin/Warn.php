@@ -54,6 +54,7 @@ class Warn extends XFCP_Warn
      */
     protected function setupWarnService(\XF\Warning\AbstractHandler $warningHandler, \XF\Entity\User $user, $contentType, Entity $content, array $input)
     {
+        /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
 
         if (!empty($input['resolve_report']))
@@ -83,32 +84,7 @@ class Warn extends XFCP_Warn
                 throw $this->exception($this->noPermission($error));
             }
 
-            /** @var \SV\ReportImprovements\XF\Service\Thread\ReplyBan $replyBanService */
-            $replyBanService = $this->service('XF:Thread\ReplyBan', $content->Thread, $user);
-
-            if ($input['ban_length'] === 'temporary')
-            {
-                $replyBanService->setExpiryDate($input['ban_length_unit'], $input['ban_length_value']);
-            }
-            else
-            {
-                $replyBanService->setExpiryDate(0);
-            }
-
-            if (!empty($input['resolve_report']))
-            {
-                Globals::$resolveWarningReport = false;
-                Globals::$resolveThreadReplyBanReport = true;
-            }
-
-            $replyBanService->setPostIdForWarning($content->post_id, $content->Thread->title);
-            $replyBanService->setSendAlert($input['reply_ban_send_alert']);
-            $replyBanService->setReason($input['reply_ban_reason']);
-            if (!$replyBanService->validate($errors))
-            {
-                throw $this->exception($this->error($errors));
-            }
-            $replyBanService->save();
+            $warnService->setupReplyBan($input['reply_ban_send_alert'], $input['reply_ban_reason'], !empty($input['resolve_report']));
         }
 
         return $warnService;
