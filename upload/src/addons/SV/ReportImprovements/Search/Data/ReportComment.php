@@ -35,7 +35,7 @@ class ReportComment extends AbstractData
      */
     public function getEntityWith($forView = false)
     {
-        return ['Report', 'User'];
+        return ['Report', 'User', 'WarningLog'];
     }
 
     /**

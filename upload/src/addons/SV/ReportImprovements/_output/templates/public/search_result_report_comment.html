@@ -4,16 +4,40 @@
 			<xf:avatar user="{$reportComment.User}" size="s" defaultname="{$reportComment.username}" />
 		</span>
 		<div class="contentRow-main">
+			<div class="contentRow-extra contentRow-extra--small">
+				<ul class="listInline listInline--bullet">
+					<xf:if is="$reportComment.state_change">
+						<li>{{ phrase('status_changed:') }} {$report.getReportState($reportComment.state_change)}</li>
+					</xf:if>
+					<xf:if is="$reportComment.WarningLog">
+						<li>{{ phrase('svReportImprov_operation_type:') }} {$reportComment.WarningLog.OperationTypePhrase}</li>
+					</xf:if>
+				</ul>
+			</div>
 			<h3 class="contentRow-title">
 				<a href="{{ link('reports', $report) }}#report-comment-{$reportComment.report_comment_id}">{{ snippet($report.title, 100, {'term': $options.term, 'fromStart': true, 'stripPlainTag': true}) }}</a>
 			</h3>
-
+			
 			<div class="contentRow-snippet">{{ snippet($reportComment.message, 300, {'term': $options.term, 'stripPlainTag': true}) }}</div>
 
 			<div class="contentRow-minor contentRow-minor--hideLinks">
 				<ul class="listInline listInline--bullet">
 					<li><xf:username user="{$reportComment.User}" defaultname="{$reportComment.username}" /></li>
-					<li>{{ phrase('svReportImprov_report_comment') }}</li>
+					<li><xf:trim>
+						<xf:if is="$reportComment.is_report">
+							{{ phrase('svReportImprov_user_report') }}
+						<xf:else />
+							{{ phrase('svReportImprov_report_comment') }}
+						</xf:if>
+					</xf:trim></li>
+					<xf:if is="$reportComment.WarningLog">
+						<xf:if is="$reportComment.WarningLog.title">
+							<li>{{ phrase('warning:') }} {$reportComment.WarningLog.title}</li>
+						</xf:if>
+						<xf:if is="$reportComment.WarningLog.points">
+							<li>{{ phrase('points:') }} {$reportComment.WarningLog.points|number}</li>
+						</xf:if>
+					</xf:if>
 					<li><xf:date time="{$reportComment.comment_date}" /></li>
 				</ul>
 			</div>
