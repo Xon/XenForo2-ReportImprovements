@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -173,6 +174,6 @@ class ReportComment extends XFCP_ReportComment
      */
     public function hasSaveableChanges()
     {
-        return parent::hasSaveableChanges() || $this->warning_log_id;
+        return parent::hasSaveableChanges() || $this->warning_log_id || Globals::$allowSavingReportComment;
     }
 }

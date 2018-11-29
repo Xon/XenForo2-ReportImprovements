@@ -84,7 +84,13 @@ class Warn extends XFCP_Warn
                 throw $this->exception($this->noPermission($error));
             }
 
-            $warnService->setupReplyBan($input['reply_ban_send_alert'], $input['reply_ban_reason'], !empty($input['resolve_report']));
+            $warnService->setupReplyBan(
+                $input['reply_ban_send_alert'],
+                $input['reply_ban_reason'],
+                $input['ban_length_value'],
+                $input['ban_length_unit'],
+                !empty($input['resolve_report'])
+            );
         }
 
         return $warnService;

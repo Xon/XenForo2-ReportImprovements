@@ -23,9 +23,11 @@ class Warn extends XFCP_Warn
     /**
      * @param      $sendAlert
      * @param      $reason
+     * @param      $banLengthValue
+     * @param      $banLengthUnit
      * @param null $resolveReport
      */
-    public function setupReplyBan($sendAlert, $reason, $resolveReport = null)
+    public function setupReplyBan($sendAlert, $reason, $banLengthValue, $banLengthUnit, $resolveReport = null)
     {
         if (!$this->content instanceof \XF\Entity\Post)
         {
@@ -46,6 +48,7 @@ class Warn extends XFCP_Warn
         }
 
         $this->replyBanSvc = $this->service('XF:Thread\ReplyBan', $post->Thread, $this->user);
+        $this->replyBanSvc->setExpiryDate($banLengthUnit, $banLengthValue);
         $this->replyBanSvc->setPostIdForWarning($post->post_id, $thread->title);
         $this->replyBanSvc->setSendAlert($sendAlert);
         $this->replyBanSvc->setReason($reason);

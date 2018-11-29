@@ -235,6 +235,7 @@ class Creator extends AbstractService
         {
             $this->reportCommenter->validate($reportCommenterErrors);
         }
+
         $errors = array_merge($warningLogErrors, $reportCreatorErrors, $reportCommenterErrors);
         foreach ($errors AS $error)
         {

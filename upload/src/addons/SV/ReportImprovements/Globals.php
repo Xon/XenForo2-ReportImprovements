@@ -29,5 +29,13 @@ class Globals
      */
     public static $resolveThreadReplyBanReport;
 
+    /**
+     * @var null|bool
+     */
     public static $resolveWarningReport;
+
+    /**
+     * @var null|bool
+     */
+    public static $allowSavingReportComment;
 }
