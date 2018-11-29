@@ -141,21 +141,13 @@ class Creator extends AbstractService
                 }
             }
 
-            $reportMessage = $this->warning->title;
-            if (!empty($this->warning->notes))
-            {
-                $reportMessage .= "\r\n" . $this->warning->notes;
-            }
-
             if (!$this->warning->Report && $this->app->options()->sv_report_new_warnings)
             {
                 $this->reportCreator = $this->service('XF:Report\Creator', $this->warning->content_type, $this->warning->Content);
-                $this->reportCreator->setMessage($reportMessage);
             }
             else if ($this->warning->Report)
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $this->warning->Report);
-                $this->reportCommenter->setMessage($reportMessage);
                 if ($this->autoResolve)
                 {
                     $this->reportCommenter->setReportState('resolved');
@@ -205,7 +197,6 @@ class Creator extends AbstractService
             $this->warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render();
             $this->warningLog->notes = $this->threadReplyBan->reason;
 
-            $threadReplyBanReason = $this->threadReplyBan->reason ?: \XF::phrase('n_a')->render();
             if (!$report)
             {
                 $this->reportCreator = $this->service(
@@ -213,12 +204,10 @@ class Creator extends AbstractService
                     $reportContent->getEntityContentType(),
                     $reportContent
                 );
-                $this->reportCreator->setMessage($threadReplyBanReason);
             }
             else if ($report)
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
-                $this->reportCommenter->setMessage($threadReplyBanReason);
                 if ($this->autoResolve)
                 {
                     $this->reportCommenter->setReportState('resolved');

@@ -132,4 +132,12 @@ class ReportComment extends XFCP_ReportComment
 
         return $visitor->hasPermission('general', 'reportLike');
     }
+
+    /**
+     * @return bool
+     */
+    public function hasSaveableChanges()
+    {
+        return parent::hasSaveableChanges() || $this->warning_log_id;
+    }
 }
