@@ -44,12 +44,31 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
             $user = $comment->User && $comment->User->user_id ? $comment->User : \XF::visitor();
 
             \XF::asVisitor($user, function () use ($comment){
-                /** @var \XF\Service\Report\CommentPreparer $commentPreparer */
-                $commentPreparer = \XF::service('XF:Report\CommentPreparer', $comment);
 
-                $commentPreparer->setMessage($comment->message);
+                $options = \XF::options();
+                $urlToPageTitle = $options->urlToPageTitle['enabled'];
+                $autoEmbedMedia = $options->autoEmbedMedia;
+                $options->urlToPageTitle['enabled'] = false;
+                $options->autoEmbedMedia['embedType'] = 0;
+                try
+                {
+                    /** @var \XF\Service\Report\CommentPreparer $commentPreparer */
+                    $commentPreparer = \XF::service('XF:Report\CommentPreparer', $comment);
 
-                $comment->saveIfChanged($saved, false);
+                    $commentPreparer->setMessage($comment->message);
+
+                    $comment->saveIfChanged($saved, false);
+                }
+                catch (\Exception $e)
+                {
+                    \XF::logException($e, true, "Error parsing report comment {$comment->report_comment_id} :", true);
+                    throw $e;
+                }
+                finally
+                {
+                    $options->urlToPageTitle['enabled'] = $urlToPageTitle;
+                    $options->autoEmbedMedia = $autoEmbedMedia;
+                }
             });
         }
     }
