@@ -148,7 +148,7 @@ class Creator extends AbstractService
             else if ($this->warning->Report)
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $this->warning->Report);
-                if ($this->autoResolve)
+                if ($this->autoResolve && $this->warning->Report->report_state !== 'resolved')
                 {
                     $this->reportCommenter->setReportState('resolved');
                 }
@@ -208,7 +208,7 @@ class Creator extends AbstractService
             else if ($report)
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
-                if ($this->autoResolve)
+                if ($this->autoResolve && $report->report_state !== 'resolved')
                 {
                     $this->reportCommenter->setReportState('resolved');
                 }
@@ -279,16 +279,16 @@ class Creator extends AbstractService
         {
             /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
             $comment = $this->reportCommenter->getComment();
-            $resolveState = $this->autoResolve && !$comment->Report->isClosed() ? 'resolved' : '';
+
             $comment->bulkSet([
                 'warning_log_id' => $this->warningLog->warning_log_id,
                 'is_report' => false,
-                'state_change' => $resolveState,
             ], ['forceSet' => true]);
 
-            if ($resolveState)
+            if ($this->autoResolve && $comment->Report->report_state !== 'resolved')
             {
-                $comment->Report->set('report_state', $resolveState, ['forceSet' => true]);
+                $comment->set('state_change', 'resolved', ['forceSet' => true]);
+                $comment->Report->set('report_state', 'resolved', ['forceSet' => true]);
                 $comment->addCascadedSave($comment->Report);
             }
 

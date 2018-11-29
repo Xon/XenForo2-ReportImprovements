@@ -1,9 +1,7 @@
 <xf:if is="$warning.Report && $warning.Report.canView()">
 	<xf:css src="svReportImprov_warning_info_show_content_report.less" />
 	
-	<hr class="formRowSep" />
-	
-	<xf:formrow rowtype="reportItem-noPadding" rowtype="fullWidth" label="{{ phrase('report') }}">
+	<xf:formrow rowtype="reportItem-noPadding noLabel" label="{{ phrase('report') }}">
 		<xf:macro template="report_list_macros" name="item" arg-report="{{ $warning.Report }}" />
 	</xf:formrow>
 </xf:if>
