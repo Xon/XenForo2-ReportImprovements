@@ -8,7 +8,7 @@ use XF\Mvc\Reply\View;
 
 /**
  * Class Warn
- * 
+ *
  * Extends \XF\ControllerPlugin\Warn
  *
  * @package SV\ReportImprovements\XF\ControllerPlugin
@@ -56,7 +56,9 @@ class Warn extends XFCP_Warn
     {
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
 
-        if (isset($input['resolve_report']))
+        $hasReplyBan = $contentType === 'post' && isset($input['ban_length']) && $input['ban_length'] !== '';
+
+        if (!empty($input['resolve_report']))
         {
             /** @var \SV\ReportImprovements\XF\Entity\Report $report */
             $report = $this->finder('XF:Report')
@@ -69,13 +71,13 @@ class Warn extends XFCP_Warn
                 throw $this->exception($this->noPermission($error));
             }
 
-            if ($contentType !== 'post')
+            if ($contentType !== 'post' || !$hasReplyBan)
             {
                 Globals::$resolveWarningReport = $input['resolve_report'];
             }
         }
 
-        if ($contentType === 'post' && isset($input['ban_length']) && $input['ban_length'] !== '')
+        if ($hasReplyBan)
         {
             /** @var \XF\Entity\Post $content */
             if (!$content->Thread)
@@ -100,7 +102,7 @@ class Warn extends XFCP_Warn
                 $replyBanService->setExpiryDate(0);
             }
 
-            if (isset($input['resolve_report']))
+            if (!empty($input['resolve_report']))
             {
                 Globals::$resolveThreadReplyBanReport = true;
             }
