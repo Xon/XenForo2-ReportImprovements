@@ -56,8 +56,6 @@ class Warn extends XFCP_Warn
     {
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
 
-        $hasReplyBan = $contentType === 'post' && isset($input['ban_length']) && $input['ban_length'] !== '';
-
         if (!empty($input['resolve_report']))
         {
             /** @var \SV\ReportImprovements\XF\Entity\Report $report */
@@ -66,18 +64,13 @@ class Warn extends XFCP_Warn
                 ->where('content_id', $content->getEntityId())
                 ->fetchOne();
 
-            if ($report && !$report->canUpdate($error))
-            {
-                throw $this->exception($this->noPermission($error));
-            }
-
-            if ($contentType !== 'post' || !$hasReplyBan)
+            if (!$report || $report->canUpdate($error))
             {
                 Globals::$resolveWarningReport = $input['resolve_report'];
             }
         }
 
-        if ($hasReplyBan)
+        if ($contentType === 'post' && isset($input['ban_length']) && $input['ban_length'] !== '')
         {
             /** @var \XF\Entity\Post $content */
             if (!$content->Thread)
@@ -104,6 +97,7 @@ class Warn extends XFCP_Warn
 
             if (!empty($input['resolve_report']))
             {
+                Globals::$resolveWarningReport = false;
                 Globals::$resolveThreadReplyBanReport = true;
             }
 
