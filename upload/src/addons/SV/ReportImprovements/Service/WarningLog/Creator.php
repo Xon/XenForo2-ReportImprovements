@@ -270,11 +270,17 @@ class Creator extends AbstractService
         {
             /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
             $comment = $this->reportCreator->getCommentPreparer()->getComment();
+            $resolveState = $this->autoResolve && !$comment->Report->isClosed() ? 'resolved' : '';
             $comment->bulkSet([
                 'warning_log_id' => $this->warningLog->warning_log_id,
                 'is_report' => false,
-                'state_change' => $this->autoResolve ? 'resolved' : ''
+                'state_change' => $resolveState
             ], ['forceSet' => true]);
+
+            if ($resolveState)
+            {
+                $comment->Report->report_state = $resolveState;
+            }
 
             $this->reportCreator->save();
         }
@@ -288,12 +294,13 @@ class Creator extends AbstractService
                 'state_change' => $this->autoResolve ? 'resolved' : ''
             ], ['forceSet' => true]);
 
-            $reportComment = $this->reportCommenter->save();
-
-            if ($reportComment && $reportComment->Report && $this->autoResolve)
+            if ($this->autoResolve)
             {
-                $reportComment->Report->fastUpdate('report_state', 'resolved');
+                $reportComment->Report->report_state = 'resolved';
+                $reportComment->addCascadedSave($reportComment->Report);
             }
+
+            $this->reportCommenter->save();
         }
 
         $this->db()->commit();
