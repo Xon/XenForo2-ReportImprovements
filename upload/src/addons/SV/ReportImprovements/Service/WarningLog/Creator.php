@@ -274,30 +274,31 @@ class Creator extends AbstractService
             $comment->bulkSet([
                 'warning_log_id' => $this->warningLog->warning_log_id,
                 'is_report' => false,
-                'state_change' => $resolveState
+                'state_change' => $resolveState,
             ], ['forceSet' => true]);
 
             if ($resolveState)
             {
-                $comment->Report->report_state = $resolveState;
+                $comment->Report->set('report_state', $resolveState, ['forceSet' => true]);
             }
 
             $this->reportCreator->save();
         }
         else if ($this->reportCommenter)
         {
-            /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
-            $reportComment = $this->reportCommenter->getComment();
-            $reportComment->bulkSet([
+            /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
+            $comment = $this->reportCommenter->getComment();
+            $resolveState = $this->autoResolve && !$comment->Report->isClosed() ? 'resolved' : '';
+            $comment->bulkSet([
                 'warning_log_id' => $this->warningLog->warning_log_id,
                 'is_report' => false,
-                'state_change' => $this->autoResolve ? 'resolved' : ''
+                'state_change' => $resolveState,
             ], ['forceSet' => true]);
 
-            if ($this->autoResolve)
+            if ($resolveState)
             {
-                $reportComment->Report->report_state = 'resolved';
-                $reportComment->addCascadedSave($reportComment->Report);
+                $comment->Report->set('report_state', $resolveState, ['forceSet' => true]);
+                $comment->addCascadedSave($comment->Report);
             }
 
             $this->reportCommenter->save();
