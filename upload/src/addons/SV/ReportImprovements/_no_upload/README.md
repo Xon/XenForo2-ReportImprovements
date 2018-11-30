@@ -4,6 +4,7 @@ A large collection of improvements to XenForo's reporting system.
 
 Note; when reports are sent to a forum, the warning<->report links can not be created!
 
+- Improve performance of Report Center by reducing stock XenForo N+1 query behaviour
 - Permission based access to the report center:
  - Default permissions set for groups (global/content) for groups with warn or edit basic profile permissions.
  - New Permissions:
@@ -19,6 +20,9 @@ Note; when reports are sent to a forum, the warning<->report links can not be cr
   - Report Alerts include the title of the report.
 - Links Warnings to reports.
   - Visible from the warning itself, and when issuing warnings against content.
+- Link reply bans to reports
+  - Log reply bans into report system
+  - Optional Issue a reply-ban on issuing a warning (default disabled)
 - Link Reports to Warnings.
   - Logs changes to Warnings (add/edit/delete), and associates them with a report.
 - Automatically create a report for a warning.
@@ -28,7 +32,7 @@ Note; when reports are sent to a forum, the warning<->report links can not be cr
 - Resolved Report Alerts are logged into Report Comments (as an explicit field).
 - Search report comments
 - Optional ability to search report comments by associated warning points, and warned user. (Requires Enhanced Search Improvements add-on)
-- Reverse order of report comments.
+- Reverse order of report comments (default disabled)
 - Optional auto-reject/resolve sufficiently old reports (default disabled)
-- Optional Issue a reply-ban on issuing a warning (default disabled)
 - Show content date when viewing a report
+- Show forum for post reports in report list
