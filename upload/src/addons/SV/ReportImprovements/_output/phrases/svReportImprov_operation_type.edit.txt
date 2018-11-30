@@ -1,1 +1,1 @@
-Edit
+Edit {contentType}

@@ -1,1 +1,1 @@
-Expire
+Expire {contentType}

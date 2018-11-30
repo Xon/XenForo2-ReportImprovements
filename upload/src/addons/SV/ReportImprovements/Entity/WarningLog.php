@@ -47,7 +47,26 @@ class WarningLog extends Entity
      */
     public function getOperationTypePhrase()
     {
-        return \XF::phrase('svReportImprov_operation_type.' . $this->operation_type);
+        if ($this->warning_id)
+        {
+            $contentType = \XF::phrase('warning');
+        }
+        else if ($this->reply_ban_post_id)
+        {
+            $contentType = \XF::phrase('svReportImprov_thread_reply_ban_from_post');
+        }
+        else if ($this->reply_ban_thread_id)
+        {
+            $contentType = \XF::phrase('svReportImprov_thread_reply_ban');
+        }
+        else
+        {
+            $contentType = '';
+        }
+
+        return \XF::phrase('svReportImprov_operation_type.' . $this->operation_type, [
+            'contentType' => $contentType
+        ]);
     }
 
     /**
