@@ -1,0 +1,4 @@
+{{ phrase('sv_x_liked_your_comment_in_the_report_y', {
+	'name': username_link($user, false, {'defaultname': $alert.username}),
+	'title': '<a href="' . link('reports/comment', $content.Report, {'report_comment_id':$content.report_comment_id}) . '" class="fauxBlockLink-blockLink">' . $content.Report.title . '</a>'
+}) }}

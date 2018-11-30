@@ -30,6 +30,16 @@ use XF\Mvc\Entity\Structure;
  */
 class ReportComment extends XFCP_ReportComment
 {
+    public function canView()
+    {
+        if (!$this->Report)
+        {
+            return false;
+        }
+
+        return $this->Report->canView();
+    }
+
     /**
      * @return bool
      */

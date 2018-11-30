@@ -54,6 +54,23 @@ class Report extends XFCP_Report
         }
     }
 
+    public function actionComment(ParameterBag $params)
+    {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @noinspection PhpUndefinedFieldInspection */
+        $report = $this->assertViewableReport($params->report_id);
+        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
+
+        $router = \XF::app()->router('public');
+
+        if ($reportComment->report_id !== $report->report_id)
+        {
+            $this->redirect($router->buildLink('canonical:reports/comment', $reportComment->Report, ['report_comment_id' => $reportComment->report_comment_id]));
+        }
+
+        return $this->redirect($router->buildLink('canonical:reports', $reportComment->Report) . '#report-comment-' . $reportComment->report_comment_id);
+    }
+
     /**
      * @param \XF\Entity\Report|\SV\ReportImprovements\XF\Entity\Report $report
      *
@@ -134,6 +151,9 @@ class Report extends XFCP_Report
 
     public function actionLike(ParameterBag $params)
     {
+        /** @noinspection PhpUndefinedFieldInspection */
+        $this->assertViewableReport($params->report_id);
+
         $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
         if (!$reportComment->canLike($error))
         {
