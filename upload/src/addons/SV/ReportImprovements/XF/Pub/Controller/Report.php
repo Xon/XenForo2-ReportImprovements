@@ -56,6 +56,8 @@ class Report extends XFCP_Report
 
     public function actionComment(ParameterBag $params)
     {
+        // this function is to ensure XF1.x links work
+
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         /** @noinspection PhpUndefinedFieldInspection */
         $report = $this->assertViewableReport($params->report_id);
