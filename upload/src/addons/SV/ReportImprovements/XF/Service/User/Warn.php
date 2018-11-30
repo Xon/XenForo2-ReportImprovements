@@ -39,7 +39,6 @@ class Warn extends XFCP_Warn
         {
             throw new \LogicException('Post does not have a valid thread.');
         }
-        $thread = $post->Thread;
 
         if ($resolveReport)
         {
@@ -49,7 +48,7 @@ class Warn extends XFCP_Warn
 
         $this->replyBanSvc = $this->service('XF:Thread\ReplyBan', $post->Thread, $this->user);
         $this->replyBanSvc->setExpiryDate($banLengthUnit, $banLengthValue);
-        $this->replyBanSvc->setPostIdForWarning($post->post_id, $thread->title);
+        $this->replyBanSvc->setPost($post);
         $this->replyBanSvc->setSendAlert($sendAlert);
         $this->replyBanSvc->setReason($reason);
     }

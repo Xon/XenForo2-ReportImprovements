@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Service\Thread;
 
 use SV\ReportImprovements\Globals;
+use XF\Entity\Post;
 
 /**
  * Class ReplyBan
@@ -10,17 +11,17 @@ use SV\ReportImprovements\Globals;
  * Extends \XF\Service\Thread\ReplyBan
  *
  * @package SV\ReportImprovements\XF\Service\Thread
+ *
+ * @property \SV\ReportImprovements\XF\Entity\ThreadReplyBan $replyBan
  */
 class ReplyBan extends XFCP_ReplyBan
 {
     /**
-     * @param int $postId
-     * @param string $threadTitle
+     * @param Post $post
      */
-    public function setPostIdForWarning($postId, $threadTitle)
+    public function setPost(Post $post)
     {
-        Globals::$postIdForWarningLog = $postId;
-        Globals::$threadTitleForWarningLog = $threadTitle;
+        $this->replyBan->post_id = $post->post_id;
     }
 
     /**

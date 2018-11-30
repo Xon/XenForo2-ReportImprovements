@@ -11,8 +11,12 @@ use XF\Mvc\Entity\Structure;
  *
  * @package SV\ReportImprovements\XF\Entity
  *
+ * COLUMNS
+ * @property int post_id
+ *
  * RELATIONS
  * @property \SV\ReportImprovements\XF\Entity\Report Report
+ * @property \SV\ReportImprovements\XF\Entity\Post Post
  */
 class ThreadReplyBan extends XFCP_ThreadReplyBan
 {
@@ -46,6 +50,8 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
     {
         parent::_postDelete();
 
+        //@TODO: set the post id so report comment is added for the reported post
+
         /** @var \SV\ReportImprovements\XF\Repository\ThreadReplyBan $threadReplyBanRepo */
         $threadReplyBanRepo = $this->repository('XF:ThreadReplyBan');
         $threadReplyBanRepo->logToReport($this, 'delete');
@@ -60,6 +66,8 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
     {
         $structure = parent::getStructure($structure);
 
+        $structure->columns['post_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
+
         $structure->relations['Report'] = [
             'entity' => 'XF:Report',
             'type' => self::TO_ONE,
@@ -67,6 +75,12 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
                 ['content_type', '=', 'user'],
                 ['content_id', '=', '$user_id']
             ]
+        ];
+        $structure->relations['Post'] = [
+            'entity' => 'XF:Post',
+            'type' => self::TO_ONE,
+            'conditions' => 'post_id',
+            'primary' => true
         ];
     
         return $structure;

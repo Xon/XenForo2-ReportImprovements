@@ -15,16 +15,6 @@ class Globals
     public static $expiringFromCron;
 
     /**
-     * @var null|int
-     */
-    public static $postIdForWarningLog;
-
-    /**
-     * @var null|string
-     */
-    public static $threadTitleForWarningLog;
-
-    /**
      * @var null|null
      */
     public static $resolveThreadReplyBanReport;

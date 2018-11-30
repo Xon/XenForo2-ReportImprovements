@@ -141,11 +141,7 @@ class Creator extends AbstractService
                 }
             }
 
-            if (!$this->warning->Report && $this->app->options()->sv_report_new_warnings)
-            {
-                $this->reportCreator = $this->service('XF:Report\Creator', $this->warning->content_type, $this->warning->Content);
-            }
-            else if ($this->warning->Report)
+            if ($this->warning->Report)
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $this->warning->Report);
                 if ($this->autoResolve && $this->warning->Report->report_state !== 'resolved')
@@ -153,59 +149,42 @@ class Creator extends AbstractService
                     $this->reportCommenter->setReportState('resolved');
                 }
             }
+            else if (!$this->warning->Report && $this->app->options()->sv_report_new_warnings)
+            {
+                $this->reportCreator = $this->service('XF:Report\Creator', $this->warning->content_type, $this->warning->Content);
+            }
         }
-        else if ($this->threadReplyBan)
+        else if ($threadReplyBan = $this->threadReplyBan)
         {
             $this->warningLog->warning_date = \XF::$time;
-            $report = null;
 
-            if (Globals::$postIdForWarningLog)
+            $report = $threadReplyBan->Report;
+            $content = $threadReplyBan->User;
+            $contentTitle = $threadReplyBan->User->username;
+
+            if ($post = $threadReplyBan->Post)
             {
-                /** @var \XF\Finder\Report $reportFinder */
-                $reportFinder = $this->finder('XF:Report');
-                $reportFinder->where('content_type', 'post');
-                $reportFinder->where('content_id', Globals::$postIdForWarningLog);
-                $report = $reportFinder->fetchOne();
-                if (!$report)
-                {
-                    $reportContent = $this->finder('XF:Post')
-                        ->where('post_id', Globals::$postIdForWarningLog)
-                        ->fetchOne();
-                }
-
-                $this->warningLog->content_type = 'post';
-                $this->warningLog->content_id = Globals::$postIdForWarningLog;
-                $this->warningLog->content_title = \XF::phrase('post_in_thread_x', [
-                    'title' => Globals::$threadTitleForWarningLog]
-                );
-                $this->warningLog->reply_ban_post_id = Globals::$postIdForWarningLog;
-            }
-            else
-            {
-                $report = $this->threadReplyBan->Report;
-                $reportContent = $this->threadReplyBan->User;
-
-                $this->warningLog->content_type = 'user';
-                $this->warningLog->content_id = $this->threadReplyBan->user_id;
-                $this->warningLog->content_title = $this->threadReplyBan->User->username;
+                $report = $post->Report;
+                $content = $post;
+                $contentTitle = \XF::phrase('post_in_thread_x', [
+                    'title' => $post->Thread->title
+                ]);
             }
 
-            $this->warningLog->reply_ban_thread_id = $this->threadReplyBan->thread_id;
-            $this->warningLog->user_id = $this->threadReplyBan->user_id;
-            $this->warningLog->warning_user_id = \XF::visitor()->user_id;
-            $this->warningLog->warning_definition_id = null;
-            $this->warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render();
-            $this->warningLog->notes = $this->threadReplyBan->reason;
+            $this->warningLog->bulkSet([
+                'content_type' => $content->getEntityContentType(),
+                'content_id' => $content->getExistingEntityId(),
+                'content_title' => $contentTitle,
+                'reply_ban_thread_id' => $threadReplyBan->thread_id,
+                'reply_ban_post_id' => $content instanceof \XF\Entity\Post ? $content->getEntityId() : 0,
+                'user_id' => $threadReplyBan->user_id,
+                'warning_user_id' => \XF::visitor()->user_id,
+                'warning_definition_id' => null,
+                'title' => \XF::phrase('svReportImprov_reply_banned')->render(),
+                'notes' => $threadReplyBan->reason
+            ]);
 
-            if (!$report)
-            {
-                $this->reportCreator = $this->service(
-                    'XF:Report\Creator',
-                    $reportContent->getEntityContentType(),
-                    $reportContent
-                );
-            }
-            else if ($report)
+            if ($report)
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
                 if ($this->autoResolve && $report->report_state !== 'resolved')
@@ -213,17 +192,39 @@ class Creator extends AbstractService
                     $this->reportCommenter->setReportState('resolved');
                 }
             }
+            else if (!$report)
+            {
+                $this->reportCreator = $this->service(
+                    'XF:Report\Creator',
+                    $content->getEntityContentType(),
+                    $content
+                );
+            }
         }
     }
 
     /**
      * @return array
-     * @throws \Exception
      */
     protected function _validate()
     {
+        $showErrorException = function ($errorFor, $errors)
+        {
+            if (\count($errors))
+            {
+                $error = reset($errors);
+                if ($error instanceof \XF\Phrase)
+                {
+                    $error = $error->render('raw');
+                }
+
+                throw new \RuntimeException("{$errorFor}: " . reset($error));
+            }
+        };
+
         $this->warningLog->preSave();
         $warningLogErrors = $this->warningLog->getErrors();
+
         $reportCreatorErrors = [];
         $reportCommenterErrors = [];
 
@@ -236,14 +237,11 @@ class Creator extends AbstractService
             $this->reportCommenter->validate($reportCommenterErrors);
         }
 
-        $errors = array_merge($warningLogErrors, $reportCreatorErrors, $reportCommenterErrors);
-        foreach ($errors AS $error)
-        {
-            // @TODO: show errors
-            //\XF::dumpSimple($error->render());
-        }
+        $showErrorException('Warning log', $warningLogErrors);
+        $showErrorException('Report', $reportCreatorErrors);
+        $showErrorException('Report comment', $reportCommenterErrors);
 
-        return array_merge($warningLogErrors, $reportCreatorErrors, $reportCommenterErrors);
+        return [];
     }
 
     /**
