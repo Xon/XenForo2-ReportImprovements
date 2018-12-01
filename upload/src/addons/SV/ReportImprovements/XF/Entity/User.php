@@ -2,6 +2,9 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use SV\ReportImprovements\Globals;
+use XF\Mvc\Entity\Structure;
+
 /**
  * Class User
  *

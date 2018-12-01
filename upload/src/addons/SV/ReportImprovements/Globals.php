@@ -28,4 +28,9 @@ class Globals
      * @var null|bool
      */
     public static $allowSavingReportComment;
+
+    /**
+     * @var null|bool
+     */
+    public static $returnAsIsModeratorIfCanViewReports;
 }

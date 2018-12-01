@@ -97,4 +97,55 @@ class Listener
                 return true;
         }
     }
+
+    /**
+     * @param \XF\Pub\App $app
+     */
+    public static function appPubStartEnd(\XF\Pub\App $app)
+    {
+        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        $visitor = \XF::visitor();
+        $session = $app->session();
+
+        if ($visitor->is_moderator || !$visitor->canViewReports())
+        {
+            return;
+        }
+
+        $sessionReportCounts = $session->reportCounts;
+        $registryReportCounts = $app->container('reportCounts');
+
+        if ($sessionReportCounts === null
+            || ($sessionReportCounts && ($sessionReportCounts['lastBuilt'] < $registryReportCounts['lastModified']))
+        )
+        {
+            /** @var \XF\Repository\Report $reportRepo */
+            $reportRepo = $app->repository('XF:Report');
+
+            /** @var \XF\Finder\Report $reportFinder */
+            $reportFinder = $app->finder('XF:Report');
+            $reports = $reportFinder->isActive()->fetch();
+            $reports = $reportRepo->filterViewableReports($reports);
+
+            $total = 0;
+            $assigned = 0;
+
+            foreach ($reports AS $reportId => $report)
+            {
+                $total++;
+                if ($report->assigned_user_id === $visitor->user_id)
+                {
+                    $assigned++;
+                }
+            }
+
+            $reportCounts = [
+                'total' => $total,
+                'assigned' => $assigned,
+                'lastBuilt' => $registryReportCounts['lastModified']
+            ];
+
+            $session->reportCounts = $reportCounts;
+        }
+    }
 }
