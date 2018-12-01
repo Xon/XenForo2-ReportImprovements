@@ -1,4 +1,5 @@
-{{ phrase('sv_x_liked_your_comment_in_the_report_y', {
+{{ phrase('svReportImprov_x_liked_your_comment_in_the_report_y', {
 	'name': username_link($user, false, {'defaultname': $alert.username}),
-	'title': '<a href="' . link('reports', $content.Report) . '#report-comment-' . $content.report_comment_id . '" class="fauxBlockLink-blockLink">' . $content.Report.title . '</a>'
+	'report_comment_attributes': 'href="' . link('reports', $content.Report) . '#report-comment-' . $content.report_comment_id . '" class="fauxBlockLink-blockLink"',
+	'report_title': '<a href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink">' . $content.Report.title . '</a>'
 }) }}

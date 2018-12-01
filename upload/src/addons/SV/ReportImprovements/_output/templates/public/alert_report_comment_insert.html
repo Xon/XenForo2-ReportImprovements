@@ -1,0 +1,5 @@
+{{ phrase('svReportImprov_x_commented_on_report_x', {
+	'name': username_link($user, false, {'defaultname': $alert.username}),
+	'report_params': 'href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink"',
+	'report_title': $content.Report.title
+}) }}.
