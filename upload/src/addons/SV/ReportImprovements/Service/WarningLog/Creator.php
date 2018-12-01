@@ -218,7 +218,7 @@ class Creator extends AbstractService
                     $error = $error->render('raw');
                 }
 
-                throw new \RuntimeException("{$errorFor}: " . reset($error));
+                throw new \RuntimeException("{$errorFor}: " . $error);
             }
         };
 
