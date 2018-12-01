@@ -77,13 +77,15 @@ class Notifier extends XFCP_Notifier
         }
 
         $usersWhoHaveAlreadyAlertedOnce = array_keys($this->db()->fetchAllKeyed('
-            SELECT alerted_user_id
-            FROM xf_user_alert
-            WHERE view_date = 0
-              AND content_type = ?
-              AND content_id = ?
-              AND action = ?
-        ', 'alerted_user_id', ['report', $this->comment->report_id, 'comment']));
+            SELECT user_alert.alerted_user_id
+            FROM xf_user_alert AS user_alert
+            INNER JOIN xf_report_comment AS report_comment
+              ON (report_comment.report_comment_id = user_alert.content_id)
+            WHERE user_alert.view_date = 0
+              AND user_alert.content_type = ?
+              AND report_comment.report_id = ?
+              AND user_alert.action = ?
+        ', 'alerted_user_id', ['report_comment', $this->comment->report_comment_id, 'insert']));
 
         /**
          * @var int $userId
@@ -118,8 +120,8 @@ class Notifier extends XFCP_Notifier
         {
             /** @var \XF\Repository\UserAlert $alertRepo */
             $alertRepo = $this->app->repository('XF:UserAlert');
-            if ($alertRepo->alert($user, $comment->user_id, $comment->username, 'report', $comment->report_id, 'comment', [
-                'report_comment_id' => $comment->report_comment_id
+            if ($alertRepo->alert($user, $comment->user_id, $comment->username, 'report_comment', $comment->report_comment_id, 'comment', [
+                'report_id' => $comment->report_id
             ]))
             {
                 $this->usersAlertedForInsert[$user->user_id] = true;
