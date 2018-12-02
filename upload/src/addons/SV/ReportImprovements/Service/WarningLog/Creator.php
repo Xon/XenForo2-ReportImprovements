@@ -292,7 +292,7 @@ class Creator extends AbstractService
                 'is_report' => false,
             ], ['forceSet' => true]);
 
-            if ($this->autoResolve && $comment->Report->report_state !== 'resolved' && !$comment->Report->isClosed()
+            if ($this->autoResolve && $comment->Report->report_state !== 'resolved' && !$comment->Report->isClosed())
             {
                 $comment->set('state_change', 'resolved', ['forceSet' => true]);
                 $comment->Report->set('report_state', 'resolved', ['forceSet' => true]);
