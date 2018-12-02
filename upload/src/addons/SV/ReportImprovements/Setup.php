@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements;
 
 use SV\Utils\InstallerHelper;
+use SV\Utils\InstallerSoftRequire;
 use XF\AddOn\AbstractSetup;
 use XF\AddOn\StepRunnerInstallTrait;
 use XF\AddOn\StepRunnerUninstallTrait;
@@ -393,5 +394,15 @@ class Setup extends AbstractSetup
 
 
         return $tables;
+    }
+
+    use InstallerSoftRequire;
+    /**
+     * @param array $errors
+     * @param array $warnings
+     */
+    public function checkRequirements(&$errors = [], &$warnings = [])
+    {
+        $this->checkSoftRequires($errors, $warnings);
     }
 }
