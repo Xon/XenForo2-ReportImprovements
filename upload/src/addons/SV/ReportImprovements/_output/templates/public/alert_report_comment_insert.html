@@ -1,5 +1,67 @@
-{{ phrase('svReportImprov_x_commented_on_report_x', {
-	'name': username_link($user, false, {'defaultname': $alert.username}),
-	'report_params': 'href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink"',
-	'report_title': $content.Report.title
-}) }}.
+<xf:set var="$specific_type">0</xf:set>
+
+<xf:if is="$content.state_change">
+    <xf:if is="$content.state_change == 'assigned'">
+		{{ phrase('svReportImprov_x_state_change_report_assigned', {
+			'name': username_link($user, false, {'defaultname': $alert.username}),
+			'report_params': 'href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink"',
+			'report_title': $content.Report.title
+		}) }}
+    	<xf:set var="$specific_type">1</xf:set>
+    <xf:elseif is="$content.state_change == 'open'" />
+		{{ phrase('svReportImprov_x_state_change_report_open', {
+			'name': username_link($user, false, {'defaultname': $alert.username}),
+			'report_params': 'href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink"',
+			'report_title': $content.Report.title
+		}) }}
+    	<xf:set var="$specific_type">1</xf:set>
+    <xf:elseif is="$content.state_change == 'resolved'" />
+		{{ phrase('svReportImprov_x_state_change_report_resolved', {
+			'name': username_link($user, false, {'defaultname': $alert.username}),
+			'report_params': 'href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink"',
+			'report_title': $content.Report.title
+		}) }}
+ 	   <xf:set var="$specific_type">1</xf:set>
+    <xf:elseif is="$content.state_change == 'rejected'" />
+		{{ phrase('svReportImprov_x_state_change_report_rejected', {
+			'name': username_link($user, false, {'defaultname': $alert.username}),
+			'report_params': 'href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink"',
+			'report_title': $content.Report.title
+		}) }}
+	    <xf:set var="$specific_type">1</xf:set>
+    </xf:if>
+</xf:if>
+
+<xf:if is="!$specific_type and $content.WarningLog.operation_type === 'acknowledge'">
+	{{ phrase('svReportImprov_x_acknowledged_a_warning', {
+		'name': username_link($user, false, {'defaultname': $alert.username}),
+		'report_params': 'href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink"',
+		'report_title': $content.Report.title
+	}) }}
+    <xf:set var="$specific_type">1</xf:set>
+</xf:if>
+
+<xf:if is="!$specific_type && $content.WarningLog">
+	{{ phrase('svReportImprov_x_issued_a_warning_on_report', {
+		'name': username_link($user, false, {'defaultname': $alert.username}),
+		'report_params': 'href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink"',
+		'report_title': $content.Report.title
+	}) }}
+    <xf:set var="$specific_type">1</xf:set>
+</xf:if>
+
+<xf:if is="!$specific_type">
+    <xf:if is="$content.is_report">
+		{{ phrase('svReportImprov_x_reported_on_report', {
+			'name': username_link($user, false, {'defaultname': $alert.username}),
+			'report_params': 'href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink"',
+			'report_title': $content.Report.title
+		}) }}
+    <xf:else />
+		{{ phrase('svReportImprov_x_commented_on_report', {
+			'name': username_link($user, false, {'defaultname': $alert.username}),
+			'report_params': 'href="' . link('reports', $content.Report) . '" class="fauxBlockLink-blockLink"',
+			'report_title': $content.Report.title
+		}) }}
+    </xf:if>
+</xf:if>

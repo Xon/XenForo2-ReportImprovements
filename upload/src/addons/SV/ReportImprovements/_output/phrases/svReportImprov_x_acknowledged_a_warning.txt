@@ -1,0 +1,1 @@
+{name} acknowledged a warning issued on the <a {report_params}>{report_title}</a> report.

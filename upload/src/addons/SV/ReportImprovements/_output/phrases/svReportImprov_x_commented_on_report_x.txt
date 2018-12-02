@@ -1,1 +1,0 @@
-{name} commented on <a {report_params}>{report_title}</a> report.

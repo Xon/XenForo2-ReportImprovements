@@ -32,10 +32,18 @@ class Warning extends XFCP_Warning
                 $type = 'expire';
             }
 
-
             if (Globals::$expiringFromCron === true && $type === 'expire' && !$this->app()->options()->sv_ri_log_to_report_natural_warning_expire)
             {
                 return;
+            }
+
+            if ($type === 'edit')
+            {
+                $newValues = $this->getNewValues();
+                if (isset($newValues['sv_acknowledgement']) || isset($newValues['sv_acknowledgement_date']))
+                {
+                    return;
+                }
             }
 
             /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
