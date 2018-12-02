@@ -70,7 +70,7 @@ class Notifier extends XFCP_Notifier
     {
         $userIds = $this->getNotifyCommenterUserIds();
 
-        $users = $this->app->em()->findByIds('XF:User', $userIds, ['Profile', 'Option']);
+        $users = $this->app->em()->findByIds('XF:User', $userIds, ['Profile', 'Option', 'User.PermissionCombination']);
         if (!$users->count())
         {
             return [];

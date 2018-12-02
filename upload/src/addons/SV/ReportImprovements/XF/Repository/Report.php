@@ -28,7 +28,7 @@ class Report extends XFCP_Report
         /** @var \XF\Repository\Moderator $moderatorRepo */
         $moderatorRepo = $this->repository('XF:Moderator');
 
-        $moderators = $moderatorRepo->findModeratorsForList()->fetch();
+        $moderators = $moderatorRepo->findModeratorsForList()->with('User.PermissionCombination')->fetch();
 
         if ($moderators->count())
         {
