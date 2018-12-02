@@ -18,44 +18,45 @@ use XF\Mvc\Entity\Structure;
 class Warning extends XFCP_Warning
 {
     /**
+     * @return string
+     */
+    protected function getSvLogOperationType()
+    {
+        $type = $this->isUpdate() ? 'edit' : 'new';
+        if ($type === 'edit' && !$this->getExistingValue('is_expired') && $this->is_expired)
+        {
+            $type = 'expire';
+        }
+
+        if (Globals::$expiringFromCron === true && $type === 'expire' && !$this->app()->options()->sv_ri_log_to_report_natural_warning_expire)
+        {
+            return null;
+        }
+
+        return $type;
+    }
+
+    /**
      * @throws \Exception
      */
     protected function _postSave()
     {
         parent::_postSave();
 
-        if ($this->isUpdate())
+        if (!$this->getOption('svLogWarningChanges'))
         {
-            $type = 'edit';
-            if (!$this->getExistingValue('is_expired') && $this->is_expired)
-            {
-                $type = 'expire';
-            }
-
-            if (Globals::$expiringFromCron === true && $type === 'expire' && !$this->app()->options()->sv_ri_log_to_report_natural_warning_expire)
-            {
-                return;
-            }
-
-            if ($type === 'edit')
-            {
-                $newValues = $this->getNewValues();
-                if (isset($newValues['sv_acknowledgement']) || isset($newValues['sv_acknowledgement_date']))
-                {
-                    return;
-                }
-            }
-
-            /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
-            $warningRepo = $this->repository('XF:Warning');
-            $warningRepo->logOperation($this, $type);
+            return;
         }
-        else if ($this->isInsert())
+
+        $type = $this->getSvLogOperationType();
+        if (!$type)
         {
-            /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
-            $warningRepo = $this->repository('XF:Warning');
-            $warningRepo->logOperation($this, 'new');
+            return;
         }
+
+        /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
+        $warningRepo = $this->repository('XF:Warning');
+        $warningRepo->logOperation($this, $type);
     }
 
     /**
@@ -87,6 +88,8 @@ class Warning extends XFCP_Warning
                 ['content_id', '=', '$content_id']
             ]
         ];
+
+        $structure->options['svLogWarningChanges'] = true;
 
         return $structure;
     }
