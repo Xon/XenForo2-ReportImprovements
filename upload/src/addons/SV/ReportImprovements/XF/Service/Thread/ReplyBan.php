@@ -7,7 +7,7 @@ use XF\Entity\Post;
 
 /**
  * Class ReplyBan
- * 
+ *
  * Extends \XF\Service\Thread\ReplyBan
  *
  * @package SV\ReportImprovements\XF\Service\Thread
@@ -29,13 +29,15 @@ class ReplyBan extends XFCP_ReplyBan
      */
     protected function _validate()
     {
+        $oldVal = Globals::$allowSavingReportComment;
+        Globals::$allowSavingReportComment = true;
         try
         {
             return parent::_validate();
         }
         finally
         {
-            Globals::$allowSavingReportComment = true;
+            Globals::$allowSavingReportComment = $oldVal;
         }
     }
 
@@ -44,13 +46,15 @@ class ReplyBan extends XFCP_ReplyBan
      */
     protected function _save()
     {
+        $oldVal = Globals::$allowSavingReportComment;
+        Globals::$allowSavingReportComment = true;
         try
         {
             return parent::_save();
         }
         finally
         {
-            Globals::$allowSavingReportComment = true;
+            Globals::$allowSavingReportComment = $oldVal;
         }
     }
 }
