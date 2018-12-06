@@ -6,17 +6,17 @@
 			<li class="inputChoices-choice">
 				<div>{{ phrase('ban_length:') }}</div>
 				<xf:radio name="ban_length">
-					<xf:option value="" label="{{ phrase('none') }}" selected="true" />
-					<xf:option value="permanent" label="{{ phrase('permanent') }}" />
-					<xf:option value="temporary" label="{{ phrase('temporary:') }}">
+					<xf:option value="" label="{{ phrase('none') }}" selected="{{$xf.options.sv_replyban_on_warning === 'none' }}" />
+					<xf:option value="permanent" label="{{ phrase('permanent') }}"  selected="{{$xf.options.sv_replyban_on_warning === 'permanent' }}"/>
+					<xf:option value="temporary" label="{{ phrase('temporary:') }}"  selected="{{$xf.options.sv_replyban_on_warning === 'temporary' }}">
 
 						<xf:dependent>
 							<div class="inputGroup inputGroup--auto">
-								<xf:textbox name="ban_length_value" value="7" />
+								<xf:textbox name="ban_length_value" value="{{$xf.options.sv_replyban_on_warning_len.value}}" />
 								<span class="inputGroup-splitter"></span>
-								<xf:select name="ban_length_unit">
+								<xf:select name="ban_length_unit" value="{{$xf.options.sv_replyban_on_warning_len.unit}}">
 									<xf:option value="hours">{{ phrase('hours') }}</xf:option>
-									<xf:option value="days" selected="true">{{ phrase('days') }}</xf:option>
+									<xf:option value="days">{{ phrase('days') }}</xf:option>
 									<xf:option value="weeks">{{ phrase('weeks') }}</xf:option>
 									<xf:option value="months">{{ phrase('months') }}</xf:option>
 								</xf:select>
@@ -34,7 +34,7 @@
 
 			<li class="inputChoices-choice">
 				<xf:checkbox>
-					<xf:option name="reply_ban_send_alert" checked="1">{{ phrase('notify_user_of_this_action') }}</xf:option>
+					<xf:option name="reply_ban_send_alert" checked="{{$xf.options.sv_replyban_alert_default ? '1' : ''}}">{{ phrase('notify_user_of_this_action') }}</xf:option>
 				</xf:checkbox>
 			</li>
 		</ul>
