@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Hides comment actioning if nothing can be done",
+    "execution_order": 15,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(</div>\\s*?)([\\t ]*<div class=\"js-handleToggle.*?submitrow.*?</div>)(.*?</xf:form>)#si",
+    "replace": "$1<xf:if is=\"$report.canComment() || $report.canAssign() || ($report.assigned_user_id === $xf.visitor.user_id)\">\n$2\n</xf:if>\n$3"
+}
