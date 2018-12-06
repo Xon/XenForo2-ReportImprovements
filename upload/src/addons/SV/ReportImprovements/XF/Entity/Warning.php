@@ -54,25 +54,21 @@ class Warning extends XFCP_Warning
     {
         parent::_postSave();
 
+        if ($this->getOption('svLogWarningChanges'))
+        {
+            $type = $this->getSvLogOperationType();
+            if ($type)
+            {
+                /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
+                $warningRepo = $this->repository('XF:Warning');
+                $warningRepo->logOperation($this, $type);
+            }
+        }
+
         if ($this->svReplyBan)
         {
             $this->svReplyBan->save();
         }
-
-        if (!$this->getOption('svLogWarningChanges'))
-        {
-            return;
-        }
-
-        $type = $this->getSvLogOperationType();
-        if (!$type)
-        {
-            return;
-        }
-
-        /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
-        $warningRepo = $this->repository('XF:Warning');
-        $warningRepo->logOperation($this, $type);
     }
 
     /**
@@ -82,9 +78,12 @@ class Warning extends XFCP_Warning
     {
         parent::_postDelete();
 
-        /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
-        $warningRepo = $this->repository('XF:Warning');
-        $warningRepo->logOperation($this, 'delete');
+        if ($this->getOption('svLogWarningChanges'))
+        {
+            /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
+            $warningRepo = $this->repository('XF:Warning');
+            $warningRepo->logOperation($this, 'delete');
+        }
     }
 
     /**

@@ -6,7 +6,7 @@ use XF\Mvc\Entity\Structure;
 
 /**
  * Class ThreadReplyBan
- * 
+ *
  * Extends \XF\Entity\ThreadReplyBan
  *
  * @package SV\ReportImprovements\XF\Entity
@@ -24,25 +24,28 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
     {
         parent::_postSave();
 
-        $type = null;
-        if ($this->isInsert())
+        if ($this->getOption('svLogWarningChanges'))
         {
-            $type = 'new';
-        }
-        else if ($this->isUpdate() && $this->hasChanges())
-        {
-            $type = 'edit';
-            if (\XF::$time >= $this->expiry_date)
+            $type = null;
+            if ($this->isInsert())
             {
-                $type = 'expire';
+                $type = 'new';
             }
-        }
+            else if ($this->isUpdate() && $this->hasChanges())
+            {
+                $type = 'edit';
+                if (\XF::$time >= $this->expiry_date)
+                {
+                    $type = 'expire';
+                }
+            }
 
-        if ($type)
-        {
-            /** @var \SV\ReportImprovements\XF\Repository\ThreadReplyBan $threadReplyBanRepo */
-            $threadReplyBanRepo = $this->repository('XF:ThreadReplyBan');
-            $threadReplyBanRepo->logToReport($this, $type);
+            if ($type)
+            {
+                /** @var \SV\ReportImprovements\XF\Repository\ThreadReplyBan $threadReplyBanRepo */
+                $threadReplyBanRepo = $this->repository('XF:ThreadReplyBan');
+                $threadReplyBanRepo->logToReport($this, $type);
+            }
         }
     }
 
@@ -50,11 +53,18 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
     {
         parent::_postDelete();
 
-        //@TODO: set the post id so report comment is added for the reported post
+        if ($this->getOption('svLogWarningChanges'))
+        {
+            $type = 'delete';
+            if (\XF::$time >= $this->expiry_date)
+            {
+                $type = 'expire';
+            }
 
-        /** @var \SV\ReportImprovements\XF\Repository\ThreadReplyBan $threadReplyBanRepo */
-        $threadReplyBanRepo = $this->repository('XF:ThreadReplyBan');
-        $threadReplyBanRepo->logToReport($this, 'delete');
+            /** @var \SV\ReportImprovements\XF\Repository\ThreadReplyBan $threadReplyBanRepo */
+            $threadReplyBanRepo = $this->repository('XF:ThreadReplyBan');
+            $threadReplyBanRepo->logToReport($this, $type);
+        }
     }
 
     /**
@@ -82,7 +92,9 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
             'conditions' => 'post_id',
             'primary' => true
         ];
-    
+
+        $structure->options['svLogWarningChanges'] = true;
+
         return $structure;
     }
 }
