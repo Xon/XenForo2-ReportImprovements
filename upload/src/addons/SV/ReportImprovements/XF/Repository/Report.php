@@ -122,11 +122,11 @@ class Report extends XFCP_Report
     /**
      * @param Entity|\XF\Entity\Report|\XF\Entity\ReportComment $entity
      *
-     * @return ArrayCollection
+     * @return int[]
      */
-    public function findUsersToAlertForSvReportImprov(Entity $entity)
+    public function findUserIdsToAlertForSvReportImprov(Entity $entity)
     {
-        $users = [];
+        $userIds = [];
 
         if ($entity instanceof \XF\Entity\Report)
         {
@@ -138,14 +138,13 @@ class Report extends XFCP_Report
                     /** @var \XF\Entity\Moderator $moderator */
                     foreach ($moderators AS $moderator)
                     {
-                        $users[$moderator->user_id] = $moderator->User;
+                        $userIds[] = $moderator->user_id;
                     }
                 }
             }
         }
         else if ($entity instanceof \XF\Entity\ReportComment)
         {
-            $userIds = [];
             if ($this->options()->sv_report_alert_mode !== 'always_alert')
             {
                 $db = $this->db();
@@ -155,19 +154,10 @@ class Report extends XFCP_Report
                     WHERE report_id = ?
                       AND user_id <> ?
                 ', [$entity->report_id, $entity->user_id]);
-
-                $userIds = array_column($userIds, 'user_id');
-            }
-
-            if (\count($userIds))
-            {
-                $users = $this->finder('XF:User')
-                    ->where('user_id', $userIds)
-                    ->fetch();
             }
         }
 
-        return new ArrayCollection($users);
+        return $userIds ?: [];
     }
 
 	protected $userReportCountCache = null;

@@ -44,8 +44,7 @@ class Commenter extends XFCP_Commenter
 
         /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
         $reportRepo = $this->repository('XF:Report');
-        $usersToAlert = $reportRepo->findUsersToAlertForSvReportImprov($comment);
-        $userIdsToAlert = $usersToAlert->keys();
+        $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($comment);
 
         /** @var \SV\ReportImprovements\XF\Service\Report\Notifier $notifier */
         $notifier = $this->service('XF:Report\Notifier', $this->report, $comment);

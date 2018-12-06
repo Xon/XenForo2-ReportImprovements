@@ -70,7 +70,7 @@ class Notifier extends XFCP_Notifier
     {
         $userIds = $this->getNotifyCommenterUserIds();
 
-        $users = $this->app->em()->findByIds('XF:User', $userIds, ['Profile', 'Option', 'User.PermissionCombination']);
+        $users = $this->app->em()->findByIds('XF:User', $userIds, ['Profile', 'Option', 'PermissionCombination']);
         if (!$users->count())
         {
             return [];
@@ -120,7 +120,7 @@ class Notifier extends XFCP_Notifier
         {
             /** @var \XF\Repository\UserAlert $alertRepo */
             $alertRepo = $this->app->repository('XF:UserAlert');
-            if ($alertRepo->alert($user, $comment->user_id, $comment->username, 'report_comment', $comment->report_comment_id, 'comment', [
+            if ($alertRepo->alert($user, $comment->user_id, $comment->username, 'report_comment', $comment->report_comment_id, 'insert', [
                 'report_id' => $comment->report_id
             ]))
             {
