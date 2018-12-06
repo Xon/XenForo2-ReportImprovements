@@ -41,6 +41,36 @@ class ReportComment extends XFCP_ReportComment
     }
 
     /**
+     * @param null $error
+     * @return bool
+     */
+    public function canLike(&$error = null)
+    {
+        $visitor = \XF::visitor();
+        if (!$visitor->user_id)
+        {
+            return false;
+        }
+
+        if ($this->user_id === $visitor->user_id)
+        {
+            $error = \XF::phraseDeferred('liking_own_content_cheating');
+
+            return false;
+        }
+
+        return $visitor->hasPermission('general', 'reportLike');
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSaveableChanges()
+    {
+        return parent::hasSaveableChanges() || $this->warning_log_id || Globals::$allowSavingReportComment;
+    }
+
+    /**
      * @return bool
      */
     public function isLiked()
@@ -79,53 +109,8 @@ class ReportComment extends XFCP_ReportComment
 
         /** @var \XF\Repository\User $userRepo */
         $userRepo = $this->repository('XF:User');
+
         return $userRepo->getGuestUser($this->ViewableUsername);
-    }
-
-    /**
-     * @param Structure $structure
-     *
-     * @return Structure
-     */
-    public static function getStructure(Structure $structure)
-    {
-        $structure = parent::getStructure($structure);
-
-        $structure->contentType = 'report_comment';
-
-        $structure->columns['warning_log_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
-        $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => false];
-        $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => true];
-        $structure->columns['likes'] = ['type' => self::UINT, 'forced' => true, 'default' => 0];
-        $structure->columns['like_users'] = ['type' => self::SERIALIZED_ARRAY, 'default' => []];
-
-        $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
-        $structure->behaviors['XF:Indexable'] = [
-            'checkForUpdates' => ['message', 'user_id', 'report_id', 'comment_date', 'state_change', 'is_report']
-        ];
-        $structure->getters['ViewableUsername'] = true;
-        $structure->getters['ViewableUser'] = true;
-        $structure->relations['Likes'] = [
-            'entity' => 'XF:LikedContent',
-            'type' => self::TO_MANY,
-            'conditions' => [
-                ['content_type', '=', 'report_comment'],
-                ['content_id', '=', '$report_comment_id']
-            ],
-            'key' => 'like_user_id',
-            'order' => 'like_date'
-        ];
-        $structure->relations['WarningLog'] = [
-            'entity' => 'SV\ReportImprovements:WarningLog',
-            'type' => self::TO_ONE,
-            'conditions' => 'warning_log_id',
-            'primary' => true
-        ];
-
-        $structure->defaultWith[] = 'WarningLog';
-        $structure->defaultWith[] = 'WarningLog.Warning';
-
-        return $structure;
     }
 
     protected function _postSave()
@@ -158,32 +143,47 @@ class ReportComment extends XFCP_ReportComment
     }
 
     /**
-     * @param null $error
-     *
-     * @return bool
+     * @param Structure $structure
+     * @return Structure
      */
-    public function canLike(&$error = null)
+    public static function getStructure(Structure $structure)
     {
-        $visitor = \XF::visitor();
-        if (!$visitor->user_id)
-        {
-            return false;
-        }
+        $structure = parent::getStructure($structure);
 
-        if ($this->user_id === $visitor->user_id)
-        {
-            $error = \XF::phraseDeferred('liking_own_content_cheating');
-            return false;
-        }
+        $structure->contentType = 'report_comment';
 
-        return $visitor->hasPermission('general', 'reportLike');
-    }
+        $structure->columns['warning_log_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
+        $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => false];
+        $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => true];
+        $structure->columns['likes'] = ['type' => self::UINT, 'forced' => true, 'default' => 0];
+        $structure->columns['like_users'] = ['type' => self::SERIALIZED_ARRAY, 'default' => []];
 
-    /**
-     * @return bool
-     */
-    public function hasSaveableChanges()
-    {
-        return parent::hasSaveableChanges() || $this->warning_log_id || Globals::$allowSavingReportComment;
+        $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
+        $structure->behaviors['XF:Indexable'] = [
+            'checkForUpdates' => ['message', 'user_id', 'report_id', 'comment_date', 'state_change', 'is_report']
+        ];
+        $structure->getters['ViewableUsername'] = true;
+        $structure->getters['ViewableUser'] = true;
+        $structure->relations['Likes'] = [
+            'entity'     => 'XF:LikedContent',
+            'type'       => self::TO_MANY,
+            'conditions' => [
+                ['content_type', '=', 'report_comment'],
+                ['content_id', '=', '$report_comment_id']
+            ],
+            'key'        => 'like_user_id',
+            'order'      => 'like_date'
+        ];
+        $structure->relations['WarningLog'] = [
+            'entity'     => 'SV\ReportImprovements:WarningLog',
+            'type'       => self::TO_ONE,
+            'conditions' => 'warning_log_id',
+            'primary'    => true
+        ];
+
+        $structure->defaultWith[] = 'WarningLog';
+        $structure->defaultWith[] = 'WarningLog.Warning';
+
+        return $structure;
     }
 }
