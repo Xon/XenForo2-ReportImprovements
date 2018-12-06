@@ -24,12 +24,8 @@ use XF\Mvc\Entity\Structure;
  * @property int expiry_date
  * @property int is_expired
  * @property string extra_user_group_ids
- * @property string sv_acknowledgement
- * @property int sv_acknowledgement_date
- * @property string sv_user_note
  * @property int reply_ban_thread_id
  * @property int reply_ban_post_id
- * @property int sv_suppress_notices
  *
  * GETTERS
  * @property \XF\Entity\ThreadReplyBan ReplyBan
@@ -133,11 +129,6 @@ class WarningLog extends Entity
             ],
             'reply_ban_thread_id'     => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'reply_ban_post_id'       => ['type' => self::UINT, 'default' => null, 'nullable' => true],
-
-            'sv_acknowledgement'      => ['type' => self::STR, 'allowedValues' => ['not_required', 'pending', 'completed'], 'default' => 'not_required'],
-            'sv_acknowledgement_date' => ['type' => self::UINT, 'default' => 0],
-            'sv_user_note'            => ['type' => self::STR, 'maxLength' => 10000, 'default' => ''],
-            'sv_suppress_notices'     => ['type' => self::UINT, 'maxLength' => 255, 'default' => 1],
         ];
         $structure->relations = [
             'Warning' => [

@@ -370,11 +370,6 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'reply_ban_thread_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'reply_ban_post_id', 'int')->nullable(true)->setDefault(null);
 
-            $this->addOrChangeColumn($table, 'sv_acknowledgement', 'enum')->values(['not_required', 'pending', 'completed'])->setDefault('not_required');
-            $this->addOrChangeColumn($table, 'sv_acknowledgement_date', 'int')->setDefault(0);
-            $this->addOrChangeColumn($table, 'sv_user_note', 'varchar', 10000)->setDefault('');
-            $this->addOrChangeColumn($table, 'sv_suppress_notices', 'int')->setDefault(1);
-
             $table->addKey('warning_id');
             $table->addKey(['content_type','content_id'], 'content_type_id');
             $table->addKey(['user_id','warning_date'], 'user_id_date');
