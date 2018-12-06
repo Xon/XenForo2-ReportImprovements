@@ -171,18 +171,18 @@ class Creator extends AbstractService
                 ]);
             }
 
-            $this->warningLog->bulkSet([
-                'content_type' => $content->getEntityContentType(),
-                'content_id' => $content->getExistingEntityId(),
-                'content_title' => $contentTitle,
-                'reply_ban_thread_id' => $threadReplyBan->thread_id,
-                'reply_ban_post_id' => $content instanceof \XF\Entity\Post ? $content->getEntityId() : 0,
-                'user_id' => $threadReplyBan->user_id,
-                'warning_user_id' => \XF::visitor()->user_id,
-                'warning_definition_id' => null,
-                'title' => \XF::phrase('svReportImprov_reply_banned')->render(),
-                'notes' => $threadReplyBan->reason
-            ]);
+            $this->warningLog->content_type = $content->getEntityContentType();
+            $this->warningLog->content_id = $content->getExistingEntityId();
+            $this->warningLog->content_title = $contentTitle;
+            $this->warningLog->expiry_date = $threadReplyBan->expiry_date;
+            $this->warningLog->is_expired = $threadReplyBan->expiry_date > \XF::$time;
+            $this->warningLog->reply_ban_thread_id = $threadReplyBan->thread_id;
+            $this->warningLog->reply_ban_post_id = $content instanceof \XF\Entity\Post ? $content->getEntityId() : 0;
+            $this->warningLog->user_id = $threadReplyBan->user_id;
+            $this->warningLog->warning_user_id = \XF::visitor()->user_id;
+            $this->warningLog->warning_definition_id = null;
+            $this->warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render();
+            $this->warningLog->notes = $threadReplyBan->reason;
 
             if ($report)
             {
