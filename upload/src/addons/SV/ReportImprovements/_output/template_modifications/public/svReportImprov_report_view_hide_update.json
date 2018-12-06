@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<xf:if is=\"!\\$report.isClosed\\(\\).*?\">)(.*?)(<\\/xf:if>)#si",
-    "replace": "$1\n<xf:if is=\"$report.canUpdate()\">\n\t$2\n<xf:elseif is=\"$report.assigned_user_id === 0 || ($report.assigned_user_id === $xf.visitor.user_id)\" />\n\t<xf:checkboxrow>\n\t\t<xf:option name=\"self_assign_unassign\" label=\"{{ $report.report_state == 'assigned' ? phrase('unassign') : phrase('svReportImprov_assign_to_self') }}\" />\n\t</xf:checkboxrow>\n</xf:if>\n$3"
+    "replace": "$1\n<xf:if is=\"$report.canUpdate()\">\n\t$2\n<xf:elseif is=\"($report.canAssign() && $report.assigned_user_id === 0) || ($report.assigned_user_id === $xf.visitor.user_id)\" />\n\t<xf:checkboxrow>\n\t\t<xf:option name=\"self_assign_unassign\" label=\"{{ $report.report_state == 'assigned' ? phrase('unassign') : phrase('svReportImprov_assign_to_self') }}\" />\n\t</xf:checkboxrow>\n</xf:if>\n$3"
 }
