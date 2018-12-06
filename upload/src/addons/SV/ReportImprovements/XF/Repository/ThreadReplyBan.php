@@ -6,7 +6,7 @@ use SV\ReportImprovements\Globals;
 
 /**
  * Class ThreadReplyBan
- * 
+ *
  * Extends \XF\Repository\ThreadReplyBan
  *
  * @package SV\ReportImprovements\XF\Repository
@@ -22,7 +22,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
         /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
         $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $threadReplyBan, $type);
         $post = $threadReplyBan->Post;
-        if ($post && $post->Report && $post->Report->report_state !== 'resolved')
+        if ($post && $post->Report && !$post->Report->isClosed())
         {
             $warningLogCreator->setAutoResolve(Globals::$resolveThreadReplyBanReport);
         }

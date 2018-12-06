@@ -242,6 +242,16 @@ class Creator extends AbstractService
     }
 
     /**
+     * @param \XF\Entity\Report $report
+     * @return bool
+     */
+    protected function wasClosed(\XF\Entity\Report $report)
+    {
+        $reportState = $report->getPreviousValue('report_state');
+        return $reportState === 'resolved' || $reportState === 'rejected';
+    }
+
+    /**
      * @return WarningLog
      * @throws \XF\PrintableException
      * @throws \Exception
@@ -256,7 +266,7 @@ class Creator extends AbstractService
             /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
             $comment = $this->reportCreator->getCommentPreparer()->getComment();
             $report = $this->reportCreator->getReport();
-            $resolveState = $this->autoResolve && $report->report_state !== 'resolved' && !$report->isClosed() ? 'resolved' : '';
+            $resolveState = $this->autoResolve && !$this->wasClosed($report) ? 'resolved' : '';
             $comment->bulkSet([
                 'warning_log_id' => $this->warningLog->warning_log_id,
                 'is_report' => false,
@@ -274,21 +284,23 @@ class Creator extends AbstractService
         {
             /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
             $comment = $this->reportCommenter->getComment();
+            $report = $comment->Report;
 
             $comment->bulkSet([
                 'warning_log_id' => $this->warningLog->warning_log_id,
                 'is_report' => false,
             ], ['forceSet' => true]);
 
-            if ($this->autoResolve && $comment->Report->report_state !== 'resolved' && !$comment->Report->isClosed())
+            if ($this->autoResolve && !$this->wasClosed($report))
             {
                 $comment->set('state_change', 'resolved', ['forceSet' => true]);
-                $comment->Report->set('report_state', 'resolved', ['forceSet' => true]);
-                $comment->addCascadedSave($comment->Report);
+                $report->set('report_state', 'resolved', ['forceSet' => true]);
+                $comment->addCascadedSave($report);
             }
             else
             {
                 $comment->set('state_change', '', ['forceSet' => true]);
+                $report->set('report_state', $report->getPreviousValue('report_state'), ['forceSet' => true]);
             }
 
             $this->reportCommenter->save();
