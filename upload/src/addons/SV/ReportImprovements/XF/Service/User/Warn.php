@@ -75,8 +75,10 @@ class Warn extends XFCP_Warn
     {
         if ($this->replyBanSvc)
         {
+            /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
+            $warning = $this->warning;
             // ensure the reply-ban is saved transactionally
-            $this->warning->addCascadedSave($this->replyBanSvc->getReplyBan());
+            $warning->setSvReplyBan($this->replyBanSvc->getReplyBan());
         }
 
         $warning = parent::_save();

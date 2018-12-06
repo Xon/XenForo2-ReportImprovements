@@ -36,12 +36,28 @@ class Warning extends XFCP_Warning
         return $type;
     }
 
+    /** @var ThreadReplyBan */
+    protected $svReplyBan = null;
+
+    /**
+     * @param ThreadReplyBan $svReplyBan
+     */
+    public function setSvReplyBan(ThreadReplyBan $svReplyBan)
+    {
+        $this->svReplyBan = $svReplyBan;
+    }
+
     /**
      * @throws \Exception
      */
     protected function _postSave()
     {
         parent::_postSave();
+
+        if ($this->svReplyBan)
+        {
+            $this->svReplyBan->save();
+        }
 
         if (!$this->getOption('svLogWarningChanges'))
         {
