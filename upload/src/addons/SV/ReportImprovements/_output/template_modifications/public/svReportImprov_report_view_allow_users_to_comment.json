@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "{{ !$assignedToOther ? ' is-active' : '' }}",
-    "replace": "is-active"
+    "replace": " is-active"
 }
