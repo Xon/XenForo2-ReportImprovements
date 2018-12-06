@@ -27,13 +27,13 @@
 			</li>
 
 			<li class="inputChoices-choice">
-				<div>{{ phrase('reason:') }}:</div>
+				<div>{{ phrase('reason:') }}</div>
 				<xf:textbox name="reply_ban_reason" maxlength="{{ max_length('XF:ThreadReplyBan', 'reason') }}" />
 				<dfn class="inputChoices-explain">{{ phrase('this_will_be_shown_to_user_if_you_choose_to_notify_them') }}</dfn>
 			</li>
 
 			<li class="inputChoices-choice">
-				<div>{{ phrase('ban_length') }}:</div>
+				<div>{{ phrase('ban_length:') }}</div>
 				<xf:checkbox>
 					<xf:option name="reply_ban_send_alert">{{ phrase('notify_user_of_this_action') }}</xf:option>
 				</xf:checkbox>
