@@ -144,10 +144,6 @@ class Creator extends AbstractService
             if ($this->warning->Report)
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $this->warning->Report);
-                if ($this->autoResolve && $this->warning->Report->report_state !== 'resolved')
-                {
-                    $this->reportCommenter->setReportState('resolved');
-                }
             }
             else if (!$this->warning->Report && $this->app->options()->sv_report_new_warnings)
             {
@@ -187,18 +183,10 @@ class Creator extends AbstractService
             if ($report)
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
-                if ($this->autoResolve && $report->report_state !== 'resolved')
-                {
-                    $this->reportCommenter->setReportState('resolved');
-                }
             }
             else if (!$report)
             {
-                $this->reportCreator = $this->service(
-                    'XF:Report\Creator',
-                    $content->getEntityContentType(),
-                    $content
-                );
+                $this->reportCreator = $this->service('XF:Report\Creator', $content->getEntityContentType(), $content);
             }
         }
     }
@@ -297,6 +285,10 @@ class Creator extends AbstractService
                 $comment->set('state_change', 'resolved', ['forceSet' => true]);
                 $comment->Report->set('report_state', 'resolved', ['forceSet' => true]);
                 $comment->addCascadedSave($comment->Report);
+            }
+            else
+            {
+                $comment->set('state_change', '', ['forceSet' => true]);
             }
 
             $this->reportCommenter->save();
