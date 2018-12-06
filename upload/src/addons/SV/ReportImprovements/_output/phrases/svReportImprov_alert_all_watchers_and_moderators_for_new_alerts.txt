@@ -1,1 +1,1 @@
-Alert all watchers and moderators for new alerts
+Alert all watchers and moderators for new reports and report comments
