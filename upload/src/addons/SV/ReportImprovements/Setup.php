@@ -361,6 +361,10 @@ class Setup extends AbstractSetup
     {
         $tables = [];
 
+        $tables['xf_thread_reply_ban'] = function (Alter $table) {
+            $this->addOrChangeColumn($table, 'post_id', 'int')->nullable(true)->setDefault(null);
+        };
+
         $tables['xf_report'] = function (Alter $table) {
             $this->addOrChangeColumn($table, 'last_modified_id', 'int')->setDefault(0);
         };
@@ -383,6 +387,10 @@ class Setup extends AbstractSetup
     protected function getRemoveAlterTables()
     {
         $tables = [];
+
+        $tables['xf_thread_reply_ban'] = function (Alter $table) {
+            $table->dropColumns(['post_id']);
+        };
 
         $tables['xf_report'] = function (Alter $table) {
             $table->dropColumns(['last_modified_id']);
