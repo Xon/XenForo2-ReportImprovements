@@ -114,6 +114,36 @@ class Setup extends AbstractSetup
         ');
     }
 
+    public function upgrade2000002Step4()
+    {
+        /** @noinspection SqlResolve */
+        $this->db()->query('
+          update xf_sv_warning_log
+          set points = null, warning_definition_id = null
+          where reply_ban_thread_id <> 0 and points = 0
+        ');
+    }
+
+    public function upgrade2000002Step5()
+    {
+        /** @noinspection SqlResolve */
+        $this->db()->query('
+          update xf_sv_warning_log
+          set reply_ban_thread_id = null
+          where reply_ban_thread_id = 0
+        ');
+    }
+
+    public function upgrade2000002Step6()
+    {
+        /** @noinspection SqlResolve */
+        $this->db()->query('
+          update xf_sv_warning_log
+          set reply_ban_post_id = null
+          where reply_ban_post_id = 0
+        ');
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -322,25 +352,27 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'warning_log_id', 'int')->autoIncrement();
             $this->addOrChangeColumn($table, 'warning_edit_date', 'int');
             $this->addOrChangeColumn($table, 'operation_type', 'enum')->values(['new', 'edit', 'expire', 'delete', 'acknowledge']);
-            $this->addOrChangeColumn($table, 'warning_id', 'int');
+            $this->addOrChangeColumn($table, 'warning_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'content_type', 'varbinary', 25);
             $this->addOrChangeColumn($table, 'content_id', 'int');
             $this->addOrChangeColumn($table, 'content_title', 'varchar', 255);
             $this->addOrChangeColumn($table, 'user_id', 'int');
             $this->addOrChangeColumn($table, 'warning_date', 'int');
             $this->addOrChangeColumn($table, 'warning_user_id', 'int');
-            $this->addOrChangeColumn($table, 'warning_definition_id', 'int');
+            $this->addOrChangeColumn($table, 'warning_definition_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'title', 'varchar', 255);
             $this->addOrChangeColumn($table, 'notes', 'text');
-            $this->addOrChangeColumn($table, 'points', 'smallint');
+            $this->addOrChangeColumn($table, 'points', 'smallint')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'expiry_date', 'int');
             $this->addOrChangeColumn($table, 'is_expired', 'tinyint', 3);
             $this->addOrChangeColumn($table, 'extra_user_group_ids', 'varbinary', 255);
-            $this->addOrChangeColumn($table, 'sv_acknowledgement', 'enum')->values(['not_required', 'pending', 'completed']);
+
+            $this->addOrChangeColumn($table, 'reply_ban_thread_id', 'int')->nullable(true)->setDefault(null);
+            $this->addOrChangeColumn($table, 'reply_ban_post_id', 'int')->nullable(true)->setDefault(null);
+
+            $this->addOrChangeColumn($table, 'sv_acknowledgement', 'enum')->values(['not_required', 'pending', 'completed'])->setDefault('not_required');
             $this->addOrChangeColumn($table, 'sv_acknowledgement_date', 'int')->setDefault(0);
             $this->addOrChangeColumn($table, 'sv_user_note', 'varchar', 10000)->setDefault('');
-            $this->addOrChangeColumn($table, 'reply_ban_thread_id', 'int')->setDefault(0);
-            $this->addOrChangeColumn($table, 'reply_ban_post_id', 'int')->setDefault(0);
             $this->addOrChangeColumn($table, 'sv_suppress_notices', 'int')->setDefault(1);
 
             $table->addKey('warning_id');

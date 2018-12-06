@@ -111,31 +111,32 @@ class WarningLog extends Entity
         $structure->primaryKey = 'warning_log_id';
         $structure->columns = [
             'warning_log_id'          => ['type' => self::UINT, 'autoIncrement' => true, 'nullable' => true],
-            'warning_edit_date'       => ['type' => self::UINT, 'required' => true],
+            'warning_edit_date'       => ['type' => self::UINT, 'required' => true, 'default' => \XF::$time],
             'operation_type'          => ['type' => self::STR, 'allowedValues' => ['new', 'edit', 'expire', 'delete', 'acknowledge'], 'required' => true],
-            'warning_id'              => ['type' => self::UINT, 'required' => true, 'nullable' => true],
+            'warning_id'              => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'content_type'            => ['type' => self::BINARY, 'maxLength' => 25, 'required' => true],
             'content_id'              => ['type' => self::UINT, 'required' => true],
             'content_title'           => ['type' => self::STR, 'maxLength' => 255, 'required' => true],
             'user_id'                 => ['type' => self::UINT, 'required' => true],
             'warning_date'            => ['type' => self::UINT, 'required' => true],
             'warning_user_id'         => ['type' => self::UINT, 'required' => true],
-            'warning_definition_id'   => ['type' => self::UINT, 'required' => true, 'nullable' => true],
+            'warning_definition_id'   => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'title' => ['type' => self::STR, 'maxLength' => 255,
                 'required' => 'please_enter_valid_title'
             ],
             'notes' => ['type' => self::STR, 'default' => ''],
-            'points' => ['type' => self::UINT, 'max' => 65535, 'required' => true, 'nullable' => true],
+            'points' => ['type' => self::UINT, 'max' => 65535, 'nullable' => true, 'default' => null],
             'expiry_date' => ['type' => self::UINT, 'default' => 0],
             'is_expired' => ['type' => self::BOOL, 'default' => false],
             'extra_user_group_ids' => ['type' => self::LIST_COMMA, 'default' => [],
                 'list' => ['type' => 'posint', 'unique' => true, 'sort' => SORT_NUMERIC]
             ],
+            'reply_ban_thread_id'     => ['type' => self::UINT, 'default' => null, 'nullable' => true],
+            'reply_ban_post_id'       => ['type' => self::UINT, 'default' => null, 'nullable' => true],
+
             'sv_acknowledgement'      => ['type' => self::STR, 'allowedValues' => ['not_required', 'pending', 'completed'], 'default' => 'not_required'],
             'sv_acknowledgement_date' => ['type' => self::UINT, 'default' => 0],
             'sv_user_note'            => ['type' => self::STR, 'maxLength' => 10000, 'default' => ''],
-            'reply_ban_thread_id'     => ['type' => self::UINT, 'default' => 0],
-            'reply_ban_post_id'       => ['type' => self::UINT, 'default' => 0],
             'sv_suppress_notices'     => ['type' => self::UINT, 'maxLength' => 255, 'default' => 1],
         ];
         $structure->relations = [
