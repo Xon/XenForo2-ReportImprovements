@@ -1,1 +1,1 @@
-{name} reopened the<a {report_params}>{report_title}</a> report.
+{name} reopened the <a {report_params}>{report_title}</a> report.
