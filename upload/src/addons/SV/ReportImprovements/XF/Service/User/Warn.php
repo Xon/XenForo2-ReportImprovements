@@ -8,7 +8,7 @@ use XF\Mvc\Entity\Entity;
 
 /**
  * Class Warn
- * 
+ *
  * Extends \XF\Service\User\Warn
  *
  * @package SV\ReportImprovements\XF\Service\User
@@ -73,10 +73,17 @@ class Warn extends XFCP_Warn
      */
     protected function _save()
     {
+        if ($this->replyBanSvc)
+        {
+            // ensure the reply-ban is saved transactionally
+            $this->warning->addCascadedSave($this->replyBanSvc->getReplyBan());
+        }
+
         $warning = parent::_save();
 
         if ($warning && $this->replyBanSvc)
         {
+            // this doesn't save the entity, but sends notifications
             $this->replyBanSvc->save();
         }
 

@@ -17,6 +17,14 @@ use XF\Entity\Post;
 class ReplyBan extends XFCP_ReplyBan
 {
     /**
+     * @return \SV\ReportImprovements\XF\Entity\ThreadReplyBan
+     */
+    public function getReplyBan()
+    {
+        return $this->replyBan;
+    }
+
+    /**
      * @param Post $post
      */
     public function setPost(Post $post)
