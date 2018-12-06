@@ -107,12 +107,14 @@ class Listener
         $visitor = \XF::visitor();
         $session = $app->session();
 
-        if ($visitor->is_moderator || !$visitor->canViewReports())
+        if ($visitor->is_moderator ||
+            !$session ||
+            !is_callable([$visitor,'canViewReports']) || !$visitor->canViewReports())
         {
             return;
         }
 
-        $sessionReportCounts = $session->reportCounts;
+        $sessionReportCounts = $session['reportCounts'];
         $registryReportCounts = $app->container('reportCounts');
 
         if ($sessionReportCounts === null
@@ -145,7 +147,7 @@ class Listener
                 'lastBuilt' => $registryReportCounts['lastModified']
             ];
 
-            $session->reportCounts = $reportCounts;
+            $session['reportCounts'] = $reportCounts;
         }
     }
 }
