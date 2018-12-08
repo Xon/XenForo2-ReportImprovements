@@ -178,7 +178,7 @@ class Creator extends AbstractService
             $warningLog->user_id = $threadReplyBan->user_id;
             $warningLog->warning_user_id = \XF::visitor()->user_id;
             $warningLog->warning_definition_id = null;
-            $warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render();
+            $warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render('raw');
             $warningLog->notes = $warningLog->getReplyBanLink() . "\n" . $threadReplyBan->reason;
 
             if ($report)
