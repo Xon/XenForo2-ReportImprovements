@@ -165,7 +165,7 @@ class Creator extends AbstractService
                 $content = $post;
                 $contentTitle = \XF::phrase('post_in_thread_x', [
                     'title' => $post->Thread->title
-                ]);
+                ])->render('raw');
             }
 
             $warningLog->content_type = $content->getEntityContentType();

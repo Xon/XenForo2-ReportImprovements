@@ -45,15 +45,15 @@ class WarningLog extends Entity
     {
         if ($this->warning_id)
         {
-            $contentType = \XF::phrase('warning');
+            $contentType = \XF::phrase('warning')->render('raw');
         }
         else if ($this->reply_ban_post_id)
         {
-            $contentType = \XF::phrase('svReportImprov_thread_reply_ban_from_post');
+            $contentType = \XF::phrase('svReportImprov_thread_reply_ban_from_post')->render('raw');
         }
         else if ($this->reply_ban_thread_id)
         {
-            $contentType = \XF::phrase('svReportImprov_thread_reply_ban');
+            $contentType = \XF::phrase('svReportImprov_thread_reply_ban')->render('raw');
         }
         else
         {
