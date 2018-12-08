@@ -23,8 +23,6 @@ class Report extends XFCP_Report
             $this->app()->em()->find('XF:Forum', $nodeId);
         }
 
-        $handler = $report->getHandler();
-
         /** @var \XF\Repository\Moderator $moderatorRepo */
         $moderatorRepo = $this->repository('XF:Moderator');
 
@@ -50,7 +48,7 @@ class Report extends XFCP_Report
             foreach ($moderators AS $id => $moderator)
             {
                 $canView = \XF::asVisitor($moderator->User,
-                    function() use ($handler, $report) { return $handler->canView($report); }
+                    function() use ($report) { return $report->canView(); }
                 );
                 if (!$canView)
                 {
