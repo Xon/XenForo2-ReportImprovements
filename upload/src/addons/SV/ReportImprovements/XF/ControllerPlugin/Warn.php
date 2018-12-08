@@ -76,12 +76,12 @@ class Warn extends XFCP_Warn
             /** @var \XF\Entity\Post $content */
             if (!$content->Thread)
             {
-                throw $this->exception($this->notFound(\XF::phrase('requested_thread_not_found')));
+                throw $this->exception($this->noPermission());
             }
 
             if (!$content->Thread->canReplyBan($error))
             {
-                throw $this->exception($this->noPermission($error));
+                throw $this->exception($this->noPermission());
             }
 
             $warnService->setupReplyBan(

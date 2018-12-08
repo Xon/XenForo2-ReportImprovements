@@ -189,7 +189,7 @@ class Report extends XFCP_Report
         $reportComment = $this->em()->find('XF:ReportComment', $reportCommentId, $extraWith);
         if (!$reportComment)
         {
-            throw $this->exception($this->notFound(\XF::phrase('requested_report_comment_not_found')));
+            throw $this->exception($this->noPermission());
         }
 
         if (!$reportComment->Report || !$reportComment->Report->canView())
