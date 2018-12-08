@@ -90,7 +90,15 @@ class Report extends XFCP_Report
         // avoid N+1 look up behaviour, just cache all node perms
         \XF::visitor()->cacheNodePermissions();
 
-        $reports = parent::filterViewableReports($reports);
+        // assume fixed in 2.0.12+  and 2.1.0 beta 5+
+        if ((\XF::$versionId > 2001270 && \XF::$versionId < 2010000) || (\XF::$versionId > 2010000 && \XF::$versionId > 2010035))
+        {
+            $reports = parent::filterViewableReports($reports);
+        }
+        else
+        {
+            $reports = $reports->filterViewable();
+        }
 
         $userIds = [];
         /** @var \XF\Entity\Report $report */
