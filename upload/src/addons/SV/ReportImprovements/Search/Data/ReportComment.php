@@ -150,6 +150,7 @@ class ReportComment extends AbstractData
      */
     public function setupMetadataStructure(MetadataStructure $structure)
     {
+        $structure->addField('thread', MetadataStructure::INT);
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('state_change', MetadataStructure::KEYWORD);
         // must be an int, as ElasticSearch single index has this all mapped to the same type

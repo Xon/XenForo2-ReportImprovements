@@ -104,6 +104,7 @@ class Report extends AbstractData
      */
     public function setupMetadataStructure(MetadataStructure $structure)
     {
+        $structure->addField('thread', MetadataStructure::INT);
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('report_state', MetadataStructure::KEYWORD);
         $structure->addField('report_content_type', MetadataStructure::KEYWORD);
