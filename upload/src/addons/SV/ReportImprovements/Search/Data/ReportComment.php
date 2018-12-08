@@ -65,7 +65,7 @@ class ReportComment extends AbstractData
             'message' => $entity->message,
             'date' => $entity->comment_date,
             'user_id' => $entity->user_id,
-            'discussion_id' => 0,
+            'discussion_id' => $entity->report_id,
             'metadata' => $this->getMetaData($entity),
         ]);
     }
@@ -111,6 +111,14 @@ class ReportComment extends AbstractData
             }
         }
 
+        if ($report = $entity->Report)
+        {
+            if (isset($report->content_info['thread_id']))
+            {
+                $metaData['thread'] = $report->content_info['thread_id'];
+            }
+        }
+
         return $metaData;
     }
 
@@ -143,7 +151,7 @@ class ReportComment extends AbstractData
     public function setupMetadataStructure(MetadataStructure $structure)
     {
         $structure->addField('report', MetadataStructure::INT);
-        $structure->addField('state_change', MetadataStructure::STR);
+        $structure->addField('state_change', MetadataStructure::KEYWORD);
         // must be an int, as ElasticSearch single index has this all mapped to the same type
         $structure->addField('is_report', MetadataStructure::INT);
         // warning bits
@@ -218,7 +226,7 @@ class ReportComment extends AbstractData
                     $userIds = $matchedUsers->keys();
                     if ($userIds)
                     {
-                        $query->withMetadata('warned_user', $isReport);
+                        $query->withMetadata('warned_user', $userIds);
                     }
                     $urlConstraints['warning.user'] = implode(', ', $users);
                 }

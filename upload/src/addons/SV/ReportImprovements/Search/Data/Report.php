@@ -57,7 +57,7 @@ class Report extends AbstractData
             'message' => $handler->getContentMessage($entity),
             'date' => $entity->first_report_date,
             'user_id' => $entity->content_user_id,
-            'discussion_id' => 0,
+            'discussion_id' => $entity->report_id,
             'metadata' => $this->getMetaData($entity)
         ]);
     }
@@ -69,13 +69,20 @@ class Report extends AbstractData
      */
     protected function getMetaData(\XF\Entity\Report $entity)
     {
-        return [
+        $metaData = [
             'report' => $entity->report_id,
             'report_state' => $entity->report_state,
             'assigned_user' => $entity->assigned_user_id,
             'is_report' => 2,
             'report_content_type' => $entity->content_type
         ];
+
+        if (isset($entity->content_info['thread_id']))
+        {
+            $metaData['thread'] = $entity->content_info['thread_id'];
+        }
+
+        return $metaData;
     }
 
     /**
@@ -98,8 +105,8 @@ class Report extends AbstractData
     public function setupMetadataStructure(MetadataStructure $structure)
     {
         $structure->addField('report', MetadataStructure::INT);
-        $structure->addField('report_state', MetadataStructure::STR);
-        $structure->addField('report_content_type', MetadataStructure::STR);
+        $structure->addField('report_state', MetadataStructure::KEYWORD);
+        $structure->addField('report_content_type', MetadataStructure::KEYWORD);
         $structure->addField('assigned_user', MetadataStructure::INT);
         // must be an int, as ElasticSearch single index has this all mapped to the same type
         $structure->addField('is_report', MetadataStructure::INT);
