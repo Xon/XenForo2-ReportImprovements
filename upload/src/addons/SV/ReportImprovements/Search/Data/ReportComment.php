@@ -162,31 +162,27 @@ class ReportComment extends AbstractData
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
         $constraints = $request->filter([
-            'type'           => [
-                'report_comment' => [
-                    'include_report_contents' => 'bool',
-                    'include_report_comments' => 'bool',
-                    'include_user_reports'    => 'bool',
-                ],
-            ],
-            'warning_points' => [
-                'lower'  => 'uint',
-                'higher' => 'uint',
-            ],
+            'c.report.contents' => 'bool',
+            'c.report.comments' => 'bool',
+            'c.report.user_reports'  => 'bool',
+
+            'c.warning.user' => 'str',
+            'c.warning.points.lower' => 'uint',
+            'c.warning.points.higher' => 'uint',
         ]);
 
         $isReport = [];
-        if ($constraints['type']['report_comment']['include_report_comments'])
+        if ($constraints['c.report.comments'])
         {
             $isReport[] = 0;
         }
 
-        if ($constraints['type']['report_comment']['include_user_reports'])
+        if ($constraints['c.report.user_reports'])
         {
             $isReport[] = 1;
         }
 
-        if ($constraints['type']['report_comment']['include_report_contents'])
+        if ($constraints['c.report.contents'])
         {
             $isReport[] = 2;
         }
@@ -196,17 +192,50 @@ class ReportComment extends AbstractData
             $query->withMetadata('is_report', $isReport);
         }
 
+        $threadId = $request->filter('c.thread', 'uint');
+        if ($threadId)
+        {
+            $query->withMetadata('thread', $threadId)
+                  ->inTitleOnly(false);
+        }
+
+        if ($constraints['c.warning.user'])
+        {
+            $users = preg_split('/,\s*/', $constraints['c.warning.user'], -1, PREG_SPLIT_NO_EMPTY);
+            if ($users)
+            {
+                /** @var \XF\Repository\User $userRepo */
+                $userRepo = \XF::repository('XF:User');
+                $matchedUsers = $userRepo->getUsersByNames($users, $notFound);
+                if ($notFound)
+                {
+                    $query->error('users',
+                        \XF::phrase('following_members_not_found_x', ['members' => implode(', ', $notFound)])
+                    );
+                }
+                else
+                {
+                    $userIds = $matchedUsers->keys();
+                    if ($userIds)
+                    {
+                        $query->withMetadata('warned_user', $isReport);
+                    }
+                    $urlConstraints['warning.user'] = implode(', ', $users);
+                }
+            }
+        }
+
         $addOns = \XF::app()->container('addon.cache');
         if (isset($addOns['SV/SearchImprovements']))
         {
             // do not simplify these imports! Otherwise it will convert the soft-dependency into a hard dependency
-            if ($constraints['warning_points']['lower'])
+            if ($constraints['c.warning.points.lower'])
             {
                 $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('warning_log.points', $constraints['warning_points']['lower'],
                     \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference()));
             }
 
-            if ($constraints['warning_points']['higher'])
+            if ($constraints['c.warning.points.higher'])
             {
                 $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('warning_log.points', $constraints['warning_points']['lower'],
                     \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference()));
