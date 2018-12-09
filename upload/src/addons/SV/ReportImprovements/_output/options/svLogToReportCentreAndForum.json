@@ -1,0 +1,12 @@
+{
+    "edit_format": "callback",
+    "edit_format_params": "XF\\Option\\Forum::renderSelect",
+    "data_type": "unsigned_integer",
+    "sub_options": [],
+    "validation_class": "",
+    "validation_method": "",
+    "default_value": "0",
+    "relations": {
+        "sv_report_improvements": 115
+    }
+}

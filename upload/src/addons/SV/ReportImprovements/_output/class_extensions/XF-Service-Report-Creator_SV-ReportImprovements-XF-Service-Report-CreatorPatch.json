@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Service\\Report\\Creator",
+    "to_class": "SV\\ReportImprovements\\XF\\Service\\Report\\CreatorPatch",
+    "execute_order": 1,
+    "active": true
+}

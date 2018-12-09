@@ -50,6 +50,7 @@ namespace SV\ReportImprovements\XF\Service\Report
 {
 	class XFCP_Commenter extends \XF\Service\Report\Commenter {}
 	class XFCP_Creator extends \XF\Service\Report\Creator {}
+	class XFCP_CreatorPatch extends \XF\Service\Report\Creator {}
 	class XFCP_Notifier extends \XF\Service\Report\Notifier {}
 }
 
