@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "</xf:title>",
-    "replace": "$0\n\n<xf:page option=\"searchConstraints\" value=\"{{ {\n\tphrase('reports'): {'search_type': 'report_comment'}\n} }}\" />"
+    "replace": "$0\n\n<xf:macro template=\"svReportImprov_search_bar\" name=\"constraint\" arg-context=\"closed-list\" />"
 }

@@ -1,0 +1,9 @@
+{
+    "template": "report_search",
+    "description": "Add search constraints to report search",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "</xf:title>",
+    "replace": "$0\n\n<xf:macro template=\"svReportImprov_search_bar\" name=\"constraint\" arg-context=\"search\" />"
+}

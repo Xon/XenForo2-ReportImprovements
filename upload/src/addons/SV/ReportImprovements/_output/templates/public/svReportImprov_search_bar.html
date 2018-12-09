@@ -1,0 +1,27 @@
+<xf:macro name="search_options">
+	<xf:if is="$searchConstraints.Reports is not empty">
+		<div class="menu-row">
+			<div class="inputGroup">
+				<xf:checkbox>
+					<xf:option name="c[report][contents]"
+							   label="{{ phrase('svReportImprov_include_reported_content') }}"
+							   checked="{{ true }}" />
+
+					<xf:option name="c[report][comments]"
+							   label="{{ phrase('svReportImprov_include_report_comments') }}"
+							   checked="{{ true }}" />
+
+					<xf:option name="c[report][user_reports]"
+							   label="{{ phrase('svReportImprov_include_user_reports') }}"
+							   checked="{{ true }}" />
+				</xf:checkbox>
+			</div>
+		</div>
+	</xf:if>
+</xf:macro>
+
+<xf:macro name="constraint" arg-context="!" arg-report="{{null}}">
+	<xf:page option="searchConstraints" value="{{ {
+		phrase('reports'): {'search_type': 'report_comment'}
+	} }}" />
+</xf:macro>
