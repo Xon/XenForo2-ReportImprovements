@@ -2,7 +2,7 @@
     "legacy_addon_id": "SV_ReportImprovements",
     "title": "Report Improvements",
     "description": "",
-    "version_id": 2000005,
+    "version_id": 2000006,
     "version_string": "2.0.0 Beta 2",
     "dev": "Atelier Aphelion",
     "dev_url": "https://atelieraphelion.com",
@@ -19,4 +19,4 @@
         "SV/WarningAcknowledgement": ["2000000", "Warning Acknowledgement 2.0.0+"]
     },
     "icon": ""
-}
+}a
