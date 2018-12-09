@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<!--\\[XF:search_menu:above_member\\]-->)(.*?<div class=\"menu-row\">.*?<\\/div>.*?)(<div class=\"menu-footer.*?\".*?>)#s",
-    "replace": "$1$2\n<xf:macro template=\"svReportImprov_search_bar\" name=\"search_options\" />\n$3"
+    "replace": "$1$2\n<xf:macro template=\"svReportImprov_search_bar\" \n\t\t  name=\"search_options\"\t\t  \n\t\t  />\n$3"
 }

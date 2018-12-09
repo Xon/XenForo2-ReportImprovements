@@ -1,5 +1,5 @@
-<xf:macro name="search_options">
-	<xf:if is="$searchConstraints.Reports is not empty">
+<xf:macro name="search_options">	
+	<xf:if is="$__globals.hasReportSearch">
 		<div class="menu-row">
 			<div class="inputGroup">
 				<xf:checkbox>
@@ -20,7 +20,9 @@
 	</xf:if>
 </xf:macro>
 
-<xf:macro name="constraint" arg-context="!" arg-report="{{null}}">
+<xf:macro name="page_options" arg-context="!" arg-report="{{null}}">
+	<xf:page option="hasReportSearch" value="{{true}}" />
+	<xf:page option="report" value="{$report}" />
 	<xf:page option="searchConstraints" value="{{ {
 		phrase('reports'): {'search_type': 'report_comment'}
 	} }}" />

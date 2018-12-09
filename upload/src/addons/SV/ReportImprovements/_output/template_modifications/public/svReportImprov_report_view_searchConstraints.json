@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "</xf:h1>",
-    "replace": "$0\n\n<xf:macro template=\"svReportImprov_search_bar\" name=\"constraint\" arg-context=\"report\" arg-report=\"{$report}\"/>"
+    "replace": "$0\n\n<xf:macro template=\"svReportImprov_search_bar\" \n\t\t  name=\"page_options\" \n\t\t  arg-context=\"report\" \n\t\t  arg-report=\"{$report}\"\n\t\t  />"
 }
