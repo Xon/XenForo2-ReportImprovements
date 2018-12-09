@@ -1,0 +1,19 @@
+<xf:if is="{{ in_array('Reports', array_keys($searchConstraints)) }}">
+	<div class="menu-row">
+		<div class="inputGroup">
+			<xf:checkbox>
+				<xf:option name="c[report][contents]"
+						   label="{{ phrase('svReportImprov_include_reported_content') }}"
+						   checked="{{ true }}" />
+
+				<xf:option name="c[report][comments]"
+						   label="{{ phrase('svReportImprov_include_report_comments') }}"
+						   checked="{{ true }}" />
+
+				<xf:option name="c[report][user_reports]"
+						   label="{{ phrase('svReportImprov_include_user_reports') }}"
+						   checked="{{ true }}" />
+			</xf:checkbox>
+		</div>
+	</div>
+</xf:if>

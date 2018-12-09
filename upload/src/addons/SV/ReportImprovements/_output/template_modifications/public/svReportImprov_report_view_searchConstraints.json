@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Add search constraints to report view",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "</xf:h1>",
+    "replace": "$0\n\n\n<xf:page option=\"searchConstraints\" value=\"{{ {\n\tphrase('reports'): {'search_type': 'report_comment'}\n} }}\" />"
+}

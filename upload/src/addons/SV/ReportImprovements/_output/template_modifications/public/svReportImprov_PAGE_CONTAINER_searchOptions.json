@@ -1,0 +1,9 @@
+{
+    "template": "PAGE_CONTAINER",
+    "description": "Add search options to report view",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(<!--\\[XF:search_menu:above_member\\]-->)(.*?<div class=\"menu-row\">.*?<\\/div>.*?)(<div class=\"menu-footer.*?\".*?>)#s",
+    "replace": "$1$2\n\n<xf:include template=\"svReportImprov_PAGE_CONTAINER_searchOptions\" />\n\n$3"
+}
