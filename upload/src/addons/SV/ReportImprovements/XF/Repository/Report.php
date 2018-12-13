@@ -14,6 +14,11 @@ use XF\Mvc\Entity\Entity;
  */
 class Report extends XFCP_Report
 {
+    /**
+     * @param \XF\Entity\Report $report
+     * @return ArrayCollection
+     * @throws \Exception
+     */
     public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
         $nodeId = null;
@@ -75,7 +80,7 @@ class Report extends XFCP_Report
             if (isset($report->content_info['node_id']))
             {
                 $nodeId = $report->content_info['node_id'];
-                if (!$em->findCached('XF:Forum', $nodeId))
+                if ($nodeId && !$em->findCached('XF:Forum', $nodeId))
                 {
                     $nodeIds[$nodeId] = true;
                 }
@@ -111,7 +116,7 @@ class Report extends XFCP_Report
 
         foreach($userIds as $userId => $null)
         {
-            if ($em->findCached('XF:User', $userId))
+            if (!$userId || $em->findCached('XF:User', $userId))
             {
                 unset($userIds[$userId]);
             }
