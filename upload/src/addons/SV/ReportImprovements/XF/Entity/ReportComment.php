@@ -89,7 +89,7 @@ class ReportComment extends XFCP_ReportComment
      */
     public function getViewableUsername()
     {
-        return \XF::phrase('svReportImprov_content_reporter')->render();
+        return \XF::phrase('svReport.content_reporter')->render();
     }
 
     /**
