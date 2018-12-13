@@ -18,6 +18,9 @@ use XF\Mvc\Entity\Structure;
  * @property array commenter_user_ids
  * @property array comment_ids
  * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified
+ *
+ * RELATIONS
+ * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified_
  */
 class Report extends XFCP_Report
 {
@@ -157,11 +160,15 @@ class Report extends XFCP_Report
                 $this->hydrateRelation('LastModified', $reportComment);
             }
         }
-        else
+        else if (!\array_key_exists('LastModified', $this->_relations))
         {
             $finder = $this->getRelationFinder('LastModified');
             $finder->with($this->getCommentWith());
             $reportComment = $finder->fetchOne();
+        }
+        else
+        {
+            $reportComment = $this->LastModified_;
         }
 
         return $reportComment;

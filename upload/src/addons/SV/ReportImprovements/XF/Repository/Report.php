@@ -15,6 +15,20 @@ use XF\Mvc\Entity\Entity;
 class Report extends XFCP_Report
 {
     /**
+     * @param array $state
+     * @param int|null  $timeFrame
+     * @return \XF\Finder\Report
+     */
+    public function findReports($state = ['open', 'assigned'], $timeFrame = null)
+    {
+        $finder = parent::findReports($state, $timeFrame);
+
+        $finder->with(['LastModified', 'LastModifiedUser']);
+
+        return $finder;
+    }
+
+    /**
      * @param \XF\Entity\Report $report
      * @return ArrayCollection
      * @throws \Exception
