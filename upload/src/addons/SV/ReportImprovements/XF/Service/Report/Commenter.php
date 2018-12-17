@@ -30,11 +30,11 @@ class Commenter extends XFCP_Commenter
         if ($oldAssignedUserId !== null && $this->report->assigned_user_id === 0)
         {
             $oldState = $this->report->getExistingValue('report_state');
-            if ($newState && ($newState != $oldState || $this->report->isChanged('assigned_user_id')))
+            $this->report->assigned_user_id = $oldAssignedUserId;
+            if ($newState && $newState === $oldState)
             {
                 $this->comment->state_change = '';
             }
-            $this->report->assigned_user_id = $oldAssignedUserId;
         }
     }
 
