@@ -17,6 +17,27 @@ use SV\ReportImprovements\XF\Entity\ReportComment;
  */
 class Commenter extends XFCP_Commenter
 {
+    public function setReportState($newState = null, \XF\Entity\User $assignedUser = null)
+    {
+        $oldAssignedUserId = null;
+        if ($newState !== 'open')
+        {
+            $oldAssignedUserId = $this->report->assigned_user_id ;
+        }
+
+        parent::setReportState($newState, $assignedUser);
+
+        if ($oldAssignedUserId !== null && $this->report->assigned_user_id === 0)
+        {
+            $oldState = $this->report->getExistingValue('report_state');
+            if ($newState && ($newState != $oldState || $this->report->isChanged('assigned_user_id')))
+            {
+                $this->comment->state_change = '';
+            }
+            $this->report->assigned_user_id = $oldAssignedUserId;
+        }
+    }
+
     protected function finalSetup()
     {
         $sendAlert = $this->sendAlert;
