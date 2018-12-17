@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Show alert send if report state was changed",
+    "execution_order": 9,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:if is=\"$comment.message\">",
+    "replace": "<xf:if is=\"$comment.alertSent\">\n\t<div class=\"message-minorHighlight\">{{ phrase('svReportImprov_report_alert:') }} {$comment.alertComment}</div>\n</xf:if>\n$0"
+}

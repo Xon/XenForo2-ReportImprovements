@@ -17,6 +17,10 @@ use SV\ReportImprovements\XF\Entity\ReportComment;
  */
 class Commenter extends XFCP_Commenter
 {
+    /**
+     * @param null                 $newState
+     * @param \XF\Entity\User|null $assignedUser
+     */
     public function setReportState($newState = null, \XF\Entity\User $assignedUser = null)
     {
         $oldAssignedUserId = null;
