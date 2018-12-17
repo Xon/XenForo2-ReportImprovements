@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Show assigned user in report status",
+    "execution_order": 11,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:if is=\"$report.report_state == 'assigned'\">",
+    "replace": "<xf:if is=\"$report.AssignedUser\">"
+}
