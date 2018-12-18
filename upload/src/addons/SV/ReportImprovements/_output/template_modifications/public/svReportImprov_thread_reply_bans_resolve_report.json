@@ -1,7 +1,7 @@
 {
     "template": "thread_reply_bans",
     "description": "Add \"Resolve report\" checkbox",
-    "execution_order": 10,
+    "execution_order": 9950,
     "enabled": true,
     "action": "preg_replace",
     "find": "#<xf:checkboxrow>.*?<xf:option name=\"send_alert\".*?>.*?<\\/xf:checkboxrow>#s",

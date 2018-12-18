@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "If the report comment has warning log attached to it, show it instead of the message",
-    "execution_order": 10,
+    "execution_order": 9950,
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<xf:if is=\"(\\$comment\\.message.*?)\">)(.*?)(<\\/xf:if>)#si",

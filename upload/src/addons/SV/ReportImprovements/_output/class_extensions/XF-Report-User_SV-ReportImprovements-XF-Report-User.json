@@ -1,6 +1,6 @@
 {
     "from_class": "XF\\Report\\User",
     "to_class": "SV\\ReportImprovements\\XF\\Report\\User",
-    "execute_order": 10,
+    "execute_order": 9950,
     "active": true
 }

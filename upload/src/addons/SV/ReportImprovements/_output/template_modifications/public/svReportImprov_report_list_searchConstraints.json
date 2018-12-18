@@ -1,7 +1,7 @@
 {
     "template": "report_list",
     "description": "Add search constraints to report list",
-    "execution_order": 10,
+    "execution_order": 9950,
     "enabled": true,
     "action": "str_replace",
     "find": "</xf:title>",

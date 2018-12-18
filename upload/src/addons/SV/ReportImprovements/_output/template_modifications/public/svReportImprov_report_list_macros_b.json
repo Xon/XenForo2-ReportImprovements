@@ -1,7 +1,7 @@
 {
     "template": "report_list_macros",
     "description": "Show \"Content reporter\" if the user has no permission to view reporter in reports list",
-    "execution_order": 10,
+    "execution_order": 9950,
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:username user=\"{$report.last_modified_cache}\" />",

@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "Hides comment actioning if nothing can be done",
-    "execution_order": 15,
+    "execution_order": 9950,
     "enabled": true,
     "action": "preg_replace",
     "find": "#(</div>\\s*?)([\\t ]*<div class=\"js-handleToggle.*?submitrow.*?</div>)(.*?</xf:form>)#si",

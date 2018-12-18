@@ -1,7 +1,7 @@
 {
     "template": "report_list_macros",
     "description": "Show forum if the content is a post",
-    "execution_order": 10,
+    "execution_order": 9950,
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<ul class=\"structItem-parts.*?\">)(.*?)(<\\/ul>)#s",

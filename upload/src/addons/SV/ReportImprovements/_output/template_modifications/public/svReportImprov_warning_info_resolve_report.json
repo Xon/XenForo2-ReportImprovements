@@ -1,7 +1,7 @@
 {
     "template": "warning_info",
     "description": "Allow content report to be resolved",
-    "execution_order": 10,
+    "execution_order": 9950,
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<xf:form action=\".*?\">)(.*?)(<\\/xf:form>)#si",
