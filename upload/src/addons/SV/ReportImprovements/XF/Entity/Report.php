@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -117,6 +118,14 @@ class Report extends XFCP_Report
         }
 
         return $handler ? $handler->getContentDate($this) : 0;
+    }
+
+    /**
+     * @param Entity $content
+     */
+    public function setContent(Entity $content)
+    {
+        $this->_valueCache['Content'] = $content;
     }
 
     /**

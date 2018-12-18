@@ -25,6 +25,56 @@ class Report extends AbstractData
         return $entity->canView();
     }
 
+    public function getContentInRange($lastId, $amount, $forView = false)
+    {
+        $contents = parent::getContentInRange($lastId, $amount, $forView);
+
+        /** @var \XF\Repository\Report $reportReport */
+        $reportReport = \XF::repository('XF:Report');
+
+
+        $reportsByContentType = [];
+
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        foreach($contents as $report)
+        {
+            $contentType = $report->content_type;
+            $handler = $reportReport->getReportHandler($contentType, false);
+            if (!$handler)
+            {
+                continue;
+            }
+
+            $reportsByContentType[$contentType][$report->content_id] = $report;
+        }
+
+        foreach($reportsByContentType as $contentType => $reports)
+        {
+            $handler = $reportReport->getReportHandler($contentType, false);
+            if (!$handler)
+            {
+                continue;
+            }
+            $contentIds = array_keys($reports);
+            $reportContents = $handler->getContent($contentIds);
+            foreach($reportContents as $contentId => $reportContent)
+            {
+                if (empty($reportsByContentType[$contentType][$contentId]))
+                {
+                    continue;
+                }
+
+                /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+                $report = $reportsByContentType[$contentType][$contentId];
+
+                $report->setContent($reportContent);
+            }
+        }
+
+
+        return $contents;
+    }
+
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
      *
@@ -58,7 +108,7 @@ class Report extends AbstractData
             'date' => $entity->first_report_date,
             'user_id' => $entity->content_user_id,
             'discussion_id' => $entity->report_id,
-            'metadata' => $this->getMetaData($entity)
+            'metadata' => $this->getMetaData($entity),
         ]);
     }
 
@@ -74,7 +124,7 @@ class Report extends AbstractData
             'report_state' => $entity->report_state,
             'assigned_user' => $entity->assigned_user_id,
             'is_report' => 2,
-            'report_content_type' => $entity->content_type
+            'report_content_type' => $entity->content_type,
         ];
 
         if (isset($entity->content_info['thread_id']))
@@ -95,7 +145,7 @@ class Report extends AbstractData
     {
         return [
             'report' => $entity,
-            'options' => $options
+            'options' => $options,
         ];
     }
 
