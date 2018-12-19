@@ -174,6 +174,7 @@ class Setup extends AbstractSetup
     }
 
     /**
+     * @noinspection PhpDocMissingThrowsInspection
      * @param int|null $previousVersion
      * @return bool True if permissions were applied.
      */
@@ -222,7 +223,7 @@ class Setup extends AbstractSetup
             "
             );
         }
-        else if ($previousVersion < 1020200)
+        if ($previousVersion < 1020200)
         {
             $globalReportPerms = ['assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'viewReports', 'reportLike'];
             foreach ($globalReportPerms as $perm)
