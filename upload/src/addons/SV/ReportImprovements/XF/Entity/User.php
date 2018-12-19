@@ -47,7 +47,7 @@ class User extends XFCP_User
             return false;
         }
 
-        return $visitor->hasPermission('general', 'viewReportConversation');
+        return $visitor->hasPermission('conversation', 'viewReportConversation');
     }
 
     /**
@@ -75,7 +75,7 @@ class User extends XFCP_User
             return false;
         }
 
-        return $visitor->hasPermission('general', 'viewReportProfilePost');
+        return $visitor->hasPermission('profilePost', 'viewReportProfilePost');
     }
 
     /**
