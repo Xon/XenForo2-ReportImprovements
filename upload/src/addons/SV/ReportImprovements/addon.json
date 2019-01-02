@@ -16,7 +16,7 @@
     "require-soft": {
         "SV/SearchImprovements": ["2000000", "Search Improvements 2.0.0+"],
         "SV/WarningImprovements": ["2000005", "Warning Improvements 2.0.0+"],
-        "SV/WarningAcknowledgement": ["2010000", "Warning Acknowledgement 2.1.0+", false]
+        "SV/WarningAcknowledgement": ["2010200", "Warning Acknowledgement 2.1.2+", false]
     },
     "icon": "fa-balance-scale"
 }
