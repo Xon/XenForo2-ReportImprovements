@@ -309,7 +309,7 @@ class ReportComment extends AbstractData
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
 
-        if (!method_exists($visitor, 'canViewReports') || !$visitor->canViewReports($error))
+        if (!$visitor->canReportSearch())
         {
             return null;
         }

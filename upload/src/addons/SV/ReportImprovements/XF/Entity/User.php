@@ -33,6 +33,19 @@ class User extends XFCP_User
     }
 
     /**
+     * @return bool
+     */
+    public function canReportSearch()
+    {
+        if (!$this->getOption('reportSearch') || !$this->canSearch())
+        {
+            return false;
+        }
+
+        return $this->canViewReports();
+    }
+
+    /**
      * @param null $error
      *
      * @return bool
@@ -136,5 +149,18 @@ class User extends XFCP_User
         }
 
         return $this->hasPermission('general', 'viewReporterUsername');
+    }
+
+    /**
+     * @param Structure $structure
+     * @return Structure
+     */
+    public static function getStructure(Structure $structure)
+    {
+        $structure = parent::getStructure($structure);
+
+        $structure->options['reportSearch'] = true;
+
+        return $structure;
     }
 }
