@@ -36,3 +36,4 @@ Note; when reports are sent to a forum, the warning<->report links can not be cr
 - Optional auto-reject/resolve sufficiently old reports (default disabled)
 - Show content date when viewing a report
 - Show forum for post reports in report list
+- Permission-based ability to join a reported conversation
