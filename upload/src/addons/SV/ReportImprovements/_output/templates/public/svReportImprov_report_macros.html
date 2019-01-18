@@ -15,7 +15,7 @@
 	<xf:if is="$conversation">
 		<dl class="pairs pairs--inline" style="display:block;">
 			<dt>{{ phrase('conversation_starter') }}</dt>
-			<dd><xf:username user="$conversation.User" defaultname="{$conversation.username}" /></dd>
+			<dd><xf:username user="$conversation.Starter" defaultname="{$conversation.username}" /></dd>
 		</dl>
 		<dl class="pairs pairs--inline" style="display:block;">
 			<dt>{{ phrase('start_date') }}</dt>
