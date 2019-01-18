@@ -1,0 +1,56 @@
+<xf:macro name="reportInfo" 
+		  arg-report="!"
+		  >
+	<dl class="pairs pairs--inline" style="display:block;">
+		<dt>{{ phrase('svReportImprov_content_date') }}</dt>
+		<dd><xf:date time="$report.content_date" /></dd>
+	</dl>
+</xf:macro>
+
+<xf:macro name="reportInfo_conversation_message" 
+		  arg-report="!"
+		  >
+	<xf:set var="$message" value="{$report.Content}" />
+	<xf:set var="$conversation" value="{$message.Conversation}" />
+	<xf:if is="$conversation">
+		<dl class="pairs pairs--inline" style="display:block;">
+			<dt>{{ phrase('conversation_starter') }}</dt>
+			<dd><xf:username user="$conversation.User" defaultname="{$conversation.username}" /></dd>
+		</dl>
+		<dl class="pairs pairs--inline" style="display:block;">
+			<dt>{{ phrase('start_date') }}</dt>
+			<dd><xf:date time="$conversation.start_date" /></dd>
+		</dl>
+		<dl class="pairs pairs--inline" style="display:block;">
+			<dt>{{ phrase('replies') }}</dt>
+			<dd>{$conversation.reply_count|number}</dd>
+		</dl>
+		<dl class="pairs pairs--inline" style="display:block;">
+			<dt>{{ phrase('conversation_participants') }}</dt>
+			<dd>
+				<ul class="listInline listInline--comma listInline--selfInline"><xf:trim>
+					<xf:foreach loop="$conversation.Recipients" value="$recipient"><xf:trim>
+						<li>
+						<xf:trim>
+							<xf:set var="$title" value="{{ $recipient.User.username }}" />
+							<xf:if is="is_addon_active('SV/ConversationEssentials')">
+								<xf:set var="$convEssUserData" value="{{ $recipient.ConvEssUserData }}" />
+								<xf:set var="$recipientState" value="{{ $recipient.recipient_state }}" />
+
+								<xf:if is="$convEssUserData && $convEssUserData.hard_delete">
+									<xf:set var="$title" value="{{ phrase('svConvEss_x_has_left_this_conversation_permanently', {'username': $recipient.User.username}) }}" />
+									<xf:set var="$recipientState" value="deleted_permanently" />
+								<xf:elseif is="in_array($recipient.recipient_state, ['deleted', 'deleted_ignored'])" />
+									<xf:set var="$title" value="{{ phrase('svConvEss_x_has_left_this_conversation', {'username': $recipient.User.username}) }}" />
+								</xf:if>
+							</xf:if>
+
+							<xf:username user="{$recipient.User}" notooltip="1" defaultname="{{ phrase('unknown_member') }}" title="{{ $recipient.User.username }}" />
+						</xf:trim>
+						</li>
+					</xf:trim></xf:foreach>
+				</xf:trim></ul>
+			</dd>
+		</dl>		
+	</xf:if>
+</xf:macro>
