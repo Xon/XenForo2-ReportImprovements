@@ -174,6 +174,41 @@ class Report extends XFCP_Report
         );
     }
 
+    public function actionConversationJoin(ParameterBag $params)
+    {
+        /** @noinspection PhpUndefinedFieldInspection */
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        $report = $this->assertViewableReport($params->report_id);
+
+        if (!$report->canJoinConversation())
+        {
+            return $this->notFound();
+        }
+
+        /** @var \XF\Entity\ConversationMessage $conversationMessage */
+        $conversationMessage = $report->Content;
+        if (!$conversationMessage || !$conversationMessage->Conversation)
+        {
+            return $this->notFound();
+        }
+
+        if ($this->isPost())
+        {
+            /** @var \XF\Service\Conversation\Inviter $service */
+            $service = \XF::service('XF:Conversation\Inviter', $conversationMessage->Conversation, \XF::visitor());
+            $service->setAutoSendNotifications(false);
+            $service->setRecipientsTrusted(\XF::visitor());
+            $service->save();
+
+            return $this->redirect(\XF::app()->router()->buildLink('conversations/messages', $conversationMessage));
+        }
+
+        return $this->view('XF:Report\XenForo_ViewPublic_Report_ConversationJoin', 'svReportImprov_conversation_join', [
+            'report'       => $report,
+            'conversation' => $conversationMessage->Conversation
+        ]);
+    }
+
     /**
      * @param       $reportCommentId
      * @param array $extraWith

@@ -92,6 +92,24 @@ class Report extends XFCP_Report
         return $visitor->hasPermission('general', 'assignReport');
     }
 
+    public function canJoinConversation()
+    {
+        if ($this->content_type !== 'conversation_message')
+        {
+            return false;
+        }
+
+        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        $visitor = \XF::visitor();
+
+        if (!$visitor->user_id)
+        {
+            return false;
+        }
+
+        return $visitor->hasPermission('conversation', 'joinReported');
+    }
+
     /**
      * @param null $error
      *

@@ -1,0 +1,9 @@
+<xf:title>{{ phrase('svReportImprov_join_conversation_x', {'title':$conversation.title} ) }}</xf:title>
+
+<xf:breadcrumb href="{{ link('reports') }}">{{ phrase('reports') }}</xf:breadcrumb>
+<xf:breadcrumb href="{{ link('reports', $report) }}">{{ phrase('reported_content:') }} {$report.title}</xf:breadcrumb>
+
+<xf:form action="{{ link('reports/conversation-join', $report) }}">
+	<xf:submitrow submit="{{ phrase('svReportImprov_join_conversation') }}" />
+	<xf:redirect />
+</xf:form>
