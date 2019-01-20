@@ -112,6 +112,7 @@ class Report extends XFCP_Report
         // assume fixed in 2.0.12+  and 2.1.0 beta 5+
         if ((\XF::$versionId > 2001270 && \XF::$versionId < 2010000) || (\XF::$versionId > 2010000 && \XF::$versionId > 2010035))
         {
+            /** @noinspection PhpDeprecationInspection */
             $reports = parent::filterViewableReports($reports);
         }
         else
@@ -145,6 +146,7 @@ class Report extends XFCP_Report
     }
 
     /**
+     * @noinspection PhpDocMissingThrowsInspection
      * @param Entity|\XF\Entity\Report|\XF\Entity\ReportComment $entity
      *
      * @return int[]
@@ -152,6 +154,10 @@ class Report extends XFCP_Report
     public function findUserIdsToAlertForSvReportImprov(Entity $entity)
     {
         $userIds = [];
+        if ($this->options()->sv_report_alert_mode === 'none')
+        {
+            return $userIds;
+        }
 
         if ($entity instanceof \XF\Entity\Report)
         {

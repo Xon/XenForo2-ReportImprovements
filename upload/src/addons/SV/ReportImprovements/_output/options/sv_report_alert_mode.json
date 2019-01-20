@@ -1,6 +1,6 @@
 {
     "edit_format": "select",
-    "edit_format_params": "always_alert={{ phrase('svReportImprov_alert_all_moderators') }}\nmoderators_new_alert={{ phrase('svReportImprov_alert_all_watchers_and_moderators_for_new_alerts') }}\nwatchers={{ phrase('svReportImprov_alert_all_watchers_on_reply') }}",
+    "edit_format_params": "none={{ phrase('none') }}\nalways_alert={{ phrase('svReportImprov_alert_all_moderators') }}\nmoderators_new_alert={{ phrase('svReportImprov_alert_all_watchers_and_moderators_for_new_alerts') }}\nwatchers={{ phrase('svReportImprov_alert_all_watchers_on_reply') }}",
     "data_type": "string",
     "sub_options": [],
     "validation_class": "",

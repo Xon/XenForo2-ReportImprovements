@@ -57,7 +57,6 @@ class Notifier extends XFCP_Notifier
                     $this->sendCommentNotification($user);
                 }
             }
-            unset($commenterUsers[$k]);
         }
         $this->notifyCommenterUserIds = [];
     }
