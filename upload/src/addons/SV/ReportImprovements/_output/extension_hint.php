@@ -8,11 +8,6 @@ namespace SV\ReportImprovements\XF\ControllerPlugin
 	class XFCP_Warn extends \XF\ControllerPlugin\Warn {}
 }
 
-namespace SV\ReportImprovements\XF\Cron
-{
-	class XFCP_Warnings extends \XF\Cron\Warnings {}
-}
-
 namespace SV\ReportImprovements\XF\Entity
 {
 	class XFCP_Post extends \XF\Entity\Post {}
