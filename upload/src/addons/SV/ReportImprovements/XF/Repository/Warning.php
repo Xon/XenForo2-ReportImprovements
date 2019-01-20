@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Repository;
 
 use SV\ReportImprovements\Globals;
+use XF\Entity\User as UserEntity;
 
 /**
  * Class Warning
@@ -12,6 +13,38 @@ use SV\ReportImprovements\Globals;
  */
 class Warning extends XFCP_Warning
 {
+    public function processExpiredWarnings()
+    {
+        Globals::$expiringFromCron = true;
+        try
+        {
+            parent::processExpiredWarnings();
+        }
+        finally
+        {
+            Globals::$expiringFromCron = null;
+        }
+    }
+
+    /**
+     * @param UserEntity $user
+     * @param bool       $checkBannedStatus
+     * @return bool
+     */
+    public function processExpiredWarningsForUser(UserEntity $user, $checkBannedStatus)
+    {
+        Globals::$expiringFromCron = true;
+        try
+        {
+            /** @noinspection PhpUndefinedMethodInspection */
+            return parent::processExpiredWarningsForUser($user, $checkBannedStatus);
+        }
+        finally
+        {
+            Globals::$expiringFromCron = null;
+        }
+    }
+
     /**
      * @param \XF\Entity\Warning $warning
      * @param                    $type

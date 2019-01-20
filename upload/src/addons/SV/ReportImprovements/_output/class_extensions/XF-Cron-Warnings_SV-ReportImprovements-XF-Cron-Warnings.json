@@ -1,6 +1,0 @@
-{
-    "from_class": "XF\\Cron\\Warnings",
-    "to_class": "SV\\ReportImprovements\\XF\\Cron\\Warnings",
-    "execute_order": 9950,
-    "active": true
-}
