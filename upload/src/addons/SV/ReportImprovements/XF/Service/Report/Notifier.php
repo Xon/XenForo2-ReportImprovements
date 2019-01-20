@@ -44,8 +44,12 @@ class Notifier extends XFCP_Notifier
     {
         parent::notify();
 
-        $notifiableUsers = $this->getUsersForCommentInsertNotification();
         $commenterUsers = $this->getNotifyCommenterUserIds();
+        if (!$commenterUsers)
+        {
+            return;
+        }
+        $notifiableUsers = $this->getUsersForCommentInsertNotification();
 
         foreach ($commenterUsers AS $k => $userId)
         {
@@ -68,6 +72,10 @@ class Notifier extends XFCP_Notifier
     protected function getUsersForCommentInsertNotification()
     {
         $userIds = $this->getNotifyCommenterUserIds();
+        if (!$userIds)
+        {
+            return [];
+        }
 
         $users = $this->app->em()->findByIds('XF:User', $userIds, ['Profile', 'Option', 'PermissionCombination']);
         if (!$users->count())
@@ -92,12 +100,8 @@ class Notifier extends XFCP_Notifier
          */
         foreach ($users AS $userId => $user)
         {
-            if (!\XF::asVisitor($user, function(){ return $this->report->canView(); }))
-            {
-                unset($users[$userId]);
-            }
-
-            if (\in_array($user->user_id, $usersWhoHaveAlreadyAlertedOnce, true))
+            if (isset($usersWhoHaveAlreadyAlertedOnce[$user->user_id]) ||
+                !\XF::asVisitor($user, function () { return $this->report->canView(); }))
             {
                 unset($users[$userId]);
             }
