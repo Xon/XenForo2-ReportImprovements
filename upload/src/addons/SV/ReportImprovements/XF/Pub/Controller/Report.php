@@ -195,7 +195,7 @@ class Report extends XFCP_Report
         if ($this->isPost())
         {
             /** @var \XF\Service\Conversation\Inviter $service */
-            $service = \XF::service('XF:Conversation\Inviter', $conversationMessage->Conversation, \XF::visitor());
+            $service = \XF::service('XF:Conversation\Inviter', $conversationMessage->Conversation, $conversationMessage->Conversation->Starter);
             $service->setAutoSendNotifications(false);
             $service->setRecipientsTrusted(\XF::visitor());
             $service->save();

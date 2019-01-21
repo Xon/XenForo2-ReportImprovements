@@ -64,4 +64,20 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
 
         return $report->content_info['message_date'];
     }
+
+    public function getContentLink(Report $report)
+    {
+        $url = parent::getContentLink($report);
+        if (!$url)
+        {
+            /** @var \XF\Entity\ConversationMessage $message */
+            $message = $report->Content;
+            if ($message && $message->canView())
+            {
+                $url = \XF::app()->router()->buildLink('conversations/messages', $message);
+            }
+        }
+
+        return $url;
+    }
 }

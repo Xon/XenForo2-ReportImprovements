@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<xf:if is=\"\\$report.link\">.*?go_to_content.*?)(\\s*</xf:if>)#si",
-    "replace": "$1\n<xf:elseif is=\"$report.canJoinConversation()\" />\n\t<div class=\"block-footer\">\n\t\t<span class=\"block-footer-controls\"><xf:button href=\"{{ link('reports/conversation-join', $report) }}\">{{ phrase('svReportImprov_join_conversation') }}</xf:button></span>\n\t</div>\n$2"
+    "replace": "$1\n<xf:elseif is=\"$report.canJoinConversation()\" />\n\t<div class=\"block-footer\">\n\t\t<span class=\"block-footer-controls\"><xf:button href=\"{{ link('reports/conversation-join', $report) }}\"  overlay=\"true\" data-cache=\"0\">{{ phrase('svReportImprov_join_conversation') }}</xf:button></span>\n\t</div>\n$2"
 }
