@@ -112,7 +112,7 @@ class WarningLog extends Entity
             'warning_id'              => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'content_type'            => ['type' => self::BINARY, 'maxLength' => 25, 'required' => true],
             'content_id'              => ['type' => self::UINT, 'required' => true],
-            'content_title'           => ['type' => self::STR, 'maxLength' => 255, 'required' => true],
+            'content_title'           => ['type' => self::STR, 'maxLength' => 255, 'default' => ''],
             'user_id'                 => ['type' => self::UINT, 'required' => true],
             'warning_date'            => ['type' => self::UINT, 'required' => true],
             'warning_user_id'         => ['type' => self::UINT, 'required' => true],
