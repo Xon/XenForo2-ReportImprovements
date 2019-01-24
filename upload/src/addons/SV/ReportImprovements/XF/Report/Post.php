@@ -64,4 +64,16 @@ class Post extends XFCP_Post implements ContentInterface
 
         return $report->content_info['post_date'];
     }
+
+    public function getContentLink(Report $report)
+    {
+        $reportInfo = $report->content_info;
+        if ($reportInfo && !isset($reportInfo['post_id']))
+        {
+            // XF1 => XF2 conversion bug
+            $reportInfo['post_id'] = $report->content_id;
+            $report->content_info = $reportInfo;
+        }
+        return parent::getContentLink($report);
+    }
 }

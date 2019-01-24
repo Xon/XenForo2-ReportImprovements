@@ -59,4 +59,16 @@ class User extends XFCP_User
             'username' => $name
         ]);
     }
+
+    public function getContentLink(Report $report)
+    {
+        $reportInfo = $report->content_info;
+        if ($reportInfo && !isset($reportInfo['user_id']))
+        {
+            // XF1 => XF2 conversion bug
+            $reportInfo['user_id'] = $report->content_id;
+            $report->content_info = $reportInfo;
+        }
+        return parent::getContentLink($report);
+    }
 }
