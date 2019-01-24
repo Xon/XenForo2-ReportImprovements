@@ -2,6 +2,8 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\ReportImprovements\Globals;
+use SV\Utils\BypassAccessStatus;
 use XF\Search\Data\AbstractData;
 use XF\Mvc\Entity\Entity;
 use XF\Search\MetadataStructure;
@@ -269,6 +271,31 @@ class ReportComment extends AbstractData
      */
     public function getTypePermissionConstraints(Query $query, $isOnlyType)
     {
+        if (!Globals::$reportInAccountPostings)
+        {
+//            $bypass = new BypassAccessStatus();
+//            $getter = $bypass->getPrivate($query, 'search');
+//            /** @var \XF\Search\Search $search */
+//            $search = $getter();
+//            $getter = $bypass->getPrivate($search, 'source');
+//            /** @var \XF\Search\Source\AbstractSource $source */
+//            $source = $getter();
+//            if ($source instanceof \XFES\Search\Source\Elasticsearch)
+//            {
+//                $getter = $bypass->getPrivate($source, 'es');
+//                /** @var \XFES\Elasticsearch\Api $es */
+//                $es = $getter();
+//                if ($es->isSingleTypeIndex())
+//                {
+//
+//                }
+//            }
+            // todo verify this works with ES5 or older
+            return [
+                new MetadataConstraint('type', 'report', 'none')
+            ];
+        }
+
         // if a visitor can't view the username of a reporter, just prevent searching for reports by users
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();

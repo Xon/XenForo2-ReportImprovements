@@ -10,6 +10,11 @@ namespace SV\ReportImprovements;
 class Globals
 {
     /**
+     * @var bool
+     */
+    public static $reportInAccountPostings = true;
+
+    /**
      * @var null|bool
      */
     public static $expiringFromCron;
@@ -28,9 +33,4 @@ class Globals
      * @var null|bool
      */
     public static $allowSavingReportComment;
-
-    /**
-     * @var null|bool
-     */
-    public static $returnAsIsModeratorIfCanViewReports;
 }
