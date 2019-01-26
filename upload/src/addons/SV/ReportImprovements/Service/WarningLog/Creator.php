@@ -39,6 +39,9 @@ class Creator extends AbstractService
      */
     protected $warningLog;
 
+    /** @var \SV\ReportImprovements\XF\Entity\Report */
+    protected $report;
+
     /**
      * @var \XF\Service\Report\Creator|\SV\ReportImprovements\XF\Service\Report\Creator
      */
@@ -146,7 +149,7 @@ class Creator extends AbstractService
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $this->warning->Report);
             }
-            else if (!$this->warning->Report && $this->app->options()->sv_report_new_warnings)
+            else if (!$this->warning->Report && $this->app->options()->sv_report_new_warnings && $this->warning->Content)
             {
                 $this->reportCreator = $this->service('XF:Report\Creator', $this->warning->content_type, $this->warning->Content);
             }
@@ -193,6 +196,22 @@ class Creator extends AbstractService
     }
 
     /**
+     * @return WarningLog
+     */
+    public function getWarningLog()
+    {
+        return $this->warningLog;
+    }
+
+    /**
+     * @return \SV\ReportImprovements\XF\Entity\Report
+     */
+    public function getReport()
+    {
+        return $this->report;
+    }
+
+    /**
      * @return array
      */
     protected function _validate()
@@ -226,7 +245,7 @@ class Creator extends AbstractService
             {
                 $this->reportCreator->validate($reportCreatorErrors);
             }
-            else
+            else if ($this->reportCommenter)
             {
                 $this->reportCommenter->validate($reportCommenterErrors);
             }
@@ -266,7 +285,7 @@ class Creator extends AbstractService
         {
             /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
             $comment = $this->reportCreator->getCommentPreparer()->getComment();
-            $report = $this->reportCreator->getReport();
+            $report = $this->report = $this->reportCreator->getReport();
             $resolveState = $this->autoResolve && !$this->wasClosed($report) ? 'resolved' : '';
             $comment->bulkSet([
                 'warning_log_id' => $this->warningLog->warning_log_id,
@@ -285,7 +304,7 @@ class Creator extends AbstractService
         {
             /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
             $comment = $this->reportCommenter->getComment();
-            $report = $comment->Report;
+            $report = $this->report = $comment->Report;
 
             $comment->bulkSet([
                 'warning_log_id' => $this->warningLog->warning_log_id,

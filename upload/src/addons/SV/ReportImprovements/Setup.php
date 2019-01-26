@@ -173,6 +173,24 @@ class Setup extends AbstractSetup
         }
     }
 
+    public function postInstall(array &$stateChanges)
+    {
+        \XF::app()->jobManager()->enqueueUnique(
+            'warningLogMigration',
+            'SV\ReportImprovements:WarningLogMigration',
+            []
+        );
+    }
+
+    public function postUpgrade($previousVersion, array &$stateChanges)
+    {
+        \XF::app()->jobManager()->enqueueUnique(
+            'warningLogMigration',
+            'SV\ReportImprovements:WarningLogMigration',
+            []
+        );
+    }
+
     /**
      * @noinspection PhpDocMissingThrowsInspection
      * @param int|null $previousVersion
