@@ -242,17 +242,15 @@ class Creator extends AbstractService
             }
         };
 
-        $this->warningLog->preSave();
-        $warningLogErrors = $this->warningLog->getErrors();
-
-        $reportCreatorErrors = [];
-        $reportCommenterErrors = [];
-
-
         $oldVal = Globals::$allowSavingReportComment;
         Globals::$allowSavingReportComment = true;
         try
         {
+            $this->warningLog->preSave();
+            $warningLogErrors = $this->warningLog->getErrors();
+            $reportCreatorErrors = [];
+            $reportCommenterErrors = [];
+
             if ($this->reportCreator)
             {
                 $this->reportCreator->validate($reportCreatorErrors);
