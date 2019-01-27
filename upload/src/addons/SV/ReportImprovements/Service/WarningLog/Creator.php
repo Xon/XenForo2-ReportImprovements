@@ -55,6 +55,10 @@ class Creator extends AbstractService
     /** @var bool */
     protected $autoResolve;
 
+    /** @var bool|null */
+    protected $autoResolveNewReports = null;
+
+
     /**
      * Creator constructor.
      *
@@ -91,6 +95,14 @@ class Creator extends AbstractService
     public function setAutoResolve($autoResolve)
     {
         $this->autoResolve = (bool)$autoResolve;
+    }
+
+    /**
+     * @param bool|null $autoResolve
+     */
+    public function setAutoResolveNewReports($autoResolve)
+    {
+        $this->autoResolveNewReports = (bool)$autoResolve;
     }
 
     /**
@@ -283,10 +295,16 @@ class Creator extends AbstractService
         $this->warningLog->save(true, false);
         if ($this->reportCreator)
         {
+            $autoResolve = $this->autoResolve;
+            if ($this->autoResolveNewReports != null)
+            {
+                $autoResolve = $this->autoResolveNewReports;
+            }
+
             /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
             $comment = $this->reportCreator->getCommentPreparer()->getComment();
             $report = $this->report = $this->reportCreator->getReport();
-            $resolveState = $this->autoResolve && !$this->wasClosed($report) ? 'resolved' : '';
+            $resolveState = $autoResolve && !$this->wasClosed($report) ? 'resolved' : '';
             $comment->bulkSet([
                 'warning_log_id' => $this->warningLog->warning_log_id,
                 'is_report' => false,

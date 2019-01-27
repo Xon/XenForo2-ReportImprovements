@@ -67,6 +67,7 @@ class WarningLogMigration extends AbstractRebuildJob
                     /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
                     $warningLogCreator = \XF::app()->service('SV\ReportImprovements:WarningLog\Creator', $warning, 'new');
                     $warningLogCreator->setAutoResolve(false);
+                    $warningLogCreator->setAutoResolveNewReports(true);
                     if ($warningLogCreator->validate($errors))
                     {
                         $warningLogCreator->save();
