@@ -314,6 +314,11 @@ class Creator extends AbstractService
             if ($resolveState)
             {
                 $report->set('report_state', $resolveState, ['forceSet' => true]);
+                // if Report Centre Essentials is installed, then mark this as an autoreport
+                if (isset($report->structure()->columns['autoreported']))
+                {
+                    $report->set('autoreported', true, ['forceSet' => true]);
+                }
             }
 
             $this->reportCreator->save();
