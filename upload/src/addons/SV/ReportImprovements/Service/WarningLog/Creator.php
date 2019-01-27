@@ -280,7 +280,7 @@ class Creator extends AbstractService
     {
         $this->db()->beginTransaction();
 
-        $this->warningLog->save();
+        $this->warningLog->save(true, false);
         if ($this->reportCreator)
         {
             /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
@@ -321,6 +321,7 @@ class Creator extends AbstractService
             {
                 $comment->set('state_change', '', ['forceSet' => true]);
                 $report->set('report_state', $report->getPreviousValue('report_state'), ['forceSet' => true]);
+                $report->set('assigned_user_id', $report->getPreviousValue('assigned_user_id'), ['forceSet' => true]);
             }
 
             $this->reportCommenter->save();

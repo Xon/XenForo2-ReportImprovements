@@ -40,7 +40,7 @@ class WarningLogMigration extends AbstractRebuildJob
     protected function rebuildById($id)
     {
         /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
-        $warning = $this->app->em()->find('XF:Warning', $id);
+        $warning = $this->app->em()->find('XF:Warning', $id, ['User', 'WarnedBy']);
         if ($warning)
         {
             Globals::$expiringFromCron = false;
@@ -61,6 +61,7 @@ class WarningLogMigration extends AbstractRebuildJob
             \XF::asVisitor($user, function () use ($warning) {
                 $time = \XF::$time;
                 \XF::$time = $warning->warning_date;
+                Globals::$suppressReportStateChange = true;
                 try
                 {
                     /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
@@ -68,35 +69,13 @@ class WarningLogMigration extends AbstractRebuildJob
                     $warningLogCreator->setAutoResolve(false);
                     if ($warningLogCreator->validate($errors))
                     {
-                        $db = \XF::db();
-                        $db->beginTransaction();
-
                         $warningLogCreator->save();
-                        $report = $warningLogCreator->getReport();
-                        if ($report && $report->exists())
-                        {
-                            if ($warning->warning_date < $report->first_report_date)
-                            {
-                                $report->first_report_date = $warning->warning_date;
-                            }
-                            $last_modified_date = $report->last_modified_date;
-                            if ($warning->warning_date > $last_modified_date || $last_modified_date === \XF::$time)
-                            {
-                                $report->last_modified_date = $warning->warning_date;
-                            }
-                            if ($report->isChanged('last_modified_date'))
-                            {
-                                $report->last_modified_id = 0;
-                            }
-                            $report->saveIfChanged($saved, true, false);
-                        }
-
-                        $db->commit();
                     }
                 }
                 finally
                 {
                     \XF::$time = $time;
+                    Globals::$suppressReportStateChange = false;
                 }
             });
         }

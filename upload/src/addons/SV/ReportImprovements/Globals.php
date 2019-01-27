@@ -33,4 +33,7 @@ class Globals
      * @var null|bool
      */
     public static $allowSavingReportComment;
+
+    /** @var bool  */
+    public static $suppressReportStateChange = false;
 }

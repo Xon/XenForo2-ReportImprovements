@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Service\Report;
 
+use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\Report;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 
@@ -17,12 +18,30 @@ use SV\ReportImprovements\XF\Entity\ReportComment;
  */
 class Commenter extends XFCP_Commenter
 {
+    protected function setCommentDefaults()
+    {
+        parent::setCommentDefaults();
+        $report = $this->report;
+        $report->last_modified_date = \XF::$time;
+        if ($report->last_modified_date < $report->getPreviousValue('last_modified_date'))
+        {
+            $report->last_modified_date = $report->getPreviousValue('last_modified_date');
+            $report->last_modified_user_id = $report->getPreviousValue('last_modified_user_id');
+            $report->last_modified_username = $report->getPreviousValue('last_modified_username');
+        }
+    }
+
     /**
      * @param null                 $newState
      * @param \XF\Entity\User|null $assignedUser
      */
     public function setReportState($newState = null, \XF\Entity\User $assignedUser = null)
     {
+        if (Globals::$suppressReportStateChange)
+        {
+            return;
+        }
+
         $oldAssignedUserId = null;
         if ($newState !== 'open')
         {
