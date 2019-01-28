@@ -117,9 +117,7 @@ class WarningLog extends Entity
             'warning_date'            => ['type' => self::UINT, 'required' => true],
             'warning_user_id'         => ['type' => self::UINT, 'required' => true],
             'warning_definition_id'   => ['type' => self::UINT, 'default' => null, 'nullable' => true],
-            'title' => ['type' => self::STR, 'maxLength' => 255,
-                'required' => 'please_enter_valid_title'
-            ],
+            'title' => ['type' => self::STR, 'maxLength' => 255, 'default' => ''], // should be required but...
             'notes' => ['type' => self::STR, 'default' => ''],
             'points' => ['type' => self::UINT, 'max' => 65535, 'nullable' => true, 'default' => null],
             'expiry_date' => ['type' => self::UINT, 'default' => 0],
