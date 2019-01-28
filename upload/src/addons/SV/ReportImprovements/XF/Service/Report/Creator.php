@@ -16,19 +16,22 @@ class Creator extends XFCP_Creator
     }
 
     /**
+     * @return \XF\Entity\ReportComment
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
      * @throws \Exception
      */
     public function sendNotifications()
     {
         parent::sendNotifications();
 
-        if (!$this->report->exists())
-        {
-            return;
-        }
-
-        $comment = $this->commentPreparer->getComment();
-        if (!$comment)
+        if (!$this->report->exists() ||
+            !$this->comment->exists())
         {
             return;
         }
@@ -38,7 +41,7 @@ class Creator extends XFCP_Creator
         $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($this->report);
 
         /** @var \SV\ReportImprovements\XF\Service\Report\Notifier $notifier */
-        $notifier = $this->service('XF:Report\Notifier', $this->report, $comment);
+        $notifier = $this->service('XF:Report\Notifier', $this->report, $this->comment);
         $notifier->setCommentersUserIds($userIdsToAlert);
         $notifier->notify();
     }

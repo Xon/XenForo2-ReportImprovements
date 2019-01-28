@@ -2,7 +2,7 @@
     "legacy_addon_id": "SV_ReportImprovements",
     "title": "Report Improvements",
     "description": "Unifies reports with warnings, reply-bans and more",
-    "version_id": 2010301,
+    "version_id": 2010302,
     "version_string": "2.1.3",
     "dev": "Atelier Aphelion",
     "dev_url": "https://atelieraphelion.com",

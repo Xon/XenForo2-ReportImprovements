@@ -97,6 +97,18 @@ class WarningLog extends Entity
     }
 
     /**
+     * @return \XF\Mvc\Entity\DeferredValue
+     */
+    public function getDeferredPrimaryId()
+    {
+        return $this->_getDeferredValue(
+            function() {
+                return $this->warning_log_id;
+            }, 'save'
+        );
+    }
+
+    /**
      * @param Structure $structure
      * @return Structure
      */

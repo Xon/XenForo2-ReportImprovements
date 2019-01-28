@@ -199,10 +199,16 @@ class Creator extends AbstractService
             if ($report)
             {
                 $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
+                /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
+                $comment = $this->reportCommenter->getComment();
+                $comment->warning_log_id = $warningLog->getDeferredPrimaryId();
             }
             else if (!$report)
             {
                 $this->reportCreator = $this->service('XF:Report\Creator', $content->getEntityContentType(), $content);
+                /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
+                $comment = $this->reportCreator->getComment();
+                $comment->warning_log_id = $warningLog->getDeferredPrimaryId();
             }
         }
     }
