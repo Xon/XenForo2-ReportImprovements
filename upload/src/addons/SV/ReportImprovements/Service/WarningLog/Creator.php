@@ -234,17 +234,25 @@ class Creator extends AbstractService
      */
     protected function _validate()
     {
-        $showErrorException = function ($errorFor, $errors)
+        $showErrorException = function ($errorFor, array $errors, array &$errorOutput)
         {
             if (\count($errors))
             {
-                $error = reset($errors);
-                if ($error instanceof \XF\Phrase)
+                foreach($errors as $key => $error)
                 {
-                    $error = $error->render('raw');
+                    if ($error instanceof \XF\Phrase)
+                    {
+                        $error = $error->render('raw');
+                    }
+                    if (\is_numeric($key))
+                    {
+                        $errorOutput[] = "{$errorFor}: {$error}";
+                    }
+                    else
+                    {
+                        $errorOutput[] = "{$errorFor}-{$key}: {$error}";
+                    }
                 }
-
-                throw new \RuntimeException("{$errorFor}: " . $error);
             }
         };
 
@@ -270,9 +278,14 @@ class Creator extends AbstractService
         {
             Globals::$allowSavingReportComment = $oldVal;
         }
-        $showErrorException('Warning log', $warningLogErrors);
-        $showErrorException('Report', $reportCreatorErrors);
-        $showErrorException('Report comment', $reportCommenterErrors);
+        $errorOutput = [];
+        $showErrorException('Warning log', $warningLogErrors, $errorOutput);
+        $showErrorException('Report', $reportCreatorErrors, $errorOutput);
+        $showErrorException('Report comment', $reportCommenterErrors, $errorOutput);
+        if ($errorOutput)
+        {
+            throw new \RuntimeException("Warning:{$this->warning->warning_id}, \n" . join(", \n", $errorOutput));
+        }
 
         return [];
     }
