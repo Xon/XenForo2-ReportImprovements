@@ -135,82 +135,119 @@ class Creator extends AbstractService
     {
         $this->warningLog = $this->em()->create('SV\ReportImprovements:WarningLog');
         $warningLog = $this->warningLog;
-
         $warningLog->operation_type = $this->operationType;
-        if ($warningLog->operation_type === 'new')
-        {
-            $warningLog->warning_edit_date = 0;
-        }
-        else
-        {
-            $warningLog->warning_edit_date = \XF::$time;
-        }
+        $warningLog->warning_edit_date = $this->operationType === 'new' ? 0 : \XF::$time;
 
+        $report = null;
         if ($this->warning)
         {
-            foreach ($this->getFieldsToLog() AS $field)
-            {
-                if ($this->warning->offsetExists($field))
-                {
-                    $fieldValue = $this->warning->get($field);
-                    $warningLog->set($field, $fieldValue);
-                }
-            }
-
-            if ($this->warning->Report)
-            {
-                $this->reportCommenter = $this->service('XF:Report\Commenter', $this->warning->Report);
-            }
-            else if (!$this->warning->Report && $this->app->options()->sv_report_new_warnings && $this->warning->Content)
-            {
-                $this->reportCreator = $this->service('XF:Report\Creator', $this->warning->content_type, $this->warning->Content);
-            }
+            $report = $this->setupDefaultsForWarning();
         }
-        else if ($threadReplyBan = $this->threadReplyBan)
+        else if ($this->threadReplyBan)
         {
-            $warningLog->warning_date = \XF::$time;
+            $report = $this->setupDefaultsForThreadReplyBan();
+        }
 
-            $report = $threadReplyBan->Report;
-            $content = $threadReplyBan->User;
-            $contentTitle = $threadReplyBan->User->username;
+        /** @var \SV\ReportImprovements\XF\Entity\ReportComment|null $comment */
+        $comment = null;
+        if ($this->reportCommenter)
+        {
+            $comment = $this->reportCommenter->getComment();
+        }
+        else if ($this->reportCreator)
+        {
+            $comment = $this->reportCreator->getComment();
+        }
 
-            if ($post = $threadReplyBan->Post)
-            {
-                $report = $post->Report;
-                $content = $post;
-                $contentTitle = \XF::phrase('post_in_thread_x', [
-                    'title' => $post->Thread->title
-                ])->render('raw');
-            }
-
-            $warningLog->content_type = $content->getEntityContentType();
-            $warningLog->content_id = $content->getExistingEntityId();
-            $warningLog->content_title = $contentTitle;
-            $warningLog->expiry_date = $threadReplyBan->expiry_date;
-            $warningLog->is_expired = $threadReplyBan->expiry_date > \XF::$time;
-            $warningLog->reply_ban_thread_id = $threadReplyBan->thread_id;
-            $warningLog->reply_ban_post_id = $content instanceof \XF\Entity\Post ? $content->getEntityId() : 0;
-            $warningLog->user_id = $threadReplyBan->user_id;
-            $warningLog->warning_user_id = \XF::visitor()->user_id;
-            $warningLog->warning_definition_id = null;
-            $warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render('raw');
-            $warningLog->notes = $warningLog->getReplyBanLink() . "\n" . $threadReplyBan->reason;
-
+        if ($comment)
+        {
+            $comment->warning_log_id = $warningLog->getDeferredPrimaryId();
+            $comment->hydrateRelation('WarningLog', $warningLog);
             if ($report)
             {
-                $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
-                /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
-                $comment = $this->reportCommenter->getComment();
-                $comment->warning_log_id = $warningLog->getDeferredPrimaryId();
-            }
-            else if (!$report)
-            {
-                $this->reportCreator = $this->service('XF:Report\Creator', $content->getEntityContentType(), $content);
-                /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
-                $comment = $this->reportCreator->getComment();
-                $comment->warning_log_id = $warningLog->getDeferredPrimaryId();
+                $comment->hydrateRelation('Report', $report);
             }
         }
+    }
+
+    /**
+     * @return \SV\ReportImprovements\XF\Entity\Report|\XF\Entity\Report|null
+     */
+    protected function setupDefaultsForWarning()
+    {
+        $warningLog = $this->warningLog;
+        $warning = $this->warning;
+        $report = $warning->Report;
+
+        foreach ($this->getFieldsToLog() AS $field)
+        {
+            if ($warning->offsetExists($field))
+            {
+                $fieldValue = $warning->get($field);
+                $warningLog->set($field, $fieldValue);
+            }
+        }
+
+        if ($report)
+        {
+            $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
+        }
+        else if (!$report && $this->app->options()->sv_report_new_warnings && $warning->Content)
+        {
+            $this->reportCreator = $this->service('XF:Report\Creator', $warning->content_type, $warning->Content);
+            $report = $this->reportCreator->getReport();
+        }
+
+        return $report;
+    }
+
+    /**
+     * @return \SV\ReportImprovements\XF\Entity\Report|null
+     */
+    protected function setupDefaultsForThreadReplyBan()
+    {
+        $warningLog = $this->warningLog;
+        $threadReplyBan = $this->threadReplyBan;
+        $warningLog->warning_date = \XF::$time;
+
+        $report = $threadReplyBan->Report;
+        $content = $threadReplyBan->User;
+        $contentTitle = $threadReplyBan->User->username;
+
+        $post = $threadReplyBan->Post;
+        if ($post)
+        {
+            $report = $post->Report;
+            $content = $post;
+            $contentTitle = \XF::phrase('post_in_thread_x', [
+                'title' => $post->Thread->title
+            ])->render('raw');
+        }
+
+        $warningLog->content_type = $content->getEntityContentType();
+        $warningLog->content_id = $content->getExistingEntityId();
+        $warningLog->content_title = $contentTitle;
+        $warningLog->expiry_date = $threadReplyBan->expiry_date;
+        $warningLog->is_expired = $threadReplyBan->expiry_date > \XF::$time;
+        $warningLog->reply_ban_thread_id = $threadReplyBan->thread_id;
+        $warningLog->reply_ban_post_id = $content instanceof \XF\Entity\Post ? $content->getEntityId() : 0;
+        $warningLog->user_id = $threadReplyBan->user_id;
+        $warningLog->warning_user_id = \XF::visitor()->user_id;
+        $warningLog->warning_definition_id = null;
+        $warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render('raw');
+        $warningLog->notes = $warningLog->getReplyBanLink() . "\n" . $threadReplyBan->reason;
+
+        if ($report)
+        {
+            $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
+        }
+        else if (!$report)
+        {
+            $this->reportCreator = $this->service('XF:Report\Creator', $content->getEntityContentType(), $content);
+            $report = $this->reportCreator->getReport();
+        }
+
+        return $report;
     }
 
     /**
@@ -284,7 +321,11 @@ class Creator extends AbstractService
         $showErrorException('Report comment', $reportCommenterErrors, $errorOutput);
         if ($errorOutput)
         {
-            throw new \RuntimeException("Warning:{$this->warning->warning_id}, \n" . join(", \n", $errorOutput));
+            if ($this->warning)
+            {
+                \array_unshift($errorOutput, "Warning:{$this->warning->warning_id}");
+            }
+            throw new \RuntimeException(join(", \n", $errorOutput));
         }
 
         return [];
@@ -312,64 +353,72 @@ class Creator extends AbstractService
         $this->warningLog->save(true, false);
         if ($this->reportCreator)
         {
-            $autoResolve = $this->autoResolve;
-            if ($this->autoResolveNewReports != null)
-            {
-                $autoResolve = $this->autoResolveNewReports;
-            }
-
-            /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
-            $comment = $this->reportCreator->getCommentPreparer()->getComment();
-            $report = $this->report = $this->reportCreator->getReport();
-            $resolveState = $autoResolve && !$this->wasClosed($report) ? 'resolved' : '';
-            $comment->bulkSet([
-                'warning_log_id' => $this->warningLog->warning_log_id,
-                'is_report' => false,
-                'state_change' => $resolveState,
-            ], ['forceSet' => true]);
-
-            if ($resolveState)
-            {
-                $report->set('report_state', $resolveState, ['forceSet' => true]);
-                // if Report Centre Essentials is installed, then mark this as an autoreport
-                if (isset($report->structure()->columns['autoreported']))
-                {
-                    $report->set('autoreported', true, ['forceSet' => true]);
-                }
-            }
-
+            $this->_saveReport();
             $this->reportCreator->save();
         }
         else if ($this->reportCommenter)
         {
-            /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
-            $comment = $this->reportCommenter->getComment();
-            $report = $this->report = $comment->Report;
-
-            $comment->bulkSet([
-                'warning_log_id' => $this->warningLog->warning_log_id,
-                'is_report' => false,
-            ], ['forceSet' => true]);
-
-            if ($this->autoResolve && !$this->wasClosed($report))
-            {
-                $comment->set('state_change', 'resolved', ['forceSet' => true]);
-                $report->set('report_state', 'resolved', ['forceSet' => true]);
-                $comment->addCascadedSave($report);
-            }
-            else
-            {
-                $comment->set('state_change', '', ['forceSet' => true]);
-                $report->set('report_state', $report->getPreviousValue('report_state'), ['forceSet' => true]);
-                $report->set('assigned_user_id', $report->getPreviousValue('assigned_user_id'), ['forceSet' => true]);
-            }
-
+            $this->_saveReportComment();
             $this->reportCommenter->save();
         }
 
         $this->db()->commit();
 
         return $this->warningLog;
+    }
+
+    protected function _saveReport()
+    {
+        $autoResolve = $this->autoResolve;
+        if ($this->autoResolveNewReports != null)
+        {
+            $autoResolve = $this->autoResolveNewReports;
+        }
+
+        /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
+        $comment = $this->reportCreator->getCommentPreparer()->getComment();
+        $report = $this->report = $this->reportCreator->getReport();
+        $resolveState = $autoResolve && !$this->wasClosed($report) ? 'resolved' : '';
+        $comment->bulkSet([
+            'warning_log_id' => $this->warningLog->warning_log_id,
+            'is_report'      => false,
+            'state_change'   => $resolveState,
+        ], ['forceSet' => true]);
+
+        if ($resolveState)
+        {
+            $report->set('report_state', $resolveState, ['forceSet' => true]);
+            // if Report Centre Essentials is installed, then mark this as an autoreport
+            if (isset($report->structure()->columns['autoreported']))
+            {
+                $report->set('autoreported', true, ['forceSet' => true]);
+            }
+        }
+    }
+
+    protected function _saveReportComment()
+    {
+        /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
+        $comment = $this->reportCommenter->getComment();
+        $report = $this->report = $comment->Report;
+
+        $comment->bulkSet([
+            'warning_log_id' => $this->warningLog->warning_log_id,
+            'is_report'      => false,
+        ], ['forceSet' => true]);
+
+        if ($this->autoResolve && !$this->wasClosed($report))
+        {
+            $comment->set('state_change', 'resolved', ['forceSet' => true]);
+            $report->set('report_state', 'resolved', ['forceSet' => true]);
+            $comment->addCascadedSave($report);
+        }
+        else
+        {
+            $comment->set('state_change', '', ['forceSet' => true]);
+            $report->set('report_state', $report->getPreviousValue('report_state'), ['forceSet' => true]);
+            $report->set('assigned_user_id', $report->getPreviousValue('assigned_user_id'), ['forceSet' => true]);
+        }
     }
 
     /**
