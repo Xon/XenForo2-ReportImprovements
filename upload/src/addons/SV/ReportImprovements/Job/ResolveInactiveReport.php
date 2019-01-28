@@ -11,6 +11,9 @@ use XF\Job\AbstractRebuildJob;
  */
 class ResolveInactiveReport extends AbstractRebuildJob
 {
+    /** @var \XF\Entity\User */
+    protected $reporter;
+
     /**
      * @param int $start
      * @param int $batch
@@ -22,6 +25,19 @@ class ResolveInactiveReport extends AbstractRebuildJob
         $options = $this->app->options();
         $daysLimit = (int) $options->sv_ri_expiry_days;
         if ($daysLimit <= 0 || !$options->sv_ri_expiry_action)
+        {
+            return null;
+        }
+
+        $app = $this->app;
+        $options = $app->options();
+        /** @var  $reporter */
+        $this->reporter = $app->find('XF:User', $options->sv_ri_user_id ?: 1);
+        if (!$this->reporter)
+        {
+            $this->reporter = $app->find('XF:User', 1);
+        }
+        if (!$this->reporter)
         {
             return null;
         }
@@ -42,19 +58,23 @@ class ResolveInactiveReport extends AbstractRebuildJob
 
     /**
      * @param $id
+     * @throws \Exception
      */
     protected function rebuildById($id)
     {
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        if ($report = $this->app->em()->find('XF:Report', $id))
+        $report = $this->app->em()->find('XF:Report', $id);
+        if ($report)
         {
-            /** @var \SV\ReportImprovements\XF\Service\Report\Commenter $commenterService */
-            $commenterService = $this->app->service('XF:Report\Commenter', $report);
-            $commenterService->setReportState($this->app->options()->sv_ri_expiry_action);
-            if ($commenterService->validate($errors))
-            {
-                $commenterService->save();
-            }
+            \XF::asVisitor($this->reporter, function () use ($report) {
+                /** @var \SV\ReportImprovements\XF\Service\Report\Commenter $commenterService */
+                $commenterService = $this->app->service('XF:Report\Commenter', $report);
+                $commenterService->setReportState($this->app->options()->sv_ri_expiry_action);
+                if ($commenterService->validate($errors))
+                {
+                    $commenterService->save();
+                }
+            });
         }
     }
 
