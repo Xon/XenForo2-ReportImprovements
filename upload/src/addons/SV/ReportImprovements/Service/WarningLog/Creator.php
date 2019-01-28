@@ -179,6 +179,9 @@ class Creator extends AbstractService
         $warning = $this->warning;
         $report = $warning->Report;
 
+        $warningLog->hydrateRelation('Warning', $warning);
+        $warningLog->hydrateRelation('User', $warning->User);
+
         foreach ($this->getFieldsToLog() AS $field)
         {
             if ($warning->offsetExists($field))
@@ -214,9 +217,14 @@ class Creator extends AbstractService
         $content = $threadReplyBan->User;
         $contentTitle = $threadReplyBan->User->username;
 
+        $warningLog->hydrateRelation('ReplyBanThread', $threadReplyBan);
+        $warningLog->hydrateRelation('User', $threadReplyBan->User);
+
         $post = $threadReplyBan->Post;
         if ($post)
         {
+            $warningLog->hydrateRelation('ReplyBanPost', $post);
+
             $report = $post->Report;
             $content = $post;
             $contentTitle = \XF::phrase('post_in_thread_x', [
