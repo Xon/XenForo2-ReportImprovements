@@ -1,6 +1,6 @@
 {
     "event_id": "app_pub_start_end",
-    "execute_order": 10,
+    "execute_order": 9950,
     "callback_class": "SV\\ReportImprovements\\Listener",
     "callback_method": "appPubStartEnd",
     "active": true,
