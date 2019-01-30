@@ -117,7 +117,7 @@ class ReportComment extends XFCP_ReportComment
     {
         parent::_postSave();
 
-        if ($this->isInsert() && $this->Report && $this->Report->last_modified_date < $this->comment_date)
+        if ($this->Report && $this->Report->last_modified_date <= $this->comment_date)
         {
             $this->Report->fastUpdate('last_modified_id', $this->report_comment_id);
         }

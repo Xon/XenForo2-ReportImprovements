@@ -65,6 +65,19 @@ class Setup extends AbstractSetup
         $this->upgrade1090200Step1();
     }
 
+    public function installStep6()
+    {
+        /** @noinspection SqlResolve */
+        $this->db()->query('
+          update xf_report
+          set last_modified_id = coalesce((select report_comment_id 
+                                  from xf_report_comment 
+                                  where xf_report_comment.report_id = xf_report.report_id
+                                  order by comment_date desc
+                                  limit 1), 0)
+        ');
+    }
+
     public function upgrade1090100Step1()
     {
         $this->app->jobManager()->enqueueUnique(
@@ -100,20 +113,6 @@ class Setup extends AbstractSetup
         $this->installStep2();
     }
 
-    public function upgrade2000002Step3()
-    {
-        /** @noinspection SqlResolve */
-        $this->db()->query('
-          update xf_report
-          set last_modified_id = coalesce((select report_comment_id 
-                                  from xf_report_comment 
-                                  where xf_report_comment.report_id = xf_report.report_id
-                                  order by comment_date desc
-                                  limit 1), 0)
-          where last_modified_id = 0
-        ');
-    }
-
     public function upgrade2000002Step4()
     {
         /** @noinspection SqlResolve */
@@ -142,6 +141,11 @@ class Setup extends AbstractSetup
           set reply_ban_post_id = null
           where reply_ban_post_id = 0
         ');
+    }
+
+    public function upgrade2010400Step1()
+    {
+        $this->installStep6();
     }
 
     /**
