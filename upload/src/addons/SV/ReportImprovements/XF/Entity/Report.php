@@ -124,6 +124,26 @@ class Report extends XFCP_Report
     }
 
     /**
+     * @param bool $includeSelf
+     *
+     * @return array
+     */
+    public function getBreadcrumbs($includeSelf = true)
+    {
+        $breadcrumbs = [];
+
+        if ($includeSelf)
+        {
+            $breadcrumbs[] = [
+                'value' => $this->title,
+                'href' => \XF::app()->router()->buildLink('reports', $this),
+            ];
+        }
+
+        return $breadcrumbs;
+    }
+
+    /**
      * @return int|null
      */
     public function getContentDate()
