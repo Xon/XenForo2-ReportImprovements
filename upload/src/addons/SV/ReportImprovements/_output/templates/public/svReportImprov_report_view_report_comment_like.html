@@ -16,6 +16,6 @@
 	</xf:if>
 
 	<div class="likesBar js-likeList {{ $comment.likes ? 'is-active' : '' }}">
-		<xf:likes content="{$comment}" url="{{ link('reports/likes', {'report_comment_id': $comment.report_comment_id}) }}" />
+		<xf:likes content="{$comment}" url="{{ link('reports/likes', $comment.Report, {'report_comment_id': $comment.report_comment_id}) }}" />
 	</div>
 </footer>
