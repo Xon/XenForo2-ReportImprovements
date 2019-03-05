@@ -285,7 +285,10 @@ class Report extends XFCP_Report
     {
         $structure = parent::getStructure($structure);
 
-        $structure->contentType = 'report';
+        if (!$structure->contentType)
+        {
+            $structure->contentType = 'report';
+        }
 
         $structure->behaviors['XF:Indexable'] = [
             'checkForUpdates' => ['content_user_id', 'content_info', 'first_report_date', 'report_state']

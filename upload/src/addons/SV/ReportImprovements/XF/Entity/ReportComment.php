@@ -155,7 +155,10 @@ class ReportComment extends XFCP_ReportComment
     {
         $structure = parent::getStructure($structure);
 
-        $structure->contentType = 'report_comment';
+        if (!$structure->contentType)
+        {
+            $structure->contentType = 'report_comment';
+        }
 
         $structure->columns['warning_log_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
         $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => false];
