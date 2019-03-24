@@ -67,7 +67,10 @@ class Report extends AbstractData
                 /** @var \SV\ReportImprovements\XF\Entity\Report $report */
                 $report = $reportsByContentType[$contentType][$contentId];
 
-                $report->setContent($reportContent);
+                if ($reportContent)
+                {
+                    $report->setContent($reportContent);
+                }
             }
         }
 

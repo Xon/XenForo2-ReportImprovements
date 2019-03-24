@@ -161,7 +161,7 @@ class Report extends XFCP_Report
     /**
      * @param Entity $content
      */
-    public function setContent(Entity $content)
+    public function setContent(Entity $content = null)
     {
         $this->_valueCache['Content'] = $content;
     }
