@@ -188,6 +188,8 @@ class Setup extends AbstractSetup
 
     public function postUpgrade($previousVersion, array &$stateChanges)
     {
+        $this->applyDefaultPermissions($previousVersion);
+
         \XF::app()->jobManager()->enqueueUnique(
             'warningLogMigration',
             'SV\ReportImprovements:WarningLogMigration',
@@ -205,6 +207,152 @@ class Setup extends AbstractSetup
         $applied = false;
         $previousVersion = (int)$previousVersion;
         $db = $this->db();
+        $globalReportPerms = ['assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'viewReports', 'reportLike'];
+
+        // content/global moderators before bulk update
+        if (!$previousVersion || ($previousVersion <= 1040002) || ($previousVersion >= 2000000 && $previousVersion <= 2011000))
+        {
+            /** @var \XF\Repository\PermissionEntry $permissionEntryRepo */
+            $permissionEntryRepo = \XF::repository('XF:PermissionEntry');
+            /** @var \XF\Repository\Moderator $modRepo */
+            $modRepo = \XF::repository('XF:Moderator');
+
+            $contentModerators = $modRepo->findContentModeratorsForList()->fetch();
+            /** @var \XF\Entity\ModeratorContent $contentModerator */
+            foreach($contentModerators as $contentModerator)
+            {
+                $user = $contentModerator->User;
+                if (!$user)
+                {
+                    continue;
+                }
+
+                $permissions = $permissionEntryRepo->getContentUserPermissionEntries(
+                    $contentModerator->content_type,
+                    $contentModerator->content_id,
+                    $contentModerator->user_id
+                );
+                if (!$permissions)
+                {
+                    continue;
+                }
+                $newPermissions = $permissions;
+                if (!isset($newPermissions['forum']['viewReportPost']) &&
+                    (!empty($newPermissions['forum']['editAnyPost']) || !empty($newPermissions['forum']['deleteAnyPost']) || !empty($newPermissions['forum']['warn']))
+                )
+                {
+                    $newPermissions['forum']['viewReportPost'] = 'content_allow';
+                }
+                if (isset($newPermissions['forum']['viewReportPost']) && $globalReportPerms)
+                {
+                    $globalPerms = $permissionEntryRepo->getGlobalUserPermissionEntries($user->user_id);
+                    $newGlobalPerms = $globalPerms;
+                    foreach ($globalReportPerms as $perm)
+                    {
+                        $newGlobalPerms['general'][$perm] = 'allow';
+                    }
+
+                    if ($newGlobalPerms != $globalPerms)
+                    {
+                        /** @var \XF\Service\UpdatePermissions $permissionUpdater */
+                        $permissionUpdater = \XF::service('XF:UpdatePermissions');
+                        $permissionUpdater->setUser($user);
+                        $permissionUpdater->setGlobal();
+                        $permissionUpdater->updatePermissions($newGlobalPerms);
+                    }
+                }
+                if ($newPermissions != $permissions)
+                {
+                    /** @var \XF\Service\UpdatePermissions $permissionUpdater */
+                    $permissionUpdater = \XF::service('XF:UpdatePermissions');
+                    $permissionUpdater->setUser($user);
+                    $permissionUpdater->setContent($contentModerator->content_type, $contentModerator->content_id);
+                    $permissionUpdater->updatePermissions($newPermissions);
+                }
+            }
+
+            $globalReportPermsChecks = [
+                [
+                    [
+                        'general' => ['warn', 'editBasicProfile'],
+                        'conversation' => ['alwaysInvite', 'editAnyPost', 'viewAny'],
+                        'profilePost' => ['warn', 'editAnyPost', 'viewAny'],
+                    ],
+                    ['general' => $globalReportPerms]
+                ],
+                [
+                    [
+                        'profilePost' => ['warn', 'editAnyPost', 'viewAny'],
+                    ],
+                    ['general' => ['viewReportProfilePost']]
+                ],
+                [
+                    [
+                        'conversation' => ['alwaysInvite', 'editAnyPost', 'viewAny'],
+                    ],
+                    ['general' => ['viewReportConversation']]
+                ],
+                [
+                    [
+                        'forum' => ['warn', 'editAnyPost', 'deleteAnyPost']
+                    ],
+                    ['forum' => ['viewReportPost']]
+                ],
+            ];
+
+            $moderators = $modRepo->findModeratorsForList()->fetch();
+            /** @var \XF\Entity\Moderator $moderator */
+            foreach($moderators as $moderator)
+            {
+                if (!$moderator->User)
+                {
+                    continue;
+                }
+                $permissions = $permissionEntryRepo->getGlobalUserPermissionEntries($moderator->user_id);
+                if (!$permissions)
+                {
+                    continue;
+                }
+                $newPermissions = $permissions;
+                foreach ($globalReportPermsChecks as $perm => $raw)
+                {
+                    list($checks, $assignments) = $raw;
+                    foreach($checks as $category => $permToTests)
+                    {
+                        if (isset($newPermissions[$category]))
+                        {
+                            foreach ($permToTests as $permToTest)
+                            {
+                                if (isset($newPermissions[$category][$permToTest]))
+                                {
+                                    // ensure access to report centre
+                                    foreach ($assignments as $category => $perms)
+                                    {
+                                        foreach($perms as $newPerm)
+                                        {
+                                            if (empty($newPermissions[$category][$newPerm]))
+                                            {
+                                                $newPermissions[$category][$newPerm] = "allow";
+                                            }
+                                        }
+                                    }
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if ($newPermissions != $permissions)
+                {
+                    /** @var \XF\Service\UpdatePermissions $permissionUpdater */
+                    $permissionUpdater = \XF::service('XF:UpdatePermissions');
+                    $permissionUpdater->setUser($moderator->User);
+                    $permissionUpdater->setGlobal();
+                    $permissionUpdater->updatePermissions($newPermissions);
+                }
+            }
+        }
 
         if (!$previousVersion)
         {
@@ -247,7 +395,6 @@ class Setup extends AbstractSetup
         }
         if ($previousVersion < 1020200)
         {
-            $globalReportPerms = ['assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'viewReports', 'reportLike'];
             foreach ($globalReportPerms as $perm)
             {
                 $db->query(
@@ -258,106 +405,6 @@ class Setup extends AbstractSetup
                 ", $perm
                 );
             }
-        }
-
-        if (!$previousVersion || $previousVersion <= 1040002)
-        {
-            /* todo - convert & support content moderators
-            $moderatorModel = XenForo_Model::create('XenForo_Model_Moderator');
-            $contentModerators = $moderatorModel->getContentModerators();
-            foreach ($contentModerators as $contentModerator)
-            {
-                $permissions = @unserialize($contentModerator['moderator_permissions']);
-                if (empty($permissions))
-                {
-                    continue;
-                }
-                $changes = false;
-                if (!isset($permissions['forum']['viewReportPost']) &&
-                    (!empty($permissions['forum']['editAnyPost']) || !empty($permissions['forum']['deleteAnyPost']) || !empty($permissions['forum']['warn']))
-                )
-                {
-                    $permissions['forum']['viewReportPost'] = "1";
-                    $changes = true;
-                }
-                if ($changes)
-                {
-                    $moderatorModel->insertOrUpdateContentModerator($contentModerator['user_id'], $contentModerator['content_type'], $contentModerator['content_id'], $permissions);
-                }
-            }
-            $moderators = $moderatorModel->getAllGeneralModerators();
-            $globalReportPerms = array(
-                'assignReport'           => array('general' => array('warn', 'editBasicProfile')),
-                'replyReport'            => array('general' => array('warn', 'editBasicProfile')),
-                'replyReportClosed'      => array('general' => array('warn', 'editBasicProfile')),
-                'updateReport'           => array('general' => array('warn', 'editBasicProfile')),
-                'viewReporterUsername'   => array('general' => array('warn', 'editBasicProfile')),
-                'viewReports'            => array('general' => array('warn', 'editBasicProfile')),
-                'reportLike'             => array('general' => array('warn', 'editBasicProfile')),
-                'viewReportPost'         => array('forum' => array('warn', 'editAnyPost', 'deleteAnyPost')),
-                'viewReportConversation' => array('conversation' => array('alwaysInvite', 'editAnyPost', 'viewAny')),
-                'viewReportProfilePost'  => array('profilePost' => array('warn', 'editAnyPost', 'viewAny')),
-                'viewReportUser'         => array('general' => array('warn', 'editBasicProfile')),
-            );
-
-            foreach ($moderators as $moderator)
-            {
-                $userPerms = $db->fetchAll(
-                    '
-                    SELECT *
-                    FROM xf_permission_entry
-                    WHERE user_id = ?
-                ', array($moderator['user_id'])
-                );
-                if (empty($userPerms))
-                {
-                    continue;
-                }
-
-                $userPermsGrouped = array();
-                foreach ($userPerms as $userPerm)
-                {
-                    if ($userPerm['permission_value'] == 'allow')
-                    {
-                        $userPermsGrouped[$userPerm['permission_group_id']][$userPerm['permission_id']] = "1";
-                    }
-                }
-                $permissions = @unserialize($moderator['moderator_permissions']);
-                $changes = false;
-                foreach ($globalReportPerms as $perm => $data)
-                {
-                    $keys = array_keys($data);
-                    $category = reset($keys);
-                    if (!isset($permissions[$category][$perm]) && !empty($data[$category]))
-                    {
-                        if (!empty($userPermsGrouped[$category][$perm]))
-                        {
-                            $permissions[$category][$perm] = "1";
-                            $changes = true;
-                            continue;
-                        }
-                        foreach ($data[$category] as $permToTest)
-                        {
-                            if (!empty($permissions[$category][$permToTest]) ||
-                                !empty($userPermsGrouped[$category][$permToTest])
-                            )
-                            {
-                                $permissions[$category][$perm] = "1";
-                                $changes = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if ($changes)
-                {
-                    $dw = XenForo_DataWriter::create('XenForo_DataWriter_Moderator');
-                    $dw->setExistingData($moderator, true);
-                    $dw->setGeneralPermissions($permissions);
-                    $dw->save();
-                }
-            }
-            */
         }
 
         return $applied;
