@@ -152,10 +152,12 @@ class Creator extends AbstractService
         $comment = null;
         if ($this->reportCommenter)
         {
+            $this->reportCommenter->setMessage('',false);
             $comment = $this->reportCommenter->getComment();
         }
         else if ($this->reportCreator)
         {
+            $this->reportCreator->setMessage('', false);
             $comment = $this->reportCreator->getComment();
         }
 
@@ -194,12 +196,10 @@ class Creator extends AbstractService
         if ($report)
         {
             $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
-            $this->reportCommenter->setMessage('',false);
         }
         else if (!$report && $this->app->options()->sv_report_new_warnings && $warning->Content)
         {
             $this->reportCreator = $this->service('XF:Report\Creator', $warning->content_type, $warning->Content);
-            $this->reportCreator->setMessage('', false);
             $report = $this->reportCreator->getReport();
         }
 
@@ -250,12 +250,10 @@ class Creator extends AbstractService
         if ($report)
         {
             $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
-            $this->reportCreator->setMessage('', false);
         }
         else if (!$report)
         {
             $this->reportCreator = $this->service('XF:Report\Creator', $content->getEntityContentType(), $content);
-            $this->reportCommenter->setMessage('',false);
             $report = $this->reportCreator->getReport();
         }
 
