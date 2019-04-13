@@ -472,6 +472,7 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'like_users', 'BLOB')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'alertSent', 'tinyint', 3)->setDefault(0);
             $this->addOrChangeColumn($table, 'alertComment', 'MEDIUMTEXT')->nullable(true)->setDefault(null);
+            $table->addKey('warning_log_id', 'warning_log_id');
         };
 
 
