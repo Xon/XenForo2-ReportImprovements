@@ -148,6 +148,14 @@ class Setup extends AbstractSetup
         $this->installStep6();
     }
 
+    public function upgrade2020200Step1()
+    {
+        $this->renamePhrases([
+            'svReportImprov_thread_reply_ban' => 'svReportImprov_operation_type_action.reply_ban',
+            'svReportImprov_thread_reply_ban_from_post' => 'svReportImprov_operation_type_action.reply_ban_from_post',
+        ]);
+    }
+
     /**
      * Drops add-on tables.
      */

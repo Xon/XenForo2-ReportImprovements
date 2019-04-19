@@ -45,15 +45,15 @@ class WarningLog extends Entity
     {
         if ($this->warning_id)
         {
-            $contentType = \XF::phrase('warning')->render('raw');
+            $contentType = \XF::phrase('svReportImprov_operation_type_action.warning');
         }
         else if ($this->reply_ban_post_id)
         {
-            $contentType = \XF::phrase('svReportImprov_thread_reply_ban_from_post')->render('raw');
+            $contentType = \XF::phrase('svReportImprov_operation_type_action.reply_ban_from_post');
         }
         else if ($this->reply_ban_thread_id)
         {
-            $contentType = \XF::phrase('svReportImprov_thread_reply_ban')->render('raw');
+            $contentType = \XF::phrase('svReportImprov_operation_type_action.reply_ban');
         }
         else
         {
@@ -83,14 +83,23 @@ class WarningLog extends Entity
      */
     public function getReplyBanLink()
     {
-        if ($this->ReplyBanThread)
+        $router = $this->app()->router('public');
+
+        if ($this->reply_ban_post_id && $this->ReplyBanPost)
         {
-            return $this->app()->router('public')->buildLink('posts', $this->ReplyBanPost);
+            if ($thread = $this->ReplyBanPost->Thread)
+            {
+                $page = floor($this->ReplyBanPost->position / \XF::options()->messagesPerPage) + 1;
+
+                return $router->buildLink('threads', $thread, ['page' => $page]) . '#post-' . $this->reply_ban_post_id;
+            }
+
+            return $router->buildLink('threads', $this->ReplyBanPost);
         }
 
         if ($this->ReplyBanThread)
         {
-            return $this->app()->router('public')->buildLink('threads', $this->ReplyBanThread);
+            return $router->buildLink('threads', $this->ReplyBanThread);
         }
 
         return null;
