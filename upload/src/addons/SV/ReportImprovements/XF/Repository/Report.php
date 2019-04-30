@@ -109,16 +109,8 @@ class Report extends XFCP_Report
         // avoid N+1 look up behaviour, just cache all node perms
         \XF::visitor()->cacheNodePermissions();
 
-        // assume fixed in 2.0.12+  and 2.1.0 beta 5+
-        if ((\XF::$versionId > 2001270 && \XF::$versionId < 2010000) || (\XF::$versionId > 2010000 && \XF::$versionId > 2010035))
-        {
-            /** @noinspection PhpDeprecationInspection */
-            $reports = parent::filterViewableReports($reports);
-        }
-        else
-        {
-            $reports = $reports->filterViewable();
-        }
+        // pre-XF2.0.12 and a few versions of XF2.1 have a bug where they skip Report::canView check, and XF2.1 marks it as deprecated
+        $reports = $reports->filterViewable();
 
         $userIds = [];
         /** @var \XF\Entity\Report $report */
