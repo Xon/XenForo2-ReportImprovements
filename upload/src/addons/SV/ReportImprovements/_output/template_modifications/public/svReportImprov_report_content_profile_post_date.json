@@ -1,7 +1,7 @@
 {
     "template": "report_content_profile_post",
     "description": "Show profile post date",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<div class=\"block-row block-row--separated block-row--minor.*?\".*?>)(.*?)(<\\/div>)#s",

@@ -1,6 +1,6 @@
 {
     "from_class": "XF\\ControllerPlugin\\Warn",
     "to_class": "SV\\ReportImprovements\\XF\\ControllerPlugin\\Warn",
-    "execute_order": 9950,
+    "execute_order": 6905,
     "active": true
 }

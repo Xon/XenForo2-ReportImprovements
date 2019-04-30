@@ -247,4 +247,39 @@ class Report extends XFCP_Report
 
         return 0;
     }
+
+    /**
+     * @param array $registryReportCounts
+     * @return array
+     */
+    public function rebuildSessionReportCounts(array $registryReportCounts)
+    {
+        /** @var \XF\Finder\Report $reportFinder */
+        $reportFinder = $this->app()->finder('XF:Report');
+        $reports = $reportFinder->isActive()->fetch();
+        $reports = $this->filterViewableReports($reports);
+
+        $total = 0;
+        $assigned = 0;
+        $userId = \XF::visitor()->user_id;
+
+        /**
+         * @var int $reportId
+         * @var \XF\Entity\Report $report
+         */
+        foreach ($reports AS $reportId => $report)
+        {
+            $total++;
+            if ($report->assigned_user_id === $userId)
+            {
+                $assigned++;
+            }
+        }
+
+        return [
+            'total' => $total,
+            'assigned' => $assigned,
+            'lastBuilt' => $registryReportCounts['lastModified'],
+        ];
+    }
 }

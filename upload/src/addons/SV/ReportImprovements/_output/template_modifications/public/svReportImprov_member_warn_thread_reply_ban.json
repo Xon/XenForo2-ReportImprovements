@@ -1,7 +1,7 @@
 {
     "template": "member_warn",
     "description": "Allow thread reply banning",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:submitrow submit=\"{{ phrase('warn') }}\" sticky=\"true\" />",

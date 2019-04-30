@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "Hides reassign tab contents if the user doesn't have permission to reassign",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "preg_replace",
     "find": "#<li role=\"tabpanel\" id=\"{{ unique_id\\('reportReassign'\\) }}\".*?>.*?<\\/li>#si",

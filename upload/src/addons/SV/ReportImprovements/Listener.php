@@ -121,33 +121,9 @@ class Listener
             || ($sessionReportCounts && ($sessionReportCounts['lastBuilt'] < $registryReportCounts['lastModified']))
         )
         {
-            /** @var \XF\Repository\Report $reportRepo */
+            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
             $reportRepo = $app->repository('XF:Report');
-
-            /** @var \XF\Finder\Report $reportFinder */
-            $reportFinder = $app->finder('XF:Report');
-            $reports = $reportFinder->isActive()->fetch();
-            $reports = $reportRepo->filterViewableReports($reports);
-
-            $total = 0;
-            $assigned = 0;
-
-            foreach ($reports AS $reportId => $report)
-            {
-                $total++;
-                if ($report->assigned_user_id === $visitor->user_id)
-                {
-                    $assigned++;
-                }
-            }
-
-            $reportCounts = [
-                'total' => $total,
-                'assigned' => $assigned,
-                'lastBuilt' => $registryReportCounts['lastModified']
-            ];
-
-            $session['reportCounts'] = $reportCounts;
+            $session['reportCounts'] = $reportRepo->rebuildSessionReportCounts($registryReportCounts);
         }
     }
 }

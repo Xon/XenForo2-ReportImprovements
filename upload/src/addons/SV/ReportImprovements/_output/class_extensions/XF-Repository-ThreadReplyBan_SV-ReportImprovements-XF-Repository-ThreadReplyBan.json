@@ -1,6 +1,6 @@
 {
     "from_class": "XF\\Repository\\ThreadReplyBan",
     "to_class": "SV\\ReportImprovements\\XF\\Repository\\ThreadReplyBan",
-    "execute_order": 9950,
+    "execute_order": 6905,
     "active": true
 }

@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "Add \".js-reportComment\" class to every report comment",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<article.*?class=\".*?message--simple)(.*?)(\">)#s",

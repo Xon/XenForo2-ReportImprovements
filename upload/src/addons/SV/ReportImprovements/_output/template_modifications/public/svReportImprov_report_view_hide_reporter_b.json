@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "Show \"Content reporter\" if the user has no permission to view reporter #2",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:macro template=\"message_macros\" name=\"user_info_simple\" arg-user=\"{$comment.User}\"  arg-fallbackName=\"{$comment.username}\" />",

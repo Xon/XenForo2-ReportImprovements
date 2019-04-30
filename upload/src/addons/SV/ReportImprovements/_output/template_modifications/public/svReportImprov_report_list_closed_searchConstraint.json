@@ -1,7 +1,7 @@
 {
     "template": "report_list_closed",
     "description": "Add search constraints to closed report list",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "str_replace",
     "find": "</xf:title>",

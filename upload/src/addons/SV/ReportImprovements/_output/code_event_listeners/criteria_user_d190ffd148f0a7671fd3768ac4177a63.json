@@ -1,6 +1,6 @@
 {
     "event_id": "criteria_user",
-    "execute_order": 9950,
+    "execute_order": 6905,
     "callback_class": "SV\\ReportImprovements\\Listener",
     "callback_method": "criteriaUser",
     "active": true,

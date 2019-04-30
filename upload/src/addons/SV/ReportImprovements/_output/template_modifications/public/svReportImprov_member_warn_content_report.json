@@ -1,7 +1,7 @@
 {
     "template": "member_warn",
     "description": "Show report for the content if there is any",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "preg_replace",
     "find": "#<h2 class=\".*?block-formSectionHeader.*?\">.*?phrase\\('member_notification'\\).*<\\/h2>#siU",

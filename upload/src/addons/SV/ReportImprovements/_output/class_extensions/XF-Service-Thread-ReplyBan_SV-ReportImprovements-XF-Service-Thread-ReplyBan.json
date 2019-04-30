@@ -1,6 +1,6 @@
 {
     "from_class": "XF\\Service\\Thread\\ReplyBan",
     "to_class": "SV\\ReportImprovements\\XF\\Service\\Thread\\ReplyBan",
-    "execute_order": 9950,
+    "execute_order": 6905,
     "active": true
 }

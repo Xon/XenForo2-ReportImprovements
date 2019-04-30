@@ -1,6 +1,6 @@
 {
     "from_class": "XF\\Pub\\Controller\\Report",
     "to_class": "SV\\ReportImprovements\\XF\\Pub\\Controller\\Report",
-    "execute_order": 9950,
+    "execute_order": 6905,
     "active": true
 }

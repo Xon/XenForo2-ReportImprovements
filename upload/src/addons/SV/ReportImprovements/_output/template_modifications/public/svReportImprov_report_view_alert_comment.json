@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "Show alert send if report state was changed",
-    "execution_order": 9949,
+    "execution_order": 6904,
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:if is=\"$comment.message\">",

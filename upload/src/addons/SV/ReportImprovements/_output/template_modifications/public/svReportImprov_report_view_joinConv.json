@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "Add join conversation link",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<xf:if is=\"\\$report.link\">.*?go_to_content.*?)(\\s*</xf:if>)#si",

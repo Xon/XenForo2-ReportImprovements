@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "Show \"Content reporter\" if the user has no permission to view reporter #3",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:avatar user=\"$comment.User\" size=\"xxs\" />\n\t\t\t\t\t\t\t\t\t\t\t<h4 class=\"attribution\"><xf:username user=\"$comment.User\" rich=\"true\" /></h4>",

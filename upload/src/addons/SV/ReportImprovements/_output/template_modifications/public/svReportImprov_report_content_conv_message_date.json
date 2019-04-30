@@ -1,6 +1,6 @@
 {
     "template": "report_content_conversation_message",
-    "description": "Show conversation message date",
+    "description": "6905 conversation message date",
     "execution_order": 9950,
     "enabled": true,
     "action": "preg_replace",

@@ -1,7 +1,7 @@
 {
     "template": "PAGE_CONTAINER",
     "description": "Don't show \"Reports\" if user doesn't have permission to view it",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "str_replace",
     "find": "$xf.visitor.is_moderator && !$xf.options.reportIntoForumId",

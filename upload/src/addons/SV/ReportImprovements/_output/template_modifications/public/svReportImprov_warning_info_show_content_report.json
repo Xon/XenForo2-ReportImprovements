@@ -1,7 +1,7 @@
 {
     "template": "warning_info",
     "description": "Show report for the content if there is any",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:if is=\"$warning.canDelete() AND $warning.canEditExpiry()\">",

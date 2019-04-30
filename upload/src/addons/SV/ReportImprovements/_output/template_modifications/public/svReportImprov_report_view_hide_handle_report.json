@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "Hides \"Handle report\" section",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "preg_replace",
     "find": "#<xf:if is=\"\\$assignedToOther\">.*?<\\/xf:if>#si",

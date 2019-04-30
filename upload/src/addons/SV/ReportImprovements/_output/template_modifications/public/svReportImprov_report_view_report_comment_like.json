@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "Add \"Like\" button for report comments",
-    "execution_order": 9949,
+    "execution_order": 6904,
     "enabled": true,
     "action": "preg_replace",
     "find": "#<xf:if is=\"\\$comment\\.message.*?\">.*?<\\/xf:if>.*?<\\/div>#s",

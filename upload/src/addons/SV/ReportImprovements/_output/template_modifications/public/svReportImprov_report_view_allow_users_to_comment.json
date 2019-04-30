@@ -1,7 +1,7 @@
 {
     "template": "report_view",
     "description": "Don't hide the comment box if report is already assigned to another user",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "str_replace",
     "find": "{{ !$assignedToOther ? ' is-active' : '' }}",

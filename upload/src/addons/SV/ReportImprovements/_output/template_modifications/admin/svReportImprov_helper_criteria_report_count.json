@@ -1,7 +1,7 @@
 {
     "template": "helper_criteria",
     "description": "Add the report count criteria.",
-    "execution_order": 9950,
+    "execution_order": 6905,
     "enabled": true,
     "action": "str_replace",
     "find": "<!--[XF:user:content_after_messages]-->",

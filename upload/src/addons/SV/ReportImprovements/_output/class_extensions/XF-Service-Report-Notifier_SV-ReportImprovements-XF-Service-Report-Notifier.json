@@ -1,6 +1,6 @@
 {
     "from_class": "XF\\Service\\Report\\Notifier",
     "to_class": "SV\\ReportImprovements\\XF\\Service\\Report\\Notifier",
-    "execute_order": 9950,
+    "execute_order": 6905,
     "active": true
 }
