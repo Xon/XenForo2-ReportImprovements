@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use XF\Mvc\Entity\AbstractCollection;
 use XF\Search\Data\AbstractData;
 use XF\Mvc\Entity\Entity;
 use XF\Search\MetadataStructure;
@@ -25,13 +26,32 @@ class Report extends AbstractData
         return $entity->canView();
     }
 
+    public function getContent($id, $forView = false)
+    {
+        $entities = parent::getContent($id, $forView);
+
+        if ($entities instanceof AbstractCollection)
+        {
+            $this->svPreloadEntityData($entities);
+        }
+
+
+        return $entities;
+    }
+
     public function getContentInRange($lastId, $amount, $forView = false)
     {
         $contents = parent::getContentInRange($lastId, $amount, $forView);
+        $this->svPreloadEntityData($contents);
+
+        return $contents;
+    }
+
+    public function svPreloadEntityData(AbstractCollection $contents)
+    {
 
         /** @var \XF\Repository\Report $reportReport */
         $reportReport = \XF::repository('XF:Report');
-
 
         $reportsByContentType = [];
 
@@ -73,7 +93,6 @@ class Report extends AbstractData
                 }
             }
         }
-
 
         return $contents;
     }

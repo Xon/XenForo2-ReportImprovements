@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\Globals;
 use SV\Utils\BypassAccessStatus;
+use XF\Mvc\Entity\AbstractCollection;
 use XF\Search\Data\AbstractData;
 use XF\Mvc\Entity\Entity;
 use XF\Search\MetadataStructure;
@@ -28,6 +29,82 @@ class ReportComment extends AbstractData
     public function canViewContent(Entity $entity, &$error = null)
     {
         return $entity->Report->canView();
+    }
+
+    public function getContent($id, $forView = false)
+    {
+        $entities = parent::getContent($id, $forView);
+
+        if ($entities instanceof AbstractCollection)
+        {
+            $this->svPreloadEntityData($entities);
+        }
+
+
+        return $entities;
+    }
+
+    public function getContentInRange($lastId, $amount, $forView = false)
+    {
+        $contents = parent::getContentInRange($lastId, $amount, $forView);
+        $this->svPreloadEntityData($contents);
+
+        return $contents;
+    }
+
+    public function svPreloadEntityData(AbstractCollection $contents)
+    {
+        /** @var \XF\Repository\Report $reportReport */
+        $reportReport = \XF::repository('XF:Report');
+
+        $reportsByContentType = [];
+        $reports = [];
+        /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
+        foreach($contents as $reportComment)
+        {
+            $reports[$reportComment->report_id] = $reportComment->Report;
+        }
+
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        foreach($reports as $report)
+        {
+            $contentType = $report->content_type;
+            $handler = $reportReport->getReportHandler($contentType, false);
+            if (!$handler)
+            {
+                continue;
+            }
+
+            $reportsByContentType[$contentType][$report->content_id] = $report;
+        }
+
+        foreach($reportsByContentType as $contentType => $reports)
+        {
+            $handler = $reportReport->getReportHandler($contentType, false);
+            if (!$handler)
+            {
+                continue;
+            }
+            $contentIds = array_keys($reports);
+            $reportContents = $handler->getContent($contentIds);
+            foreach($reportContents as $contentId => $reportContent)
+            {
+                if (empty($reportsByContentType[$contentType][$contentId]))
+                {
+                    continue;
+                }
+
+                /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+                $report = $reportsByContentType[$contentType][$contentId];
+
+                if ($reportContent)
+                {
+                    $report->setContent($reportContent);
+                }
+            }
+        }
+
+        return $contents;
     }
 
     /**
