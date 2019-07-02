@@ -156,6 +156,48 @@ class Setup extends AbstractSetup
         ]);
     }
 
+    public function upgrade2020600Step1(array $stepParams)
+    {
+        $finder = \XF::finder('XF:UserAlert')
+                     ->where('content_type', '=', 'report_comment')
+                     ->where('action', '=', 'mention')
+                     ->order('alert_id');
+
+        $stepData = isset($stepParams[2]) ? $stepParams[2] : [];
+        if (!isset($stepData['max']))
+        {
+            $stepData['max'] = $finder->total();
+        }
+        $alerts = $finder->limit(50)->fetch();
+        if (!$alerts->count())
+        {
+            return null;
+        }
+
+        $next = 0;
+        foreach ($alerts as $alert)
+        {
+            $next++;
+            /** @var \XF\Entity\UserAlert $alert */
+            $extraData = $alert->extra_data;
+            /** @var \XF\Entity\ReportComment $comment */
+            $comment = $alert->Content;
+            $extraData['comment'] = $comment->toArray();
+
+            $alert->content_type = 'report';
+            $alert->content_id = $comment->report_id;
+            $alert->extra_data = $extraData;
+
+            $alert->save();
+        }
+
+        return [
+            $next,
+            "{$next} / {$stepData['max']}",
+            $stepData
+        ];
+    }
+
     /**
      * Drops add-on tables.
      */
