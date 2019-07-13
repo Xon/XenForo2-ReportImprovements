@@ -156,7 +156,7 @@ class Setup extends AbstractSetup
         ]);
     }
 
-    public function upgrade2020600Step1(array $stepParams)
+    public function upgrade2020700Step1(array $stepParams)
     {
         $finder = \XF::finder('XF:UserAlert')
                      ->where('content_type', '=', 'report_comment')
@@ -181,7 +181,11 @@ class Setup extends AbstractSetup
             /** @var \XF\Entity\UserAlert $alert */
             $extraData = $alert->extra_data;
             /** @var \XF\Entity\ReportComment $comment */
-            $comment = $alert->Content;
+            $comment = \XF::finder('XF:ReportComment')->whereId($alert->content_id)->fetchOne();
+            if (!$comment)
+            {
+                continue;
+            }
             $extraData['comment'] = $comment->toArray();
 
             $alert->content_type = 'report';
