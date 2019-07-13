@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Entity\\Thread",
+    "to_class": "SV\\ReportImprovements\\XF\\Entity\\Thread",
+    "execute_order": 6905,
+    "active": true
+}
