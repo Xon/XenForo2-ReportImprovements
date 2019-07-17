@@ -3,7 +3,6 @@
 namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\Globals;
-use SV\Utils\BypassAccessStatus;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Search\Data\AbstractData;
 use XF\Mvc\Entity\Entity;
@@ -28,7 +27,7 @@ class ReportComment extends AbstractData
      */
     public function canViewContent(Entity $entity, &$error = null)
     {
-        return $entity->Report->canView();
+        return $entity->Report && $entity->Report->canView();
     }
 
     public function getContent($id, $forView = false)
@@ -68,6 +67,10 @@ class ReportComment extends AbstractData
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         foreach($reports as $report)
         {
+            if (!$report)
+            {
+                continue;
+            }
             $contentType = $report->content_type;
             $handler = $reportReport->getReportHandler($contentType, false);
             if (!$handler)
@@ -86,6 +89,10 @@ class ReportComment extends AbstractData
                 continue;
             }
             $contentIds = array_keys($reports);
+            if (!$contentIds)
+            {
+                continue;
+            }
             $reportContents = $handler->getContent($contentIds);
             foreach($reportContents as $contentId => $reportContent)
             {
