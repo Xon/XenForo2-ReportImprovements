@@ -180,10 +180,6 @@ class Report extends XFCP_Report
         $this->assertViewableReport($params->report_id);
 
         $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
-        if (!$reportComment->canLike($error))
-        {
-            return $this->noPermission($error);
-        }
 
         $breadcrumbs = $reportComment->Report->getBreadcrumbs();
         $title = \XF::phrase('sv_members_who_liked_this_report_comment');
