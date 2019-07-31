@@ -7,6 +7,16 @@ namespace SV\ReportImprovements\XF\Service\Report;
  */
 class Creator extends XFCP_Creator
 {
+    protected function setDefaults()
+    {
+        $applyXFWorkAround = $this->report->report_state === 'open';
+        parent::setDefaults();
+        if ($applyXFWorkAround && $this->comment->state_change === 'open')
+        {
+            $this->comment->state_change = '';
+        }
+    }
+
     /**
      * @return \XF\Entity\Report
      */
