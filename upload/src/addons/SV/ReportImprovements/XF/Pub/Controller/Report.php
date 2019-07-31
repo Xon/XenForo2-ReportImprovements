@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
+use SV\ReportImprovements\Globals;
 use XF\Mvc\ParameterBag;
 
 /**
@@ -49,6 +50,19 @@ class Report extends XFCP_Report
                     $visitor->setReadOnly($wasReadonly);
                 }
             }
+        }
+    }
+
+    public function actionView(ParameterBag $params)
+    {
+        Globals::$shimCommentsFinder = true;
+        try
+        {
+            return parent::actionView($params);
+        }
+        finally
+        {
+            Globals::$shimCommentsFinder = false;
         }
     }
 
@@ -226,6 +240,13 @@ class Report extends XFCP_Report
         ]);
     }
 
+    protected function assertViewableReport($reportId, array $extraWith = [])
+    {
+        // avoid N+1 look up behaviour, just cache all node perms
+        \XF::visitor()->cacheNodePermissions();
+
+        return parent::assertViewableReport($reportId, $extraWith);
+    }
     /**
      * @param       $reportCommentId
      * @param array $extraWith
@@ -234,6 +255,9 @@ class Report extends XFCP_Report
      */
     protected function assertViewableReportComment($reportCommentId, array $extraWith = [])
     {
+        // avoid N+1 look up behaviour, just cache all node perms
+        \XF::visitor()->cacheNodePermissions();
+
         $extraWith[] = 'Report';
 
         /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */

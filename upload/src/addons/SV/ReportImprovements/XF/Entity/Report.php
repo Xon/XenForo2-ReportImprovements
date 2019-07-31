@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
@@ -253,10 +254,15 @@ class Report extends XFCP_Report
             $with[] = 'Likes|' . $userId;
         }
 
+        if ($this->content_type === 'post')
+        {
+            $with[] = 'WarningLog.ReplyBan';
+        }
+
         return $with;
     }
 
-    public function getComments()
+    public function getCommentsFinder()
     {
         $direction = \XF::app()->options()->sv_reverse_report_comment_order ? 'DESC' : 'ASC';
 
@@ -266,7 +272,22 @@ class Report extends XFCP_Report
 
         $finder->with($this->getCommentWith());
 
-        return $finder->fetch();
+        return $finder;
+    }
+
+    public function getComments()
+    {
+        return $this->getCommentsFinder()->fetch();
+    }
+
+    public function getRelationFinder($key, $type = 'current')
+    {
+        if (Globals::$shimCommentsFinder && $key === 'Comments')
+        {
+            return $this->getCommentsFinder();
+        }
+
+        return parent::getRelationFinder($key, $type);
     }
 
     /**

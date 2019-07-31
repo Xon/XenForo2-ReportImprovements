@@ -36,4 +36,7 @@ class Globals
 
     /** @var bool  */
     public static $suppressReportStateChange = false;
+
+    /** @var bool  */
+    public static $shimCommentsFinder = false;
 }

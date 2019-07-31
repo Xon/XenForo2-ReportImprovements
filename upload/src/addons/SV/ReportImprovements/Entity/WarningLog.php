@@ -69,11 +69,15 @@ class WarningLog extends Entity
      */
     public function getReplyBan()
     {
+        if (isset($this->_relations['ReplyBan']))
+        {
+            return $this->ReplyBan;
+        }
+
         if (!$this->ReplyBanThread)
         {
             return null;
         }
-
         return $this->ReplyBanThread->ReplyBans[$this->user_id];
     }
 
@@ -160,6 +164,15 @@ class WarningLog extends Entity
                 'entity'     => 'XF:User',
                 'type'       => self::TO_ONE,
                 'conditions' => 'user_id',
+                'primary'    => true,
+            ],
+            'ReplyBan' => [
+                'entity'     => 'XF:ThreadReplyBan',
+                'type'       => self::TO_ONE,
+                'conditions' => [
+                    ['thread_id', '=', '$reply_ban_thread_id'],
+                    ['user_id', '=', '$user_id'],
+                ],
                 'primary'    => true,
             ],
             'ReplyBanThread' => [

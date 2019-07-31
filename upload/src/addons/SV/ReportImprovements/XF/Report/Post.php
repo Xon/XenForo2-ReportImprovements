@@ -22,6 +22,8 @@ class Post extends XFCP_Post implements ContentInterface
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
+        // ensure content is loaded, as this will fetch the forum
+        $report->Content;
 
         return $visitor->canViewPostReport($report->content_info['node_id']);
     }

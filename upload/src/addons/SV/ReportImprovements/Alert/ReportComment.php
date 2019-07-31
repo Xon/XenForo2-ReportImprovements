@@ -60,6 +60,6 @@ class ReportComment extends AbstractHandler
      */
     public function getEntityWith()
     {
-        return ['Report'];
+        return ['Report', 'AssignedUser'];
     }
 }
