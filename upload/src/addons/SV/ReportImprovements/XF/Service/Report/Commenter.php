@@ -60,8 +60,8 @@ class Commenter extends XFCP_Commenter
 
         if ($this->report->isChanged('assigned_user_id'))
         {
-            $this->comment->assigned_user_id = $assignedUser->user_id;
-            $this->comment->assigned_username = $assignedUser->username;
+            $this->comment->assigned_user_id = $assignedUser ? $assignedUser->user_id : null;
+            $this->comment->assigned_username = $assignedUser ? $assignedUser->username : '';
         }
     }
 
