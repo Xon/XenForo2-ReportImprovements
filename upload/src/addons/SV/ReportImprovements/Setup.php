@@ -202,6 +202,16 @@ class Setup extends AbstractSetup
         ];
     }
 
+    public function upgrade2030000Step1()
+    {
+        $this->installStep1();
+    }
+
+    public function upgrade2030000Step2()
+    {
+        $this->installStep2();
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -526,6 +536,8 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'like_users', 'BLOB')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'alertSent', 'tinyint', 3)->setDefault(0);
             $this->addOrChangeColumn($table, 'alertComment', 'MEDIUMTEXT')->nullable(true)->setDefault(null);
+            $this->addOrChangeColumn($table, 'assigned_user_id', 'int')->nullable(true)->setDefault(null);
+            $this->addOrChangeColumn($table, 'assigned_username', 'varchar', 50)->setDefault('');
             $table->addKey('warning_log_id', 'warning_log_id');
         };
 

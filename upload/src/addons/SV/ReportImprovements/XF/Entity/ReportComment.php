@@ -7,26 +7,24 @@ use XF\Mvc\Entity\Structure;
 
 /**
  * Class ReportComment
- *
  * Extends \XF\Entity\ReportComment
  *
  * @package SV\ReportImprovements\XF\Entity
- *
  * COLUMNS
- * @property int likes
- * @property array like_users
- * @property int warning_log_id
- * @property bool alertSent
- * @property string alertComment
- *
+ * @property int                                      likes
+ * @property array                                    like_users
+ * @property int                                      warning_log_id
+ * @property bool                                     alertSent
+ * @property string                                   alertComment
+ * @property int|null                                 assigned_user_id
+ * @property string                                   assigned_username
  * GETTERS
- * @property \SV\ReportImprovements\XF\Entity\User ViewableUsername
- * @property \SV\ReportImprovements\XF\Entity\User ViewableUser
- *
+ * @property User                                     ViewableUsername
+ * @property User                                     ViewableUser
  * RELATIONS
- * @property \XF\Entity\LikedContent[] Likes
+ * @property \XF\Entity\LikedContent[]                Likes
  * @property \SV\ReportImprovements\Entity\WarningLog WarningLog
- * @property \SV\ReportImprovements\XF\Entity\Report Report
+ * @property Report                                   Report
  */
 class ReportComment extends XFCP_ReportComment
 {
@@ -93,7 +91,7 @@ class ReportComment extends XFCP_ReportComment
     }
 
     /**
-     * @return \XF\Entity\User|\SV\ReportImprovements\XF\Entity\User
+     * @return \XF\Entity\User|User
      */
     public function getViewableUser()
     {
@@ -138,7 +136,7 @@ class ReportComment extends XFCP_ReportComment
             $lastReportCommentFinder->where('report_id', $this->report_id);
             $lastReportCommentFinder->order('comment_date', 'DESC');
 
-            /** @var \SV\ReportImprovements\XF\Entity\ReportComment $lastReportComment */
+            /** @var ReportComment $lastReportComment */
             $lastReportComment = $lastReportCommentFinder->fetchOne();
             if ($lastReportComment)
             {
@@ -164,7 +162,10 @@ class ReportComment extends XFCP_ReportComment
         $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => false];
         $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => true];
         $structure->columns['likes'] = ['type' => self::UINT, 'forced' => true, 'default' => 0];
+        /** @noinspection PhpDeprecationInspection */
         $structure->columns['like_users'] = ['type' => self::SERIALIZED_ARRAY, 'default' => []];
+        $structure->columns['assigned_user_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
+        $structure->columns['assigned_username'] = ['type' => self::STR, 'maxLength' => 50, 'default' => ''];
 
         $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
         $structure->behaviors['XF:Indexable'] = [
@@ -186,6 +187,12 @@ class ReportComment extends XFCP_ReportComment
             'entity'     => 'SV\ReportImprovements:WarningLog',
             'type'       => self::TO_ONE,
             'conditions' => 'warning_log_id',
+            'primary'    => true
+        ];
+        $structure->relations['AssignedUser'] = [
+            'entity'     => 'XF:User',
+            'type'       => self::TO_ONE,
+            'conditions' => [['user_id', '=', '$assigned_user_id']],
             'primary'    => true
         ];
 

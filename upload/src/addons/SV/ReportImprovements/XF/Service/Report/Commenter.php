@@ -59,6 +59,12 @@ class Commenter extends XFCP_Commenter
                 $this->comment->state_change = '';
             }
         }
+
+        if ($this->report->isChanged('assigned_user_id'))
+        {
+            $this->comment->assigned_user_id = $assignedUser->user_id;
+            $this->comment->assigned_username = $assignedUser->username;
+        }
     }
 
     protected function finalSetup()
