@@ -65,7 +65,6 @@ class Creator extends AbstractService
      * @param \XF\App $app
      * @param Entity  $content
      * @param         $operationType
-     *
      * @throws \Exception
      */
     public function __construct(\XF\App $app, Entity $content, $operationType)
@@ -152,7 +151,7 @@ class Creator extends AbstractService
         $comment = null;
         if ($this->reportCommenter)
         {
-            $this->reportCommenter->setMessage('',false);
+            $this->reportCommenter->setMessage('', false);
             $comment = $this->reportCommenter->getComment();
         }
         else if ($this->reportCreator)
@@ -230,7 +229,7 @@ class Creator extends AbstractService
             $report = $post->Report;
             $content = $post;
             $contentTitle = \XF::phrase('post_in_thread_x', [
-                'title' => $post->Thread->title
+                'title' => $post->Thread->title,
             ])->render('raw');
         }
 
@@ -281,11 +280,10 @@ class Creator extends AbstractService
      */
     protected function _validate()
     {
-        $showErrorException = function ($errorFor, array $errors, array &$errorOutput)
-        {
+        $showErrorException = function ($errorFor, array $errors, array &$errorOutput) {
             if (\count($errors))
             {
-                foreach($errors as $key => $error)
+                foreach ($errors as $key => $error)
                 {
                     if ($error instanceof \XF\Phrase)
                     {
@@ -348,6 +346,7 @@ class Creator extends AbstractService
     protected function wasClosed(\XF\Entity\Report $report)
     {
         $reportState = $report->getPreviousValue('report_state');
+
         return $reportState === 'resolved' || $reportState === 'rejected';
     }
 

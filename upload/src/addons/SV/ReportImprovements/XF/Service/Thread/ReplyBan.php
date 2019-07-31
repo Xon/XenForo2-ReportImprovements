@@ -7,11 +7,9 @@ use XF\Entity\Post;
 
 /**
  * Class ReplyBan
- *
  * Extends \XF\Service\Thread\ReplyBan
  *
  * @package SV\ReportImprovements\XF\Service\Thread
- *
  * @property \SV\ReportImprovements\XF\Entity\ThreadReplyBan $replyBan
  */
 class ReplyBan extends XFCP_ReplyBan

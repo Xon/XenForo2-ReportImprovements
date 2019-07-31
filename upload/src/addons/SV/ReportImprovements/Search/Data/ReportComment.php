@@ -4,10 +4,10 @@ namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\AbstractCollection;
-use XF\Search\Data\AbstractData;
 use XF\Mvc\Entity\Entity;
-use XF\Search\MetadataStructure;
+use XF\Search\Data\AbstractData;
 use XF\Search\IndexRecord;
+use XF\Search\MetadataStructure;
 use XF\Search\Query\MetadataConstraint;
 use XF\Search\Query\Query;
 use XF\Search\Query\TableReference;
@@ -21,8 +21,7 @@ class ReportComment extends AbstractData
 {
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     * @param null   $error
-     *
+     * @param null                                                  $error
      * @return bool
      */
     public function canViewContent(Entity $entity, &$error = null)
@@ -59,13 +58,13 @@ class ReportComment extends AbstractData
         $reportsByContentType = [];
         $reports = [];
         /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
-        foreach($contents as $reportComment)
+        foreach ($contents as $reportComment)
         {
             $reports[$reportComment->report_id] = $reportComment->Report;
         }
 
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        foreach($reports as $report)
+        foreach ($reports as $report)
         {
             if (!$report)
             {
@@ -81,7 +80,7 @@ class ReportComment extends AbstractData
             $reportsByContentType[$contentType][$report->content_id] = $report;
         }
 
-        foreach($reportsByContentType as $contentType => $reports)
+        foreach ($reportsByContentType as $contentType => $reports)
         {
             $handler = $reportReport->getReportHandler($contentType, false);
             if (!$handler)
@@ -94,7 +93,7 @@ class ReportComment extends AbstractData
                 continue;
             }
             $reportContents = $handler->getContent($contentIds);
-            foreach($reportContents as $contentId => $reportContent)
+            foreach ($reportContents as $contentId => $reportContent)
             {
                 if (empty($reportsByContentType[$contentType][$contentId]))
                 {
@@ -116,7 +115,6 @@ class ReportComment extends AbstractData
 
     /**
      * @param bool $forView
-     *
      * @return array
      */
     public function getEntityWith($forView = false)
@@ -126,7 +124,6 @@ class ReportComment extends AbstractData
 
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     *
      * @return mixed|null
      */
     public function getResultDate(Entity $entity)
@@ -136,7 +133,6 @@ class ReportComment extends AbstractData
 
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     *
      * @return IndexRecord|null
      */
     public function getIndexData(Entity $entity)
@@ -147,26 +143,25 @@ class ReportComment extends AbstractData
         }
 
         return IndexRecord::create('report_comment', $entity->report_comment_id, [
-            'title' => $entity->Report->title,
-            'message' => $entity->message,
-            'date' => $entity->comment_date,
-            'user_id' => $entity->user_id,
+            'title'         => $entity->Report->title,
+            'message'       => $entity->message,
+            'date'          => $entity->comment_date,
+            'user_id'       => $entity->user_id,
             'discussion_id' => $entity->report_id,
-            'metadata' => $this->getMetaData($entity),
+            'metadata'      => $this->getMetaData($entity),
         ]);
     }
 
     /**
      * @param \XF\Entity\ReportComment|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     *
      * @return array
      */
     protected function getMetaData(\XF\Entity\ReportComment $entity)
     {
         $metaData = [
-            'report' => $entity->report_id,
+            'report'       => $entity->report_id,
             'state_change' => $entity->state_change ?: '',
-            'is_report' => $entity->is_report ? 1 : 0, // must be an int
+            'is_report'    => $entity->is_report ? 1 : 0, // must be an int
         ];
 
         if ($warningLog = $entity->WarningLog)
@@ -210,16 +205,15 @@ class ReportComment extends AbstractData
 
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     * @param array  $options
-     *
+     * @param array                                                 $options
      * @return array
      */
     public function getTemplateData(Entity $entity, array $options = [])
     {
         return [
-            'report' => $entity->Report,
+            'report'        => $entity->Report,
             'reportComment' => $entity,
-            'options' => $options,
+            'options'       => $options,
         ];
     }
 
@@ -250,19 +244,19 @@ class ReportComment extends AbstractData
     }
 
     /**
-     * @param Query $query
-     * @param \XF\Http\Request       $request
-     * @param array                  $urlConstraints
+     * @param Query            $query
+     * @param \XF\Http\Request $request
+     * @param array            $urlConstraints
      */
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
         $constraints = $request->filter([
-            'c.report.contents' => 'bool',
-            'c.report.comments' => 'bool',
-            'c.report.user_reports'  => 'bool',
+            'c.report.contents'     => 'bool',
+            'c.report.comments'     => 'bool',
+            'c.report.user_reports' => 'bool',
 
-            'c.warning.user' => 'str',
-            'c.warning.points.lower' => 'uint',
+            'c.warning.user'          => 'str',
+            'c.warning.points.lower'  => 'uint',
             'c.warning.points.higher' => 'uint',
         ]);
 
@@ -341,16 +335,13 @@ class ReportComment extends AbstractData
     /**
      * This allows you to specify constraints to avoid including search results that will ultimately be filtered
      * out due to permissions.In most cases, the query should not generally be modified. It is passed in to allow inspection.
-     *
      * Note that your returned constraints may not be applied only to results of the relevant types. If possible, you
      * should only return "none" constraints using metadata keys that are unique to the involved content types.
-     *
      * $isOnlyType will be true when the search is specific to this type. This allows different constraints to be applied
      * when searching within the type. For example, this could implicitly disable searching of a content type unless targeted.
      *
-     * @param Query $query $query
-     * @param bool $isOnlyType Will be true if the search is specifically limited to this type.
-     *
+     * @param Query $query      $query
+     * @param bool  $isOnlyType Will be true if the search is specifically limited to this type.
      * @return MetadataConstraint[] Only an array of metadata constraints may be returned.
      */
     public function getTypePermissionConstraints(Query $query, $isOnlyType)
@@ -376,7 +367,7 @@ class ReportComment extends AbstractData
 //            }
             // todo verify this works with ES5 or older
             return [
-                new MetadataConstraint('type', 'report', 'none')
+                new MetadataConstraint('type', 'report', 'none'),
             ];
         }
 
@@ -386,7 +377,7 @@ class ReportComment extends AbstractData
         if (!$visitor->canViewReporter())
         {
             return [
-                new MetadataConstraint('is_report', [1], 'none')
+                new MetadataConstraint('is_report', [1], 'none'),
             ];
         }
 
@@ -427,7 +418,7 @@ class ReportComment extends AbstractData
 
         return [
             'title' => \XF::phrase('svReportImprov_search_reports'),
-            'order' => 250
+            'order' => 250,
         ];
     }
 }

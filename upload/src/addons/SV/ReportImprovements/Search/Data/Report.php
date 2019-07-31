@@ -3,10 +3,10 @@
 namespace SV\ReportImprovements\Search\Data;
 
 use XF\Mvc\Entity\AbstractCollection;
-use XF\Search\Data\AbstractData;
 use XF\Mvc\Entity\Entity;
-use XF\Search\MetadataStructure;
+use XF\Search\Data\AbstractData;
 use XF\Search\IndexRecord;
+use XF\Search\MetadataStructure;
 
 /**
  * Class Report
@@ -17,8 +17,7 @@ class Report extends AbstractData
 {
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
-     * @param null   $error
-     *
+     * @param null                                           $error
      * @return bool
      */
     public function canViewContent(Entity $entity, &$error = null)
@@ -56,7 +55,7 @@ class Report extends AbstractData
         $reportsByContentType = [];
 
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        foreach($contents as $report)
+        foreach ($contents as $report)
         {
             $contentType = $report->content_type;
             $handler = $reportReport->getReportHandler($contentType, false);
@@ -68,7 +67,7 @@ class Report extends AbstractData
             $reportsByContentType[$contentType][$report->content_id] = $report;
         }
 
-        foreach($reportsByContentType as $contentType => $reports)
+        foreach ($reportsByContentType as $contentType => $reports)
         {
             $handler = $reportReport->getReportHandler($contentType, false);
             if (!$handler)
@@ -77,7 +76,7 @@ class Report extends AbstractData
             }
             $contentIds = array_keys($reports);
             $reportContents = $handler->getContent($contentIds);
-            foreach($reportContents as $contentId => $reportContent)
+            foreach ($reportContents as $contentId => $reportContent)
             {
                 if (empty($reportsByContentType[$contentType][$contentId]))
                 {
@@ -99,7 +98,6 @@ class Report extends AbstractData
 
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
-     *
      * @return int
      */
     public function getResultDate(Entity $entity)
@@ -109,7 +107,6 @@ class Report extends AbstractData
 
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
-     *
      * @return IndexRecord|null
      */
     public function getIndexData(Entity $entity)
@@ -125,27 +122,26 @@ class Report extends AbstractData
         }
 
         return IndexRecord::create('report', $entity->report_id, [
-            'title' => $handler->getContentTitle($entity),
-            'message' => $handler->getContentMessage($entity),
-            'date' => $entity->first_report_date,
-            'user_id' => $entity->content_user_id,
+            'title'         => $handler->getContentTitle($entity),
+            'message'       => $handler->getContentMessage($entity),
+            'date'          => $entity->first_report_date,
+            'user_id'       => $entity->content_user_id,
             'discussion_id' => $entity->report_id,
-            'metadata' => $this->getMetaData($entity),
+            'metadata'      => $this->getMetaData($entity),
         ]);
     }
 
     /**
      * @param \XF\Entity\Report|\SV\ReportImprovements\XF\Entity\Report $entity
-     *
      * @return array
      */
     protected function getMetaData(\XF\Entity\Report $entity)
     {
         $metaData = [
-            'report' => $entity->report_id,
-            'report_state' => $entity->report_state,
-            'assigned_user' => $entity->assigned_user_id,
-            'is_report' => 2,
+            'report'              => $entity->report_id,
+            'report_state'        => $entity->report_state,
+            'assigned_user'       => $entity->assigned_user_id,
+            'is_report'           => 2,
             'report_content_type' => $entity->content_type,
         ];
 
@@ -160,13 +156,12 @@ class Report extends AbstractData
     /**
      * @param Entity $entity
      * @param array  $options
-     *
      * @return array
      */
     public function getTemplateData(Entity $entity, array $options = [])
     {
         return [
-            'report' => $entity,
+            'report'  => $entity,
             'options' => $options,
         ];
     }

@@ -6,7 +6,6 @@ use XF\Mvc\ParameterBag;
 
 /**
  * Class Report
- *
  * Extends \XF\Pub\Controller\Report
  *
  * @package SV\ReportImprovements\XF\Pub\Controller
@@ -16,7 +15,6 @@ class Report extends XFCP_Report
     /**
      * @param              $action
      * @param ParameterBag $params
-     *
      * @throws \XF\Mvc\Reply\Exception
      */
     protected function preDispatchController($action, ParameterBag $params)
@@ -75,7 +73,6 @@ class Report extends XFCP_Report
 
     /**
      * @param \XF\Entity\Report|\SV\ReportImprovements\XF\Entity\Report $report
-     *
      * @return \XF\Mvc\Reply\Error|\XF\Service\Report\Commenter
      * @throws \XF\Mvc\Reply\Exception
      */
@@ -132,7 +129,6 @@ class Report extends XFCP_Report
 
     /**
      * @param ParameterBag $params
-     *
      * @return \XF\Mvc\Reply\Error|\XF\Mvc\Reply\Redirect
      * @throws \XF\Mvc\Reply\Exception
      */
@@ -166,6 +162,7 @@ class Report extends XFCP_Report
 
         /** @var \XF\ControllerPlugin\Like $likePlugin */
         $likePlugin = $this->plugin('XF:Like');
+
         return $likePlugin->actionToggleLike(
             $reportComment,
             $this->buildLink('reports/like', $reportComment->Report, $likeLinkParams),
@@ -186,6 +183,7 @@ class Report extends XFCP_Report
 
         /** @var \XF\ControllerPlugin\Like $likePlugin */
         $likePlugin = $this->plugin('XF:Like');
+
         return $likePlugin->actionLikes(
             $reportComment,
             ['reports/likes', $reportComment->Report, ['report_comment_id' => $reportComment->report_comment_id]],
@@ -224,14 +222,13 @@ class Report extends XFCP_Report
 
         return $this->view('XF:Report\XenForo_ViewPublic_Report_ConversationJoin', 'svReportImprov_conversation_join', [
             'report'       => $report,
-            'conversation' => $conversationMessage->Conversation
+            'conversation' => $conversationMessage->Conversation,
         ]);
     }
 
     /**
      * @param       $reportCommentId
      * @param array $extraWith
-     *
      * @return \SV\ReportImprovements\XF\Entity\ReportComment
      * @throws \XF\Mvc\Reply\Exception
      */

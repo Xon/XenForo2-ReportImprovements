@@ -2,23 +2,19 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
-use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
  * Class Post
- * 
  * Extends \XF\Entity\Post
  *
  * @package SV\ReportImprovements\XF\Entity
- *
  * @property \SV\ReportImprovements\XF\Entity\Report Report
  */
 class Post extends XFCP_Post
 {
     /**
      * @param Structure $structure
-     *
      * @return Structure
      */
     public static function getStructure(Structure $structure)
@@ -26,12 +22,12 @@ class Post extends XFCP_Post
         $structure = parent::getStructure($structure);
 
         $structure->relations['Report'] = [
-            'entity' => 'XF:Report',
-            'type' => self::TO_ONE,
+            'entity'     => 'XF:Report',
+            'type'       => self::TO_ONE,
             'conditions' => [
                 ['content_type', '=', 'post'],
-                ['content_id', '=', '$post_id']
-            ]
+                ['content_id', '=', '$post_id'],
+            ],
         ];
 
         return $structure;

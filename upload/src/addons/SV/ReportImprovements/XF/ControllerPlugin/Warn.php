@@ -8,7 +8,6 @@ use XF\Mvc\Reply\View;
 
 /**
  * Class Warn
- *
  * Extends \XF\ControllerPlugin\Warn
  *
  * @package SV\ReportImprovements\XF\ControllerPlugin
@@ -48,7 +47,6 @@ class Warn extends XFCP_Warn
      * @param string                      $contentType
      * @param Entity                      $content
      * @param array                       $input
-     *
      * @return \XF\Service\User\Warn
      * @throws \XF\Mvc\Reply\Exception
      */
@@ -61,9 +59,9 @@ class Warn extends XFCP_Warn
         {
             /** @var \SV\ReportImprovements\XF\Entity\Report $report */
             $report = $this->finder('XF:Report')
-                ->where('content_type', $contentType)
-                ->where('content_id', $content->getEntityId())
-                ->fetchOne();
+                           ->where('content_type', $contentType)
+                           ->where('content_id', $content->getEntityId())
+                           ->fetchOne();
 
             if (!$report || $report->canUpdate($error))
             {
@@ -101,7 +99,6 @@ class Warn extends XFCP_Warn
      * @param Entity $content
      * @param string $warnUrl
      * @param array  $breadcrumbs
-     *
      * @return \XF\Mvc\Reply\Error|\XF\Mvc\Reply\Redirect|View
      */
     public function actionWarn($contentType, Entity $content, $warnUrl, array $breadcrumbs = [])
@@ -112,15 +109,15 @@ class Warn extends XFCP_Warn
         {
             /** @var \XF\Entity\Report $contentReport */
             $contentReport = $this->finder('XF:Report')
-                ->where('content_type', $contentType)
-                ->where('content_id', $content->getEntityId())
-                ->with(['LastModified', 'LastModifiedUser'])
-                ->fetchOne();
+                                  ->where('content_type', $contentType)
+                                  ->where('content_id', $content->getEntityId())
+                                  ->with(['LastModified', 'LastModifiedUser'])
+                                  ->fetchOne();
 
             $response->setParams([
-                'report' => $contentReport,
+                'report'      => $contentReport,
                 'contentType' => $contentType,
-                'contentId' => $content->getEntityId()
+                'contentId'   => $content->getEntityId(),
             ]);
         }
 

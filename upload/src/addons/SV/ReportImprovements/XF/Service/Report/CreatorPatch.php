@@ -26,7 +26,7 @@ class CreatorPatch extends XFCP_CreatorPatch
         if ($this->threadCreator && \XF::options()->svLogToReportCentreAndForum)
         {
             $this->report->preSave();
-            $errors = array_merge($errors,$this->report->getErrors());
+            $errors = array_merge($errors, $this->report->getErrors());
         }
 
         return $errors;
@@ -39,8 +39,7 @@ class CreatorPatch extends XFCP_CreatorPatch
             $threadCreator = $this->threadCreator;
 
             $thread = $threadCreator->save();
-            \XF::asVisitor($this->user, function() use($thread)
-            {
+            \XF::asVisitor($this->user, function () use ($thread) {
                 /** @var \XF\Repository\Thread $threadRepo */
                 $threadRepo = $this->repository('XF:Thread');
                 $threadRepo->markThreadReadByVisitor($thread, $thread->post_date);

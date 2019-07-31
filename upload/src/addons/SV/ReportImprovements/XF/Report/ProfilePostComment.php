@@ -8,7 +8,6 @@ use XF\Mvc\Entity\Entity;
 
 /**
  * Class ProfilePostComment
- *
  * Extends \XF\Report\ProfilePostComment
  *
  * @package SV\ReportImprovements\XF\Report
@@ -17,7 +16,6 @@ class ProfilePostComment extends XFCP_ProfilePostComment implements ContentInter
 {
     /**
      * @param Report $report
-     *
      * @return bool
      */
     public function canView(Report $report)
@@ -29,7 +27,7 @@ class ProfilePostComment extends XFCP_ProfilePostComment implements ContentInter
     }
 
     /**
-     * @param Report $report
+     * @param Report                               $report
      * @param Entity|\XF\Entity\ProfilePostComment $content
      */
     public function setupReportEntityContent(Report $report, Entity $content)
@@ -43,7 +41,6 @@ class ProfilePostComment extends XFCP_ProfilePostComment implements ContentInter
 
     /**
      * @param Report $report
-     *
      * @return int
      */
     public function getContentDate(Report $report)

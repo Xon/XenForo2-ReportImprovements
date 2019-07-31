@@ -14,8 +14,7 @@ class ReportComment extends AbstractHandler
 {
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     * @param null   $error
-     *
+     * @param null                                                  $error
      * @return bool
      */
     public function canViewContent(Entity $entity, &$error = null)
@@ -30,7 +29,6 @@ class ReportComment extends AbstractHandler
 
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     *
      * @return bool
      */
     public function likesCounted(Entity $entity)

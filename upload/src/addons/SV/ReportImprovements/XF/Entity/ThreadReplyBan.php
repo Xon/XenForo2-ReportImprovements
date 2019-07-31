@@ -6,17 +6,14 @@ use XF\Mvc\Entity\Structure;
 
 /**
  * Class ThreadReplyBan
- *
  * Extends \XF\Entity\ThreadReplyBan
  *
  * @package SV\ReportImprovements\XF\Entity
- *
  * COLUMNS
- * @property int post_id
- *
+ * @property int                                     post_id
  * RELATIONS
  * @property \SV\ReportImprovements\XF\Entity\Report Report
- * @property \SV\ReportImprovements\XF\Entity\Post Post
+ * @property \SV\ReportImprovements\XF\Entity\Post   Post
  */
 class ThreadReplyBan extends XFCP_ThreadReplyBan
 {
@@ -69,7 +66,6 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
 
     /**
      * @param Structure $structure
-     *
      * @return Structure
      */
     public static function getStructure(Structure $structure)
@@ -79,18 +75,18 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
         $structure->columns['post_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
 
         $structure->relations['Report'] = [
-            'entity' => 'XF:Report',
-            'type' => self::TO_ONE,
+            'entity'     => 'XF:Report',
+            'type'       => self::TO_ONE,
             'conditions' => [
                 ['content_type', '=', 'user'],
-                ['content_id', '=', '$user_id']
-            ]
+                ['content_id', '=', '$user_id'],
+            ],
         ];
         $structure->relations['Post'] = [
-            'entity' => 'XF:Post',
-            'type' => self::TO_ONE,
+            'entity'     => 'XF:Post',
+            'type'       => self::TO_ONE,
             'conditions' => 'post_id',
-            'primary' => true
+            'primary'    => true,
         ];
 
         $structure->options['svLogWarningChanges'] = true;

@@ -2,12 +2,10 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
-use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\Structure;
 
 /**
  * Class User
- *
  * Extends \XF\Entity\User
  *
  * @package SV\ReportImprovements\XF\Entity
@@ -16,7 +14,6 @@ class User extends XFCP_User
 {
     /**
      * @param null $error
-     *
      * @return bool
      */
     public function canViewReports(/** @noinspection PhpUnusedParameterInspection */
@@ -47,7 +44,6 @@ class User extends XFCP_User
 
     /**
      * @param null $error
-     *
      * @return bool
      */
     public function canViewConversationMessageReport(/** @noinspection PhpUnusedParameterInspection */
@@ -65,7 +61,6 @@ class User extends XFCP_User
 
     /**
      * @param null $error
-     *
      * @return bool
      */
     public function canViewProfilePostCommentReport(&$error = null)
@@ -75,7 +70,6 @@ class User extends XFCP_User
 
     /**
      * @param null $error
-     *
      * @return bool
      */
     public function canViewProfilePostReport(/** @noinspection PhpUnusedParameterInspection */
@@ -93,7 +87,6 @@ class User extends XFCP_User
 
     /**
      * @param null $error
-     *
      * @return bool
      */
     public function canViewUserReport(/** @noinspection PhpUnusedParameterInspection */
@@ -114,8 +107,8 @@ class User extends XFCP_User
      * @param null $error
      * @return bool
      */
-    public function canViewPostReport($nodeId,/** @noinspection PhpUnusedParameterInspection */
-        &$error = null)
+    public function canViewPostReport($nodeId, /** @noinspection PhpUnusedParameterInspection */
+                                      &$error = null)
     {
         if (!$this->hasNodePermission($nodeId, 'viewReportPost'))
         {
@@ -137,7 +130,6 @@ class User extends XFCP_User
 
     /**
      * @param null $error
-     *
      * @return bool
      */
     public function canViewReporter(/** @noinspection PhpUnusedParameterInspection */

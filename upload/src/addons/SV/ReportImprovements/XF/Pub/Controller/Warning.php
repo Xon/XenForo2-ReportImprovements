@@ -7,7 +7,6 @@ use XF\Mvc\ParameterBag;
 
 /**
  * Class Warning
- *
  * Extends \XF\Pub\Controller\Warning
  *
  * @package SV\ReportImprovements\XF\Pub\Controller
@@ -15,21 +14,20 @@ use XF\Mvc\ParameterBag;
 class Warning extends XFCP_Warning
 {
     /**
-     * @param int $id
+     * @param int   $id
      * @param array $extraWith
-     *
      * @return \XF\Entity\Warning
      * @throws \XF\Mvc\Reply\Exception
      */
     protected function assertViewableWarning($id, array $extraWith = [])
     {
         $extraWith[] = 'Report';
+
         return parent::assertViewableWarning($id, $extraWith);
     }
 
     /**
      * @param ParameterBag $params
-     *
      * @return \XF\Mvc\Reply\Redirect|\XF\Mvc\Reply\Reroute
      * @throws \XF\Mvc\Reply\Exception
      */
@@ -50,7 +48,6 @@ class Warning extends XFCP_Warning
 
     /**
      * @param ParameterBag $params
-     *
      * @return \XF\Mvc\Reply\Redirect
      * @throws \XF\Mvc\Reply\Exception
      */
@@ -65,6 +62,7 @@ class Warning extends XFCP_Warning
         {
             Globals::$resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
         }
+
         return parent::actionExpire($params);
     }
 }

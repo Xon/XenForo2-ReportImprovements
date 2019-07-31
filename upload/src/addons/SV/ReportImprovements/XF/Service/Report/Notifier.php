@@ -4,12 +4,10 @@ namespace SV\ReportImprovements\XF\Service\Report;
 
 /**
  * Class Notifier
- *
  * Extends \XF\Service\Report\Notifier
  *
  * @package SV\ReportImprovements\XF\Service\Report
- *
- * @property \SV\ReportImprovements\XF\Entity\Report $report
+ * @property \SV\ReportImprovements\XF\Entity\Report        $report
  * @property \SV\ReportImprovements\XF\Entity\ReportComment $comment
  */
 class Notifier extends XFCP_Notifier
@@ -56,7 +54,7 @@ class Notifier extends XFCP_Notifier
             if (isset($notifiableUsers[$userId]))
             {
                 $user = $notifiableUsers[$userId];
-                if (\XF::asVisitor($user, function() { return $this->report->canView(); }))
+                if (\XF::asVisitor($user, function () { return $this->report->canView(); }))
                 {
                     $this->sendCommentNotification($user);
                 }
@@ -95,7 +93,7 @@ class Notifier extends XFCP_Notifier
         ', 'alerted_user_id', ['report_comment', $this->comment->report_comment_id, 'insert']));
 
         /**
-         * @var int $userId
+         * @var int                                   $userId
          * @var \SV\ReportImprovements\XF\Entity\User $user
          */
         foreach ($users AS $userId => $user)
@@ -112,7 +110,6 @@ class Notifier extends XFCP_Notifier
 
     /**
      * @param \XF\Entity\User $user
-     *
      * @return bool
      */
     protected function sendCommentNotification(\XF\Entity\User $user)
@@ -124,10 +121,11 @@ class Notifier extends XFCP_Notifier
             /** @var \XF\Repository\UserAlert $alertRepo */
             $alertRepo = $this->app->repository('XF:UserAlert');
             if ($alertRepo->alert($user, $comment->user_id, $comment->username, 'report_comment', $comment->report_comment_id, 'insert', [
-                'report_id' => $comment->report_id
+                'report_id' => $comment->report_id,
             ]))
             {
                 $this->usersAlertedForInsert[$user->user_id] = true;
+
                 return true;
             }
         }

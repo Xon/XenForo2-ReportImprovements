@@ -8,7 +8,6 @@ use XF\Mvc\Entity\Entity;
 
 /**
  * Class Post
- *
  * Extends \XF\Report\Post
  *
  * @package SV\ReportImprovements\XF\Report
@@ -17,7 +16,6 @@ class Post extends XFCP_Post implements ContentInterface
 {
     /**
      * @param Report $report
-     *
      * @return bool
      */
     public function canView(Report $report)
@@ -29,7 +27,7 @@ class Post extends XFCP_Post implements ContentInterface
     }
 
     /**
-     * @param Report $report
+     * @param Report                                       $report
      * @param Entity|\SV\ReportImprovements\XF\Entity\Post $content
      */
     public function setupReportEntityContent(Report $report, Entity $content)
@@ -43,7 +41,6 @@ class Post extends XFCP_Post implements ContentInterface
 
     /**
      * @param Report $report
-     *
      * @return int
      */
     public function getContentDate(Report $report)
@@ -74,6 +71,7 @@ class Post extends XFCP_Post implements ContentInterface
             $reportInfo['post_id'] = $report->content_id;
             $report->content_info = $reportInfo;
         }
+
         return parent::getContentLink($report);
     }
 }

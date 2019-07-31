@@ -24,7 +24,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
             '
             SELECT report_comment_id
             FROM xf_report_comment 
-            WHERE (message LIKE \'%http:%\' OR message LIKE \'%https:%\') and message NOT LIKE \'%[URL=%http%\' and message NOT LIKE \'%[URL]http%\'
+            WHERE (message LIKE \'%http:%\' OR message LIKE \'%https:%\') AND message NOT LIKE \'%[URL=%http%\' AND message NOT LIKE \'%[URL]http%\'
               AND report_comment_id > ?
             ORDER BY report_comment_id
 			', $batch
@@ -43,7 +43,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
         {
             $user = $comment->User && $comment->User->user_id ? $comment->User : \XF::visitor();
 
-            \XF::asVisitor($user, function () use ($comment){
+            \XF::asVisitor($user, function () use ($comment) {
 
                 $options = \XF::options();
                 $urlToPageTitle = $options->urlToPageTitle['enabled'];

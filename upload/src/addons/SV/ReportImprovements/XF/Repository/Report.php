@@ -7,7 +7,6 @@ use XF\Mvc\Entity\Entity;
 
 /**
  * Class Report
- *
  * Extends \XF\Repository\Report
  *
  * @package SV\ReportImprovements\XF\Repository
@@ -15,8 +14,8 @@ use XF\Mvc\Entity\Entity;
 class Report extends XFCP_Report
 {
     /**
-     * @param array $state
-     * @param int|null  $timeFrame
+     * @param array    $state
+     * @param int|null $timeFrame
      * @return \XF\Finder\Report
      */
     public function findReports($state = ['open', 'assigned'], $timeFrame = null)
@@ -50,7 +49,7 @@ class Report extends XFCP_Report
         if ($moderators->count())
         {
             /**
-             * @var int $id
+             * @var int                  $id
              * @var \XF\Entity\Moderator $moderator
              */
             if ($nodeId)
@@ -67,7 +66,7 @@ class Report extends XFCP_Report
             foreach ($moderators AS $id => $moderator)
             {
                 $canView = \XF::asVisitor($moderator->User,
-                    function() use ($report) { return $report->canView(); }
+                    function () use ($report) { return $report->canView(); }
                 );
                 if (!$canView)
                 {
@@ -81,7 +80,6 @@ class Report extends XFCP_Report
 
     /**
      * @param \XF\Mvc\Entity\ArrayCollection $reports
-     *
      * @return \XF\Mvc\Entity\ArrayCollection
      */
     public function filterViewableReports($reports)
@@ -89,7 +87,7 @@ class Report extends XFCP_Report
         $em = $this->app()->em();
         $nodeIds = [];
         /** @var \XF\Entity\Report $report */
-        foreach($reports as $report)
+        foreach ($reports as $report)
         {
             if (isset($report->content_info['node_id']))
             {
@@ -114,14 +112,14 @@ class Report extends XFCP_Report
 
         $userIds = [];
         /** @var \XF\Entity\Report $report */
-        foreach($reports as $report)
+        foreach ($reports as $report)
         {
             $userIds[$report->content_user_id] = true;
             $userIds[$report->assigned_user_id] = true;
             $userIds[$report->last_modified_user_id] = true;
         }
 
-        foreach($userIds as $userId => $null)
+        foreach ($userIds as $userId => $null)
         {
             if (!$userId || $em->findCached('XF:User', $userId))
             {
@@ -140,7 +138,6 @@ class Report extends XFCP_Report
     /**
      * @noinspection PhpDocMissingThrowsInspection
      * @param Entity|\XF\Entity\Report|\XF\Entity\ReportComment $entity
-     *
      * @return int[]
      */
     public function findUserIdsToAlertForSvReportImprov(Entity $entity)
@@ -190,13 +187,12 @@ class Report extends XFCP_Report
         return $userIds ?: [];
     }
 
-	protected $userReportCountCache = null;
+    protected $userReportCountCache = null;
 
     /**
      * @param \XF\Entity\User|\SV\ReportImprovements\XF\Entity\User $user
-     * @param int $daysLimit
-     * @param string $state
-     *
+     * @param int                                                   $daysLimit
+     * @param string                                                $state
      * @return mixed
      */
     public function countReportsByUser(\XF\Entity\User $user, $daysLimit, $state = '')
@@ -263,7 +259,7 @@ class Report extends XFCP_Report
         $userId = \XF::visitor()->user_id;
 
         /**
-         * @var int $reportId
+         * @var int               $reportId
          * @var \XF\Entity\Report $report
          */
         foreach ($reports AS $reportId => $report)
@@ -276,8 +272,8 @@ class Report extends XFCP_Report
         }
 
         return [
-            'total' => $total,
-            'assigned' => $assigned,
+            'total'     => $total,
+            'assigned'  => $assigned,
             'lastBuilt' => $registryReportCounts['lastModified'],
         ];
     }

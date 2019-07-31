@@ -3,7 +3,6 @@
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
 
-
 use SV\ReportImprovements\Globals;
 use XF\Mvc\ParameterBag;
 
@@ -24,7 +23,7 @@ class Member extends XFCP_Member
         }
         finally
         {
-            Globals::$reportInAccountPostings  = true;
+            Globals::$reportInAccountPostings = true;
         }
     }
 }

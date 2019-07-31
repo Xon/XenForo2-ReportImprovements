@@ -12,10 +12,10 @@ class Report
     public static function resolveInactiveReports()
     {
         $options = \XF::options();
-        $daysLimit = (int) $options->sv_ri_expiry_days;
+        $daysLimit = (int)$options->sv_ri_expiry_days;
         if ($daysLimit <= 0 || !$options->sv_ri_expiry_action)
         {
-            return ;
+            return;
         }
 
         \XF::app()->jobManager()->enqueueUnique(

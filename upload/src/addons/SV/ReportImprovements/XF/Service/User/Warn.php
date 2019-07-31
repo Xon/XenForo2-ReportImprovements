@@ -3,12 +3,10 @@
 namespace SV\ReportImprovements\XF\Service\User;
 
 use SV\ReportImprovements\Globals;
-use XF\Entity\User;
 use XF\Mvc\Entity\Entity;
 
 /**
  * Class Warn
- *
  * Extends \XF\Service\User\Warn
  *
  * @package SV\ReportImprovements\XF\Service\User

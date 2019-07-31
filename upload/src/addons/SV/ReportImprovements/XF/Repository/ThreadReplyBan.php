@@ -6,7 +6,6 @@ use SV\ReportImprovements\Globals;
 
 /**
  * Class ThreadReplyBan
- *
  * Extends \XF\Repository\ThreadReplyBan
  *
  * @package SV\ReportImprovements\XF\Repository
@@ -15,7 +14,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
 {
     /**
      * @param \XF\Entity\ThreadReplyBan|\SV\ReportImprovements\XF\Entity\ThreadReplyBan $threadReplyBan
-     * @param                           $type
+     * @param                                                                           $type
      */
     public function logToReport(\XF\Entity\ThreadReplyBan $threadReplyBan, $type)
     {

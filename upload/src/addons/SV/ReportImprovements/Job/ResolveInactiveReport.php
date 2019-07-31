@@ -17,13 +17,12 @@ class ResolveInactiveReport extends AbstractRebuildJob
     /**
      * @param int $start
      * @param int $batch
-     *
      * @return array
      */
     protected function getNextIds($start, $batch)
     {
         $options = $this->app->options();
-        $daysLimit = (int) $options->sv_ri_expiry_days;
+        $daysLimit = (int)$options->sv_ri_expiry_days;
         if ($daysLimit <= 0 || !$options->sv_ri_expiry_action)
         {
             return null;
@@ -92,6 +91,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
     public function getStatusMessage()
     {
         $actionPhrase = \XF::phrase('svReportImprov_resolving_inactive_reports');
+
         return sprintf('%s... (%s)', $actionPhrase, $this->data['start']);
     }
 }

@@ -169,7 +169,7 @@ class ReportComment extends XFCP_ReportComment
 
         $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
         $structure->behaviors['XF:Indexable'] = [
-            'checkForUpdates' => ['message', 'user_id', 'report_id', 'comment_date', 'state_change', 'is_report']
+            'checkForUpdates' => ['message', 'user_id', 'report_id', 'comment_date', 'state_change', 'is_report'],
         ];
         $structure->getters['ViewableUsername'] = true;
         $structure->getters['ViewableUser'] = true;
@@ -178,22 +178,22 @@ class ReportComment extends XFCP_ReportComment
             'type'       => self::TO_MANY,
             'conditions' => [
                 ['content_type', '=', 'report_comment'],
-                ['content_id', '=', '$report_comment_id']
+                ['content_id', '=', '$report_comment_id'],
             ],
             'key'        => 'like_user_id',
-            'order'      => 'like_date'
+            'order'      => 'like_date',
         ];
         $structure->relations['WarningLog'] = [
             'entity'     => 'SV\ReportImprovements:WarningLog',
             'type'       => self::TO_ONE,
             'conditions' => 'warning_log_id',
-            'primary'    => true
+            'primary'    => true,
         ];
         $structure->relations['AssignedUser'] = [
             'entity'     => 'XF:User',
             'type'       => self::TO_ONE,
             'conditions' => [['user_id', '=', '$assigned_user_id']],
-            'primary'    => true
+            'primary'    => true,
         ];
 
         $structure->defaultWith[] = 'WarningLog';

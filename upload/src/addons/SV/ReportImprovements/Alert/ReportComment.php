@@ -3,7 +3,6 @@
 namespace SV\ReportImprovements\Alert;
 
 use XF\Alert\AbstractHandler;
-use XF\Entity\UserAlert;
 use XF\Mvc\Entity\Entity;
 
 /**
@@ -15,8 +14,7 @@ class ReportComment extends AbstractHandler
 {
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     * @param null   $error
-     *
+     * @param null                                                  $error
      * @return bool
      */
     public function canViewContent(Entity $entity, &$error = null)
@@ -45,7 +43,7 @@ class ReportComment extends AbstractHandler
 
         return [
             'insert',
-            'like'
+            'like',
         ];
     }
 

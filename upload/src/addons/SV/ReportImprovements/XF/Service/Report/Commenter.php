@@ -8,12 +8,10 @@ use SV\ReportImprovements\XF\Entity\ReportComment;
 
 /**
  * Class Commenter
- *
  * Extends \XF\Service\Report\Commenter
  *
  * @package SV\ReportImprovements\XF\Service\Report
- *
- * @property Report $report
+ * @property Report        $report
  * @property ReportComment $comment
  */
 class Commenter extends XFCP_Commenter
@@ -45,7 +43,7 @@ class Commenter extends XFCP_Commenter
         $oldAssignedUserId = null;
         if ($newState !== 'open')
         {
-            $oldAssignedUserId = $this->report->assigned_user_id ;
+            $oldAssignedUserId = $this->report->assigned_user_id;
         }
 
         parent::setReportState($newState, $assignedUser);

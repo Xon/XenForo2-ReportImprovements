@@ -13,7 +13,6 @@ interface ContentInterface
 {
     /**
      * @param Report|\SV\ReportImprovements\XF\Entity\Report $report
-     *
      * @return int
      */
     public function getContentDate(Report $report);

@@ -48,7 +48,6 @@ class Warning extends XFCP_Warning
     /**
      * @param \XF\Entity\Warning $warning
      * @param                    $type
-     *
      * @throws \Exception
      */
     public function logOperation(\XF\Entity\Warning $warning, $type)
@@ -84,7 +83,7 @@ class Warning extends XFCP_Warning
             {
                 $warningLogCreator->save();
             }
-            \XF::runLater(function() use($warningLogCreator, $reporter) {
+            \XF::runLater(function () use ($warningLogCreator, $reporter) {
                 \XF::asVisitor($reporter, function () use ($warningLogCreator) {
                     $warningLogCreator->sendNotifications();
                 });

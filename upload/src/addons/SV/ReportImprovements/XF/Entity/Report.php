@@ -7,19 +7,15 @@ use XF\Mvc\Entity\Structure;
 
 /**
  * Class Report
- *
  * Extends \XF\Entity\Report
  *
  * @package SV\ReportImprovements\XF\Entity
- *
  * COLUMNS
- * @property int last_modified_id
- *
+ * @property int                                            last_modified_id
  * GETTERS
- * @property array commenter_user_ids
- * @property array comment_ids
+ * @property array                                          commenter_user_ids
+ * @property array                                          comment_ids
  * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified
- *
  * RELATIONS
  * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified_
  */
@@ -27,7 +23,6 @@ class Report extends XFCP_Report
 {
     /**
      * @param null $error
-     *
      * @return bool
      */
     public function canComment(/** @noinspection PhpUnusedParameterInspection */
@@ -51,7 +46,6 @@ class Report extends XFCP_Report
 
     /**
      * @param null $error
-     *
      * @return bool
      */
     public function canUpdate(/** @noinspection PhpUnusedParameterInspection */
@@ -75,7 +69,6 @@ class Report extends XFCP_Report
 
     /**
      * @param null $error
-     *
      * @return bool
      */
     public function canAssign(/** @noinspection PhpUnusedParameterInspection */
@@ -112,7 +105,6 @@ class Report extends XFCP_Report
 
     /**
      * @param null $error
-     *
      * @return bool
      */
     public function canViewReporter(&$error = null)
@@ -125,7 +117,6 @@ class Report extends XFCP_Report
 
     /**
      * @param bool $includeSelf
-     *
      * @return array
      */
     public function getBreadcrumbs($includeSelf = true)
@@ -136,7 +127,7 @@ class Report extends XFCP_Report
         {
             $breadcrumbs[] = [
                 'value' => $this->title,
-                'href' => \XF::app()->router()->buildLink('reports', $this),
+                'href'  => \XF::app()->router()->buildLink('reports', $this),
             ];
         }
 
@@ -172,6 +163,7 @@ class Report extends XFCP_Report
     public function getMessage()
     {
         $handler = $this->Handler;
+
         return $handler ? $handler->getContentMessage($this) : $this->title;
     }
 
@@ -260,6 +252,7 @@ class Report extends XFCP_Report
 
             $with[] = 'Likes|' . $userId;
         }
+
         return $with;
     }
 
@@ -278,7 +271,6 @@ class Report extends XFCP_Report
 
     /**
      * @param Structure $structure
-     *
      * @return Structure
      */
     public static function getStructure(Structure $structure)
@@ -291,12 +283,12 @@ class Report extends XFCP_Report
         }
 
         $structure->behaviors['XF:Indexable'] = [
-            'checkForUpdates' => ['content_user_id', 'content_info', 'first_report_date', 'report_state']
+            'checkForUpdates' => ['content_user_id', 'content_info', 'first_report_date', 'report_state'],
         ];
         $structure->behaviors['XF:IndexableContainer'] = [
             'childContentType' => 'report_comment',
-            'childIds' => function($report) { return $report->comment_ids; },
-            'checkForUpdates' => ['report_id', 'is_report']
+            'childIds'         => function ($report) { return $report->comment_ids; },
+            'checkForUpdates'  => ['report_id', 'is_report'],
         ];
 
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
@@ -310,12 +302,12 @@ class Report extends XFCP_Report
         $structure->getters['LastModified'] = true;
 
         $structure->relations['LastModified'] = [
-            'entity' => 'XF:ReportComment',
-            'type' => self::TO_ONE,
+            'entity'     => 'XF:ReportComment',
+            'type'       => self::TO_ONE,
             'conditions' => [
-                ['report_comment_id', '=', '$last_modified_id']
+                ['report_comment_id', '=', '$last_modified_id'],
             ],
-            'primary' => true,
+            'primary'    => true,
         ];
 
         return $structure;

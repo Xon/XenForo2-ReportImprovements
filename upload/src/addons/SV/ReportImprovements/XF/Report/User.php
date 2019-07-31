@@ -2,12 +2,10 @@
 
 namespace SV\ReportImprovements\XF\Report;
 
-use SV\ReportImprovements\Report\ContentInterface;
 use XF\Entity\Report;
 
 /**
  * Class User
- *
  * Extends \XF\Report\User
  *
  * @package SV\ReportImprovements\XF\Report
@@ -16,7 +14,6 @@ class User extends XFCP_User
 {
     /**
      * @param Report $report
-     *
      * @return bool
      */
     public function canView(Report $report)
@@ -29,7 +26,6 @@ class User extends XFCP_User
 
     /**
      * @param Report $report
-     *
      * @return \XF\Phrase
      */
     public function getContentTitle(Report $report)
@@ -56,7 +52,7 @@ class User extends XFCP_User
         }
 
         return \XF::phrase('member_x', [
-            'username' => $name
+            'username' => $name,
         ]);
     }
 
@@ -69,6 +65,7 @@ class User extends XFCP_User
             $reportInfo['user_id'] = $report->content_id;
             $report->content_info = $reportInfo;
         }
+
         return parent::getContentLink($report);
     }
 }

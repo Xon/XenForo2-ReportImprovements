@@ -15,7 +15,6 @@ class WarningLogMigration extends AbstractRebuildJob
     /**
      * @param int $start
      * @param int $batch
-     *
      * @return array
      */
     protected function getNextIds($start, $batch)
@@ -27,7 +26,7 @@ class WarningLogMigration extends AbstractRebuildJob
 				SELECT warning_id
 				FROM xf_warning
 				WHERE warning_id > ?
-				  AND not exists (SELECT warning_id FROM xf_sv_warning_log where xf_sv_warning_log.warning_id = xf_warning.warning_id)
+				  AND NOT exists (SELECT warning_id FROM xf_sv_warning_log WHERE xf_sv_warning_log.warning_id = xf_warning.warning_id)
 				ORDER BY warning_id
 			', $batch
         ), [$start]);
@@ -96,6 +95,7 @@ class WarningLogMigration extends AbstractRebuildJob
     public function getStatusMessage()
     {
         $actionPhrase = \XF::phrase('svReportImprov_migrating');
+
         return sprintf('%s... (%s)', $actionPhrase, $this->data['start']);
     }
 }

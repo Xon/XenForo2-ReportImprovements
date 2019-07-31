@@ -7,7 +7,6 @@ use XF\Mvc\ParameterBag;
 
 /**
  * Class Thread
- * 
  * Extends \XF\Pub\Controller\Thread
  *
  * @package SV\ReportImprovements\XF\Pub\Controller
@@ -16,7 +15,6 @@ class Thread extends XFCP_Thread
 {
     /**
      * @param ParameterBag $params
-     *
      * @return \XF\Mvc\Reply\Redirect|\XF\Mvc\Reply\View
      */
     public function actionReplyBans(ParameterBag $params)

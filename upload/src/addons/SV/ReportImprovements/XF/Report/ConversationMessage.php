@@ -8,7 +8,6 @@ use XF\Mvc\Entity\Entity;
 
 /**
  * Class ConversationMessage
- *
  * Extends \XF\Report\ConversationMessage
  *
  * @package SV\ReportImprovements\XF\Report
@@ -17,7 +16,6 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
 {
     /**
      * @param Report $report
-     *
      * @return bool
      */
     public function canView(Report $report)
@@ -29,7 +27,7 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
     }
 
     /**
-     * @param Report $report
+     * @param Report                                $report
      * @param Entity|\XF\Entity\ConversationMessage $content
      */
     public function setupReportEntityContent(Report $report, Entity $content)
@@ -43,7 +41,6 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
 
     /**
      * @param Report $report
-     *
      * @return int
      */
     public function getContentDate(Report $report)
