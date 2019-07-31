@@ -178,6 +178,13 @@ class Report extends XFCP_Report
                       AND user_id <> ?
                 ', [$entity->report_id, $entity->user_id]);
             }
+
+            if ($entity->state_change === 'assigned' && $entity->Report->assigned_user_id)
+            {
+                // alerts the assigned user who likely isn't a watcher
+                $userIds[] = $entity->Report->assigned_user_id;
+                $userIds = \array_unique($userIds);
+            }
         }
 
         return $userIds ?: [];
