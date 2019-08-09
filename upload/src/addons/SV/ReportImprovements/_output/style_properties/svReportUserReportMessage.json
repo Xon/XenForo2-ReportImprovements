@@ -1,0 +1,22 @@
+{
+    "group_name": "message",
+    "title": "Reports - User report messages",
+    "description": "",
+    "property_type": "css",
+    "css_components": [
+        "text",
+        "background",
+        "border",
+        "border_radius",
+        "padding",
+        "extra"
+    ],
+    "value_type": "",
+    "value_parameters": "",
+    "depends_on": "",
+    "value_group": "",
+    "property_value": {
+        "extra": ".message-cell--user\n{\n    background-color: @xf-contentHighlightBg;\n}"
+    },
+    "display_order": 30400
+}

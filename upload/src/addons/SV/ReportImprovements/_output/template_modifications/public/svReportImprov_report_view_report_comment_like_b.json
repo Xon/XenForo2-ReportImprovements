@@ -1,9 +1,9 @@
 {
     "template": "report_view",
-    "description": "Add \".js-reportComment\" class to every report comment",
+    "description": "Add extra classes to every report comment",
     "execution_order": 6905,
     "enabled": true,
     "action": "preg_replace",
-    "find": "#(<article.*?class=\".*?message--simple)(.*?)(\">)#s",
-    "replace": "$1$2 js-reportComment$3"
+    "find": "#(<article.*?class=\".*?message--simple)([^\"]*)(\"[^>]*)(>)#si",
+    "replace": "$1$2 message--report js-reportComment{{$comment.is_report ? ' is-report' : ' is-comment'}}$3\n\t\tdata-author=\"{{ $comment.User.username ?: $comment.username }}\"\n\t\tdata-content=\"report-comment-{$comment.report_comment_id}\"$4"
 }

@@ -1,0 +1,9 @@
+{
+    "template": "report.less",
+    "description": "Add extra css to reports",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#$#",
+    "replace": "$0\n{{ include('svReportImprove_report.less') }}"
+}
