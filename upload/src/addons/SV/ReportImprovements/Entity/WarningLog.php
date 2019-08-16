@@ -95,15 +95,15 @@ class WarningLog extends Entity
             {
                 $page = floor($this->ReplyBanPost->position / \XF::options()->messagesPerPage) + 1;
 
-                return $router->buildLink('threads', $thread, ['page' => $page]) . '#post-' . $this->reply_ban_post_id;
+                return $router->buildLink('canonical:threads', $thread, ['page' => $page]) . '#post-' . $this->reply_ban_post_id;
             }
 
-            return $router->buildLink('threads', $this->ReplyBanPost);
+            return $router->buildLink('canonical:threads', $this->ReplyBanPost);
         }
 
         if ($this->ReplyBanThread)
         {
-            return $router->buildLink('threads', $this->ReplyBanThread);
+            return $router->buildLink('canonical:threads', $this->ReplyBanThread);
         }
 
         return null;
