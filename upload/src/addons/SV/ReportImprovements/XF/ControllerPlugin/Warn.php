@@ -82,6 +82,12 @@ class Warn extends XFCP_Warn
                 throw $this->exception($this->noPermission());
             }
 
+            if ($input['ban_length'] === 'permanent')
+            {
+                $input['ban_length_unit'] = 0;
+                $input['ban_length_value'] = null;
+            }
+
             $warnService->setupReplyBan(
                 $input['reply_ban_send_alert'],
                 $input['reply_ban_reason'],
