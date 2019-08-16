@@ -50,7 +50,7 @@ class Creator extends XFCP_Creator
         $reportRepo = $this->repository('XF:Report');
         $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($this->report);
 
-        /** @var \SV\ReportImprovements\XF\Service\Report\Notifier $notifier */
+        /** @var Notifier $notifier */
         $notifier = $this->service('XF:Report\Notifier', $this->report, $this->comment);
         $notifier->setCommentersUserIds($userIdsToAlert);
         $notifier->notify();

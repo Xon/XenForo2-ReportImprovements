@@ -34,6 +34,7 @@ class Warning extends XFCP_Warning
     public function actionDelete(ParameterBag $params)
     {
         /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
+        /** @noinspection PhpUndefinedFieldInspection */
         $warning = $this->assertViewableWarning($params->warning_id);
         $report = $warning->Report;
 
@@ -54,6 +55,7 @@ class Warning extends XFCP_Warning
     public function actionExpire(ParameterBag $params)
     {
         /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
+        /** @noinspection PhpUndefinedFieldInspection */
         $warning = $this->assertViewableWarning($params->warning_id);
         $report = $warning->Report;
 

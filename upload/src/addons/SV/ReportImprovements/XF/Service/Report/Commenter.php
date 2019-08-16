@@ -94,7 +94,7 @@ class Commenter extends XFCP_Commenter
         $reportRepo = $this->repository('XF:Report');
         $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($comment);
 
-        /** @var \SV\ReportImprovements\XF\Service\Report\Notifier $notifier */
+        /** @var Notifier $notifier */
         $notifier = $this->service('XF:Report\Notifier', $this->report, $comment);
         $notifier->setCommentersUserIds($userIdsToAlert);
         $notifier->notify();

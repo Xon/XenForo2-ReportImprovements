@@ -116,7 +116,8 @@ class Report extends AbstractData
             return null;
         }
 
-        if (!$handler = $entity->getHandler())
+        $handler = $entity->getHandler();
+        if (!$handler)
         {
             return null;
         }

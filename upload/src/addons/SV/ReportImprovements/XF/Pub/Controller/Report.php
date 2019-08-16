@@ -247,6 +247,7 @@ class Report extends XFCP_Report
 
         return parent::assertViewableReport($reportId, $extraWith);
     }
+
     /**
      * @param       $reportCommentId
      * @param array $extraWith

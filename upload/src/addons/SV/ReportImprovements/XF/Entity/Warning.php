@@ -11,7 +11,7 @@ use XF\Mvc\Entity\Structure;
  *
  * @package SV\ReportImprovements\XF\Entity
  * RELATIONS
- * @property \SV\ReportImprovements\XF\Entity\Report Report
+ * @property Report Report
  */
 class Warning extends XFCP_Warning
 {

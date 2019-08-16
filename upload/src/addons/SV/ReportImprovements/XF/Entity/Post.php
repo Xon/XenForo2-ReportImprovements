@@ -9,7 +9,7 @@ use XF\Mvc\Entity\Structure;
  * Extends \XF\Entity\Post
  *
  * @package SV\ReportImprovements\XF\Entity
- * @property \SV\ReportImprovements\XF\Entity\Report Report
+ * @property Report Report
  */
 class Post extends XFCP_Post
 {

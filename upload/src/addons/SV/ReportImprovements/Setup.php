@@ -19,9 +19,9 @@ use XF\Db\Schema\Create;
 class Setup extends AbstractSetup
 {
     use InstallerHelper;
-	use StepRunnerInstallTrait;
-	use StepRunnerUpgradeTrait;
-	use StepRunnerUninstallTrait;
+    use StepRunnerInstallTrait;
+    use StepRunnerUpgradeTrait;
+    use StepRunnerUninstallTrait;
 
     /**
      * Creates add-on tables.
@@ -68,13 +68,14 @@ class Setup extends AbstractSetup
     public function installStep6()
     {
         /** @noinspection SqlResolve */
+        /** @noinspection SqlWithoutWhere */
         $this->db()->query('
-          update xf_report
-          set last_modified_id = coalesce((select report_comment_id 
-                                  from xf_report_comment 
-                                  where xf_report_comment.report_id = xf_report.report_id
-                                  order by comment_date desc
-                                  limit 1), 0)
+          UPDATE xf_report
+          SET last_modified_id = coalesce((SELECT report_comment_id 
+                                  FROM xf_report_comment 
+                                  WHERE xf_report_comment.report_id = xf_report.report_id
+                                  ORDER BY comment_date DESC
+                                  LIMIT 1), 0)
         ');
     }
 
@@ -97,9 +98,9 @@ class Setup extends AbstractSetup
     public function upgrade2000001Step1()
     {
         $this->db()->query('
-          update xf_report_comment
-          set warning_log_id = null
-          where warning_log_id = 0
+          UPDATE xf_report_comment
+          SET warning_log_id = NULL
+          WHERE warning_log_id = 0
         ');
     }
 
@@ -117,9 +118,9 @@ class Setup extends AbstractSetup
     {
         /** @noinspection SqlResolve */
         $this->db()->query('
-          update xf_sv_warning_log
-          set points = null, warning_definition_id = null
-          where reply_ban_thread_id <> 0 and points = 0
+          UPDATE xf_sv_warning_log
+          SET points = NULL, warning_definition_id = NULL
+          WHERE reply_ban_thread_id <> 0 AND points = 0
         ');
     }
 
@@ -127,9 +128,9 @@ class Setup extends AbstractSetup
     {
         /** @noinspection SqlResolve */
         $this->db()->query('
-          update xf_sv_warning_log
-          set reply_ban_thread_id = null
-          where reply_ban_thread_id = 0
+          UPDATE xf_sv_warning_log
+          SET reply_ban_thread_id = NULL
+          WHERE reply_ban_thread_id = 0
         ');
     }
 
@@ -137,9 +138,9 @@ class Setup extends AbstractSetup
     {
         /** @noinspection SqlResolve */
         $this->db()->query('
-          update xf_sv_warning_log
-          set reply_ban_post_id = null
-          where reply_ban_post_id = 0
+          UPDATE xf_sv_warning_log
+          SET reply_ban_post_id = NULL
+          WHERE reply_ban_post_id = 0
         ');
     }
 
@@ -151,7 +152,7 @@ class Setup extends AbstractSetup
     public function upgrade2020200Step1()
     {
         $this->renamePhrases([
-            'svReportImprov_thread_reply_ban' => 'svReportImprov_operation_type_action.reply_ban',
+            'svReportImprov_thread_reply_ban'           => 'svReportImprov_operation_type_action.reply_ban',
             'svReportImprov_thread_reply_ban_from_post' => 'svReportImprov_operation_type_action.reply_ban_from_post',
         ]);
     }
@@ -283,7 +284,7 @@ class Setup extends AbstractSetup
 
             $contentModerators = $modRepo->findContentModeratorsForList()->fetch();
             /** @var \XF\Entity\ModeratorContent $contentModerator */
-            foreach($contentModerators as $contentModerator)
+            foreach ($contentModerators as $contentModerator)
             {
                 $user = $contentModerator->User;
                 if (!$user)
@@ -338,9 +339,9 @@ class Setup extends AbstractSetup
             $globalReportPermsChecks = [
                 [
                     [
-                        'general' => ['warn', 'editBasicProfile'],
+                        'general'      => ['warn', 'editBasicProfile'],
                         'conversation' => ['alwaysInvite', 'editAnyPost', 'viewAny'],
-                        'profilePost' => ['warn', 'editAnyPost', 'viewAny'],
+                        'profilePost'  => ['warn', 'editAnyPost', 'viewAny'],
                     ],
                     ['general' => $globalReportPerms]
                 ],
@@ -366,7 +367,7 @@ class Setup extends AbstractSetup
 
             $moderators = $modRepo->findModeratorsForList()->fetch();
             /** @var \XF\Entity\Moderator $moderator */
-            foreach($moderators as $moderator)
+            foreach ($moderators as $moderator)
             {
                 if (!$moderator->User)
                 {
@@ -381,7 +382,7 @@ class Setup extends AbstractSetup
                 foreach ($globalReportPermsChecks as $perm => $raw)
                 {
                     list($checks, $assignments) = $raw;
-                    foreach($checks as $category => $permToTests)
+                    foreach ($checks as $category => $permToTests)
                     {
                         if (isset($newPermissions[$category]))
                         {
@@ -392,7 +393,7 @@ class Setup extends AbstractSetup
                                     // ensure access to report centre
                                     foreach ($assignments as $category => $perms)
                                     {
-                                        foreach($perms as $newPerm)
+                                        foreach ($perms as $newPerm)
                                         {
                                             if (empty($newPermissions[$category][$newPerm]))
                                             {
@@ -505,8 +506,8 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'reply_ban_post_id', 'int')->nullable(true)->setDefault(null);
 
             $table->addKey('warning_id');
-            $table->addKey(['content_type','content_id'], 'content_type_id');
-            $table->addKey(['user_id','warning_date'], 'user_id_date');
+            $table->addKey(['content_type', 'content_id'], 'content_type_id');
+            $table->addKey(['user_id', 'warning_date'], 'user_id_date');
             $table->addKey(['expiry_date'], 'expiry');
             $table->addKey(['operation_type'], 'operation_type');
             $table->addKey(['warning_edit_date'], 'warning_edit_date');
@@ -569,6 +570,7 @@ class Setup extends AbstractSetup
     }
 
     use InstallerSoftRequire;
+
     /**
      * @param array $errors
      * @param array $warnings

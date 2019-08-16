@@ -78,6 +78,7 @@ class WarningLog extends Entity
         {
             return null;
         }
+
         return $this->ReplyBanThread->ReplyBans[$this->user_id];
     }
 
@@ -166,7 +167,7 @@ class WarningLog extends Entity
                 'conditions' => 'user_id',
                 'primary'    => true,
             ],
-            'ReplyBan' => [
+            'ReplyBan'       => [
                 'entity'     => 'XF:ThreadReplyBan',
                 'type'       => self::TO_ONE,
                 'conditions' => [

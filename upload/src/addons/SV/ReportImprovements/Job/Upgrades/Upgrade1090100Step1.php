@@ -33,6 +33,7 @@ class Upgrade1090100Step1 extends AbstractRebuildJob
 
     /**
      * @param $id
+     * @throws \XF\Db\Exception
      */
     protected function rebuildById($id)
     {
@@ -47,6 +48,7 @@ class Upgrade1090100Step1 extends AbstractRebuildJob
         ", [$id]);
         if ($comment)
         {
+            /** @noinspection RegExpRedundantEscape */
             $output = preg_replace("/\@\[([^:]+):([^\]]+)\]/Uu", "[USER=$1]$2[/USER]", $comment['message']);
             if ($output !== null && $output != $comment['message'])
             {

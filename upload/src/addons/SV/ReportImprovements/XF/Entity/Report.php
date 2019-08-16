@@ -12,13 +12,13 @@ use XF\Mvc\Entity\Structure;
  *
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
- * @property int                                            last_modified_id
+ * @property int           last_modified_id
  * GETTERS
- * @property array                                          commenter_user_ids
- * @property array                                          comment_ids
- * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified
+ * @property array         commenter_user_ids
+ * @property array         comment_ids
+ * @property ReportComment LastModified
  * RELATIONS
- * @property \SV\ReportImprovements\XF\Entity\ReportComment LastModified_
+ * @property ReportComment LastModified_
  */
 class Report extends XFCP_Report
 {
@@ -29,7 +29,7 @@ class Report extends XFCP_Report
     public function canComment(/** @noinspection PhpUnusedParameterInspection */
         &$error = null)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var User $visitor */
         $visitor = \XF::visitor();
 
         if (!$visitor->user_id)
@@ -52,7 +52,7 @@ class Report extends XFCP_Report
     public function canUpdate(/** @noinspection PhpUnusedParameterInspection */
         &$error = null)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var User $visitor */
         $visitor = \XF::visitor();
 
         if (!$visitor->user_id)
@@ -75,7 +75,7 @@ class Report extends XFCP_Report
     public function canAssign(/** @noinspection PhpUnusedParameterInspection */
         &$error = null)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var User $visitor */
         $visitor = \XF::visitor();
 
         if (!$visitor->user_id)
@@ -93,7 +93,7 @@ class Report extends XFCP_Report
             return false;
         }
 
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var User $visitor */
         $visitor = \XF::visitor();
 
         if (!$visitor->user_id)
@@ -110,7 +110,7 @@ class Report extends XFCP_Report
      */
     public function canViewReporter(&$error = null)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var User $visitor */
         $visitor = \XF::visitor();
 
         return $visitor->canViewReporter($error);

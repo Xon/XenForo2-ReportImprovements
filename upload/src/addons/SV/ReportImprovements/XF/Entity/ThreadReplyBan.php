@@ -10,10 +10,10 @@ use XF\Mvc\Entity\Structure;
  *
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
- * @property int                                     post_id
+ * @property int    post_id
  * RELATIONS
- * @property \SV\ReportImprovements\XF\Entity\Report Report
- * @property \SV\ReportImprovements\XF\Entity\Post   Post
+ * @property Report Report
+ * @property Post   Post
  */
 class ThreadReplyBan extends XFCP_ThreadReplyBan
 {

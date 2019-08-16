@@ -79,8 +79,8 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param \XF\Mvc\Entity\ArrayCollection $reports
-     * @return \XF\Mvc\Entity\ArrayCollection
+     * @param ArrayCollection $reports
+     * @return ArrayCollection
      */
     public function filterViewableReports($reports)
     {

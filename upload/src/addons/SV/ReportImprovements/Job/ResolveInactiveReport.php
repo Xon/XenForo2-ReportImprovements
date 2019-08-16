@@ -78,7 +78,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
     }
 
     /**
-     * @return |null
+     * @return null
      */
     protected function getStatusType()
     {
