@@ -4,6 +4,6 @@
     "execution_order": 6905,
     "enabled": true,
     "action": "str_replace",
-    "find": "<xf:submitrow submit=\"{{ phrase('warn') }}\" sticky=\"true\" />",
+    "find": "<xf:submitrow submit=\"{{ phrase('warn') }}\"",
     "replace": "<xf:include template=\"svReportImprov_member_warn_thread_reply_ban\" />\n\n$0"
 }
