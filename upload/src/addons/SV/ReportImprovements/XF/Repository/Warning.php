@@ -82,12 +82,12 @@ class Warning extends XFCP_Warning
             if ($warningLogCreator->validate($errors))
             {
                 $warningLogCreator->save();
-            }
-            \XF::runLater(function () use ($warningLogCreator, $reporter) {
-                \XF::asVisitor($reporter, function () use ($warningLogCreator) {
-                    $warningLogCreator->sendNotifications();
+                \XF::runLater(function () use ($warningLogCreator, $reporter) {
+                    \XF::asVisitor($reporter, function () use ($warningLogCreator) {
+                        $warningLogCreator->sendNotifications();
+                    });
                 });
-            });
+            }
         });
     }
 }
