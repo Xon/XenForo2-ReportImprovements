@@ -360,15 +360,24 @@ class Creator extends AbstractService
         $this->db()->beginTransaction();
 
         $this->warningLog->save(true, false);
+        $report = null;
         if ($this->reportCreator)
         {
             $this->_saveReport();
-            $this->reportCreator->save();
+            /** @var \XF\Entity\Report $report */
+            $report = $this->reportCreator->save();
         }
         else if ($this->reportCommenter)
         {
             $this->_saveReportComment();
-            $this->reportCommenter->save();
+            /** @var \XF\Entity\ReportComment $comment */
+            $comment = $this->reportCommenter->save();
+            $report = $comment ? $comment->Report : null;
+        }
+
+        if ($report && !$this->warning->Report)
+        {
+            $this->warning->hydrateRelation('Report', $report);
         }
 
         $this->db()->commit();
