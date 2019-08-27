@@ -375,7 +375,7 @@ class Creator extends AbstractService
             $report = $comment ? $comment->Report : null;
         }
 
-        if ($report && !$this->warning->Report)
+        if ($report && $this->warning && !$this->warning->Report)
         {
             $this->warning->hydrateRelation('Report', $report);
         }
