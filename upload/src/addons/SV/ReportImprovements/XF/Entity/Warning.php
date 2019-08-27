@@ -50,6 +50,11 @@ class Warning extends XFCP_Warning
      */
     protected function _postSave()
     {
+        if ($this->svReplyBan)
+        {
+            $this->svReplyBan->saveIfChanged();
+        }
+
         if ($this->getOption('svLogWarningChanges'))
         {
             $type = $this->getSvLogOperationType();
@@ -59,11 +64,6 @@ class Warning extends XFCP_Warning
                 $warningRepo = $this->repository('XF:Warning');
                 $warningRepo->logOperation($this, $type);
             }
-        }
-
-        if ($this->svReplyBan)
-        {
-            $this->svReplyBan->save();
         }
 
         parent::_postSave();
