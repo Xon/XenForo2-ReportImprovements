@@ -1,4 +1,4 @@
-<li class="block-row block-row--separated" data-author="{{ $reportComment.User.username ?: $reportComment.username }}">
+<li class="block-row block-row--separated" data-author="{{ $reportComment.ViewableUser.username ?: $reportComment.username }}">
 	<div class="contentRow">
 		<span class="contentRow-figure">
 			<xf:avatar user="{$reportComment.User}" size="s" defaultname="{$reportComment.username}" />

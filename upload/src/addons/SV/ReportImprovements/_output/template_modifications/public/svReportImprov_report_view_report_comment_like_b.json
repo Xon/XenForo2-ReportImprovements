@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<article.*?class=\".*?message--simple)([^\"]*)(\"[^>]*)(>)#si",
-    "replace": "$1$2 message--report js-reportComment{{$comment.is_report ? ' is-report' : ' is-comment'}}$3\n\t\tdata-author=\"{{ $comment.User.username ?: $comment.username }}\"\n\t\tdata-content=\"report-comment-{$comment.report_comment_id}\"$4"
+    "replace": "$1$2 message--report js-reportComment{{$comment.is_report ? ' is-report' : ' is-comment'}}$3\n\t\tdata-author=\"{{ $comment.ViewableUser.username ?: $comment.username }}\"\n\t\tdata-content=\"report-comment-{$comment.report_comment_id}\"$4"
 }
