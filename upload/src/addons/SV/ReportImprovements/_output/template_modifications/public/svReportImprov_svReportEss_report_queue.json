@@ -1,0 +1,9 @@
+{
+    "template": "svReportEss_report_queue",
+    "description": "Hide user report's username if the user can't see it",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(<xf:if is=\".*?)LastModifiedUser(\".*?<xf:username.*?)LastModifiedUser#si",
+    "replace": "$1LastModified$2LastModified.ViewableUser"
+}
