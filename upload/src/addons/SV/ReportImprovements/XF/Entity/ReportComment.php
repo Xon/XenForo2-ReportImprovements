@@ -100,7 +100,9 @@ class ReportComment extends XFCP_ReportComment
             return $this->User;
         }
 
-        if ($this->Report->canViewReporter($error))
+        $visitor = \XF::visitor();
+        if (($visitor->user_id && $this->User->user_id === $visitor->user_id) ||
+            $this->Report->canViewReporter($error))
         {
             return $this->User;
         }
