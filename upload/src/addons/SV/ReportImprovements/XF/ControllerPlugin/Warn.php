@@ -57,16 +57,18 @@ class Warn extends XFCP_Warn
 
         if (!empty($input['resolve_report']))
         {
+            // TODO: fix me; racy
             /** @var \SV\ReportImprovements\XF\Entity\Report $report */
             $report = $this->finder('XF:Report')
                            ->where('content_type', $contentType)
                            ->where('content_id', $content->getEntityId())
                            ->fetchOne();
 
-            if (!$report || $report->canUpdate($error))
-            {
-                Globals::$resolveWarningReport = $input['resolve_report'];
-            }
+            Globals::$resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
+        }
+        else
+        {
+            Globals::$resolveWarningReport = false;
         }
 
         if ($contentType === 'post' && isset($input['ban_length']) && $input['ban_length'] !== '')
@@ -93,7 +95,7 @@ class Warn extends XFCP_Warn
                 $input['reply_ban_reason'],
                 $input['ban_length_value'],
                 $input['ban_length_unit'],
-                !empty($input['resolve_report'])
+                Globals::$resolveWarningReport
             );
         }
 
