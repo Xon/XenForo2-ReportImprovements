@@ -2,15 +2,15 @@
     "legacy_addon_id": "SV_ReportImprovements",
     "title": "Report Improvements",
     "description": "Unifies reports with warnings, reply-bans and more",
-    "version_id": 2030601,
-    "version_string": "2.3.6",
+    "version_id": 2040000,
+    "version_string": "2.4.0",
     "dev": "Atelier Aphelion",
     "dev_url": "https://atelieraphelion.com",
     "faq_url": "",
     "support_url": "https://xenforo.com/community/resources/report-improvements-by-xon.6905/",
     "extra_urls": [],
     "require": {
-        "XF": [2001070, "XenForo 2.0.10+"],
+        "XF": [2010070, "XenForo 2.1.0+"],
         "php": ["5.6.0","PHP 5.6.0+"]
     },
     "require-soft": {
