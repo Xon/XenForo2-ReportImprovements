@@ -54,7 +54,7 @@ class Notifier extends XFCP_Notifier
             if (isset($notifiableUsers[$userId]))
             {
                 $user = $notifiableUsers[$userId];
-                if (\XF::asVisitor($user, function () { return $this->report->canView(); }))
+                if (\XF::asVisitor($user, function () { return $this->comment->canView(); }))
                 {
                     $this->sendCommentNotification($user);
                 }
@@ -75,12 +75,6 @@ class Notifier extends XFCP_Notifier
             return [];
         }
 
-        $users = $this->app->em()->findByIds('XF:User', $userIds, ['Profile', 'Option', 'PermissionCombination']);
-        if (!$users->count())
-        {
-            return [];
-        }
-
         $usersWhoHaveAlreadyAlertedOnce = array_keys($this->db()->fetchAllKeyed('
             SELECT user_alert.alerted_user_id
             FROM xf_user_alert AS user_alert
@@ -92,17 +86,37 @@ class Notifier extends XFCP_Notifier
               AND user_alert.action = ?
         ', 'alerted_user_id', ['report_comment', $this->comment->report_comment_id, 'insert']));
 
-        /**
-         * @var int                                   $userId
-         * @var \SV\ReportImprovements\XF\Entity\User $user
-         */
-        foreach ($users AS $userId => $user)
+        $userIds = \array_fill_keys($userIds, true);
+        foreach($usersWhoHaveAlreadyAlertedOnce as $userId)
         {
-            if (isset($usersWhoHaveAlreadyAlertedOnce[$user->user_id]) ||
-                !\XF::asVisitor($user, function () { return $this->report->canView(); }))
+            unset($userIds[$userId]);
+        }
+
+        if (!$userIds)
+        {
+            return [];
+        }
+
+        $userIds = \array_keys($userIds);
+        $em = $this->app->em();
+        $toLoad = [];
+        $users = [];
+        foreach($userIds as $userId)
+        {
+            $user = $em->findCached('XF:User', $userId);
+            if ($user)
             {
-                unset($users[$userId]);
+                $users[$userId] = $user;
             }
+            else
+            {
+                $toLoad[] = $userId;
+            }
+        }
+
+        if ($toLoad)
+        {
+            $users = $users + $this->app->em()->findByIds('XF:User', $toLoad, ['Profile', 'Option', 'PermissionCombination']);
         }
 
         return $users;
