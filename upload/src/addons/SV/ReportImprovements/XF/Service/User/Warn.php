@@ -18,14 +18,19 @@ class Warn extends XFCP_Warn
      */
     protected $replyBanSvc;
 
+    public function setResolveReport($resolveReport)
+    {
+        $this->warning->setOption('svResolveReport', $resolveReport);
+    }
+
     /**
-     * @param      $sendAlert
-     * @param      $reason
-     * @param      $banLengthValue
-     * @param      $banLengthUnit
-     * @param null $resolveReport
+     * @param boolean $sendAlert
+     * @param string  $reason
+     * @param int     $banLengthValue
+     * @param string  $banLengthUnit
+     * @param boolean $resolveReport
      */
-    public function setupReplyBan($sendAlert, $reason, $banLengthValue, $banLengthUnit, $resolveReport = null)
+    public function setupReplyBan($sendAlert, $reason, $banLengthValue, $banLengthUnit, $resolveReport = false)
     {
         if (!$this->content instanceof \XF\Entity\Post)
         {
@@ -38,17 +43,17 @@ class Warn extends XFCP_Warn
             throw new \LogicException('Post does not have a valid thread.');
         }
 
-        if ($resolveReport)
-        {
-            Globals::$resolveWarningReport = false;
-            Globals::$resolveThreadReplyBanReport = true;
-        }
-
         $this->replyBanSvc = $this->service('XF:Thread\ReplyBan', $post->Thread, $this->user);
         $this->replyBanSvc->setExpiryDate($banLengthUnit, $banLengthValue);
         $this->replyBanSvc->setPost($post);
         $this->replyBanSvc->setSendAlert($sendAlert);
         $this->replyBanSvc->setReason($reason);
+
+        if ($resolveReport)
+        {
+            $this->warning->setOption('svResolveReport', false);
+            $this->replyBanSvc->getReplyBan()->setOption('svResolveReport', true);
+        }
     }
 
     /**

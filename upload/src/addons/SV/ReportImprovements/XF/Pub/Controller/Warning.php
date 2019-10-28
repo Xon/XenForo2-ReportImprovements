@@ -41,7 +41,7 @@ class Warning extends XFCP_Warning
         if ($this->request()->exists('resolve_report') &&
             $this->filter('resolve_report', 'bool'))
         {
-            Globals::$resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
+            $warning->setOption('svResolveReport',!$report || $report->canView() && $report->canUpdate($error));
         }
 
         return parent::actionDelete($params);
@@ -62,7 +62,7 @@ class Warning extends XFCP_Warning
         if ($this->request()->exists('resolve_report') &&
             $this->filter('resolve_report', 'bool'))
         {
-            Globals::$resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
+            $warning->setOption('svResolveReport',!$report || $report->canView() && $report->canUpdate($error));
         }
 
         return parent::actionExpire($params);

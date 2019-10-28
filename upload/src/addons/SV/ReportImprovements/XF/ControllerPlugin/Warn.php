@@ -2,7 +2,6 @@
 
 namespace SV\ReportImprovements\XF\ControllerPlugin;
 
-use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\View;
 
@@ -64,12 +63,13 @@ class Warn extends XFCP_Warn
                            ->where('content_id', $content->getEntityId())
                            ->fetchOne();
 
-            Globals::$resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
+            $resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
         }
         else
         {
-            Globals::$resolveWarningReport = false;
+            $resolveWarningReport = false;
         }
+        $warnService->setResolveReport($resolveWarningReport);
 
         if ($contentType === 'post' && isset($input['ban_length']) && $input['ban_length'] !== '')
         {
@@ -95,7 +95,7 @@ class Warn extends XFCP_Warn
                 $input['reply_ban_reason'],
                 $input['ban_length_value'],
                 $input['ban_length_unit'],
-                Globals::$resolveWarningReport
+                $resolveWarningReport
             );
         }
 

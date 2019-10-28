@@ -20,16 +20,6 @@ class Globals
     public static $expiringFromCron;
 
     /**
-     * @var null|null
-     */
-    public static $resolveThreadReplyBanReport;
-
-    /**
-     * @var null|bool
-     */
-    public static $resolveWarningReport;
-
-    /**
      * @var null|bool
      */
     public static $allowSavingReportComment;

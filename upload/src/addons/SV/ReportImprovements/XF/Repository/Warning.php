@@ -47,10 +47,11 @@ class Warning extends XFCP_Warning
 
     /**
      * @param \XF\Entity\Warning $warning
-     * @param                    $type
+     * @param string             $type
+     * @param boolean            $resolveReport
      * @throws \Exception
      */
-    public function logOperation(\XF\Entity\Warning $warning, $type)
+    public function logOperation(\XF\Entity\Warning $warning, $type, $resolveReport)
     {
         $reporter = \XF::visitor();
         $options = \XF::options();
@@ -75,10 +76,10 @@ class Warning extends XFCP_Warning
             }
         }
 
-        \XF::asVisitor($reporter, function () use ($reporter, $warning, $type) {
+        \XF::asVisitor($reporter, function () use ($reporter, $warning, $type, $resolveReport) {
             /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
             $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $warning, $type);
-            $warningLogCreator->setAutoResolve(Globals::$resolveWarningReport);
+            $warningLogCreator->setAutoResolve($resolveReport);
             if ($warningLogCreator->validate($errors))
             {
                 $warningLogCreator->save();

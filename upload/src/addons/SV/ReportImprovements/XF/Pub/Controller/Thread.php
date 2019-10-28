@@ -2,7 +2,6 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
-use SV\ReportImprovements\Globals;
 use XF\Mvc\ParameterBag;
 
 /**
@@ -13,24 +12,30 @@ use XF\Mvc\ParameterBag;
  */
 class Thread extends XFCP_Thread
 {
-    /**
-     * @param ParameterBag $params
-     * @return \XF\Mvc\Reply\Redirect|\XF\Mvc\Reply\View
-     */
-    public function actionReplyBans(ParameterBag $params)
+    protected function setupThreadReplyBan(\XF\Entity\Thread $thread)
     {
-        if ($this->isPost())
+        /** @var \SV\ReportImprovements\XF\Service\Thread\ReplyBan $replyBanSrv */
+        $replyBanSrv = parent::setupThreadReplyBan($thread);
+
+        if ($this->request()->exists('resolve_report') &&
+            $this->filter('resolve_report', 'bool'))
         {
-            Globals::$resolveThreadReplyBanReport = $this->filter('resolve_report', 'bool');
+            // TODO: fix me; racy
+            /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+            $report = $this->finder('XF:Report')
+                           ->where('content_type', 'user')
+                           ->where('content_id', $replyBanSrv->getUser()->user_id)
+                           ->fetchOne();
+            $resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
+        }
+        else
+        {
+            $resolveWarningReport = false;
         }
 
-        try
-        {
-            return parent::actionReplyBans($params);
-        }
-        finally
-        {
-            Globals::$resolveThreadReplyBanReport = null;
-        }
+        $replyBanSrv->getReplyBan()->setOption('svResolveReport',  $resolveWarningReport);
+
+
+        return $replyBanSrv;
     }
 }
