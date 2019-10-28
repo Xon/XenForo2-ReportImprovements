@@ -14,6 +14,8 @@ class Globals
      */
     public static $reportInAccountPostings = true;
 
+    public static $resolveReplyBanOnDelete = false;
+
     /**
      * @var null|bool
      */

@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
+use SV\ReportImprovements\Globals;
 use XF\Mvc\ParameterBag;
 
 /**
@@ -12,6 +13,21 @@ use XF\Mvc\ParameterBag;
  */
 class Thread extends XFCP_Thread
 {
+
+    public function actionReplyBans(ParameterBag $params)
+    {
+        Globals::$resolveReplyBanOnDelete = $this->request()->exists('resolve_report') &&
+                                            $this->filter('resolve_report', 'bool');
+        try
+        {
+            return parent::actionReplyBans($params);
+        }
+        finally
+        {
+            Globals::$resolveReplyBanOnDelete = false;
+        }
+    }
+
     protected function setupThreadReplyBan(\XF\Entity\Thread $thread)
     {
         /** @var \SV\ReportImprovements\XF\Service\Thread\ReplyBan $replyBanSrv */

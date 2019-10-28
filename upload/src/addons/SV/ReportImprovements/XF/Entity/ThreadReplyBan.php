@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -49,6 +50,28 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
     protected function _postDelete()
     {
         parent::_postDelete();
+
+        if (Globals::$resolveReplyBanOnDelete)
+        {
+            // TODO: fix me; racy
+            /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+            if ($this->post_id)
+            {
+                $report = $this->finder('XF:Report')
+                               ->where('content_type', 'post')
+                               ->where('content_id', $this->post_id)
+                               ->fetchOne();
+            }
+            if (!$report)
+            {
+                $report = $this->finder('XF:Report')
+                               ->where('content_type', 'user')
+                               ->where('content_id', $this->user_id)
+                               ->fetchOne();
+            }
+            $resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
+            $this->setOption('svResolveReport', $resolveWarningReport);
+        }
 
         if ($this->getOption('svLogWarningChanges'))
         {
