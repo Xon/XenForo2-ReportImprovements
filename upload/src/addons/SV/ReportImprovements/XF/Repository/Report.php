@@ -29,6 +29,31 @@ class Report extends XFCP_Report
 
     /**
      * @param \XF\Entity\Report $report
+     * @return int[]
+     */
+    protected function getNonModeratorsWhoCanHandleReport(/** @noinspection PhpUnusedParameterInspection */ \XF\Entity\Report $report)
+    {
+        // find users with groups with the assign/update report, or via direct permission assignment but aren't moderators
+        return \XF::db()->fetchAllColumn("
+            SELECT DISTINCT xu.user_id 
+            FROM (
+                SELECT DISTINCT user_group_id 
+                FROM xf_permission_entry
+                WHERE xf_permission_entry.permission_group_id = 'general' AND xf_permission_entry.permission_id IN ('assignReport', 'updateReport')
+            ) a 
+            JOIN xf_user_group_relation gr ON a.user_group_id = gr.user_group_id
+            JOIN xf_user xu ON gr.user_id = xu.user_id
+            WHERE xu.is_moderator = 0
+            UNION
+            SELECT DISTINCT xf_permission_entry.user_id 
+            FROM xf_permission_entry
+            JOIN xf_user xu ON xf_permission_entry.user_id = xu.user_id
+            WHERE xf_permission_entry.permission_group_id = 'general' AND xf_permission_entry.permission_id IN ('assignReport', 'updateReport') AND xu.is_moderator = 0
+        ");
+    }
+
+    /**
+     * @param \XF\Entity\Report $report
      * @return ArrayCollection
      * @throws \Exception
      */
@@ -44,38 +69,63 @@ class Report extends XFCP_Report
         /** @var \XF\Repository\Moderator $moderatorRepo */
         $moderatorRepo = $this->repository('XF:Moderator');
 
-        $moderators = $moderatorRepo->findModeratorsForList()->with('User.PermissionCombination')->fetch();
+        /** @var \XF\Entity\Moderator[] $moderators */
+        $moderators = $moderatorRepo->findModeratorsForList()
+                                    ->with('User.PermissionCombination')
+                                    ->fetch()
+                                    ->toArray();
 
-        if ($moderators->count())
+        $permCombinationIds = [];
+        if ($nodeId)
         {
-            /**
-             * @var int                  $id
-             * @var \XF\Entity\Moderator $moderator
-             */
-            if ($nodeId)
-            {
-                $permCombinationIds = [];
-                foreach ($moderators AS $id => $moderator)
-                {
-                    $id = $moderator->User->permission_combination_id;
-                    $permCombinationIds[$id] = $id;
-                }
-                $this->app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'node', $nodeId);
-            }
-
             foreach ($moderators AS $id => $moderator)
             {
-                $canView = \XF::asVisitor($moderator->User,
-                    function () use ($report) { return $report->canView(); }
-                );
-                if (!$canView)
-                {
-                    unset($moderators[$id]);
-                }
+                $id = $moderator->User->permission_combination_id;
+                $permCombinationIds[$id] = $id;
             }
         }
 
-        return $moderators;
+        $fakeModerators = $this->getNonModeratorsWhoCanHandleReport($report);
+        if ($fakeModerators)
+        {
+            $users = \XF::finder('XF:User')
+                        ->with('PermissionCombination')
+                        ->where('user_id', '=', $fakeModerators)
+                        ->fetch();
+            $em = \XF::em();
+            /** @var \XF\Entity\User $user */
+            foreach ($users as $user)
+            {
+                $id = $user->permission_combination_id;
+                $permCombinationIds[$id] = $id;
+
+                /** @var \XF\Entity\Moderator $moderator */
+                $moderator = $em->create('XF:Moderator');
+                $moderator->user_id = $user->user_id;
+                $moderator->hydrateRelation('User', $user);
+                $moderator->setReadOnly(true);
+
+                $moderators[] = $moderator;
+            }
+        }
+
+        if ($permCombinationIds && $nodeId)
+        {
+            $this->app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'node', $nodeId);
+        }
+
+        foreach ($moderators AS $id => $moderator)
+        {
+            $canView = \XF::asVisitor($moderator->User,
+                function () use ($report) { return $report->canView(); }
+            );
+            if (!$canView)
+            {
+                unset($moderators[$id]);
+            }
+        }
+
+        return new ArrayCollection($moderators);
     }
 
     /**
