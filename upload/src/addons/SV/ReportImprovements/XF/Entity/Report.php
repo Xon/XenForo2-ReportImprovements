@@ -27,7 +27,8 @@ class Report extends XFCP_Report
         /** @var User $visitor */
         $visitor = \XF::visitor();
 
-        if (!$visitor->canViewReports())
+        if (!$visitor->user_id ||
+            !$visitor->canViewReports())
         {
             return false;
         }

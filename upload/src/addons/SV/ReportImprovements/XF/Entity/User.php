@@ -119,7 +119,7 @@ class User extends XFCP_User
         {
             /** @var \XF\Entity\Forum $forum */
             $forum = \XF::app()->find('XF:Forum', $nodeId);
-            if ($forum && !$forum->canView())
+            if (!$forum || !$forum->canView())
             {
                 return false;
             }
