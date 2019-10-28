@@ -84,7 +84,7 @@ class Notifier extends XFCP_Notifier
               AND user_alert.content_type = ?
               AND report_comment.report_id = ?
               AND user_alert.action = ?
-        ', 'alerted_user_id', ['report_comment', $this->comment->report_comment_id, 'insert']));
+        ', 'alerted_user_id', ['report_comment', $this->comment->report_id, 'insert']));
 
         $userIds = \array_fill_keys($userIds, true);
         foreach($usersWhoHaveAlreadyAlertedOnce as $userId)
@@ -116,7 +116,7 @@ class Notifier extends XFCP_Notifier
 
         if ($toLoad)
         {
-            $users = $users + $this->app->em()->findByIds('XF:User', $toLoad, ['Profile', 'Option', 'PermissionCombination']);
+            $users = $users + $this->app->em()->findByIds('XF:User', $toLoad, ['Profile', 'Option', 'PermissionCombination'])->toArray();
         }
 
         return $users;
