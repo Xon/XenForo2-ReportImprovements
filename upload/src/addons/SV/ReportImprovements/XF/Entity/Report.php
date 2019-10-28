@@ -22,6 +22,19 @@ use XF\Mvc\Entity\Structure;
  */
 class Report extends XFCP_Report
 {
+    public function canView()
+    {
+        /** @var User $visitor */
+        $visitor = \XF::visitor();
+
+        if (!$visitor->canViewReports())
+        {
+            return false;
+        }
+
+        return parent::canView();
+    }
+
     /**
      * @param null $error
      * @return bool
