@@ -48,12 +48,7 @@ class Warn extends XFCP_Warn
         $this->replyBanSvc->setPost($post);
         $this->replyBanSvc->setSendAlert($sendAlert);
         $this->replyBanSvc->setReason($reason);
-
-        if ($resolveReport)
-        {
-            $this->warning->setOption('svResolveReport', false);
-            $this->replyBanSvc->getReplyBan()->setOption('svResolveReport', true);
-        }
+        $this->replyBanSvc->getReplyBan()->setOption('svResolveReport', $resolveReport);
     }
 
     /**

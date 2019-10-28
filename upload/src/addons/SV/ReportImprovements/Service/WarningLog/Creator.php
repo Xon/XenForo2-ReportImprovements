@@ -42,6 +42,9 @@ class Creator extends AbstractService
     /** @var \SV\ReportImprovements\XF\Entity\Report */
     protected $report;
 
+    /** @var \SV\ReportImprovements\XF\Entity\ReportComment */
+    protected $reportComment;
+
     /**
      * @var \XF\Service\Report\Creator|\SV\ReportImprovements\XF\Service\Report\Creator
      */
@@ -58,6 +61,8 @@ class Creator extends AbstractService
     /** @var bool|null */
     protected $autoResolveNewReports = null;
 
+    /** @var bool */
+    protected $canReopenReport = true;
 
     /**
      * Creator constructor.
@@ -138,37 +143,51 @@ class Creator extends AbstractService
         $warningLog->warning_edit_date = $this->operationType === 'new' ? 0 : \XF::$time;
 
         $report = null;
-        if ($this->warning)
+        $oldValue = Globals::$suppressReportStateChange;
+        Globals::$suppressReportStateChange = true;
+        try
         {
-            $report = $this->setupDefaultsForWarning();
+            if ($this->warning)
+            {
+                $report = $this->setupDefaultsForWarning();
+            }
+            else if ($this->threadReplyBan)
+            {
+                $report = $this->setupDefaultsForThreadReplyBan();
+            }
         }
-        else if ($this->threadReplyBan)
+        finally
         {
-            $report = $this->setupDefaultsForThreadReplyBan();
+            Globals::$suppressReportStateChange = $oldValue;
         }
 
-        /** @var \SV\ReportImprovements\XF\Entity\ReportComment|null $comment */
-        $comment = null;
         if ($this->reportCommenter)
         {
             $this->reportCommenter->setMessage('', false);
-            $comment = $this->reportCommenter->getComment();
+            $this->reportComment = $this->reportCommenter->getComment();
+            $this->report = $this->reportCommenter->getReport();
         }
         else if ($this->reportCreator)
         {
             $this->reportCreator->setMessage('', false);
-            $comment = $this->reportCreator->getComment();
+            $this->reportComment = $this->reportCreator->getComment();
+            $this->report = $this->reportCreator->getReport();
         }
 
-        if ($comment)
+        if ($this->reportComment)
         {
-            $comment->warning_log_id = $warningLog->getDeferredPrimaryId();
-            $comment->hydrateRelation('WarningLog', $warningLog);
+            $this->reportComment->warning_log_id = $warningLog->getDeferredPrimaryId();
+            $this->reportComment->hydrateRelation('WarningLog', $warningLog);
             if ($report)
             {
-                $comment->hydrateRelation('Report', $report);
+                $this->reportComment->hydrateRelation('Report', $report);
             }
         }
+    }
+
+    public function setCanReopenReport($canReopen)
+    {
+        $this->canReopenReport = $canReopen;
     }
 
     /**
@@ -340,17 +359,6 @@ class Creator extends AbstractService
     }
 
     /**
-     * @param \XF\Entity\Report $report
-     * @return bool
-     */
-    protected function wasClosed(\XF\Entity\Report $report)
-    {
-        $reportState = $report->getPreviousValue('report_state');
-
-        return $reportState === 'resolved' || $reportState === 'rejected';
-    }
-
-    /**
      * @return WarningLog
      * @throws \XF\PrintableException
      * @throws \Exception
@@ -385,19 +393,56 @@ class Creator extends AbstractService
         return $this->warningLog;
     }
 
-    protected function _saveReport()
+    /**
+     * @param boolean $newReport
+     * @return bool
+     */
+    protected function getNextReportState($newReport)
     {
         $autoResolve = $this->autoResolve;
-        if ($this->autoResolveNewReports != null)
+        if ($newReport && $this->autoResolveNewReports !== null)
         {
             $autoResolve = $this->autoResolveNewReports;
         }
 
-        /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
-        $comment = $this->reportCreator->getCommentPreparer()->getComment();
-        $report = $this->report = $this->reportCreator->getReport();
-        $resolveState = $autoResolve && !$this->wasClosed($report) ? 'resolved' : '';
-        $comment->bulkSet([
+        $newReportState = '';
+        if ($autoResolve)
+        {
+            $newReportState = 'resolved';
+        }
+
+        // don't re-open the report when a warning expires naturally.
+        if ($this->operationType === 'expire' || $this->operationType === 'acknowledge')
+        {
+            return '';
+        }
+
+        $report = $this->report;
+        if ($newReportState === '' && ($report->report_state === 'resolved' || $report->report_state === 'rejected'))
+        {
+            // re-open an existing report
+            $newReportState = $report->assigned_user_id
+                ? 'assigned'
+                : 'open';
+            if ($newReportState === 'open' && !$this->canReopenReport)
+            {
+                $newReportState = '';
+            }
+        }
+        // do not change the report state to something it already is
+        if ($newReportState !== '' && $report->report_state === $newReportState)
+        {
+            $newReportState = '';
+        }
+
+        return $newReportState;
+    }
+
+    protected function _saveReport()
+    {
+        $resolveState = $this->getNextReportState(true);
+
+        $this->reportComment->bulkSet([
             'warning_log_id' => $this->warningLog->warning_log_id,
             'is_report'      => false,
             'state_change'   => $resolveState,
@@ -405,6 +450,7 @@ class Creator extends AbstractService
 
         if ($resolveState)
         {
+            $report = $this->report;
             $report->set('report_state', $resolveState, ['forceSet' => true]);
             // if Report Centre Essentials is installed, then mark this as an autoreport
             if (isset($report->structure()->columns['autoreported']))
@@ -416,26 +462,18 @@ class Creator extends AbstractService
 
     protected function _saveReportComment()
     {
-        /** @var \SV\ReportImprovements\XF\Entity\ReportComment $comment */
-        $comment = $this->reportCommenter->getComment();
-        $report = $this->report = $comment->Report;
+        $resolveState = $this->getNextReportState(false);
 
-        $comment->bulkSet([
+        $this->reportComment->bulkSet([
             'warning_log_id' => $this->warningLog->warning_log_id,
             'is_report'      => false,
+            'state_change'   => $resolveState,
         ], ['forceSet' => true]);
 
-        if ($this->autoResolve && !$this->wasClosed($report))
+        if ($resolveState)
         {
-            $comment->set('state_change', 'resolved', ['forceSet' => true]);
-            $report->set('report_state', 'resolved', ['forceSet' => true]);
-            $comment->addCascadedSave($report);
-        }
-        else
-        {
-            $comment->set('state_change', '', ['forceSet' => true]);
-            $report->set('report_state', $report->getPreviousValue('report_state'), ['forceSet' => true]);
-            $report->set('assigned_user_id', $report->getPreviousValue('assigned_user_id'), ['forceSet' => true]);
+            $this->report->set('report_state', $resolveState, ['forceSet' => true]);
+            $this->reportComment->addCascadedSave($this->report);
         }
     }
 

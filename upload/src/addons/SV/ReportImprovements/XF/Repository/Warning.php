@@ -55,7 +55,8 @@ class Warning extends XFCP_Warning
     {
         $reporter = \XF::visitor();
         $options = \XF::options();
-        if (Globals::$expiringFromCron || !$reporter->user_id)
+        $expiringFromCron = Globals::$expiringFromCron;
+        if ($expiringFromCron || !$reporter->user_id)
         {
             $reporter = $this->app()->find('XF:User', $options->sv_ri_user_id ?: 1);
             if (!$reporter)
@@ -76,10 +77,14 @@ class Warning extends XFCP_Warning
             }
         }
 
-        \XF::asVisitor($reporter, function () use ($reporter, $warning, $type, $resolveReport) {
+        \XF::asVisitor($reporter, function () use ($reporter, $warning, $type, $resolveReport, $expiringFromCron) {
             /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
             $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $warning, $type);
             $warningLogCreator->setAutoResolve($resolveReport);
+            if ($expiringFromCron)
+            {
+                $warningLogCreator->setCanReopenReport(false);
+            }
             if ($warningLogCreator->validate($errors))
             {
                 $warningLogCreator->save();

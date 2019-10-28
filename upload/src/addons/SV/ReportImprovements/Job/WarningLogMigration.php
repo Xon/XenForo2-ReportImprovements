@@ -60,12 +60,12 @@ class WarningLogMigration extends AbstractRebuildJob
             \XF::asVisitor($user, function () use ($warning) {
                 $time = \XF::$time;
                 \XF::$time = $warning->warning_date;
-                Globals::$suppressReportStateChange = true;
                 try
                 {
                     /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
                     $warningLogCreator = \XF::app()->service('SV\ReportImprovements:WarningLog\Creator', $warning, 'new');
                     $warningLogCreator->setAutoResolve(false);
+                    $warningLogCreator->canReopenReport(false);
                     $warningLogCreator->setAutoResolveNewReports(true);
                     if ($warningLogCreator->validate($errors))
                     {
@@ -75,7 +75,6 @@ class WarningLogMigration extends AbstractRebuildJob
                 finally
                 {
                     \XF::$time = $time;
-                    Globals::$suppressReportStateChange = false;
                 }
             });
         }
