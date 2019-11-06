@@ -17,8 +17,6 @@ class Notifier extends XFCP_Notifier
      */
     protected $notifyCommenterUserIds = [];
 
-    protected $usersAlertedForInsert = [];
-
     /**
      * @return array
      */
@@ -130,7 +128,7 @@ class Notifier extends XFCP_Notifier
     {
         $comment = $this->comment;
 
-        if (empty($this->usersAlertedForInsert[$user->user_id]) && ($user->user_id !== $comment->user_id))
+        if (empty($this->usersAlerted[$user->user_id]) && ($user->user_id !== $comment->user_id))
         {
             /** @var \XF\Repository\UserAlert $alertRepo */
             $alertRepo = $this->app->repository('XF:UserAlert');
@@ -138,7 +136,7 @@ class Notifier extends XFCP_Notifier
                 'report_id' => $comment->report_id,
             ]))
             {
-                $this->usersAlertedForInsert[$user->user_id] = true;
+                $this->usersAlerted[$user->user_id] = true;
 
                 return true;
             }
