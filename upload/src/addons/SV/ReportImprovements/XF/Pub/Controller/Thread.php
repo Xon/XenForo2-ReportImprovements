@@ -32,6 +32,10 @@ class Thread extends XFCP_Thread
     {
         /** @var \SV\ReportImprovements\XF\Service\Thread\ReplyBan $replyBanSrv */
         $replyBanSrv = parent::setupThreadReplyBan($thread);
+        if (!$replyBanSrv)
+        {
+            return $replyBanSrv;
+        }
 
         if ($this->request()->exists('resolve_report') &&
             $this->filter('resolve_report', 'bool'))
