@@ -2,6 +2,10 @@
 
 namespace SV\ReportImprovements\XF\Service\Report;
 
+use SV\ReportImprovements\Globals;
+use XF\Entity\Report;
+use XF\Entity\ReportComment;
+
 /**
  * Class Notifier
  * Extends \XF\Service\Report\Notifier
@@ -12,6 +16,15 @@ namespace SV\ReportImprovements\XF\Service\Report;
  */
 class Notifier extends XFCP_Notifier
 {
+    public function __construct(\XF\App $app, Report $report, ReportComment $comment)
+    {
+        parent::__construct($app, $report, $comment);
+        if (Globals::$notifyReportUserIds)
+        {
+            $this->setCommentersUserIds(Globals::$notifyReportUserIds);
+        }
+    }
+
     /**
      * @var array
      */
@@ -127,16 +140,18 @@ class Notifier extends XFCP_Notifier
     protected function sendCommentNotification(\XF\Entity\User $user)
     {
         $comment = $this->comment;
+        $commentUserId = $comment->user_id;
+        $userId = $user->user_id;
 
-        if (empty($this->usersAlerted[$user->user_id]) && ($user->user_id !== $comment->user_id))
+        if (empty($this->usersAlerted[$userId]) && ($userId !== $commentUserId))
         {
             /** @var \XF\Repository\UserAlert $alertRepo */
             $alertRepo = $this->app->repository('XF:UserAlert');
-            if ($alertRepo->alert($user, $comment->user_id, $comment->username, 'report_comment', $comment->report_comment_id, 'insert', [
+            if ($alertRepo->alert($user, $commentUserId, $comment->username, 'report_comment', $comment->report_comment_id, 'insert', [
                 'report_id' => $comment->report_id,
             ]))
             {
-                $this->usersAlerted[$user->user_id] = true;
+                $this->usersAlerted[$userId] = true;
 
                 return true;
             }

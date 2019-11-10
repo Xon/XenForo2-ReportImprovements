@@ -31,4 +31,7 @@ class Globals
 
     /** @var bool  */
     public static $shimCommentsFinder = false;
+
+    /** @var int[] */
+    public static $notifyReportUserIds = [];
 }

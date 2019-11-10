@@ -86,17 +86,16 @@ class Commenter extends XFCP_Commenter
      */
     public function sendNotifications()
     {
-        parent::sendNotifications();
-
-        $comment = $this->comment;
-
         /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
         $reportRepo = $this->repository('XF:Report');
-        $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($comment);
-
-        /** @var Notifier $notifier */
-        $notifier = $this->service('XF:Report\Notifier', $this->report, $comment);
-        $notifier->setCommentersUserIds($userIdsToAlert);
-        $notifier->notify();
+        Globals::$notifyReportUserIds = $reportRepo->findUserIdsToAlertForSvReportImprov($this->comment);
+        try
+        {
+            parent::sendNotifications();
+        }
+        finally
+        {
+            Globals::$notifyReportUserIds = null;
+        }
     }
 }
