@@ -275,6 +275,8 @@ class Creator extends AbstractService
             $report = $this->reportCreator->getReport();
         }
 
+        $threadReplyBan->hydrateRelation('Report', $report);
+
         return $report;
     }
 

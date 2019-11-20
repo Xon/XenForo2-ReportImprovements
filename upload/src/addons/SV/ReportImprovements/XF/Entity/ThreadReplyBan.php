@@ -12,12 +12,37 @@ use XF\Mvc\Entity\Structure;
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
  * @property int    post_id
- * RELATIONS
+ * GETTERS
  * @property Report Report
+ * RELATIONS
  * @property Post   Post
  */
 class ThreadReplyBan extends XFCP_ThreadReplyBan
 {
+    /**
+     * @return Report|\XF\Mvc\Entity\Entity|null
+     */
+    protected function getReport()
+    {
+        $report = null;
+        if ($this->post_id)
+        {
+            $report = $this->finder('XF:Report')
+                           ->where('content_type', 'post')
+                           ->where('content_id', $this->post_id)
+                           ->fetchOne();
+        }
+        if (!$report)
+        {
+            $report = $this->finder('XF:Report')
+                           ->where('content_type', 'user')
+                           ->where('content_id', $this->user_id)
+                           ->fetchOne();
+        }
+
+        return $report;
+    }
+
     protected function _postSave()
     {
         parent::_postSave();
@@ -54,21 +79,8 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
         if (Globals::$resolveReplyBanOnDelete)
         {
             // TODO: fix me; racy
-            /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-            if ($this->post_id)
-            {
-                $report = $this->finder('XF:Report')
-                               ->where('content_type', 'post')
-                               ->where('content_id', $this->post_id)
-                               ->fetchOne();
-            }
-            if (!$report)
-            {
-                $report = $this->finder('XF:Report')
-                               ->where('content_type', 'user')
-                               ->where('content_id', $this->user_id)
-                               ->fetchOne();
-            }
+            $report = $this->Report;
+
             $resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
             $this->setOption('svResolveReport', $resolveWarningReport);
         }
@@ -112,6 +124,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
             'primary'    => true,
         ];
 
+        $structure->getters['Report'] = true;
         $structure->options['svLogWarningChanges'] = true;
         $structure->options['svResolveReport'] = false;
 
