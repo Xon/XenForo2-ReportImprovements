@@ -71,7 +71,7 @@ class Post extends XFCP_Post implements ContentInterface
         {
             // XF1 => XF2 conversion bug
             $reportInfo['post_id'] = $report->content_id;
-            $report->set('content_info', $reportInfo, ['forceSet' => true]);
+            $report->setTrusted('content_info', $reportInfo);
         }
 
         return parent::getContentLink($report);
