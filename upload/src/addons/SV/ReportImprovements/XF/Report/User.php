@@ -31,7 +31,7 @@ class User extends XFCP_User
         {
             // XF1 => XF2 conversion bug
             $reportInfo['user_id'] = $report->content_id;
-            $report->content_info = $reportInfo;
+            $report->set('content_info', $reportInfo, ['forceSet' => true]);
         }
 
         return parent::getContentLink($report);
