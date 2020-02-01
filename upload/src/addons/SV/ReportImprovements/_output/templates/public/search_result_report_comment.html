@@ -1,7 +1,7 @@
-<li class="block-row block-row--separated" data-author="{{ $reportComment.ViewableUser.username ?: $reportComment.username }}">
+<li class="block-row block-row--separated" data-author="{{ $reportComment.ViewableUsername }}">
 	<div class="contentRow">
 		<span class="contentRow-figure">
-			<xf:avatar user="{$reportComment.User}" size="s" defaultname="{$reportComment.username}" />
+			<xf:avatar user="{$reportComment.ViewableUser}" size="s" defaultname="{$reportComment.ViewableUsername}" />
 		</span>
 		<div class="contentRow-main">
 			<div class="contentRow-extra contentRow-extra--small">

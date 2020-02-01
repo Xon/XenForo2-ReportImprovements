@@ -19,7 +19,7 @@ use XF\Mvc\Entity\Structure;
  * @property int|null                                 assigned_user_id
  * @property string                                   assigned_username
  * GETTERS
- * @property User                                     ViewableUsername
+ * @property string                                   ViewableUsername
  * @property User                                     ViewableUser
  * RELATIONS
  * @property \XF\Entity\LikedContent[]                Likes
