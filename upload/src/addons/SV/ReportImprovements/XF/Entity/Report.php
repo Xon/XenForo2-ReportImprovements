@@ -14,6 +14,7 @@ use XF\Mvc\Entity\Structure;
  * COLUMNS
  * @property int           last_modified_id
  * GETTERS
+ * @property string        Username
  * @property array         commenter_user_ids
  * @property array         comment_ids
  * @property ReportComment LastModified
@@ -294,6 +295,35 @@ class Report extends XFCP_Report
         return $this->getCommentsFinder()->fetch();
     }
 
+    /**
+     * @return string
+     */
+    protected function getUsername()
+    {
+        if (\is_callable('parent::getUsername'))
+        {
+            /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+            return parent::getUsername();
+        }
+
+        if ($this->User)
+        {
+            return $this->User->username;
+        }
+
+        if (isset($this->content_info['username']))
+        {
+            return $this->content_info['username'];
+        }
+
+        if (isset($this->content_info['user']['username']))
+        {
+            return $this->content_info['user']['username'];
+        }
+
+        return '';
+    }
+
     public function getRelationFinder($key, $type = 'current')
     {
         if (Globals::$shimCommentsFinder && $key === 'Comments')
@@ -328,6 +358,7 @@ class Report extends XFCP_Report
 
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
+        $structure->getters['username'] = ['getter' => 'getUsername', 'cache' => true];
         $structure->getters['content_date'] = true;
         $structure->getters['message'] = true;
         $structure->getters['commenter_user_ids'] = true;
