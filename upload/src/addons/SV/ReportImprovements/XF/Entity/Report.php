@@ -14,7 +14,7 @@ use XF\Mvc\Entity\Structure;
  * COLUMNS
  * @property int           last_modified_id
  * GETTERS
- * @property string        Username
+ * @property string        username
  * @property array         commenter_user_ids
  * @property array         comment_ids
  * @property ReportComment LastModified
