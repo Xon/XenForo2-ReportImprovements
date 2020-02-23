@@ -168,7 +168,7 @@ class Report extends XFCP_Report
      * @return \XF\Mvc\Reply\View
      * @throws \XF\Mvc\Reply\Exception
      */
-    public function actionReaction(ParameterBag $parameterBag)
+    public function actionReact(ParameterBag $parameterBag)
     {
         /** @noinspection PhpUndefinedFieldInspection */
         $this->assertViewableReport($parameterBag->report_id);
