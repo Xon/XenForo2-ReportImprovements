@@ -183,10 +183,11 @@ class Report extends XFCP_Report
 
         /** @var ReactionControllerPlugin $reactionControllerPlugin */
         $reactionControllerPlugin = $this->plugin('XF:Reaction');
-        return $reactionControllerPlugin->actionToggleReaction(
+        return $reactionControllerPlugin->actionReact(
             $reportComment,
-            $this->buildLink('reports/reactions', $reportComment, $reactionLinkParams),
-            $this->buildLink('reports', $reportComment->Report, $reactionLinkParams)
+            $this->buildLink('reports', $reportComment->Report) . '#report-comment-' . $reportComment->report_comment_id,
+            $this->buildLink('reports/react', $reportComment, $reactionLinkParams),
+            $this->buildLink('reports/reactions', $reportComment, $reactionLinkParams)
         );
     }
 
