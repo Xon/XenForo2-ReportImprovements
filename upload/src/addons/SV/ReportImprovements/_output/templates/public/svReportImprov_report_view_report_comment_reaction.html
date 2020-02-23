@@ -1,0 +1,19 @@
+<footer class="message-footer">
+	<xf:if contentcheck="true">
+		<div class="message-actionBar actionBar">
+			<xf:contentcheck>
+				<xf:if contentcheck="true">
+					<div class="actionBar-set actionBar-set--external">
+						<xf:contentcheck>
+							<xf:react content="{$comment}" link="reports/react" params="{{ {'report_comment_id': $comment.report_comment_id} }}" list="< .js-reportComment | .js-reactionsList" />
+						</xf:contentcheck>
+					</div>
+				</xf:if>
+			</xf:contentcheck>
+		</div>
+	</xf:if>
+
+	<div class="reactionsBar js-reactionsList {{ $comment.reactions ? 'is-active' : '' }}">
+		<xf:reactions content="{$comment}" link="reports/reactions" params="{{ {'report_comment_id': $comment.report_comment_id} }}" />
+	</div>
+</footer>

@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Globals;
+use XF\Entity\ReactionTrait;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -11,16 +12,21 @@ use XF\Mvc\Entity\Structure;
  *
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
- * @property int                                      likes
- * @property array                                    like_users
+ * @property int reaction_score
+ * @property array reactions_
+ * @property array reaction_users_
  * @property int                                      warning_log_id
  * @property bool                                     alertSent
  * @property string                                   alertComment
  * @property int|null                                 assigned_user_id
  * @property string                                   assigned_username
+ *
  * GETTERS
  * @property string                                   ViewableUsername
  * @property User                                     ViewableUser
+ * @property mixed reactions
+ * @property mixed reaction_users
+ *
  * RELATIONS
  * @property \XF\Entity\LikedContent[]                Likes
  * @property \SV\ReportImprovements\Entity\WarningLog WarningLog
@@ -28,6 +34,8 @@ use XF\Mvc\Entity\Structure;
  */
 class ReportComment extends XFCP_ReportComment
 {
+    use ReactionTrait;
+
     public function canView()
     {
         if (!$this->Report)
@@ -40,9 +48,10 @@ class ReportComment extends XFCP_ReportComment
 
     /**
      * @param null $error
+     *
      * @return bool
      */
-    public function canLike(&$error = null)
+    public function canReact(&$error = null)
     {
         $visitor = \XF::visitor();
         if (!$visitor->user_id)
@@ -52,12 +61,12 @@ class ReportComment extends XFCP_ReportComment
 
         if ($this->user_id === $visitor->user_id)
         {
-            $error = \XF::phraseDeferred('liking_own_content_cheating');
+            $error = \XF::phraseDeferred('reacting_to_your_own_content_is_considered_cheating');
 
             return false;
         }
 
-        return $visitor->hasPermission('general', 'reportLike');
+        return $visitor->hasPermission('general', 'reportReact');
     }
 
     /**
@@ -66,20 +75,6 @@ class ReportComment extends XFCP_ReportComment
     public function hasSaveableChanges()
     {
         return Globals::$allowSavingReportComment || $this->warning_log_id || parent::hasSaveableChanges();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isLiked()
-    {
-        $visitor = \XF::visitor();
-        if (!$visitor->user_id)
-        {
-            return false;
-        }
-
-        return isset($this->Likes[$visitor->user_id]);
     }
 
     /**
@@ -163,27 +158,24 @@ class ReportComment extends XFCP_ReportComment
         $structure->columns['warning_log_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
         $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => false];
         $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => true];
-        $structure->columns['likes'] = ['type' => self::UINT, 'forced' => true, 'default' => 0];
-        /** @noinspection PhpDeprecationInspection */
-        $structure->columns['like_users'] = ['type' => self::SERIALIZED_ARRAY, 'default' => []];
         $structure->columns['assigned_user_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
         $structure->columns['assigned_username'] = ['type' => self::STR, 'maxLength' => 50, 'default' => ''];
 
-        $structure->behaviors['XF:Likeable'] = ['stateField' => ''];
+        $structure->behaviors['XF:Reactable'] = ['stateField' => ''];
         $structure->behaviors['XF:Indexable'] = [
             'checkForUpdates' => ['message', 'user_id', 'report_id', 'comment_date', 'state_change', 'is_report'],
         ];
         $structure->getters['ViewableUsername'] = true;
         $structure->getters['ViewableUser'] = true;
-        $structure->relations['Likes'] = [
-            'entity'     => 'XF:LikedContent',
+        $structure->relations['Reactions'] = [
+            'entity'     => 'XF:ReactionContent',
             'type'       => self::TO_MANY,
             'conditions' => [
                 ['content_type', '=', 'report_comment'],
                 ['content_id', '=', '$report_comment_id'],
             ],
-            'key'        => 'like_user_id',
-            'order'      => 'like_date',
+            'key'        => 'reaction_user_id',
+            'order'      => 'reaction_date',
         ];
         $structure->relations['WarningLog'] = [
             'entity'     => 'SV\ReportImprovements:WarningLog',
@@ -200,6 +192,8 @@ class ReportComment extends XFCP_ReportComment
 
         $structure->defaultWith[] = 'WarningLog';
         $structure->defaultWith[] = 'WarningLog.Warning';
+
+        static::addReactableStructureElements($structure);
 
         return $structure;
     }

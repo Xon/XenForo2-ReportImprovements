@@ -43,7 +43,7 @@ class ReportComment extends AbstractHandler
 
         return [
             'insert',
-            'like',
+            'react',
         ];
     }
 

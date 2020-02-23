@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
 use SV\ReportImprovements\Globals;
+use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
 use XF\Mvc\ParameterBag;
 
 /**
@@ -161,31 +162,41 @@ class Report extends XFCP_Report
         return parent::actionReassign($params);
     }
 
-    public function actionLike(ParameterBag $params)
+    /**
+     * @param ParameterBag $parameterBag
+     *
+     * @return \XF\Mvc\Reply\View
+     * @throws \XF\Mvc\Reply\Exception
+     */
+    public function actionReaction(ParameterBag $parameterBag)
     {
         /** @noinspection PhpUndefinedFieldInspection */
-        $this->assertViewableReport($params->report_id);
+        $this->assertViewableReport($parameterBag->report_id);
 
         $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
-        if (!$reportComment->canLike($error))
+        if (!$reportComment->canReact($error))
         {
             return $this->noPermission($error);
         }
 
-        $likeLinkParams = ['report_comment_id' => $reportComment->report_comment_id];
+        $reactionLinkParams = ['report_comment_id' => $reportComment->report_comment_id];
 
-        /** @var \XF\ControllerPlugin\Like $likePlugin */
-        $likePlugin = $this->plugin('XF:Like');
-
-        return $likePlugin->actionToggleLike(
+        /** @var ReactionControllerPlugin $reactionControllerPlugin */
+        $reactionControllerPlugin = $this->plugin('XF:Reaction');
+        return $reactionControllerPlugin->actionToggleReaction(
             $reportComment,
-            $this->buildLink('reports/like', $reportComment->Report, $likeLinkParams),
-            $this->buildLink('reports', $reportComment->Report, $likeLinkParams),
-            $this->buildLink('reports/likes', $reportComment->Report, $likeLinkParams)
+            $this->buildLink('reports/reactions', $reportComment->Report, $reactionLinkParams),
+            $this->buildLink('reports', $reportComment->Report, $reactionLinkParams)
         );
     }
 
-    public function actionLikes(ParameterBag $params)
+    /**
+     * @param ParameterBag $params
+     *
+     * @return \XF\Mvc\Reply\Message|\XF\Mvc\Reply\View
+     * @throws \XF\Mvc\Reply\Exception
+     */
+    public function actionReactions(ParameterBag $params)
     {
         /** @noinspection PhpUndefinedFieldInspection */
         $this->assertViewableReport($params->report_id);
@@ -193,15 +204,16 @@ class Report extends XFCP_Report
         $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
 
         $breadcrumbs = $reportComment->Report->getBreadcrumbs();
-        $title = \XF::phrase('sv_members_who_liked_this_report_comment');
+        $title = \XF::phrase('sv_members_who_reacted_this_report_comment');
 
-        /** @var \XF\ControllerPlugin\Like $likePlugin */
-        $likePlugin = $this->plugin('XF:Like');
-
-        return $likePlugin->actionLikes(
+        /** @var ReactionControllerPlugin $reactionControllerPlugin */
+        $reactionControllerPlugin = $this->plugin('XF:Reaction');
+        return $reactionControllerPlugin->actionReactions(
             $reportComment,
-            ['reports/likes', $reportComment->Report, ['report_comment_id' => $reportComment->report_comment_id]],
-            $title, $breadcrumbs
+            'reports/reactions',
+            $title,
+            $breadcrumbs,
+            ['report_comment_id' => $reportComment->report_comment_id]
         );
     }
 

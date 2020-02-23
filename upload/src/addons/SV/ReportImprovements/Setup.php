@@ -213,6 +213,21 @@ class Setup extends AbstractSetup
         $this->installStep2();
     }
 
+    public function upgrade2040700Step1()
+    {
+        $this->installStep1();
+    }
+
+    public function upgrade2040700Step2()
+    {
+        $this->installStep2();
+    }
+
+    public function upgrade2040700Step3()
+    {
+        $this->migrateTableToReactions('xf_report_comment');
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -272,7 +287,7 @@ class Setup extends AbstractSetup
         $applied = false;
         $previousVersion = (int)$previousVersion;
         $db = $this->db();
-        $globalReportPerms = ['assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'viewReports', 'reportLike'];
+        $globalReportPerms = ['assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'viewReports', 'reportReact'];
 
         // content/global moderators before bulk update
         if (!$previousVersion || ($previousVersion <= 1040002) || ($previousVersion >= 2000000 && $previousVersion <= 2011000))
@@ -533,8 +548,8 @@ class Setup extends AbstractSetup
 
         $tables['xf_report_comment'] = function (Alter $table) {
             $this->addOrChangeColumn($table, 'warning_log_id', 'int')->nullable(true)->setDefault(null);
-            $this->addOrChangeColumn($table, 'likes', 'int')->setDefault(0);
-            $this->addOrChangeColumn($table, 'like_users', 'BLOB')->nullable(true)->setDefault(null);
+            $table->addColumn('reactions', 'blob')->nullable();
+            $table->addColumn('reaction_users', 'blob');
             $this->addOrChangeColumn($table, 'alertSent', 'tinyint', 3)->setDefault(0);
             $this->addOrChangeColumn($table, 'alertComment', 'MEDIUMTEXT')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'assigned_user_id', 'int')->nullable(true)->setDefault(null);
@@ -562,7 +577,7 @@ class Setup extends AbstractSetup
         };
 
         $tables['xf_report_comment'] = function (Alter $table) {
-            $table->dropColumns(['warning_log_id', 'likes', 'like_users', 'alertSent', 'alertComment']);
+            $table->dropColumns(['warning_log_id', 'reactions', 'reaction_users', 'alertSent', 'alertComment']);
         };
 
 

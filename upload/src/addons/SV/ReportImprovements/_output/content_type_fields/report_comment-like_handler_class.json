@@ -1,5 +1,0 @@
-{
-    "content_type": "report_comment",
-    "field_name": "like_handler_class",
-    "field_value": "SV\\ReportImprovements\\Like\\ReportComment"
-}

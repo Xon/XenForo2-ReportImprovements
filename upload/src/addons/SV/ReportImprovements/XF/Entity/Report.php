@@ -266,7 +266,7 @@ class Report extends XFCP_Report
                 $with[] = 'User.Activity';
             }
 
-            $with[] = 'Likes|' . $userId;
+            $with[] = 'Reactions|' . $userId;
         }
 
         if ($this->content_type === 'post')

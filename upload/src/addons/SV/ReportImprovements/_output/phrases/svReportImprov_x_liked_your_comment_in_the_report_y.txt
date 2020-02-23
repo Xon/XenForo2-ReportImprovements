@@ -1,1 +1,0 @@
-{name} liked <a {report_comment_attributes}>your report comment</a> in the report {report_title}.

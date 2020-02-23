@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "preg_replace",
     "find": "#<xf:if is=\"\\$comment\\.message.*?\">.*?<\\/xf:if>.*?<\\/div>#s",
-    "replace": "$0\n<xf:include template=\"svReportImprov_report_view_report_comment_like\" />"
+    "replace": "$0\n<xf:include template=\"svReportImprov_report_view_report_comment_reaction\" />"
 }
