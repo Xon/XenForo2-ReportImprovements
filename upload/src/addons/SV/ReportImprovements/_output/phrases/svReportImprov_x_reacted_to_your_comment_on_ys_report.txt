@@ -1,0 +1,1 @@
+{name} reacted to <a {comment_attributes}>your comment</a> on {reporter}'s report with {reaction}.

@@ -1,0 +1,14 @@
+<xf:if is="$xf.visitor.user_id == $content.Report.user_id">
+	{{ phrase('push_x_reacted_to_your_comment_on_your_report', {
+		'name': $user.username ?: $alert.username,
+		'reaction': reaction_title($extra.reaction_id)
+	}) }}
+<xf:else />
+	{{ phrase('push_x_reacted_to_your_comment_on_ys_report', {
+		'name': $user.username ?: $alert.username,
+		'reporter': $content.Report.username,
+		'reaction': reaction_title($extra.reaction_id)
+	}) }}
+</xf:if>
+<push:url>{{ link('canonical:reports', $content.Report) }}</push:url>
+<push:tag>report_comment_reaction_{$content.report_comment_id}_{$extra.reaction_id}</push:tag>
