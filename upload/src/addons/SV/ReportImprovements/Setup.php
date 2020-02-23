@@ -215,17 +215,29 @@ class Setup extends AbstractSetup
 
     public function upgrade2040700Step1()
     {
-        $this->installStep1();
+        $this->migrateTableToReactions('xf_report_comment');
     }
 
     public function upgrade2040700Step2()
     {
-        $this->installStep2();
+        $this->renameLikeAlertOptionsToReactions('xf_report_comment');
     }
 
     public function upgrade2040700Step3()
     {
-        $this->migrateTableToReactions('xf_report_comment');
+        $this->renameLikeAlertsToReactions('xf_report_comment');
+    }
+
+    public function upgrade2040700Step4()
+    {
+        $this->renameLikePermissionsToReactions([
+            'general' => false // global only
+        ], 'reportLike', 'reportReact');
+    }
+
+    public function upgrade2040700Step5()
+    {
+        $this->renameLikeStatsToReactions(['report', 'report_comment']);
     }
 
     /**
