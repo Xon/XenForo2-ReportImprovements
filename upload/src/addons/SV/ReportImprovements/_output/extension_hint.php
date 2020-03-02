@@ -27,6 +27,11 @@ namespace SV\ReportImprovements\XF\Pub\Controller
 	class XFCP_Warning extends \XF\Pub\Controller\Warning {}
 }
 
+namespace SV\ReportImprovements\XF\Pub\View\Member
+{
+	class XFCP_WarnFill extends \XF\Pub\View\Member\WarnFill {}
+}
+
 namespace SV\ReportImprovements\XF\Report
 {
 	class XFCP_ConversationMessage extends \XF\Report\ConversationMessage {}

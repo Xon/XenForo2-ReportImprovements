@@ -1,0 +1,14 @@
+{
+    "edit_format": "callback",
+    "edit_format_params": "SV\\ReportImprovements\\Option\\Warnings::renderOption",
+    "data_type": "array",
+    "sub_options": [
+        "*"
+    ],
+    "validation_class": "",
+    "validation_method": "",
+    "default_value": "[]",
+    "relations": {
+        "sv_report_improvements": 310
+    }
+}

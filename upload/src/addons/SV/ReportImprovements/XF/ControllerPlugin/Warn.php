@@ -71,7 +71,10 @@ class Warn extends XFCP_Warn
         }
         $warnService->setResolveReport($resolveWarningReport);
 
-        if ($contentType === 'post' && isset($input['ban_length']) && $input['ban_length'] !== '')
+        if ($contentType === 'post' &&
+            isset($input['ban_length']) &&
+            $input['ban_length'] !== '' &&
+            $input['ban_length'] !== 'none')
         {
             /** @var \XF\Entity\Post $content */
             if (!$content->Thread)

@@ -1,0 +1,1 @@
+Skip reply bans for the given warnings
