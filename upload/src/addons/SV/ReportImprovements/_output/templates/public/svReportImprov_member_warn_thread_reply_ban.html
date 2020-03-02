@@ -5,10 +5,11 @@
 		<ul class="inputChoices threadReplyBan">
 			<li class="inputChoices-choice">
 				<div>{{ phrase('ban_length:') }}</div>
+				<xf:set var="$svReplyban" value="{{ $xf.app.em.getRepository('XF:Warning').getReplyBanForWarningDefinition(0) }}" />
 				<xf:radio name="ban_length">
-					<xf:option value="" label="{{ phrase('none') }}" selected="{{$xf.options.sv_replyban_on_warning === 'none' }}" />
-					<xf:option value="permanent" label="{{ phrase('permanent') }}"  selected="{{$xf.options.sv_replyban_on_warning === 'permanent' }}"/>
-					<xf:option value="temporary" label="{{ phrase('temporary:') }}"  selected="{{$xf.options.sv_replyban_on_warning === 'temporary' }}">
+					<xf:option value="none" label="{{ phrase('none') }}" selected="{{ $svReplyban === 'none' }}" />
+					<xf:option value="permanent" label="{{ phrase('permanent') }}"  selected="{{ $svReplyban === 'permanent' }}"/>
+					<xf:option value="temporary" label="{{ phrase('temporary:') }}"  selected="{{ $svReplyban === 'temporary' }}">
 
 						<xf:dependent>
 							<div class="inputGroup inputGroup--auto">

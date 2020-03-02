@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Repository;
 
 use SV\ReportImprovements\Globals;
 use XF\Entity\User as UserEntity;
+use XF\Entity\WarningDefinition;
 
 /**
  * Class Warning
@@ -95,5 +96,31 @@ class Warning extends XFCP_Warning
                 });
             }
         });
+    }
+
+    /**
+     * @param WarningDefinition|int $warningDefinition
+     * @return string
+     */
+    public function getReplyBanForWarningDefinition($warningDefinition)
+    {
+        $warningDefinitionId = 0;
+        if ($warningDefinition instanceof WarningDefinition)
+        {
+            $warningDefinitionId = $warningDefinition->warning_definition_id;
+        }
+        else if (\is_numeric($warningDefinitionId))
+        {
+            $warningDefinitionId = (int)$warningDefinitionId;
+        }
+
+        $options = \XF::options();
+
+        if (in_array('' . $warningDefinitionId, $options->svSkipReplyBansForWarning, true))
+        {
+            return 'none';
+        }
+
+        return $options->sv_replyban_on_warning;
     }
 }
