@@ -18,17 +18,19 @@ Note; when reports are sent to a forum, the warning<->report links can not be cr
   - Only sends an alert if the previous alert has not been viewed.
   - Report Alerts link to the actual comments for longer reports.
   - Report Alerts include the title of the report.
+- Alert moderators if a report is assigned to them
 - Links Warnings to reports.
   - Visible from the warning itself, and when issuing warnings against content.
 - Link reply bans to reports
   - Log reply bans into report system
   - Optional Issue a reply-ban on issuing a warning (default disabled)
+  - Allow reply-banning through a closed threads for moderators
 - Link Reports to Warnings.
   - Logs changes to Warnings (add/edit/delete), and associates them with a report.
 - Automatically create a report for a warning.
 - When issuing a Warning, option to resolve any linked report.
 - Optional ability to log warnings into reports when they expire. This does not disrupt who the report was assigned to, and does not re-open the report.
-- Report Comment Likes.
+- Report Comment Reactions.
 - Resolved Report Alerts are logged into Report Comments (as an explicit field).
 - Search report comments
 - Optional ability to search report comments by associated warning points, and warned user. (Requires Enhanced Search Improvements add-on)
