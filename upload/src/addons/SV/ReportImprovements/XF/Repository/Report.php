@@ -279,7 +279,7 @@ class Report extends XFCP_Report
             foreach ($reportStats AS $reportStat)
             {
                 $total += $reportStat['total'];
-                $stats[$reportStat['report_state']] = $reportStat['count'];
+                $stats[$reportStat['report_state']] = $reportStat['total'];
             }
             $stats[''] = $total;
             $this->userReportCountCache[$user->user_id][$daysLimit] = $stats;
