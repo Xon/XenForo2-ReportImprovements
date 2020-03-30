@@ -261,7 +261,7 @@ class Report extends XFCP_Report
             if ($daysLimit)
             {
                 $params[] = \XF::$time - (86400 * $daysLimit);
-                $additionalWhere = 'AND report_comment.comment_date ?';
+                $additionalWhere = 'AND report_comment.comment_date >= ?';
             }
 
             $reportStats = $db->fetchAll(
