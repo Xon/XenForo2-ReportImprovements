@@ -252,7 +252,7 @@ class Report extends XFCP_Report
             $this->userReportCountCache = [];
         }
 
-        if (!isset($this->userReportCountCache[$user->user_id][$state][$daysLimit]))
+        if (!isset($this->userReportCountCache[$user->user_id][$daysLimit][$state]))
         {
             $db = $this->db();
 
@@ -261,7 +261,7 @@ class Report extends XFCP_Report
             if ($daysLimit)
             {
                 $params[] = \XF::$time - (86400 * $daysLimit);
-                $additionalWhere = 'AND report_comment.comment_date ?';
+                $additionalWhere = 'AND report_comment.comment_date >= ?';
             }
 
             $reportStats = $db->fetchAll(
@@ -285,9 +285,9 @@ class Report extends XFCP_Report
             $this->userReportCountCache[$user->user_id][$daysLimit] = $stats;
         }
 
-        if (isset($this->userReportCountCache[$user->user_id][$state][$daysLimit]))
+        if (isset($this->userReportCountCache[$user->user_id][$daysLimit][$state]))
         {
-            return $this->userReportCountCache[$user->user_id][$state][$daysLimit];
+            return $this->userReportCountCache[$user->user_id][$daysLimit][$state];
         }
 
         return 0;

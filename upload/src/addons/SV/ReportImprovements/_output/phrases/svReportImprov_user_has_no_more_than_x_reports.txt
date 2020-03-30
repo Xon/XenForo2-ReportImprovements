@@ -1,1 +1,1 @@
-User has no more than X reports:
+User has no more than X reports
