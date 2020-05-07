@@ -203,42 +203,43 @@ class Setup extends AbstractSetup
         ];
     }
 
-    public function upgrade2030000Step1()
-    {
-        $this->installStep1();
-    }
-
-    public function upgrade2030000Step2()
-    {
-        $this->installStep2();
-    }
-
-    public function upgrade2040700Step1()
+    public function upgrade2050002Step1()
     {
         $this->migrateTableToReactions('xf_report_comment');
     }
 
-    public function upgrade2040700Step2()
+    public function upgrade2050002Step2()
     {
         $this->renameLikeAlertOptionsToReactions('xf_report_comment');
     }
 
-    public function upgrade2040700Step3()
+    public function upgrade2050002Step3()
     {
         $this->renameLikeAlertsToReactions('xf_report_comment');
     }
 
-    public function upgrade2040700Step4()
+    public function upgrade2050002Step4()
     {
         $this->renameLikePermissionsToReactions([
             'general' => false // global only
         ], 'reportLike', 'reportReact');
     }
 
-    public function upgrade2040700Step5()
+    public function upgrade2050002Step5()
     {
         $this->renameLikeStatsToReactions(['report', 'report_comment']);
     }
+
+    public function upgrade2050002Step6()
+    {
+        $this->installStep1();
+    }
+
+    public function upgrade2050002Step7()
+    {
+        $this->installStep2();
+    }
+
 
     /**
      * Drops add-on tables.
