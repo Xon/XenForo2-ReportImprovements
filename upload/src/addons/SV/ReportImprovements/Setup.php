@@ -561,8 +561,8 @@ class Setup extends AbstractSetup
 
         $tables['xf_report_comment'] = function (Alter $table) {
             $this->addOrChangeColumn($table, 'warning_log_id', 'int')->nullable(true)->setDefault(null);
-            $table->addColumn('reactions', 'blob')->nullable();
-            $table->addColumn('reaction_users', 'blob');
+            $this->addOrChangeColumn($table, 'reactions', 'blob')->nullable();
+            $this->addOrChangeColumn($table, 'reaction_users', 'blob')->nullable();
             $this->addOrChangeColumn($table, 'alertSent', 'tinyint', 3)->setDefault(0);
             $this->addOrChangeColumn($table, 'alertComment', 'MEDIUMTEXT')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'assigned_user_id', 'int')->nullable(true)->setDefault(null);
