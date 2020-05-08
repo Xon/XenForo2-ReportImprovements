@@ -240,7 +240,13 @@ class Setup extends AbstractSetup
         $this->installStep2();
     }
 
-
+    public function upgrade2050003Step1()
+    {
+        $this->renamePhrases([
+            'push_x_reacted_to_your_comment_on_your_report' => 'svReportImprov_push_x_reacted_to_your_comment_on_your_report',
+            'push_x_reacted_to_your_comment_on_ys_report' => 'svReportImprov_push_x_reacted_to_your_comment_on_ys_report',
+        ]);
+    }
     /**
      * Drops add-on tables.
      */
