@@ -108,6 +108,30 @@ class ReportComment extends XFCP_ReportComment
         return $userRepo->getGuestUser($this->ViewableUsername);
     }
 
+    /**
+     * @return int|null
+     */
+    protected function getCurrentReportQueueId()
+    {
+        $report = $this->Report;
+
+        return $report && $report->offsetExists('queue_id')
+            ? $report->get('queue_id')
+            : null;
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function getCurrentReportQueueName()
+    {
+        $report = $this->Report;
+
+        return $report && $report->offsetExists('queue_name')
+            ? $report->get('queue_name')
+            : null;
+    }
+
     protected function _postSave()
     {
         parent::_postSave();
@@ -194,6 +218,14 @@ class ReportComment extends XFCP_ReportComment
         $structure->defaultWith[] = 'WarningLog.Warning';
 
         static::addReactableStructureElements($structure);
+
+        // compat fix for Report Centre Essentials < v2.4.0
+        $addonsCache = \XF::app()->container('addon.cache');
+        if (isset($addonsCache['SV/ReportCentreEssentials']) && $addonsCache['SV/ReportCentreEssentials'] < 2040000)
+        {
+            $structure->getters['queue_id'] = ['getter' => 'getCurrentReportQueueId', 'cache' => false];
+            $structure->getters['queue_name'] = ['getter' => 'getCurrentReportQueueName', 'cache' => false];
+        }
 
         return $structure;
     }
