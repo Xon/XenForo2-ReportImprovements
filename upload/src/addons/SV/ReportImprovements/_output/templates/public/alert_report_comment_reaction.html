@@ -1,16 +1,6 @@
-<xf:if is="$content.user_id == $xf.visitor.user_id">
-	{{ phrase('svReportImprov_x_reacted_to_your_comment_on_ys_report', {
-		'name': username_link($reactionUser, false, {'defaultname': $fallbackName}),
-		'comment_attributes': 'href="' . link('reports', $content.Report) . '#report-comment-' . $content.report_comment_id . '"',
-		'reporter': $content.Report.username,
-		'reaction': alert_reaction($reactionId, 'medium')|preescaped
-	}) }}
-<xf:else />
-	{{ phrase('svReportImprov_x_reacted_to_ys_comment_on_zs_report', {
-		'name': username_link($reactionUser, false, {'defaultname': $fallbackName}),
-		'comment_params': 'href="' . link('reports', $content.Report) . '#report-comment-' . $content.report_comment_id . '"',
-		'poster': $content.username,
-		'reporter': $content.Report.username,
-		'reaction': alert_reaction($reactionId, 'medium')|preescaped
-	}) }}
-</xf:if>
+{{ phrase('svReportImprov_x_reacted_to_your_comment_in_y_report', {
+	'name': username_link($user, false, {'defaultname': $alert.username}),
+	'report_params': 'href="' . link('reports', $content.Report). '#report-comment-' . $content.report_comment_id . '" class="fauxBlockLink-blockLink"',
+	'report_title': $content.Report.title,
+	'reaction': alert_reaction($extra.reaction_id)|preescaped
+}) }}

@@ -1,1 +1,0 @@
-{name} reacted to your comment on {reporter}'s report with {reaction}.

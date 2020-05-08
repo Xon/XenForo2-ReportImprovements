@@ -1,14 +1,7 @@
-<xf:if is="$content.user_id == $xf.visitor.user_id">
-	{{ phrase('svReportImprov_push_x_reacted_to_your_comment_on_your_report', {
-		'name': $user.username ?: $alert.username,
-		'reaction': reaction_title($extra.reaction_id)
-	}) }}
-<xf:else />
-	{{ phrase('svReportImprov_push_x_reacted_to_your_comment_on_ys_report', {
-		'name': $user.username ?: $alert.username,
-		'reporter': $content.Report.username,
-		'reaction': reaction_title($extra.reaction_id)
-	}) }}
-</xf:if>
-<push:url>{{ link('canonical:reports', $content.Report) }}</push:url>
+{{ phrase('svReportImprov_push_x_reacted_to_your_comment_in_y_report', {
+	'name': $user.username ?: $alert.username,
+	'report_title': $content.Report.title,
+	'reaction': reaction_title($extra.reaction_id)
+}) }}
+<push:url>{{ link('canonical:reports', $content.Report) . '#report-comment-' . $content.report_comment_id }}</push:url>
 <push:tag>report_comment_reaction_{$content.report_comment_id}_{$extra.reaction_id}</push:tag>
