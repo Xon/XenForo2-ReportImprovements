@@ -203,44 +203,44 @@ class Setup extends AbstractSetup
         ];
     }
 
-    public function upgrade2050002Step1()
+    public function upgrade2050004Step1()
     {
         $this->migrateTableToReactions('xf_report_comment');
     }
 
-    public function upgrade2050002Step2()
+    public function upgrade2050004Step2()
     {
-        $this->renameLikeAlertOptionsToReactions('xf_report_comment');
+        $this->renameLikeAlertOptionsToReactions('report_comment');
     }
 
-    public function upgrade2050002Step3()
+    public function upgrade2050004Step3()
     {
-        $this->renameLikeAlertsToReactions('xf_report_comment');
+        $this->renameLikeAlertsToReactions('report_comment');
     }
 
-    public function upgrade2050002Step4()
+    public function upgrade2050004Step4()
     {
         $this->renameLikePermissionsToReactions([
             'general' => false // global only
         ], 'reportLike', 'reportReact');
     }
 
-    public function upgrade2050002Step5()
+    public function upgrade2050004Step5()
     {
         $this->renameLikeStatsToReactions(['report', 'report_comment']);
     }
 
-    public function upgrade2050002Step6()
+    public function upgrade2050004Step6()
     {
         $this->installStep1();
     }
 
-    public function upgrade2050002Step7()
+    public function upgrade2050004Step7()
     {
         $this->installStep2();
     }
 
-    public function upgrade2050003Step1()
+    public function upgrade2050004Step8()
     {
         $this->renamePhrases([
             'push_x_reacted_to_your_comment_on_your_report' => 'svReportImprov_push_x_reacted_to_your_comment_on_your_report',
