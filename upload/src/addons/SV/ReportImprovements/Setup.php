@@ -247,6 +247,16 @@ class Setup extends AbstractSetup
             'push_x_reacted_to_your_comment_on_ys_report' => 'svReportImprov_push_x_reacted_to_your_comment_on_ys_report',
         ]);
     }
+
+    public function upgrade2050005Step1()
+    {
+        \XF::db()->query("
+            UPDATE xf_user_alert 
+            SET depends_on_addon_id = 'SV/ReportImprovements'
+            WHERE depends_on_addon_id = '' AND content_type = 'report_comment' AND action IN ('insert', 'reaction')
+        ");
+    }
+
     /**
      * Drops add-on tables.
      */

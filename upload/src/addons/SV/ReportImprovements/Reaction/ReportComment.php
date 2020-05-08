@@ -34,6 +34,18 @@ class ReportComment extends AbstractHandler
         return true;
     }
 
+    protected function getExtraDataForAlertOrFeed(Entity $content, $context)
+    {
+        if ($context !== 'alert')
+        {
+            return [];
+        }
+
+        return [
+            'depends_on_addon_id' => 'SV/ReportImprovements',
+        ];
+    }
+
     /**
      * @return array
      */
