@@ -232,29 +232,29 @@ class Setup extends AbstractSetup
 
     public function upgrade2050004Step6()
     {
-        $this->installStep1();
-    }
-
-    public function upgrade2050004Step7()
-    {
-        $this->installStep2();
-    }
-
-    public function upgrade2050004Step8()
-    {
         $this->renamePhrases([
             'push_x_reacted_to_your_comment_on_your_report' => 'svReportImprov_push_x_reacted_to_your_comment_on_your_report',
             'push_x_reacted_to_your_comment_on_ys_report' => 'svReportImprov_push_x_reacted_to_your_comment_on_ys_report',
         ]);
     }
 
-    public function upgrade2050005Step1()
+    public function upgrade2050004Step7()
     {
         \XF::db()->query("
             UPDATE xf_user_alert 
             SET depends_on_addon_id = 'SV/ReportImprovements'
             WHERE depends_on_addon_id = '' AND content_type = 'report_comment' AND action IN ('insert', 'reaction')
         ");
+    }
+
+    public function upgrade2050100Step1()
+    {
+        $this->installStep1();
+    }
+
+    public function upgrade2050100Step2()
+    {
+        $this->installStep2();
     }
 
     /**
