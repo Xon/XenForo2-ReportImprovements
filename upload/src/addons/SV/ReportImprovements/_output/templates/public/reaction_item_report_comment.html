@@ -1,18 +1,18 @@
 <xf:macro name="reaction_snippet" arg-reactionUser="!" arg-reactionId="!" arg-comment="!" arg-date="!" arg-fallbackName="{{ phrase('unknown_member') }}">
 	<div class="contentRow-title">
-		<xf:if is="$comment.user_id == $xf.visitor.user_id">
-			{{ phrase('svReportImprov_x_reacted_to_your_comment_on_ys_report', {
+		<xf:if is="$comment.user_id && $comment.user_id == $xf.visitor.user_id">
+			{{ phrase('svReportImprov_x_reacted_to_your_comment_in_y_report', {
 				'name': username_link($reactionUser, false, {'defaultname': $fallbackName}),
-				'comment_attributes': 'href="' . link('reports', $comment.Report) . '#report-comment-' . $comment.report_comment_id . '"',
-				'reporter': $comment.Report.username,
+				'report_params': 'href="' . link('reports', $comment.Report) . '#report-comment-' . $comment.report_comment_id . '"',
+				'report_title': $content.Report.title,
 				'reaction': alert_reaction($reactionId, 'medium')|preescaped
 			}) }}
 		<xf:else />
-			{{ phrase('svReportImprov_x_reacted_to_ys_comment_on_zs_report', {
+			{{ phrase('svReportImprov_x_reacted_to_ys_comment_in_y_report', {
 				'name': username_link($reactionUser, false, {'defaultname': $fallbackName}),
-				'comment_params': 'href="' . link('reports', $comment.Report) . '#report-comment-' . $comment.report_comment_id . '"',
+				'report_params': 'href="' . link('reports', $comment.Report) . '#report-comment-' . $comment.report_comment_id . '"',
 				'poster': $comment.username,
-				'reporter': $comment.Report.username,
+				'report_title': $content.Report.title,
 				'reaction': alert_reaction($reactionId, 'medium')|preescaped
 			}) }}
 		</xf:if>

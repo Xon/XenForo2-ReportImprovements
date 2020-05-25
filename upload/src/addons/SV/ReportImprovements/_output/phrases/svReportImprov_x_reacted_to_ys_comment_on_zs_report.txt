@@ -1,1 +1,0 @@
-{name} reacted to <a {comment_params}>{poster}'s comment</a> on {reporter}'s report with {reaction}.
