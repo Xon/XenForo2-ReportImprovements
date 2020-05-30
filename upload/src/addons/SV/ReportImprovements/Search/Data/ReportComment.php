@@ -320,13 +320,13 @@ class ReportComment extends AbstractData
             // do not simplify these imports! Otherwise it will convert the soft-dependency into a hard dependency
             if ($constraints['c.warning.points.lower'])
             {
-                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('warning_log.points', $constraints['warning_points']['lower'],
+                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('warning_log.points', $constraints['c.warning.points.lower'],
                     \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference()));
             }
 
             if ($constraints['c.warning.points.higher'])
             {
-                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('warning_log.points', $constraints['warning_points']['lower'],
+                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('warning_log.points', $constraints['c.warning.points.higher'],
                     \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference()));
             }
         }
