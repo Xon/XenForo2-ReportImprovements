@@ -15,7 +15,7 @@
     },
     "require-soft": {
         "SV/ContentRatings": ["2010500", "Content Rating 2.1.5+", true],
-        "SV/SearchImprovements": ["2000000", "Search Improvements 2.0.0+"],
+        "SV/SearchImprovements": ["2030100", "Search Improvements 2.3.1+", true],
         "SV/WarningImprovements": ["2000005", "Warning Improvements 2.0.0+"]
     },
     "icon": "fa-balance-scale"

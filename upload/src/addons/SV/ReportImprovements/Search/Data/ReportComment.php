@@ -317,23 +317,24 @@ class ReportComment extends AbstractData
         $addOns = \XF::app()->container('addon.cache');
         if (isset($addOns['SV/SearchImprovements']))
         {
+            $source = isset($addOns['SV/XFES']) ? 'search_index' : 'warning_log';
             // do not simplify these imports! Otherwise it will convert the soft-dependency into a hard dependency
             if ($constraints['c.warning.points.lower'] && $constraints['c.warning.points.upper'])
             {
                 $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('points', [
                     $constraints['c.warning.points.upper'],
                     $constraints['c.warning.points.lower'],
-                ],\SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_BETWEEN, $this->getWarningLogQueryTableReference()));
+                ],\SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_BETWEEN, $this->getWarningLogQueryTableReference(), $source));
             }
             else if ($constraints['c.warning.points.lower'])
             {
                 $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('points', $constraints['c.warning.points.lower'],
-                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference()));
+                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference(), $source));
             }
             else if ($constraints['c.warning.points.upper'])
             {
                 $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('points', $constraints['c.warning.points.upper'],
-                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference()));
+                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference(), $source));
             }
         }
     }
