@@ -126,6 +126,7 @@ class Warn extends XFCP_Warn
                                   ->fetchOne();
 
             $response->setParams([
+                'content'     => $content,
                 'report'      => $contentReport,
                 'contentType' => $contentType,
                 'contentId'   => $content->getEntityId(),
