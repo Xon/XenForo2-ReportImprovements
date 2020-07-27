@@ -2,9 +2,9 @@
 
 namespace SV\ReportImprovements\Reaction;
 
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Reaction\AbstractHandler;
-use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 
 /**
  * Class ReportComment

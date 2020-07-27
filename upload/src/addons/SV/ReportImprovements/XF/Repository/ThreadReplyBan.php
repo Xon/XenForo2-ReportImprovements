@@ -2,8 +2,6 @@
 
 namespace SV\ReportImprovements\XF\Repository;
 
-use SV\ReportImprovements\Globals;
-
 /**
  * Class ThreadReplyBan
  * Extends \XF\Repository\ThreadReplyBan

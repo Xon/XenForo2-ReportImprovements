@@ -2,7 +2,6 @@
 
 namespace SV\ReportImprovements\XF\Service\User;
 
-use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\Entity;
 
 /**

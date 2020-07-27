@@ -302,7 +302,7 @@ class Report extends XFCP_Report
     {
         if (\is_callable('parent::getUsername'))
         {
-            /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+            /** @noinspection PhpUndefinedMethodInspection */
             return parent::getUsername();
         }
 
