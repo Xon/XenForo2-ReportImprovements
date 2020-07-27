@@ -284,8 +284,13 @@ class ReportComment extends AbstractData
         $threadId = $request->filter('c.thread', 'uint');
         if ($threadId)
         {
-            $query->withMetadata('thread', $threadId)
-                  ->inTitleOnly(false);
+            $query->withMetadata('thread', $threadId);
+
+            if (\XF::$versionId < 2020000 || is_callable([$query, 'inTitleOnly']))
+            {
+                /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+                $query->inTitleOnly(false);
+            }
         }
 
         if ($constraints['c.warning.user'])
