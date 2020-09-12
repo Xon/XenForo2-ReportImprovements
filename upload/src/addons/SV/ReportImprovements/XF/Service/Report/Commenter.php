@@ -27,6 +27,11 @@ class Commenter extends XFCP_Commenter
             $report->last_modified_user_id = $report->getPreviousValue('last_modified_user_id');
             $report->last_modified_username = $report->getPreviousValue('last_modified_username');
         }
+        else
+        {
+            $report->last_modified_id = $this->comment->getDeferredId();
+            $report->hydrateRelation('LastModified', $this);
+        }
     }
 
     /**

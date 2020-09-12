@@ -2,8 +2,14 @@
 
 namespace SV\ReportImprovements\XF\Service\Report;
 
+use SV\ReportImprovements\XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\ReportComment;
+
 /**
  * Extends \XF\Service\Report\Creator
+ *
+ * @property Report        $report
+ * @property ReportComment $comment
  */
 class Creator extends XFCP_Creator
 {
@@ -15,6 +21,9 @@ class Creator extends XFCP_Creator
         {
             $this->comment->state_change = '';
         }
+
+        $this->report->last_modified_id = $this->comment->getDeferredId();
+        $this->report->hydrateRelation('LastModified', $this);
     }
 
     /**

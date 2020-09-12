@@ -132,6 +132,13 @@ class ReportComment extends XFCP_ReportComment
             : null;
     }
 
+    public function getDeferredId()
+    {
+        return $this->_getDeferredValue(function() {
+            return $this->report_comment_id;
+        },'save');
+    }
+
     protected function _postSave()
     {
         parent::_postSave();
@@ -139,6 +146,7 @@ class ReportComment extends XFCP_ReportComment
         if ($this->Report && $this->Report->last_modified_date <= $this->comment_date)
         {
             $this->Report->fastUpdate('last_modified_id', $this->report_comment_id);
+            $this->Report->hydrateRelation('LastModified', $this);
         }
 
         if ($this->Report && $this->Report->first_report_date > $this->comment_date)
