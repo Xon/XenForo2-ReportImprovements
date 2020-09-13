@@ -132,13 +132,6 @@ class ReportComment extends XFCP_ReportComment
             : null;
     }
 
-    public function getDeferredId()
-    {
-        return $this->_getDeferredValue(function() {
-            return $this->report_comment_id;
-        },'save');
-    }
-
     protected function _postSave()
     {
         parent::_postSave();

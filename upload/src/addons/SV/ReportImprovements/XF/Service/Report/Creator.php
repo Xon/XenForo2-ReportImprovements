@@ -22,7 +22,6 @@ class Creator extends XFCP_Creator
             $this->comment->state_change = '';
         }
 
-        $this->report->last_modified_id = $this->comment->getDeferredId();
         $this->report->hydrateRelation('LastModified', $this->comment);
     }
 

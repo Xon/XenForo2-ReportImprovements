@@ -29,7 +29,6 @@ class Commenter extends XFCP_Commenter
         }
         else
         {
-            $report->last_modified_id = $this->comment->getDeferredId();
             $report->hydrateRelation('LastModified', $this->comment);
         }
     }
