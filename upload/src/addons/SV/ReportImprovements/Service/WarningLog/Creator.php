@@ -163,13 +163,19 @@ class Creator extends AbstractService
 
         if ($this->reportCommenter)
         {
-            $this->reportCommenter->setMessage('', false);
+            if (is_callable([$this->reportCommenter, 'setAutoReport']))
+            {
+                $this->reportCommenter->setAutoReport(true);
+            }
             $this->reportComment = $this->reportCommenter->getComment();
             $this->report = $this->reportCommenter->getReport();
         }
         else if ($this->reportCreator)
         {
-            $this->reportCreator->setMessage('', false);
+            if (is_callable([$this->reportCreator, 'setAutoReport']))
+            {
+                $this->reportCreator->setAutoReport(true);
+            }
             $this->reportComment = $this->reportCreator->getComment();
             $this->report = $this->reportCreator->getReport();
         }
@@ -182,6 +188,16 @@ class Creator extends AbstractService
             {
                 $this->reportComment->hydrateRelation('Report', $report);
             }
+        }
+
+        // set the message after so the reportComment.warning_log_id is set
+        if ($this->reportCommenter)
+        {
+            $this->reportCommenter->setMessage('', false);
+        }
+        else if ($this->reportCreator)
+        {
+            $this->reportCreator->setMessage('', false);
         }
     }
 
