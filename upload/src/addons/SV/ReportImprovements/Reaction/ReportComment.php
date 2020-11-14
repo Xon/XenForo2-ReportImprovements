@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Reaction;
 
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Reaction\AbstractHandler;
 
@@ -44,6 +45,20 @@ class ReportComment extends AbstractHandler
         return [
             'depends_on_addon_id' => 'SV/ReportImprovements',
         ];
+    }
+
+    public function getContent($id)
+    {
+        $entities = parent::getContent($id);
+
+        if ($entities instanceof AbstractCollection)
+        {
+            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+            $reportRepo = \XF::repository('XF:Report');
+            $reportRepo->svPreloadReportComments($entities);
+        }
+
+        return $entities;
     }
 
     /**

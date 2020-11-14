@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Alert;
 
 use XF\Alert\AbstractHandler;
+use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 
 /**
@@ -45,6 +46,20 @@ class ReportComment extends AbstractHandler
             'insert',
             'react',
         ];
+    }
+
+    public function getContent($id)
+    {
+        $entities = parent::getContent($id);
+
+        if ($entities instanceof AbstractCollection)
+        {
+            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+            $reportRepo = \XF::repository('XF:Report');
+            $reportRepo->svPreloadReportComments($entities);
+        }
+
+        return $entities;
     }
 
     /**

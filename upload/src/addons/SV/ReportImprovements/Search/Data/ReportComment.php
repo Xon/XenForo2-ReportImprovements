@@ -35,9 +35,10 @@ class ReportComment extends AbstractData
 
         if ($entities instanceof AbstractCollection)
         {
-            $this->svPreloadEntityData($entities);
+            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+            $reportRepo = \XF::repository('XF:Report');
+            $reportRepo->svPreloadReportComments($entities);
         }
-
 
         return $entities;
     }
@@ -45,70 +46,9 @@ class ReportComment extends AbstractData
     public function getContentInRange($lastId, $amount, $forView = false)
     {
         $contents = parent::getContentInRange($lastId, $amount, $forView);
-        $this->svPreloadEntityData($contents);
-
-        return $contents;
-    }
-
-    public function svPreloadEntityData(AbstractCollection $contents)
-    {
-        /** @var \XF\Repository\Report $reportReport */
-        $reportReport = \XF::repository('XF:Report');
-
-        $reportsByContentType = [];
-        $reports = [];
-        /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
-        foreach ($contents as $reportComment)
-        {
-            $reports[$reportComment->report_id] = $reportComment->Report;
-        }
-
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        foreach ($reports as $report)
-        {
-            if (!$report)
-            {
-                continue;
-            }
-            $contentType = $report->content_type;
-            $handler = $reportReport->getReportHandler($contentType, false);
-            if (!$handler)
-            {
-                continue;
-            }
-
-            $reportsByContentType[$contentType][$report->content_id] = $report;
-        }
-
-        foreach ($reportsByContentType as $contentType => $reports)
-        {
-            $handler = $reportReport->getReportHandler($contentType, false);
-            if (!$handler)
-            {
-                continue;
-            }
-            $contentIds = array_keys($reports);
-            if (!$contentIds)
-            {
-                continue;
-            }
-            $reportContents = $handler->getContent($contentIds);
-            foreach ($reportContents as $contentId => $reportContent)
-            {
-                if (empty($reportsByContentType[$contentType][$contentId]))
-                {
-                    continue;
-                }
-
-                /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-                $report = $reportsByContentType[$contentType][$contentId];
-
-                if ($reportContent)
-                {
-                    $report->setContent($reportContent);
-                }
-            }
-        }
+        /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+        $reportRepo = \XF::repository('XF:Report');
+        $reportRepo->svPreloadReportComments($contents);
 
         return $contents;
     }
