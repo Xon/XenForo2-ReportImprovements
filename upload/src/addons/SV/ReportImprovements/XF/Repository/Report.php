@@ -78,8 +78,6 @@ class Report extends XFCP_Report
                 }
             }
         }
-
-        return $this->svPreloadReports(new ArrayCollection($reports));
     }
 
     /**
