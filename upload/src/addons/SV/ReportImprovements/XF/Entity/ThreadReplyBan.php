@@ -67,7 +67,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
             {
                 /** @var \SV\ReportImprovements\XF\Repository\ThreadReplyBan $threadReplyBanRepo */
                 $threadReplyBanRepo = $this->repository('XF:ThreadReplyBan');
-                $threadReplyBanRepo->logToReport($this, $type, $this->getOption('svResolveReport'));
+                $threadReplyBanRepo->logToReport($this, $type, (bool)$this->getOption('svResolveReport'));
             }
         }
     }
@@ -95,7 +95,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
 
             /** @var \SV\ReportImprovements\XF\Repository\ThreadReplyBan $threadReplyBanRepo */
             $threadReplyBanRepo = $this->repository('XF:ThreadReplyBan');
-            $threadReplyBanRepo->logToReport($this, $type, $this->getOption('svResolveReport'));
+            $threadReplyBanRepo->logToReport($this, $type, (bool)$this->getOption('svResolveReport'));
         }
     }
 

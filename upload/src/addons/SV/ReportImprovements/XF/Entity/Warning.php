@@ -62,7 +62,7 @@ class Warning extends XFCP_Warning
             {
                 /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
                 $warningRepo = $this->repository('XF:Warning');
-                $warningRepo->logOperation($this, $type, $this->getOption('svResolveReport'));
+                $warningRepo->logOperation($this, $type, (bool)$this->getOption('svResolveReport'));
             }
         }
 
@@ -80,7 +80,7 @@ class Warning extends XFCP_Warning
         {
             /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
             $warningRepo = $this->repository('XF:Warning');
-            $warningRepo->logOperation($this, 'delete', $this->getOption('svResolveReport'));
+            $warningRepo->logOperation($this, 'delete', (bool)$this->getOption('svResolveReport'));
         }
     }
 

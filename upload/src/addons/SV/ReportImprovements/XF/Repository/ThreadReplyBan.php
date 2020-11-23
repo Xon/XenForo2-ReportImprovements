@@ -15,11 +15,12 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
      * @param string                                                                    $type
      * @param boolean                                                                   $resolveReport
      */
-    public function logToReport(\XF\Entity\ThreadReplyBan $threadReplyBan, $type, $resolveReport)
+    public function logToReport(\XF\Entity\ThreadReplyBan $threadReplyBan, string $type, bool $resolveReport)
     {
         /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
         $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $threadReplyBan, $type);
-        if ($threadReplyBan->Report && !$threadReplyBan->Report->isClosed())
+        $report = $threadReplyBan->Report;
+        if ($report && !$report->isClosed())
         {
             $warningLogCreator->setAutoResolve($resolveReport);
         }

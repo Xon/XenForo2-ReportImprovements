@@ -9,14 +9,7 @@ namespace SV\ReportImprovements;
  */
 class Listener
 {
-    /**
-     * @param string          $rule
-     * @param array           $data
-     * @param \XF\Entity\User $user
-     * @param bool            $eventReturnValue
-     * @return bool
-     */
-    public static function criteriaUser($rule, array $data, \XF\Entity\User $user, &$eventReturnValue)
+    public static function criteriaUser(string $rule, array $data, \XF\Entity\User $user, bool &$eventReturnValue): bool
     {
         /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
         $reportRepo = \XF::repository('XF:Report');
@@ -98,9 +91,6 @@ class Listener
         }
     }
 
-    /**
-     * @param \XF\Pub\App $app
-     */
     public static function appPubStartEnd(\XF\Pub\App $app)
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */

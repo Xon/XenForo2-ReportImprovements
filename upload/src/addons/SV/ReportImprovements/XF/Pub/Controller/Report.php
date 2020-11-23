@@ -88,7 +88,7 @@ class Report extends XFCP_Report
 
     /**
      * @param \XF\Entity\Report|\SV\ReportImprovements\XF\Entity\Report $report
-     * @return \XF\Mvc\Reply\Error|\XF\Service\Report\Commenter
+     * @return \XF\Service\Report\Commenter
      * @throws \XF\Mvc\Reply\Exception
      */
     protected function setupReportComment(\XF\Entity\Report $report)
@@ -144,7 +144,7 @@ class Report extends XFCP_Report
 
     /**
      * @param ParameterBag $params
-     * @return \XF\Mvc\Reply\Error|\XF\Mvc\Reply\Redirect
+     * @return \XF\Mvc\Reply\AbstractReply
      * @throws \XF\Mvc\Reply\Exception
      */
     public function actionReassign(ParameterBag $params)
@@ -165,7 +165,7 @@ class Report extends XFCP_Report
     /**
      * @param ParameterBag $parameterBag
      *
-     * @return \XF\Mvc\Reply\View
+     * @return \XF\Mvc\Reply\AbstractReply
      * @throws \XF\Mvc\Reply\Exception
      */
     public function actionReact(ParameterBag $parameterBag)
@@ -194,7 +194,7 @@ class Report extends XFCP_Report
     /**
      * @param ParameterBag $params
      *
-     * @return \XF\Mvc\Reply\Message|\XF\Mvc\Reply\View
+     * @return \XF\Mvc\Reply\AbstractReply
      * @throws \XF\Mvc\Reply\Exception
      */
     public function actionReactions(ParameterBag $params)

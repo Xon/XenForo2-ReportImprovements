@@ -93,20 +93,14 @@ class Creator extends AbstractService
         $this->setupDefaults();
     }
 
-    /**
-     * @param bool $autoResolve
-     */
-    public function setAutoResolve($autoResolve)
+    public function setAutoResolve(bool $autoResolve)
     {
-        $this->autoResolve = (bool)$autoResolve;
+        $this->autoResolve = $autoResolve;
     }
 
-    /**
-     * @param bool|null $autoResolve
-     */
-    public function setAutoResolveNewReports($autoResolve)
+    public function setAutoResolveNewReports(bool $autoResolve)
     {
-        $this->autoResolveNewReports = (bool)$autoResolve;
+        $this->autoResolveNewReports = $autoResolve;
     }
 
     /**
@@ -250,12 +244,15 @@ class Creator extends AbstractService
         $warningLog->warning_date = \XF::$time;
 
         $report = $threadReplyBan->Report;
-        $content = $threadReplyBan->User;
-        $contentTitle = $threadReplyBan->User->username;
+        /** @var \XF\Entity\User $user */
+        $user = $threadReplyBan->User;
+        $content = $user;
+        $contentTitle = $user->username;
 
         $warningLog->hydrateRelation('ReplyBanThread', $threadReplyBan);
-        $warningLog->hydrateRelation('User', $threadReplyBan->User);
+        $warningLog->hydrateRelation('User', $user);
 
+        /** @var \SV\ReportImprovements\XF\Entity\Post $post */
         $post = $threadReplyBan->Post;
         if ($post)
         {
@@ -411,11 +408,7 @@ class Creator extends AbstractService
         return $this->warningLog;
     }
 
-    /**
-     * @param boolean $newReport
-     * @return bool
-     */
-    protected function getNextReportState($newReport)
+    protected function getNextReportState(bool $newReport): string
     {
         $autoResolve = $this->autoResolve;
         if ($newReport && $this->autoResolveNewReports !== null)

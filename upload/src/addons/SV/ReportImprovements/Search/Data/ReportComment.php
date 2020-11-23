@@ -26,7 +26,8 @@ class ReportComment extends AbstractData
      */
     public function canViewContent(Entity $entity, &$error = null)
     {
-        return $entity->Report && $entity->Report->canView();
+        $report = $entity->Report;
+        return $report && $report->canView();
     }
 
     public function getContent($id, $forView = false)
@@ -77,13 +78,15 @@ class ReportComment extends AbstractData
      */
     public function getIndexData(Entity $entity)
     {
-        if (!$entity->Report)
+        $report = $entity->Report;
+        if (!$report)
         {
             return null;
         }
 
+
         return IndexRecord::create('report_comment', $entity->report_comment_id, [
-            'title'         => $entity->Report->title,
+            'title'         => $report->title,
             'message'       => $entity->message,
             'date'          => $entity->comment_date,
             'user_id'       => $entity->user_id,
@@ -104,7 +107,8 @@ class ReportComment extends AbstractData
             'is_report'    => $entity->is_report ? 1 : 0, // must be an int
         ];
 
-        if ($warningLog = $entity->WarningLog)
+        $warningLog = $entity->WarningLog;
+        if ($warningLog)
         {
             if ($warningLog->points)
             {
@@ -295,6 +299,7 @@ class ReportComment extends AbstractData
      * @param Query $query      $query
      * @param bool  $isOnlyType Will be true if the search is specifically limited to this type.
      * @return MetadataConstraint[] Only an array of metadata constraints may be returned.
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function getTypePermissionConstraints(Query $query, $isOnlyType)
     {

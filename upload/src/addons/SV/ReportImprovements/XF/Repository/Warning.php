@@ -31,6 +31,7 @@ class Warning extends XFCP_Warning
      * @param UserEntity $user
      * @param bool       $checkBannedStatus
      * @return bool
+     * @noinspection PhpMissingParamTypeInspection
      */
     public function processExpiredWarningsForUser(UserEntity $user, $checkBannedStatus)
     {
@@ -52,7 +53,7 @@ class Warning extends XFCP_Warning
      * @param boolean            $resolveReport
      * @throws \Exception
      */
-    public function logOperation(\XF\Entity\Warning $warning, $type, $resolveReport)
+    public function logOperation(\XF\Entity\Warning $warning, string $type, bool $resolveReport)
     {
         $reporter = \XF::visitor();
         $options = \XF::options();

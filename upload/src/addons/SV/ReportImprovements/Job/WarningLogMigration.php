@@ -16,6 +16,7 @@ class WarningLogMigration extends AbstractRebuildJob
      * @param int $start
      * @param int $batch
      * @return array
+     * @noinspection PhpMissingParamTypeInspection
      */
     protected function getNextIds($start, $batch)
     {
@@ -33,8 +34,9 @@ class WarningLogMigration extends AbstractRebuildJob
     }
 
     /**
-     * @param $id
+     * @param int $id
      * @throws \Exception
+     * @noinspection PhpMissingParamTypeInspection
      */
     protected function rebuildById($id)
     {

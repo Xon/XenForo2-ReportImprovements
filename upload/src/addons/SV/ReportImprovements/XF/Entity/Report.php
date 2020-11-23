@@ -157,12 +157,12 @@ class Report extends XFCP_Report
     {
         $handler = $this->Handler;
 
-        if (!$handler instanceof \SV\ReportImprovements\Report\ContentInterface)
+        if (!($handler instanceof \SV\ReportImprovements\Report\ContentInterface))
         {
             return 0;
         }
 
-        return $handler ? $handler->getContentDate($this) : 0;
+        return $handler->getContentDate($this);
     }
 
     /**

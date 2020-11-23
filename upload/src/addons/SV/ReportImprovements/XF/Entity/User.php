@@ -106,9 +106,9 @@ class User extends XFCP_User
      * @param int  $nodeId
      * @param null $error
      * @return bool
+     * @noinspection PhpUnusedParameterInspection
      */
-    public function canViewPostReport($nodeId, /** @noinspection PhpUnusedParameterInspection */
-                                      &$error = null)
+    public function canViewPostReport(int $nodeId, &$error = null): bool
     {
         if (!$this->hasNodePermission($nodeId, 'viewReportPost'))
         {

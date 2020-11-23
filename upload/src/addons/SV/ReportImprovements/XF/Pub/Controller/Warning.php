@@ -17,6 +17,7 @@ class Warning extends XFCP_Warning
      * @param array $extraWith
      * @return \XF\Entity\Warning
      * @throws \XF\Mvc\Reply\Exception
+     * @noinspection PhpMissingParamTypeInspection
      */
     protected function assertViewableWarning($id, array $extraWith = [])
     {
@@ -27,7 +28,7 @@ class Warning extends XFCP_Warning
 
     /**
      * @param ParameterBag $params
-     * @return \XF\Mvc\Reply\Redirect|\XF\Mvc\Reply\Reroute
+     * @return \XF\Mvc\Reply\AbstractReply
      * @throws \XF\Mvc\Reply\Exception
      */
     public function actionDelete(ParameterBag $params)
@@ -48,7 +49,7 @@ class Warning extends XFCP_Warning
 
     /**
      * @param ParameterBag $params
-     * @return \XF\Mvc\Reply\Redirect
+     * @return \XF\Mvc\Reply\AbstractReply
      * @throws \XF\Mvc\Reply\Exception
      */
     public function actionExpire(ParameterBag $params)
