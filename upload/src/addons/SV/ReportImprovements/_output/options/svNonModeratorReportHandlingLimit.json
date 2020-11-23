@@ -7,6 +7,6 @@
     "validation_method": "",
     "default_value": "1000",
     "relations": {
-        "svReportImprovementsDebug": 10
+        "svReportImprovements": 10000
     }
 }

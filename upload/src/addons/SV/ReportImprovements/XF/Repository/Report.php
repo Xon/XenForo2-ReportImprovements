@@ -105,28 +105,63 @@ class Report extends XFCP_Report
         $options = \XF::options();
         $limit = isset($options->svNonModeratorReportHandlingLimit) ? (int)$options->svNonModeratorReportHandlingLimit : 1000;
         $limit = max(0, $limit);
-        if ($limit === 0)
-        {
-            $limit = null;
-        }
         $db = \XF::db();
+
         // find users with groups with the assign/update report, or via direct permission assignment but aren't moderators
-        return $db->fetchAllColumn($db->limit("
+        // ensure they can view the report centre, or this might return more users than expected
+        // SQL note; This query produces vastly faster query plans as it goes from what should be a small set of permission rows to users rather than all users and then filtering down
+        $userIds = $db->fetchAllColumn("
             SELECT DISTINCT xu.user_id 
             FROM (
-                SELECT DISTINCT user_group_id 
-                FROM xf_permission_entry
-                WHERE xf_permission_entry.permission_group_id = 'general' AND xf_permission_entry.permission_id IN ('assignReport', 'updateReport')
+                SELECT DISTINCT innerGroupPerm.user_group_id 
+                FROM xf_permission_entry as innerGroupPerm
+                WHERE innerGroupPerm.permission_group_id = 'general' AND innerGroupPerm.permission_id = 'viewReports'
             ) a 
             JOIN xf_user_group_relation gr ON a.user_group_id = gr.user_group_id
             JOIN xf_user xu ON gr.user_id = xu.user_id
-            WHERE xu.is_moderator = 0
+            WHERE xu.is_moderator = 0 and xu.user_state = 'valid' AND (
+                  exists(SELECT outerUserPerm.user_id 
+                        FROM xf_permission_entry as outerUserPerm
+                        WHERE outerUserPerm.user_id = xu.user_id AND 
+                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id IN ('assignReport', 'updateReport')) OR 
+                  exists(SELECT gr.user_id
+                  
+                        FROM xf_permission_entry as outerUserPerm
+                        JOIN xf_user_group_relation gr ON outerUserPerm.user_group_id = gr.user_group_id
+                        WHERE gr.user_id = xu.user_id AND 
+                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id IN ('assignReport', 'updateReport'))
+                  )
             UNION
-            SELECT DISTINCT xf_permission_entry.user_id 
-            FROM xf_permission_entry
-            JOIN xf_user xu ON xf_permission_entry.user_id = xu.user_id
-            WHERE xf_permission_entry.permission_group_id = 'general' AND xf_permission_entry.permission_id IN ('assignReport', 'updateReport') AND xu.is_moderator = 0
-        ", $limit);
+            SELECT DISTINCT innerUserGroupPerm.user_id 
+            FROM xf_permission_entry as innerUserGroupPerm
+            JOIN xf_user xu ON innerUserGroupPerm.user_id = xu.user_id
+            WHERE innerUserGroupPerm.permission_group_id = 'general' AND innerUserGroupPerm.permission_id = 'viewReports' AND
+                  xu.is_moderator = 0 and xu.user_state = 'valid' AND (
+                  exists(SELECT outerUserPerm.user_id 
+                        FROM xf_permission_entry as outerUserPerm
+                        WHERE outerUserPerm.user_id = xu.user_id AND 
+                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id IN ('assignReport', 'updateReport')) OR 
+                  exists(SELECT gr.user_id
+                        FROM xf_permission_entry as outerUserPerm
+                        JOIN xf_user_group_relation gr ON outerUserPerm.user_group_id = gr.user_group_id
+                        WHERE gr.user_id = xu.user_id AND 
+                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id IN ('assignReport', 'updateReport'))
+                  )
+        ");
+
+        $count = count($userIds);
+        if ($limit && $count > $limit)
+        {
+            $error = "Potential miss-configuration detected. {$count} users have access to handler/update this report via permissions. Sanity limit is {$limit}, to adjust edit the 'Maximum non-moderator users who can handle reports' option";
+            if (\XF::$debugMode)
+            {
+                trigger_error($error, E_USER_WARNING);
+            }
+            \XF::logError($error);
+            return [];
+        }
+
+        return $userIds;
     }
 
     /**
@@ -178,7 +213,7 @@ class Report extends XFCP_Report
 
                 /** @var \XF\Entity\Moderator $moderator */
                 $moderator = $em->create('XF:Moderator');
-                $moderator->user_id = $user->user_id;
+                $moderator->setTrusted('user_id', $user->user_id);
                 $moderator->hydrateRelation('User', $user);
                 $moderator->setReadOnly(true);
 
