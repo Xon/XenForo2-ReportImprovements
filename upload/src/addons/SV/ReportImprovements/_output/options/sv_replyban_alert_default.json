@@ -7,6 +7,6 @@
     "validation_method": "",
     "default_value": "1",
     "relations": {
-        "sv_report_improvements": 130
+        "svReportImprovements": 130
     }
 }

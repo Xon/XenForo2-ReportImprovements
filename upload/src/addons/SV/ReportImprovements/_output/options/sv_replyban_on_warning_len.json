@@ -10,6 +10,6 @@
     "validation_method": "",
     "default_value": "{\"value\":8,\"unit\":\"hours\"}",
     "relations": {
-        "sv_report_improvements": 330
+        "svReportImprovements": 330
     }
 }
