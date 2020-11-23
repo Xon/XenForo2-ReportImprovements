@@ -97,11 +97,21 @@ class Report extends XFCP_Report
     /**
      * @param \XF\Entity\Report $report
      * @return int[]
+     * @noinspection PhpUnusedParameterInspection
      */
-    protected function getNonModeratorsWhoCanHandleReport(/** @noinspection PhpUnusedParameterInspection */ \XF\Entity\Report $report)
+    protected function getNonModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
+        // apply sanity check limit <= 0 means no limit. WHY
+        $options = \XF::options();
+        $limit = isset($options->svNonModeratorReportHandlingLimit) ? (int)$options->svNonModeratorReportHandlingLimit : 1000;
+        $limit = max(0, $limit);
+        if ($limit === 0)
+        {
+            $limit = null;
+        }
+        $db = \XF::db();
         // find users with groups with the assign/update report, or via direct permission assignment but aren't moderators
-        return \XF::db()->fetchAllColumn("
+        return $db->fetchAllColumn($db->limit("
             SELECT DISTINCT xu.user_id 
             FROM (
                 SELECT DISTINCT user_group_id 
@@ -116,7 +126,7 @@ class Report extends XFCP_Report
             FROM xf_permission_entry
             JOIN xf_user xu ON xf_permission_entry.user_id = xu.user_id
             WHERE xf_permission_entry.permission_group_id = 'general' AND xf_permission_entry.permission_id IN ('assignReport', 'updateReport') AND xu.is_moderator = 0
-        ");
+        ", $limit);
     }
 
     /**

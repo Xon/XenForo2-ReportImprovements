@@ -1,0 +1,2 @@
+Sanity limit to prevent loading the entire user-base<br/>
+0 for no limit
