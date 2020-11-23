@@ -256,6 +256,14 @@ class Setup extends AbstractSetup
         $this->installStep2();
     }
 
+    public function upgrade2070000Step1()
+    {
+        $this->renameOption('sv_ri_user_id', 'svReportImpro_expireUserId');
+        $this->renameOption('sv_ri_log_to_report_natural_warning_expire', 'svReportImpro_logNaturalWarningExpiry');
+        $this->renameOption('sv_ri_expiry_days', 'svReportImpro_autoExpireDays');
+        $this->renameOption('sv_ri_expiry_action', 'svReportImpro_autoExpireACtion');
+    }
+
     /**
      * Drops add-on tables.
      */

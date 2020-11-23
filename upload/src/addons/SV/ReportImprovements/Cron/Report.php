@@ -12,8 +12,9 @@ class Report
     public static function resolveInactiveReports()
     {
         $options = \XF::options();
-        $daysLimit = (int)$options->sv_ri_expiry_days;
-        if ($daysLimit <= 0 || !$options->sv_ri_expiry_action)
+        $daysLimit = isset($options->svReportImpro_autoExpireDays) ? (int)$options->svReportImpro_autoExpireDays : 0;
+        $expireAction = isset($options->svReportImpro_autoExpireAction) ? $options->svReportImpro_autoExpireAction : '';
+        if ($daysLimit <= 0 || !$expireAction)
         {
             return;
         }

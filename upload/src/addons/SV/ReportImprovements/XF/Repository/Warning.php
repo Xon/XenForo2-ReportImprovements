@@ -60,7 +60,8 @@ class Warning extends XFCP_Warning
         $expiringFromCron = Globals::$expiringFromCron;
         if ($expiringFromCron || !$reporter->user_id)
         {
-            $reporter = $this->app()->find('XF:User', $options->sv_ri_user_id ?: 1);
+            $expireUserId = isset($options->svReportImpro_expireUserId) ? (int)$options->svReportImpro_expireUserId : 1;
+            $reporter = $this->app()->find('XF:User', $expireUserId);
             if (!$reporter)
             {
                 $reporter = $this->app()->find('XF:User', 1);

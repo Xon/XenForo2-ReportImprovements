@@ -48,7 +48,8 @@ class WarningLogMigration extends AbstractRebuildJob
             $user = $warning->WarnedBy;
             if (!$user)
             {
-                $user = \XF::app()->find('XF:User', \XF::options()->sv_ri_user_id ?: 1);
+                $expireUserId = isset($options->svReportImpro_ExpireUserId) ? (int)$options->svReportImpro_ExpireUserId : 1;
+                $user = \XF::app()->find('XF:User', $expireUserId);
                 if (!$user)
                 {
                     $user = \XF::app()->find('XF:User', 1);

@@ -26,7 +26,7 @@ class Warning extends XFCP_Warning
             $type = 'expire';
         }
 
-        if (Globals::$expiringFromCron && $type === 'expire' && !$this->app()->options()->sv_ri_log_to_report_natural_warning_expire)
+        if (Globals::$expiringFromCron && $type === 'expire' && empty(\XF::options()->svReportImpro_logNaturalWarningExpiry))
         {
             return null;
         }
