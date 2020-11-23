@@ -115,7 +115,7 @@ class Report extends XFCP_Report
             FROM (
                 SELECT DISTINCT innerGroupPerm.user_group_id 
                 FROM xf_permission_entry as innerGroupPerm
-                WHERE innerGroupPerm.permission_group_id = 'general' AND innerGroupPerm.permission_id = 'viewReports'
+                WHERE innerGroupPerm.permission_group_id = 'general' AND innerGroupPerm.permission_id = 'viewReports' AND innerGroupPerm.permission_value = 'allow' 
             ) a 
             JOIN xf_user_group_relation gr ON a.user_group_id = gr.user_group_id
             JOIN xf_user xu ON gr.user_id = xu.user_id
@@ -123,30 +123,30 @@ class Report extends XFCP_Report
                   exists(SELECT outerUserPerm.user_id 
                         FROM xf_permission_entry as outerUserPerm
                         WHERE outerUserPerm.user_id = xu.user_id AND 
-                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport') OR 
+                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport' AND outerUserPerm.permission_value = 'allow') OR 
                   exists(SELECT gr.user_id
                   
                         FROM xf_permission_entry as outerUserPerm
                         JOIN xf_user_group_relation gr ON outerUserPerm.user_group_id = gr.user_group_id
                         WHERE gr.user_id = xu.user_id AND 
-                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport')
+                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport' AND outerUserPerm.permission_value = 'allow')
                   )
             UNION
             SELECT DISTINCT innerUserGroupPerm.user_id 
             FROM xf_permission_entry as innerUserGroupPerm
             JOIN xf_user xu ON innerUserGroupPerm.user_id = xu.user_id
-            WHERE innerUserGroupPerm.permission_group_id = 'general' AND innerUserGroupPerm.permission_id = 'viewReports' AND
+            WHERE innerUserGroupPerm.permission_group_id = 'general' AND innerUserGroupPerm.permission_id = 'viewReports' AND innerUserGroupPerm.permission_value = 'allow' AND
                   xu.is_moderator = 0 and xu.user_state = 'valid' AND (
                   exists(SELECT outerUserPerm.user_id 
                         FROM xf_permission_entry as outerUserPerm
                         WHERE outerUserPerm.user_id = xu.user_id AND 
-                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport') OR 
+                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport' AND outerUserPerm.permission_value = 'allow') OR 
                   exists(SELECT gr.user_id
                   
                         FROM xf_permission_entry as outerUserPerm
                         JOIN xf_user_group_relation gr ON outerUserPerm.user_group_id = gr.user_group_id
                         WHERE gr.user_id = xu.user_id AND 
-                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport')
+                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport' AND outerUserPerm.permission_value = 'allow')
                   )
         ");
 
@@ -172,6 +172,7 @@ class Report extends XFCP_Report
      */
     public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         $nodeId = null;
         if (isset($report->content_info['node_id']))
         {
@@ -231,7 +232,7 @@ class Report extends XFCP_Report
         {
             /** @var int $id */
             $canView = \XF::asVisitor($moderator->User,
-                function () use ($report) { return $report->canView(); }
+                function () use ($report) { return $report->canView() && $report->canUpdate(); }
             );
             if (!$canView)
             {
