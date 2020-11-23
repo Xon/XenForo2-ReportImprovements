@@ -153,7 +153,7 @@ class Report extends XFCP_Report
         $count = count($userIds);
         if ($limit && $count > $limit)
         {
-            $error = "Potential miss-configuration detected. {$count} users have access to handle/update/assign this report via permissions. Sanity limit is {$limit}, to adjust edit the 'Maximum non-moderator users who can handle reports' option";
+            $error = "Potential miss-configuration detected. {$count} users have access to handle/update this report via permissions. Sanity limit is {$limit}, to adjust edit the 'Maximum non-moderator users who can handle reports' option";
             if (\XF::$debugMode)
             {
                 trigger_error($error, E_USER_WARNING);
