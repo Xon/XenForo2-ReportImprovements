@@ -305,6 +305,10 @@ class Setup extends AbstractSetup
             'SV\ReportImprovements:WarningLogMigration',
             []
         );
+
+        /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
+        $repo = \XF::repository('XF:Report');
+        $repo->deferResetNonModeratorsWhoCanHandleReportCache();
     }
 
     public function postUpgrade($previousVersion, array &$stateChanges)
@@ -316,6 +320,22 @@ class Setup extends AbstractSetup
             'SV\ReportImprovements:WarningLogMigration',
             []
         );
+
+        // add-on upgraded while disabled can get into a very wonky state, so ensure we zap this cache entry
+        /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
+        $repo = \XF::repository('XF:Report');
+        if (\is_callable([$repo, 'deferResetNonModeratorsWhoCanHandleReportCache']))
+        {
+            $repo->deferResetNonModeratorsWhoCanHandleReportCache();
+        }
+        else
+        {
+            $cache = \XF::app()->cache();
+            if ($cache)
+            {
+                $cache->delete('reports-non-mods-assignable');
+            }
+        }
     }
 
     /**

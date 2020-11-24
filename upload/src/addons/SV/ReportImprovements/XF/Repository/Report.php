@@ -96,12 +96,19 @@ class Report extends XFCP_Report
 
     protected function getReportAssignableNonModeratorsCacheTime()
     {
-        return 3600; // an hour
+        return 86400; // 1 day
     }
 
     protected function getReportAssignableNonModeratorsCacheKey()
     {
         return 'reports-non-mods-assignable';
+    }
+
+    public function deferResetNonModeratorsWhoCanHandleReportCache()
+    {
+        \XF::runLater(function(){
+            $this->resetNonModeratorsWhoCanHandleReportCache();
+        });
     }
 
     public function resetNonModeratorsWhoCanHandleReportCache()

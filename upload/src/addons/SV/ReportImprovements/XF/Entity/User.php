@@ -143,6 +143,18 @@ class User extends XFCP_User
         return $this->hasPermission('general', 'viewReporterUsername');
     }
 
+    protected function _postSave()
+    {
+        parent::_postSave();
+
+        if ($this->isChanged('is_moderator'))
+        {
+            /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
+            $repo = \XF::repository('XF:Report');
+            $repo->deferResetNonModeratorsWhoCanHandleReportCache();
+        }
+    }
+
     /**
      * @param Structure $structure
      * @return Structure

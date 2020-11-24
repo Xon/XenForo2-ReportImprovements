@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Repository\\PermissionCombination",
+    "to_class": "SV\\ReportImprovements\\XF\\Repository\\PermissionCombination",
+    "execute_order": 6905,
+    "active": true
+}
