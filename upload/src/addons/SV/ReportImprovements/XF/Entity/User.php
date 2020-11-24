@@ -147,7 +147,7 @@ class User extends XFCP_User
     {
         parent::_postSave();
 
-        if ($this->isChanged('is_moderator'))
+        if ($this->isChanged(['is_moderator', 'user_group_id', 'secondary_group_ids']))
         {
             /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
             $repo = \XF::repository('XF:Report');
