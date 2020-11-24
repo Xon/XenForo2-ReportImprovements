@@ -264,6 +264,11 @@ class Setup extends AbstractSetup
         $this->renameOption('sv_ri_expiry_action', 'svReportImpro_autoExpireACtion');
     }
 
+    public function upgrade2070100Step1()
+    {
+        $this->installStep2();
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -592,6 +597,10 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'assigned_user_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'assigned_username', 'varchar', 50)->setDefault('');
             $table->addKey('warning_log_id', 'warning_log_id');
+        };
+
+        $tables['xf_permission_entry'] = function (Alter $table) {
+            $table->addKey(['permission_group_id','permission_id']);
         };
 
 
