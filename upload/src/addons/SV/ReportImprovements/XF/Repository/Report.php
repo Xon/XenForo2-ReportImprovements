@@ -94,6 +94,26 @@ class Report extends XFCP_Report
         return $finder;
     }
 
+    protected function getReportAssignableNonModeratorsCacheTime()
+    {
+        return 3600; // an hour
+    }
+
+    protected function getReportAssignableNonModeratorsCacheKey()
+    {
+        return 'reports-non-mods-assignable';
+    }
+
+    public function resetNonModeratorsWhoCanHandleReportCache()
+    {
+        $key = $this->getReportAssignableNonModeratorsCacheKey();
+        $cache = \XF::app()->cache();
+        if ($cache && $key)
+        {
+            $cache->delete($key);
+        }
+    }
+
     /**
      * @param \XF\Entity\Report $report
      * @return int[]
@@ -101,54 +121,79 @@ class Report extends XFCP_Report
      */
     protected function getNonModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
+        $key = $this->getReportAssignableNonModeratorsCacheKey();
+        $cacheTime = (int)$this->getReportAssignableNonModeratorsCacheTime();
+        $cache = \XF::app()->cache();
+
+        $userIds = null;
+        if ($cache && $key && $cacheTime)
+        {
+            $userIds = @\json_decode($cache->fetch($key), true);
+            $userIds = is_array($userIds) ? $userIds : null;
+        }
+
         // apply sanity check limit <= 0 means no limit. WHY
         $options = \XF::options();
         $limit = isset($options->svNonModeratorReportHandlingLimit) ? (int)$options->svNonModeratorReportHandlingLimit : 1000;
         $limit = max(0, $limit);
-        $db = \XF::db();
 
-        // find users with groups with the update report, or via direct permission assignment but aren't moderators
-        // ensure they can view the report centre, or this might return more users than expected
-        // SQL note; This query produces vastly faster query plans as it goes from what should be a small set of permission rows to users rather than all users and then filtering down
-        $userIds = $db->fetchAllColumn("
-            SELECT DISTINCT xu.user_id 
-            FROM (
-                SELECT DISTINCT innerGroupPerm.user_group_id 
-                FROM xf_permission_entry as innerGroupPerm
-                WHERE innerGroupPerm.permission_group_id = 'general' AND innerGroupPerm.permission_id = 'viewReports' AND innerGroupPerm.permission_value = 'allow' 
-            ) a 
-            JOIN xf_user_group_relation gr ON a.user_group_id = gr.user_group_id
-            JOIN xf_user xu ON gr.user_id = xu.user_id
-            WHERE xu.is_moderator = 0 and xu.user_state = 'valid' AND (
-                  exists(SELECT outerUserPerm.user_id 
-                        FROM xf_permission_entry as outerUserPerm
-                        WHERE outerUserPerm.user_id = xu.user_id AND 
-                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport' AND outerUserPerm.permission_value = 'allow') OR 
-                  exists(SELECT gr.user_id
-                  
-                        FROM xf_permission_entry as outerUserPerm
-                        JOIN xf_user_group_relation gr ON outerUserPerm.user_group_id = gr.user_group_id
-                        WHERE gr.user_id = xu.user_id AND 
-                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport' AND outerUserPerm.permission_value = 'allow')
-                  )
-            UNION
-            SELECT DISTINCT innerUserGroupPerm.user_id 
-            FROM xf_permission_entry as innerUserGroupPerm
-            JOIN xf_user xu ON innerUserGroupPerm.user_id = xu.user_id
-            WHERE innerUserGroupPerm.permission_group_id = 'general' AND innerUserGroupPerm.permission_id = 'viewReports' AND innerUserGroupPerm.permission_value = 'allow' AND
-                  xu.is_moderator = 0 and xu.user_state = 'valid' AND (
-                  exists(SELECT outerUserPerm.user_id 
-                        FROM xf_permission_entry as outerUserPerm
-                        WHERE outerUserPerm.user_id = xu.user_id AND 
-                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport' AND outerUserPerm.permission_value = 'allow') OR 
-                  exists(SELECT gr.user_id
-                  
-                        FROM xf_permission_entry as outerUserPerm
-                        JOIN xf_user_group_relation gr ON outerUserPerm.user_group_id = gr.user_group_id
-                        WHERE gr.user_id = xu.user_id AND 
-                              outerUserPerm.permission_group_id = 'general' AND outerUserPerm.permission_id = 'updateReport' AND outerUserPerm.permission_value = 'allow')
-                  )
-        ");
+        if (!is_array($userIds))
+        {
+            // find users with groups with the update report, or via direct permission assignment but aren't moderators
+            // ensure they can view the report centre, or this might return more users than expected
+            // this requires an index on xf_permission_entry.permission_group_id/xf_permission_entry.permission_id to be effective
+            // this can still be slow-ish initially, so cache.
+            $userIds = \XF::db()->fetchAllColumn("
+                SELECT xu.user_id 
+                FROM xf_user xu
+                WHERE xu.is_moderator = 0 AND xu.user_state = 'valid' AND (
+                      NOT exists(SELECT notExistsGroupPerm.user_id 
+                            FROM xf_permission_entry AS notExistsGroupPerm
+                            WHERE notExistsGroupPerm.user_id = xu.user_id AND 
+                                  notExistsGroupPerm.permission_group_id = 'general' AND notExistsGroupPerm.permission_id = 'viewReports' AND notExistsGroupPerm.permission_value = 'never') OR 
+                      NOT exists(SELECT gr.user_id
+                            FROM xf_permission_entry AS notExistsUserPerm
+                            JOIN xf_user_group_relation gr ON notExistsUserPerm.user_group_id = gr.user_group_id
+                            WHERE gr.user_id = xu.user_id AND 
+                                  notExistsUserPerm.permission_group_id = 'general' AND notExistsUserPerm.permission_id = 'viewReports' AND notExistsUserPerm.permission_value = 'never')
+                      ) AND (
+                      exists(SELECT existsUserPerm.user_id 
+                            FROM xf_permission_entry AS existsUserPerm
+                            WHERE existsUserPerm.user_id = xu.user_id AND 
+                                  existsUserPerm.permission_group_id = 'general' AND existsUserPerm.permission_id = 'viewReports' AND existsUserPerm.permission_value = 'allow') OR 
+                      exists(SELECT gr.user_id
+                            FROM xf_permission_entry AS existsUserPerm
+                            JOIN xf_user_group_relation gr ON existsUserPerm.user_group_id = gr.user_group_id
+                            WHERE gr.user_id = xu.user_id AND 
+                                  existsUserPerm.permission_group_id = 'general' AND existsUserPerm.permission_id = 'viewReports' AND existsUserPerm.permission_value = 'allow')
+                      ) AND (
+                      NOT exists(SELECT notExistsUserPerm.user_id 
+                            FROM xf_permission_entry AS notExistsUserPerm
+                            WHERE notExistsUserPerm.user_id = xu.user_id AND 
+                                  notExistsUserPerm.permission_group_id = 'general' AND notExistsUserPerm.permission_id = 'updateReport' AND notExistsUserPerm.permission_value = 'never') OR 
+                      NOT exists(SELECT gr.user_id
+                            FROM xf_permission_entry AS notExistsGroupPerm
+                            JOIN xf_user_group_relation gr ON notExistsGroupPerm.user_group_id = gr.user_group_id
+                            WHERE gr.user_id = xu.user_id AND 
+                                  notExistsGroupPerm.permission_group_id = 'general' AND notExistsGroupPerm.permission_id = 'updateReport' AND notExistsGroupPerm.permission_value = 'never')
+                      ) AND (
+                      exists(SELECT existsUserPerm.user_id 
+                            FROM xf_permission_entry AS existsUserPerm
+                            WHERE existsUserPerm.user_id = xu.user_id AND 
+                                  existsUserPerm.permission_group_id = 'general' AND existsUserPerm.permission_id = 'updateReport' AND existsUserPerm.permission_value = 'allow') OR 
+                      exists(SELECT gr.user_id
+                            FROM xf_permission_entry AS existsGroupPerm
+                            JOIN xf_user_group_relation gr ON existsGroupPerm.user_group_id = gr.user_group_id
+                            WHERE gr.user_id = xu.user_id AND 
+                                  existsGroupPerm.permission_group_id = 'general' AND existsGroupPerm.permission_id = 'updateReport' AND existsGroupPerm.permission_value = 'allow')
+                      )
+            ");
+
+            if ($cache && $key && $cacheTime)
+            {
+                $cache->save($key, \json_encode($userIds), $cacheTime);
+            }
+        }
 
         $count = count($userIds);
         if ($limit && $count > $limit)
