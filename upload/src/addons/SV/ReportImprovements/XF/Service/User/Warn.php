@@ -22,7 +22,7 @@ class Warn extends XFCP_Warn
         $this->warning->setOption('svResolveReport', $resolveReport);
     }
 
-    public function setupReplyBan(bool $sendAlert, string $reason, int $banLengthValue, string $banLengthUnit, bool $resolveReport = false)
+    public function setupReplyBan(bool $sendAlert, string $reason, int $banLengthValue = null, string $banLengthUnit = null, bool $resolveReport = false)
     {
         if (!$this->content instanceof \XF\Entity\Post)
         {
