@@ -143,15 +143,45 @@ class User extends XFCP_User
         return $this->hasPermission('general', 'viewReporterUsername');
     }
 
+    protected $wasCanBeAssignedReports = false;
+
+    protected function _preSave()
+    {
+        parent::_preSave();
+
+        $this->wasCanBeAssignedReports =
+            (
+                !$this->is_moderator && $this->getPreviousValue('is_moderator') ||
+                $this->is_moderator && !$this->getPreviousValue('is_moderator')
+            ) &&
+            $this->hasPermission('general', 'viewReports') &&
+            $this->hasPermission('general', 'updateReport');
+    }
+
     protected function _postSave()
     {
         parent::_postSave();
 
-        if ($this->isChanged(['is_moderator', 'user_group_id', 'secondary_group_ids']))
+        if ($this->wasCanBeAssignedReports)
         {
-            /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
-            $repo = \XF::repository('XF:Report');
-            $repo->deferResetNonModeratorsWhoCanHandleReportCache();
+            $doRebuild = $this->isChanged('user_state');
+            // check for permission change
+            if ($this->isChanged(['is_moderator', 'user_group_id', 'secondary_group_ids']))
+            {
+                $newPermissions = \XF::permissionCache()->getPermissionSet($this->permission_combination_id);
+                if (!$newPermissions->hasGlobalPermission('general', 'viewReports') ||
+                    !$newPermissions->hasGlobalPermission('general', 'updateReport'))
+                {
+                    $doRebuild = true;
+                }
+            }
+
+            if ($doRebuild)
+            {
+                /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
+                $repo = \XF::repository('XF:Report');
+                $repo->deferResetNonModeratorsWhoCanHandleReportCache();
+            }
         }
     }
 
