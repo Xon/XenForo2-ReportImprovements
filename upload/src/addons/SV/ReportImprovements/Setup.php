@@ -306,9 +306,7 @@ class Setup extends AbstractSetup
             []
         );
 
-        /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
-        $repo = \XF::repository('XF:Report');
-        $repo->deferResetNonModeratorsWhoCanHandleReportCache();
+        $this->cleanupPermissionChecks();
     }
 
     public function postUpgrade($previousVersion, array &$stateChanges)
@@ -320,6 +318,21 @@ class Setup extends AbstractSetup
             'SV\ReportImprovements:WarningLogMigration',
             []
         );
+
+        $this->cleanupPermissionChecks();
+    }
+
+    protected function cleanupPermissionChecks()
+    {
+        /** @var \XF\Repository\PermissionEntry $permEntryRepo */
+        $permEntryRepo = \XF::repository('XF:PermissionEntry');
+
+        $permEntryRepo->deleteOrphanedGlobalUserPermissionEntries();
+        $permEntryRepo->deleteOrphanedContentUserPermissionEntries();
+
+        /** @var \XF\Repository\PermissionCombination $permComboRepo */
+        $permComboRepo = \XF::repository('XF:PermissionCombination');
+        $permComboRepo->deleteUnusedPermissionCombinations();
 
         // add-on upgraded while disabled can get into a very wonky state, so ensure we zap this cache entry
         /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
