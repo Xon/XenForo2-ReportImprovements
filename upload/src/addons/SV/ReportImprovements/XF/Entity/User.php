@@ -164,9 +164,9 @@ class User extends XFCP_User
 
         if ($this->wasCanBeAssignedReports)
         {
-            $doRebuild = $this->isChanged('user_state');
+            $doRebuild = $this->isChanged('user_state') || $this->isChanged('is_moderator');
             // check for permission change
-            if ($this->isChanged(['is_moderator', 'user_group_id', 'secondary_group_ids']))
+            if ($this->isChanged(['user_group_id', 'secondary_group_ids']))
             {
                 $newPermissions = \XF::permissionCache()->getPermissionSet($this->permission_combination_id);
                 if (!$newPermissions->hasGlobalPermission('general', 'viewReports') ||
