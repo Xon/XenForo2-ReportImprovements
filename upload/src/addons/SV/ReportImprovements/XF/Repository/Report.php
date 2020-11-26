@@ -220,7 +220,7 @@ class Report extends XFCP_Report
                     canUpdate = if(canUpdate = 0 OR userPerm.permission_value = 'never', 0, if(userPerm.permission_value = 'allow', 1, NULL))
             ");
 
-            $userIds = $db->fetchAllColumn('SELECT user_id FROM xf_sv_non_moderator_report_users_update where canUpdate = 1');
+            $userIds = $db->fetchAllColumn('SELECT user_id FROM xf_sv_non_moderator_report_users_update where canUpdate = 1 and user_id <> 0');
 
 
 //            $userIds = \XF::db()->fetchAllColumn("
