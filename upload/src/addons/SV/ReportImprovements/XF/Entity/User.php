@@ -117,9 +117,8 @@ class User extends XFCP_User
 
         if (\XF::options()->sv_moderators_respect_view_node)
         {
-            /** @var \XF\Entity\Forum $forum */
-            $forum = \XF::app()->find('XF:Forum', $nodeId);
-            if (!$forum || !$forum->canView())
+            // just check forum permission instead of loading the entire forum to avoid N+1 queries
+            if (!$this->hasNodePermission($nodeId, 'view'))
             {
                 return false;
             }

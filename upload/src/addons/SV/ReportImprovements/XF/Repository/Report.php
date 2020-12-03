@@ -376,24 +376,6 @@ class Report extends XFCP_Report
     public function filterViewableReports($reports)
     {
         $em = $this->app()->em();
-        $nodeIds = [];
-        /** @var \XF\Entity\Report $report */
-        foreach ($reports as $report)
-        {
-            if (isset($report->content_info['node_id']))
-            {
-                $nodeId = $report->content_info['node_id'];
-                if ($nodeId && !$em->findCached('XF:Forum', $nodeId))
-                {
-                    $nodeIds[$nodeId] = true;
-                }
-            }
-        }
-
-        if ($nodeIds)
-        {
-            $em->findByIds('XF:Forum', array_keys($nodeIds));
-        }
 
         // avoid N+1 look up behaviour, just cache all node perms
         \XF::visitor()->cacheNodePermissions();
