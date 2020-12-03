@@ -4,7 +4,10 @@ namespace SV\ReportImprovements\XF\Pub\Controller;
 
 use SV\ReportImprovements\Globals;
 use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
+use XF\Mvc\Entity\AbstractCollection;
+use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\ParameterBag;
+use XF\Mvc\Reply\View;
 
 /**
  * Class Report
@@ -52,6 +55,44 @@ class Report extends XFCP_Report
                 }
             }
         }
+    }
+
+    public function actionIndex(ParameterBag $params)
+    {
+        // avoid N+1 look up behaviour, just cache all node perms
+        \XF::visitor()->cacheNodePermissions();
+
+        $reply = parent::actionIndex($params);
+
+        if ($reply instanceof View)
+        {
+            $reports = [];
+            /** @var \XF\Entity\Report $report */
+            $openReports = $reply->getParam('openReports');
+            if ($openReports instanceof AbstractCollection)
+            {
+                $openReports = $openReports->toArray();
+            }
+            if (is_array($openReports))
+            {
+                $reports = $reports + $openReports;
+            }
+            $closedReports = $reply->getParam('closedReports');
+            if ($closedReports instanceof AbstractCollection)
+            {
+                $closedReports = $closedReports->toArray();
+            }
+            if (is_array($closedReports))
+            {
+                $reports = $reports + $closedReports;
+            }
+
+            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+            $reportRepo = \XF::repository('XF:Report');
+            $reportRepo->filterViewableReports(new ArrayCollection($reports));
+        }
+
+        return $reply;
     }
 
     public function actionView(ParameterBag $params)

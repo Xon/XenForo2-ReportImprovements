@@ -387,6 +387,7 @@ class Report extends XFCP_Report
         /** @var \XF\Entity\Report $report */
         foreach ($reports as $report)
         {
+            $report->title;
             $userIds[$report->content_user_id] = true;
             $userIds[$report->assigned_user_id] = true;
             $userIds[$report->last_modified_user_id] = true;
