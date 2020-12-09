@@ -135,7 +135,7 @@ class Report extends XFCP_Report
         $userIds = null;
         if ($cache && $key && $cacheTime)
         {
-            $userIds = @\json_decode($cache->fetch($key), true);
+            $userIds = @$cache->fetch($key);
             $userIds = is_array($userIds) ? $userIds : null;
         }
 
@@ -271,7 +271,7 @@ class Report extends XFCP_Report
 
             if ($cache && $key && $cacheTime)
             {
-                $cache->save($key, \json_encode($userIds), $cacheTime);
+                $cache->save($key, $userIds, $cacheTime);
             }
         }
 
