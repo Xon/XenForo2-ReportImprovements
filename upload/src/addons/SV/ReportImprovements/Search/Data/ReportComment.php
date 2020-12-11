@@ -120,9 +120,10 @@ class ReportComment extends AbstractData
                 $metaData['expiry_date'] = $warningLog->expiry_date;
             }
 
-            if ($warningLog->Warning && $warningLog->Warning->user_id)
+            $warning = $warningLog->Warning;
+            if ($warning && $warning->user_id)
             {
-                $metaData['warned_user'] = $warningLog->Warning->user_id;
+                $metaData['warned_user'] = $warning->user_id;
             }
 
             if ($warningLog->reply_ban_thread_id)
@@ -232,7 +233,9 @@ class ReportComment extends AbstractData
 
             if (\XF::$versionId < 2020000 || is_callable([$query, 'inTitleOnly']))
             {
-                /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+                /** @noinspection PhpPossiblePolymorphicInvocationInspection
+                 * @noinspection RedundantSuppression
+                 */
                 $query->inTitleOnly(false);
             }
         }

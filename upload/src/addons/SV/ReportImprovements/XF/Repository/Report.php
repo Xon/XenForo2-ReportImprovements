@@ -125,6 +125,8 @@ class Report extends XFCP_Report
      * @param \XF\Entity\Report $report
      * @return int[]
      * @noinspection PhpUnusedParameterInspection
+     * @noinspection PhpDocMissingThrowsInspection
+     * @noinspection SqlResolve
      */
     protected function getNonModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
@@ -410,9 +412,9 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @noinspection PhpDocMissingThrowsInspection
      * @param Entity|\XF\Entity\Report|\XF\Entity\ReportComment $entity
      * @return int[]
+     * @noinspection PhpDocMissingThrowsInspection
      */
     public function findUserIdsToAlertForSvReportImprov(Entity $entity)
     {
