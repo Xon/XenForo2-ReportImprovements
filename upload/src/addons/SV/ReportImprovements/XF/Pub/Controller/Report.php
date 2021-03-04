@@ -280,7 +280,8 @@ class Report extends XFCP_Report
         if ($this->isPost())
         {
             $visitor = \XF::visitor();
-            if ($existingRecipient = $conversationMessage->Conversation->Recipients[$visitor->user_id])
+            $existingRecipient = $conversationMessage->Conversation->Recipients[$visitor->user_id] ?? null;
+            if ($existingRecipient)
             {
                 $existingRecipient->recipient_state = 'active';
                 $existingRecipient->saveIfChanged();
