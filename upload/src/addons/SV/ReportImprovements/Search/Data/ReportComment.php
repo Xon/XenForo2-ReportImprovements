@@ -171,6 +171,14 @@ class ReportComment extends AbstractData
     }
 
     /**
+     * @return string
+     */
+    public function getGroupByType()
+    {
+        return 'report';
+    }
+
+    /**
      * @param MetadataStructure $structure
      */
     public function setupMetadataStructure(MetadataStructure $structure)
