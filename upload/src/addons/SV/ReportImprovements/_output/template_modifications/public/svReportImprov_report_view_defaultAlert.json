@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Configure default alert for resolving reports",
+    "execution_order": 6906,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:option name=\"send_alert\"",
+    "replace": "$0 checked=\"{{ $xf.options.sv_default_alert_on_resolve_report ? '1' : '' }}\""
+}
