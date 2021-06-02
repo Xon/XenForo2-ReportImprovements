@@ -115,7 +115,7 @@ class User extends XFCP_User
             return false;
         }
 
-        if (\XF::options()->sv_moderators_respect_view_node)
+        if (\XF::options()->sv_moderators_respect_view_node ?? false)
         {
             // just check forum permission instead of loading the entire forum to avoid N+1 queries
             if (!$this->hasNodePermission($nodeId, 'view'))

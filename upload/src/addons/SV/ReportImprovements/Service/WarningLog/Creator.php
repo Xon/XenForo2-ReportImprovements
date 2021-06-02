@@ -225,7 +225,7 @@ class Creator extends AbstractService
         {
             $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
         }
-        else if ($this->app->options()->sv_report_new_warnings && $warning->Content)
+        else if (($this->app->options()->sv_report_new_warnings ?? false) && $warning->Content)
         {
             $this->reportCreator = $this->service('XF:Report\Creator', $warning->content_type, $warning->Content);
             $report = $this->reportCreator->getReport();

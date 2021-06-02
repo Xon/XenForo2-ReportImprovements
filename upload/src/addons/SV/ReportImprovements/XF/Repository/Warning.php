@@ -60,7 +60,7 @@ class Warning extends XFCP_Warning
         $expiringFromCron = Globals::$expiringFromCron;
         if ($expiringFromCron || !$reporter->user_id)
         {
-            $expireUserId = isset($options->svReportImpro_expireUserId) ? (int)$options->svReportImpro_expireUserId : 1;
+            $expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
             $reporter = $this->app()->find('XF:User', $expireUserId);
             if (!$reporter)
             {
@@ -118,11 +118,11 @@ class Warning extends XFCP_Warning
 
         $options = \XF::options();
 
-        if (in_array('' . $warningDefinitionId, $options->svSkipReplyBansForWarning, true))
+        if (in_array('' . $warningDefinitionId, $options->svSkipReplyBansForWarning ?? [], true))
         {
             return 'none';
         }
 
-        return $options->sv_replyban_on_warning;
+        return $options->sv_replyban_on_warning ?? '';
     }
 }

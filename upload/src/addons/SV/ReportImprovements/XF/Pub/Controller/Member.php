@@ -13,10 +13,7 @@ class Member extends XFCP_Member
 {
     public function actionRecentContent(ParameterBag $params)
     {
-        if (isset(\XF::options()->svReportInAccountPostings))
-        {
-            Globals::$reportInAccountPostings = \XF::options()->svReportInAccountPostings;
-        }
+        Globals::$reportInAccountPostings = \XF::options()->svReportInAccountPostings ?? false;
         try
         {
             return parent::actionRecentContent($params);

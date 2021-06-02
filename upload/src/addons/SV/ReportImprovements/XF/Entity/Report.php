@@ -279,7 +279,7 @@ class Report extends XFCP_Report
 
     public function getCommentsFinder()
     {
-        $direction = \XF::app()->options()->sv_reverse_report_comment_order ? 'DESC' : 'ASC';
+        $direction = (\XF::app()->options()->sv_reverse_report_comment_order ?? false) ? 'DESC' : 'ASC';
 
         $finder = $this->finder('XF:ReportComment')
                        ->where('report_id', $this->report_id)

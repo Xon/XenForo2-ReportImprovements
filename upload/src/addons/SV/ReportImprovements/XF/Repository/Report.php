@@ -142,7 +142,7 @@ class Report extends XFCP_Report
 
         // apply sanity check limit <= 0 means no limit. WHY
         $options = \XF::options();
-        $limit = isset($options->svNonModeratorReportHandlingLimit) ? (int)$options->svNonModeratorReportHandlingLimit : 1000;
+        $limit = (int)($options->svNonModeratorReportHandlingLimit ?? 1000);
         $limit = max(0, $limit);
 
         if (!is_array($userIds))
@@ -418,14 +418,15 @@ class Report extends XFCP_Report
     public function findUserIdsToAlertForSvReportImprov(Entity $entity)
     {
         $userIds = [];
-        if ($this->options()->sv_report_alert_mode === 'none')
+        $alertMode = $this->options()->sv_report_alert_mode ?? 'none';
+        if ($alertMode === 'none')
         {
             return $userIds;
         }
 
         if ($entity instanceof \XF\Entity\Report)
         {
-            if ($this->options()->sv_report_alert_mode !== 'watchers')
+            if ($alertMode !== 'watchers')
             {
                 $moderators = $this->getModeratorsWhoCanHandleReport($entity);
                 if ($moderators->count())
@@ -440,7 +441,7 @@ class Report extends XFCP_Report
         }
         else if ($entity instanceof \XF\Entity\ReportComment)
         {
-            if ($this->options()->sv_report_alert_mode !== 'always_alert')
+            if ($alertMode !== 'always_alert')
             {
                 $db = $this->db();
                 $userIds = $db->fetchAllColumn('

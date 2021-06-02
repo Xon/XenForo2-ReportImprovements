@@ -12,9 +12,10 @@ class CreatorPatch extends XFCP_CreatorPatch
     public function createReport($contentType, Entity $content)
     {
         $options = \XF::options();
-        if ($options->svLogToReportCentreAndForum)
+        $reportIntoForumId = $options->svLogToReportCentreAndForum ?? 0;
+        if ($reportIntoForumId)
         {
-            $options->offsetSet('reportIntoForumId', $options->svLogToReportCentreAndForum);
+            $options->offsetSet('reportIntoForumId', $reportIntoForumId);
         }
         parent::createReport($contentType, $content);
     }
@@ -23,7 +24,7 @@ class CreatorPatch extends XFCP_CreatorPatch
     {
         $errors = parent::_validate();
 
-        if ($this->threadCreator && \XF::options()->svLogToReportCentreAndForum)
+        if ($this->threadCreator && (\XF::options()->svLogToReportCentreAndForum ?? false))
         {
             $this->report->preSave();
             $errors = array_merge($errors, $this->report->getErrors());
@@ -34,7 +35,7 @@ class CreatorPatch extends XFCP_CreatorPatch
 
     protected function _save()
     {
-        if ($this->threadCreator && \XF::options()->svLogToReportCentreAndForum)
+        if ($this->threadCreator && (\XF::options()->svLogToReportCentreAndForum ?? false))
         {
             $threadCreator = $this->threadCreator;
 
