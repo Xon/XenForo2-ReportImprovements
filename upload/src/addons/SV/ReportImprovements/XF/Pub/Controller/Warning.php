@@ -17,7 +17,6 @@ class Warning extends XFCP_Warning
      * @param array $extraWith
      * @return \XF\Entity\Warning
      * @throws \XF\Mvc\Reply\Exception
-     * @noinspection PhpMissingParamTypeInspection
      */
     protected function assertViewableWarning($id, array $extraWith = [])
     {

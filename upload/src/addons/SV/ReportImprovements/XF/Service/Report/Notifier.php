@@ -60,7 +60,7 @@ class Notifier extends XFCP_Notifier
         }
         $notifiableUsers = $this->getUsersForCommentInsertNotification();
 
-        foreach ($commenterUsers AS $k => $userId)
+        foreach ($commenterUsers AS $userId)
         {
             if (isset($notifiableUsers[$userId]))
             {

@@ -48,7 +48,6 @@ class Warn extends XFCP_Warn
      * @param array                       $input
      * @return \XF\Service\User\Warn
      * @throws \XF\Mvc\Reply\Exception
-     * @noinspection PhpMissingParamTypeInspection
      */
     protected function setupWarnService(\XF\Warning\AbstractHandler $warningHandler, \XF\Entity\User $user, $contentType, Entity $content, array $input)
     {
@@ -109,7 +108,6 @@ class Warn extends XFCP_Warn
      * @param string $warnUrl
      * @param array  $breadcrumbs
      * @return \XF\Mvc\Reply\AbstractReply
-     * @noinspection PhpMissingParamTypeInspection
      */
     public function actionWarn($contentType, Entity $content, $warnUrl, array $breadcrumbs = [])
     {

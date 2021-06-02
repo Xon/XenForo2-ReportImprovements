@@ -106,7 +106,7 @@ class Creator extends AbstractService
     /**
      * @return string[]
      */
-    protected function getFieldsToLog()
+    protected function getFieldsToLog(): array
     {
         return [
             'content_type',
@@ -296,15 +296,12 @@ class Creator extends AbstractService
     /**
      * @return WarningLog
      */
-    public function getWarningLog()
+    public function getWarningLog(): WarningLog
     {
         return $this->warningLog;
     }
 
-    /**
-     * @return \SV\ReportImprovements\XF\Entity\Report
-     */
-    public function getReport()
+    public function getReport(): \SV\ReportImprovements\XF\Entity\Report
     {
         return $this->report;
     }
@@ -378,7 +375,7 @@ class Creator extends AbstractService
      * @throws \XF\PrintableException
      * @throws \Exception
      */
-    protected function _save()
+    protected function _save(): WarningLog
     {
         $this->db()->beginTransaction();
 

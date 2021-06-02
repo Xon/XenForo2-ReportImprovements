@@ -37,10 +37,7 @@ use XF\Mvc\Entity\Structure;
  */
 class WarningLog extends Entity
 {
-    /**
-     * @return \XF\Phrase
-     */
-    public function getOperationTypePhrase()
+    public function getOperationTypePhrase(): \XF\Phrase
     {
         if ($this->warning_id)
         {
@@ -109,10 +106,7 @@ class WarningLog extends Entity
         return null;
     }
 
-    /**
-     * @return \XF\Mvc\Entity\DeferredValue
-     */
-    public function getDeferredPrimaryId()
+    public function getDeferredPrimaryId(): \XF\Mvc\Entity\DeferredValue
     {
         return $this->_getDeferredValue(
             function () {
@@ -125,7 +119,7 @@ class WarningLog extends Entity
      * @param Structure $structure
      * @return Structure
      */
-    public static function getStructure(Structure $structure)
+    public static function getStructure(Structure $structure): Structure
     {
         $structure->table = 'xf_sv_warning_log';
         $structure->shortName = 'SV\ReportImprovements:WarningLog';

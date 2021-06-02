@@ -310,7 +310,6 @@ class ReportComment extends AbstractData
      * @param Query $query      $query
      * @param bool  $isOnlyType Will be true if the search is specifically limited to this type.
      * @return MetadataConstraint[] Only an array of metadata constraints may be returned.
-     * @noinspection PhpMissingParamTypeInspection
      */
     public function getTypePermissionConstraints(Query $query, $isOnlyType)
     {

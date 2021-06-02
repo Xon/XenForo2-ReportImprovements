@@ -18,13 +18,12 @@ class ResolveInactiveReport extends AbstractRebuildJob
      * @param int $start
      * @param int $batch
      * @return array
-     * @noinspection PhpMissingParamTypeInspection
      */
     protected function getNextIds($start, $batch)
     {
         $options = $this->app->options();
-        $daysLimit = isset($options->svReportImpro_autoExpireDays) ? (int)$options->svReportImpro_autoExpireDays : 0;
-        $expireAction = isset($options->svReportImpro_autoExpireAction) ? $options->svReportImpro_autoExpireAction : '';
+        $daysLimit = (int)($options->svReportImpro_autoExpireDays ?? 0);
+        $expireAction = $options->svReportImpro_autoExpireAction ?? '';
         if ($daysLimit <= 0 || !$expireAction)
         {
             return null;
@@ -33,7 +32,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
         $app = $this->app;
         $options = $app->options();
         /** @var  $reporter */
-        $expireUserId = isset($options->svReportImpro_expireUserId) ? (int)$options->svReportImpro_expireUserId : 1;
+        $expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
         $this->reporter = \XF::app()->find('XF:User', $expireUserId);
         if (!$this->reporter)
         {
@@ -61,11 +60,10 @@ class ResolveInactiveReport extends AbstractRebuildJob
     /**
      * @param int $id
      * @throws \Exception
-     * @noinspection PhpMissingParamTypeInspection
      */
     protected function rebuildById($id)
     {
-        $expireAction = isset($options->svReportImpro_autoExpireAction) ? $options->svReportImpro_autoExpireAction : '';
+        $expireAction = $options->svReportImpro_autoExpireAction ?? '';
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         $report = $this->app->em()->find('XF:Report', $id);
         if ($report && $expireAction)

@@ -46,6 +46,7 @@ class Report extends XFCP_Report
             $reportsByContentType[$contentType][$report->content_id] = $report;
 
             // preload title, this only triggers phrase loading if touched in a stringy context
+            /** @noinspection PhpExpressionResultUnusedInspection */
             $report->title;
         }
 
@@ -64,14 +65,12 @@ class Report extends XFCP_Report
             $reportContents = $handler->getContent($contentIds);
             foreach ($reportContents as $contentId => $reportContent)
             {
-                if (empty($reportsByContentType[$contentType][$contentId]))
+                /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+                $report = $reports[$contentId] ?? null;
+                if (!$report)
                 {
                     continue;
                 }
-
-                /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-                $report = $reportsByContentType[$contentType][$contentId];
-
                 if ($reportContent)
                 {
                     $report->setContent($reportContent);
@@ -94,12 +93,12 @@ class Report extends XFCP_Report
         return $finder;
     }
 
-    protected function getReportAssignableNonModeratorsCacheTime()
+    protected function getReportAssignableNonModeratorsCacheTime(): int
     {
         return 86400; // 1 day
     }
 
-    protected function getReportAssignableNonModeratorsCacheKey()
+    protected function getReportAssignableNonModeratorsCacheKey(): string
     {
         return 'reports-non-mods-assignable';
     }
@@ -131,7 +130,7 @@ class Report extends XFCP_Report
     protected function getNonModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
         $key = $this->getReportAssignableNonModeratorsCacheKey();
-        $cacheTime = (int)$this->getReportAssignableNonModeratorsCacheTime();
+        $cacheTime = $this->getReportAssignableNonModeratorsCacheTime();
         $cache = \XF::app()->cache();
 
         $userIds = null;
@@ -319,7 +318,7 @@ class Report extends XFCP_Report
         $permCombinationIds = [];
         if ($nodeId)
         {
-            foreach ($moderators AS $id => $moderator)
+            foreach ($moderators AS $moderator)
             {
                 $id = $moderator->User->permission_combination_id;
                 $permCombinationIds[$id] = $id;
@@ -352,7 +351,7 @@ class Report extends XFCP_Report
 
         if ($permCombinationIds && $nodeId)
         {
-            $this->app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'node', $nodeId);
+            $this->app()->permissionCache()->cacheMultipleContentPermsForContent(\array_values($permCombinationIds), 'node', $nodeId);
         }
 
         foreach ($moderators AS $id => $moderator)
@@ -373,7 +372,6 @@ class Report extends XFCP_Report
     /**
      * @param AbstractCollection $reports
      * @return AbstractCollection
-     * @noinspection PhpMissingParamTypeInspection
      */
     public function filterViewableReports($reports)
     {
@@ -389,6 +387,7 @@ class Report extends XFCP_Report
         /** @var \XF\Entity\Report $report */
         foreach ($reports as $report)
         {
+            /** @noinspection PhpExpressionResultUnusedInspection */
             $report->title;
             $userIds[$report->content_user_id] = true;
             $userIds[$report->assigned_user_id] = true;
@@ -540,7 +539,7 @@ class Report extends XFCP_Report
          * @var int               $reportId
          * @var \XF\Entity\Report $report
          */
-        foreach ($reports AS $reportId => $report)
+        foreach ($reports AS $report)
         {
             $total++;
             if ($report->assigned_user_id === $userId)

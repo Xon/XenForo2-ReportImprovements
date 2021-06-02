@@ -163,7 +163,7 @@ class Setup extends AbstractSetup
                      ->where('action', '=', 'mention')
                      ->order('alert_id');
 
-        $stepData = isset($stepParams[2]) ? $stepParams[2] : [];
+        $stepData = $stepParams[2] ?? [];
         if (!isset($stepData['max']))
         {
             $stepData['max'] = $finder->total();
@@ -468,7 +468,7 @@ class Setup extends AbstractSetup
                     continue;
                 }
                 $newPermissions = $permissions;
-                foreach ($globalReportPermsChecks as $perm => $raw)
+                foreach ($globalReportPermsChecks as $raw)
                 {
                     list($checks, $assignments) = $raw;
                     foreach ($checks as $category => $permToTests)
