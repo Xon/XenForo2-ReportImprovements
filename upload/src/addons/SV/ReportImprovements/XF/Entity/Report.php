@@ -247,7 +247,7 @@ class Report extends XFCP_Report
      */
     public function getCommenterUserIds()
     {
-        return array_keys(
+        return \array_keys(
             $this->db()->fetchAllKeyed('
               SELECT DISTINCT user_id
               FROM xf_report_comment AS report_comment

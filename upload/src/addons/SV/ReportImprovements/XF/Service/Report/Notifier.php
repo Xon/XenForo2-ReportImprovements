@@ -43,7 +43,7 @@ class Notifier extends XFCP_Notifier
      */
     public function setCommentersUserIds(array $commenterUserIds)
     {
-        $this->notifyCommenterUserIds = array_unique($commenterUserIds);
+        $this->notifyCommenterUserIds = \array_unique($commenterUserIds);
     }
 
     /**
@@ -86,7 +86,7 @@ class Notifier extends XFCP_Notifier
             return [];
         }
 
-        $usersWhoHaveAlreadyAlertedOnce = array_keys($this->db()->fetchAllKeyed('
+        $usersWhoHaveAlreadyAlertedOnce = \array_keys($this->db()->fetchAllKeyed('
             SELECT user_alert.alerted_user_id
             FROM xf_user_alert AS user_alert
             INNER JOIN xf_report_comment AS report_comment

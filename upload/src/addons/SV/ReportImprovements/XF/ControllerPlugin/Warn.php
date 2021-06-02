@@ -37,7 +37,7 @@ class Warn extends XFCP_Warn
             $inputData['reply_ban_reason'] = 'str';
         }
 
-        return array_merge($warningSubmitInput, $this->filter($inputData));
+        return \array_merge($warningSubmitInput, $this->filter($inputData));
     }
 
     /**

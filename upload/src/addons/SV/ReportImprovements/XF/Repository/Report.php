@@ -57,7 +57,7 @@ class Report extends XFCP_Report
             {
                 continue;
             }
-            $contentIds = array_keys($reports);
+            $contentIds = \array_keys($reports);
             if (!$contentIds)
             {
                 continue;
@@ -137,7 +137,7 @@ class Report extends XFCP_Report
         if ($cache && $key && $cacheTime)
         {
             $userIds = @$cache->fetch($key);
-            $userIds = is_array($userIds) ? $userIds : null;
+            $userIds = \is_array($userIds) ? $userIds : null;
         }
 
         // apply sanity check limit <= 0 means no limit. WHY
@@ -145,7 +145,7 @@ class Report extends XFCP_Report
         $limit = (int)($options->svNonModeratorReportHandlingLimit ?? 1000);
         $limit = max(0, $limit);
 
-        if (!is_array($userIds))
+        if (!\is_array($userIds))
         {
             // find users with groups with the update report, or via direct permission assignment but aren't moderators
             // ensure they can view the report centre, or this might return more users than expected
@@ -276,13 +276,13 @@ class Report extends XFCP_Report
             }
         }
 
-        $count = count($userIds);
+        $count = \count($userIds);
         if ($limit && $count > $limit)
         {
             $error = "Potential miss-configuration detected. {$count} users have access to handle/update this report via permissions. Sanity limit is {$limit}, to adjust edit the 'Maximum non-moderator users who can handle reports' option";
             if (\XF::$debugMode)
             {
-                trigger_error($error, E_USER_WARNING);
+                \trigger_error($error, E_USER_WARNING);
             }
             \XF::logError($error);
             return [];
@@ -404,7 +404,7 @@ class Report extends XFCP_Report
 
         if ($userIds)
         {
-            $em->findByIds('XF:User', array_keys($userIds));
+            $em->findByIds('XF:User', \array_keys($userIds));
         }
 
         return $reports;

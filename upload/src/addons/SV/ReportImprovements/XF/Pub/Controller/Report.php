@@ -73,7 +73,7 @@ class Report extends XFCP_Report
             {
                 $openReports = $openReports->toArray();
             }
-            if (is_array($openReports))
+            if (\is_array($openReports))
             {
                 $reports = $reports + $openReports;
             }
@@ -82,7 +82,7 @@ class Report extends XFCP_Report
             {
                 $closedReports = $closedReports->toArray();
             }
-            if (is_array($closedReports))
+            if (\is_array($closedReports))
             {
                 $reports = $reports + $closedReports;
             }

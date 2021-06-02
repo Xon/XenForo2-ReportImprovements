@@ -118,7 +118,7 @@ class Warning extends XFCP_Warning
 
         $options = \XF::options();
 
-        if (in_array('' . $warningDefinitionId, $options->svSkipReplyBansForWarning ?? [], true))
+        if (\in_array('' . $warningDefinitionId, $options->svSkipReplyBansForWarning ?? [], true))
         {
             return 'none';
         }

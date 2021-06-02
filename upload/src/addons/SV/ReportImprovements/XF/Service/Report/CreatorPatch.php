@@ -27,7 +27,7 @@ class CreatorPatch extends XFCP_CreatorPatch
         if ($this->threadCreator && (\XF::options()->svLogToReportCentreAndForum ?? false))
         {
             $this->report->preSave();
-            $errors = array_merge($errors, $this->report->getErrors());
+            $errors = \array_merge($errors, $this->report->getErrors());
         }
 
         return $errors;
