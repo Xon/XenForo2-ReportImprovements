@@ -40,7 +40,7 @@
 								<xf:if is="$convEssUserData && $convEssUserData.hard_delete">
 									<xf:set var="$title" value="{{ phrase('svConvEss_x_has_left_this_conversation_permanently', {'username': $recipient.User.username}) }}" />
 									<xf:set var="$recipientState" value="deleted_permanently" />
-								<xf:elseif is="in_array($recipient.recipient_state, ['deleted', 'deleted_ignored'])" />
+								<xf:elseif is="in_array($recipient.recipient_state, ['deleted', 'deleted_ignored'], true)" />
 									<xf:set var="$title" value="{{ phrase('svConvEss_x_has_left_this_conversation', {'username': $recipient.User.username}) }}" />
 								</xf:if>
 							</xf:if>

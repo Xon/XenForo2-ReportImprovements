@@ -1,6 +1,6 @@
 <xf:macro name="reaction_snippet" arg-reactionUser="!" arg-reactionId="!" arg-comment="!" arg-date="!" arg-fallbackName="{{ phrase('unknown_member') }}">
 	<div class="contentRow-title">
-		<xf:if is="$comment.user_id && $comment.user_id == $xf.visitor.user_id">
+		<xf:if is="$comment.user_id && $comment.user_id === $xf.visitor.user_id">
 			{{ phrase('svReportImprov_x_reacted_to_your_comment_in_y_report', {
 				'name': username_link($reactionUser, false, {'defaultname': $fallbackName}),
 				'report_params': 'href="' . link('reports', $comment.Report) . '#report-comment-' . $comment.report_comment_id . '"',

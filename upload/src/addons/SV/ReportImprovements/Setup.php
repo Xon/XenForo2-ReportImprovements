@@ -406,7 +406,7 @@ class Setup extends AbstractSetup
                         $newGlobalPerms['general'][$perm] = 'allow';
                     }
 
-                    if ($newGlobalPerms != $globalPerms)
+                    if ($newGlobalPerms !== $globalPerms)
                     {
                         /** @var \XF\Service\UpdatePermissions $permissionUpdater */
                         $permissionUpdater = \XF::service('XF:UpdatePermissions');
@@ -415,7 +415,7 @@ class Setup extends AbstractSetup
                         $permissionUpdater->updatePermissions($newGlobalPerms);
                     }
                 }
-                if ($newPermissions != $permissions)
+                if ($newPermissions !== $permissions)
                 {
                     /** @var \XF\Service\UpdatePermissions $permissionUpdater */
                     $permissionUpdater = \XF::service('XF:UpdatePermissions');
@@ -497,7 +497,7 @@ class Setup extends AbstractSetup
                     }
                 }
 
-                if ($newPermissions != $permissions)
+                if ($newPermissions !== $permissions)
                 {
                     /** @var \XF\Service\UpdatePermissions $permissionUpdater */
                     $permissionUpdater = \XF::service('XF:UpdatePermissions');
