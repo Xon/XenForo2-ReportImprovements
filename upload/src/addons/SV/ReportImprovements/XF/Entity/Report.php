@@ -131,7 +131,7 @@ class Report extends XFCP_Report
         return $visitor->canViewReporter($error);
     }
 
-    public function getBreadcrumbs(bool $includeSelf = true): array
+    public function getBreadcrumbs(bool $includeSelf = true)
     {
         $breadcrumbs = [];
 
