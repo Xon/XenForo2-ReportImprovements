@@ -7,6 +7,39 @@
 	</dl>
 </xf:macro>
 
+<xf:macro name="resolve_report"
+		  arg-report="!"
+		  arg-name="resolve_report"
+		  arg-resolveDefault="{{ $xf.options.sv_default_resolve_report_on_warning ? '1' : '' }}"
+		  arg-alert="{{ true }}"
+		  arg-alertDefault="{{ $xf.options.sv_default_alert_on_resolve_report ? '1' : '' }}"
+		  arg-alertEnableName="resolve_alert"
+		  arg-alertCommentName="resolve_alert_comment"
+		  arg-label="{{ phrase('svReportImprov_resolve_report') }}"
+		  >
+	<xf:if is="!$report || ($report && $report.canUpdate())">
+		<xf:checkboxrow explain="{{ !$report ? phrase('svReportImprov_report_will_be_created') : '' }}">
+			<xf:if is="$alert">
+				<xf:option name="{$name}" label="{{ $label }}" checked="{$resolveDefault}">
+					<xf:dependent>
+						<xf:checkbox>
+							<xf:option name="{$alertEnableName}" 
+									   label="{{ phrase('svReportImprov_send_resolution_alert:') }}"
+									   checked="{$alertDefault}">
+								<xf:dependent>
+									<xf:textbox name="{$alertCommentName}" maxlength="300" />
+								</xf:dependent>
+							</xf:option>
+						</xf:checkbox>
+					</xf:dependent>
+				</xf:option>
+			<xf:else />
+				<xf:option name="{$name}" label="{{ $label }}" checked="{{ true }}" />
+			</xf:if>
+		</xf:checkboxrow>
+	</xf:if>
+</xf:macro>
+
 <xf:macro name="reportInfo_conversation_message" 
 		  arg-report="!"
 		  >
@@ -40,7 +73,7 @@
 								<xf:if is="$convEssUserData && $convEssUserData.hard_delete">
 									<xf:set var="$title" value="{{ phrase('svConvEss_x_has_left_this_conversation_permanently', {'username': $recipient.User.username}) }}" />
 									<xf:set var="$recipientState" value="deleted_permanently" />
-								<xf:elseif is="in_array($recipient.recipient_state, ['deleted', 'deleted_ignored'], true)" />
+								<xf:elseif is="in_array($recipient.recipient_state, ['deleted', 'deleted_ignored'])" />
 									<xf:set var="$title" value="{{ phrase('svConvEss_x_has_left_this_conversation', {'username': $recipient.User.username}) }}" />
 								</xf:if>
 							</xf:if>

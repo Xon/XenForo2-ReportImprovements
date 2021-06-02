@@ -17,12 +17,14 @@ class Warn extends XFCP_Warn
      */
     protected $replyBanSvc;
 
-    public function setResolveReport(bool $resolveReport)
+    public function setResolveReport(bool $resolveReport, bool $alert, string $comment = '')
     {
         $this->warning->setOption('svResolveReport', $resolveReport);
+        $this->warning->setOption('svResolveReportAlert', $alert);
+        $this->warning->setOption('svResolveReportAlertComment', $comment);
     }
 
-    public function setupReplyBan(bool $sendAlert, string $reason, int $banLengthValue = null, string $banLengthUnit = null, bool $resolveReport = false)
+    public function setupReplyBan(bool $sendAlert, string $reason, int $banLengthValue = null, string $banLengthUnit = null, bool $resolveReport = false, bool $alert = false, string $alertComment = '')
     {
         if (!$this->content instanceof \XF\Entity\Post)
         {
@@ -40,7 +42,10 @@ class Warn extends XFCP_Warn
         $this->replyBanSvc->setPost($post);
         $this->replyBanSvc->setSendAlert($sendAlert);
         $this->replyBanSvc->setReason($reason);
-        $this->replyBanSvc->getReplyBan()->setOption('svResolveReport', $resolveReport);
+        $replyBan = $this->replyBanSvc->getReplyBan();
+        $replyBan->setOption('svResolveReport', $resolveReport);
+        $replyBan->setOption('svResolveReportAlert', $alert);
+        $replyBan->setOption('svResolveReportAlertComment', $alertComment);
     }
 
     /**

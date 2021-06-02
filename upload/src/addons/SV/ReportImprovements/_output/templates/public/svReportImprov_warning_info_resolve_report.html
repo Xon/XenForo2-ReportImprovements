@@ -1,5 +1,0 @@
-<xf:if is="($warning.Report && $warning.Report.canUpdate()) || !$warning.Report">
-	<xf:checkboxrow explain="{{ !$warning.Report ? phrase('svReportImprov_report_will_be_created') : '' }}">
-		<xf:option name="resolve_report" label="{{ phrase('svReportImprov_resolve_report') }}" checked="{{ $xf.options.sv_default_resolve_report_on_warning ? '1' : '' }}" />
-	</xf:checkboxrow>
-</xf:if>

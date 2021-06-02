@@ -67,7 +67,11 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
             {
                 /** @var \SV\ReportImprovements\XF\Repository\ThreadReplyBan $threadReplyBanRepo */
                 $threadReplyBanRepo = $this->repository('XF:ThreadReplyBan');
-                $threadReplyBanRepo->logToReport($this, $type, (bool)$this->getOption('svResolveReport'));
+                $threadReplyBanRepo->logToReport($this, $type,
+                    (bool)$this->getOption('svResolveReport'),
+                    (bool)$this->getOption('svResolveReportAlert'),
+                    $this->getOption('svResolveReportAlertComment')
+                );
             }
         }
     }
@@ -95,7 +99,11 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
 
             /** @var \SV\ReportImprovements\XF\Repository\ThreadReplyBan $threadReplyBanRepo */
             $threadReplyBanRepo = $this->repository('XF:ThreadReplyBan');
-            $threadReplyBanRepo->logToReport($this, $type, (bool)$this->getOption('svResolveReport'));
+            $threadReplyBanRepo->logToReport($this, $type,
+                (bool)$this->getOption('svResolveReport'),
+                (bool)$this->getOption('svResolveReportAlert'),
+                $this->getOption('svResolveReportAlertComment')
+            );
         }
     }
 
@@ -127,6 +135,8 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
         $structure->getters['Report'] = true;
         $structure->options['svLogWarningChanges'] = true;
         $structure->options['svResolveReport'] = false;
+        $structure->options['svResolveReportAlert'] = false;
+        $structure->options['svResolveReportAlertComment'] = '';
 
         return $structure;
     }

@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Repository;
 
 use SV\ReportImprovements\Globals;
 use XF\Entity\User as UserEntity;
+use XF\Entity\Warning as WarningEntity;
 use XF\Entity\WarningDefinition;
 
 /**
@@ -27,13 +28,7 @@ class Warning extends XFCP_Warning
         }
     }
 
-    /**
-     * @param UserEntity $user
-     * @param bool       $checkBannedStatus
-     * @return bool
-     * @noinspection PhpMissingParamTypeInspection
-     */
-    public function processExpiredWarningsForUser(UserEntity $user, $checkBannedStatus)
+    public function processExpiredWarningsForUser(UserEntity $user, bool $checkBannedStatus): bool
     {
         Globals::$expiringFromCron = true;
         try
@@ -48,12 +43,14 @@ class Warning extends XFCP_Warning
     }
 
     /**
-     * @param \XF\Entity\Warning $warning
-     * @param string             $type
-     * @param boolean            $resolveReport
+     * @param WarningEntity $warning
+     * @param string        $type
+     * @param boolean       $resolveReport
+     * @param bool          $alert
+     * @param string        $alertComment
      * @throws \Exception
      */
-    public function logOperation(\XF\Entity\Warning $warning, string $type, bool $resolveReport)
+    public function logOperation(WarningEntity $warning, string $type, bool $resolveReport, bool $alert, string $alertComment)
     {
         $reporter = \XF::visitor();
         $options = \XF::options();
@@ -80,10 +77,10 @@ class Warning extends XFCP_Warning
             }
         }
 
-        \XF::asVisitor($reporter, function () use ($reporter, $warning, $type, $resolveReport, $expiringFromCron) {
+        \XF::asVisitor($reporter, function () use ($reporter, $warning, $type, $resolveReport, $expiringFromCron, $alert, $alertComment) {
             /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
             $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $warning, $type);
-            $warningLogCreator->setAutoResolve($resolveReport);
+            $warningLogCreator->setAutoResolve($resolveReport, $alert, $alertComment);
             if ($expiringFromCron)
             {
                 $warningLogCreator->setCanReopenReport(false);

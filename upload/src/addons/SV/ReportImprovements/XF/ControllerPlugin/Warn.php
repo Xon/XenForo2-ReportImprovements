@@ -2,6 +2,9 @@
 
 namespace SV\ReportImprovements\XF\ControllerPlugin;
 
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use XF\Entity\Warning as WarningEntity;
+use XF\Service\Thread\ReplyBan as ReplyBanEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\View;
 
@@ -14,6 +17,29 @@ use XF\Mvc\Reply\View;
 class Warn extends XFCP_Warn
 {
     /**
+     * @param WarningEntity|ReplyBanEntity $entity
+     */
+    public function resolveReportFor(Entity $entity, ExtendedReportEntity $report = null, callable $getReport = null)
+    {
+        if ($this->controller->request()->exists('resolve_report') &&
+            $this->filter('resolve_report', 'bool'))
+        {
+            if (!$report && $getReport)
+            {
+                /** @var ExtendedReportEntity $report */
+                $report = $getReport();
+            }
+
+            if (!$report || ($report->canView() && $report->canUpdate($error)))
+            {
+                $entity->setOption('svResolveReport',true);
+                $entity->setOption('svResolveReportAlert', $this->filter('resolve_alert', 'bool'));
+                $entity->setOption('svResolveReportAlertComment', $this->filter('resolve_alert_comment', 'str'));
+            }
+        }
+    }
+
+    /**
      * @return mixed
      */
     protected function getWarnSubmitInput()
@@ -25,6 +51,8 @@ class Warn extends XFCP_Warn
         if ($this->request->exists('resolve_report'))
         {
             $inputData['resolve_report'] = 'bool';
+            $inputData['resolve_alert'] = 'bool';
+            $inputData['resolve_alert_comment'] = 'str';
         }
 
         if ($this->request->exists('ban_length'))
@@ -54,6 +82,10 @@ class Warn extends XFCP_Warn
         /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
 
+        $resolveWarningReport = false;
+        $alert = false;
+        $alertComment = '';
+
         if (!empty($input['resolve_report']))
         {
             // TODO: fix me; racy
@@ -64,12 +96,14 @@ class Warn extends XFCP_Warn
                            ->fetchOne();
 
             $resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
+
+            if ($resolveWarningReport)
+            {
+                $alert = (bool)($input['resolve_alert'] ?? false);
+                $alertComment = $input['resolve_alert_comment'] ?? '';
+            }
         }
-        else
-        {
-            $resolveWarningReport = false;
-        }
-        $warnService->setResolveReport($resolveWarningReport);
+        $warnService->setResolveReport($resolveWarningReport, $alert, $alertComment);
 
         if ($contentType === 'post' &&
             isset($input['ban_length']) &&
@@ -95,7 +129,9 @@ class Warn extends XFCP_Warn
                 $input['reply_ban_reason'],
                 $input['ban_length_value'],
                 $input['ban_length_unit'],
-                $resolveWarningReport
+                $resolveWarningReport,
+                $alert,
+                $alertComment
             );
         }
 

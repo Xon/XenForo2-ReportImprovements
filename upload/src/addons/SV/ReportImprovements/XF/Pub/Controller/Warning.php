@@ -35,13 +35,10 @@ class Warning extends XFCP_Warning
         /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
         /** @noinspection PhpUndefinedFieldInspection */
         $warning = $this->assertViewableWarning($params->warning_id);
-        $report = $warning->Report;
 
-        if ($this->request()->exists('resolve_report') &&
-            $this->filter('resolve_report', 'bool'))
-        {
-            $warning->setOption('svResolveReport',!$report || $report->canView() && $report->canUpdate($error));
-        }
+        /** @var \SV\ReportImprovements\XF\ControllerPlugin\Warn $warnPlugin */
+        $warnPlugin = $this->plugin('XF:Warn');
+        $warnPlugin->resolveReportFor($warning, $warning->Report);
 
         return parent::actionDelete($params);
     }
@@ -56,13 +53,10 @@ class Warning extends XFCP_Warning
         /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
         /** @noinspection PhpUndefinedFieldInspection */
         $warning = $this->assertViewableWarning($params->warning_id);
-        $report = $warning->Report;
 
-        if ($this->request()->exists('resolve_report') &&
-            $this->filter('resolve_report', 'bool'))
-        {
-            $warning->setOption('svResolveReport',!$report || $report->canView() && $report->canUpdate($error));
-        }
+        /** @var \SV\ReportImprovements\XF\ControllerPlugin\Warn $warnPlugin */
+        $warnPlugin = $this->plugin('XF:Warn');
+        $warnPlugin->resolveReportFor($warning, $warning->Report);
 
         return parent::actionExpire($params);
     }

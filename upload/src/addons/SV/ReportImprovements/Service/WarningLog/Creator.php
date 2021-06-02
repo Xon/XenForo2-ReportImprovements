@@ -57,6 +57,10 @@ class Creator extends AbstractService
 
     /** @var bool */
     protected $autoResolve;
+    /** @var bool */
+    protected $alertOnResolve = false;
+    /** @var string */
+    protected $alertCommentOnResolve = '';
 
     /** @var bool|null */
     protected $autoResolveNewReports = null;
@@ -93,9 +97,27 @@ class Creator extends AbstractService
         $this->setupDefaults();
     }
 
-    public function setAutoResolve(bool $autoResolve)
+    public function setAutoResolve(bool $autoResolve, bool $alert, string $alertComment)
     {
         $this->autoResolve = $autoResolve;
+        $this->alertOnResolve = $alert;
+        $this->alertCommentOnResolve = $alertComment;
+
+        if ($alert)
+        {
+            if ($this->reportCommenter)
+            {
+                $this->reportCommenter->setupClosedAlert($alertComment);
+            }
+            else if ($this->reportCreator)
+            {
+                // store even if the alert isn't actually sent
+                $this->reportCreator->getComment()->bulkSet([
+                    'alertSent'    => true,
+                    'alertComment' => $alertComment,
+                ], ['forceSet' => true]);
+            }
+        }
     }
 
     public function setAutoResolveNewReports(bool $autoResolve)

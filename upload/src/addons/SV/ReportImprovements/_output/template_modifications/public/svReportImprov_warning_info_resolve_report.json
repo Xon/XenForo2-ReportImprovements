@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "preg_replace",
     "find": "#(<xf:form action=\".*?\">)(.*?)(<\\/xf:form>)#si",
-    "replace": "$1\n<xf:include template=\"svReportImprov_warning_info_resolve_report\" />\n$2\n$3"
+    "replace": "$1\n<xf:macro template=\"svReportImprov_report_macros\"\n\t\t  name=\"resolve_report\" \n\t\t  arg-report=\"{$warning.Report}\"\n\t\t  />\n$2\n$3"
 }

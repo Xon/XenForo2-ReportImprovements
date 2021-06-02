@@ -10,12 +10,13 @@
 	</div>
 </xf:if>
 
-<xf:if is="$report && $report.canUpdate() || !$report">
+<xf:if is="!$report || ($report && $report.canUpdate())">
 	<h2 class="block-formSectionHeader"><span class="block-formSectionHeader-aligner">{{ phrase('svReportImprov_report_action') }}</span></h2>
 
 	<div class="block-body">
-		<xf:checkboxrow explain="{{ !$report ? phrase('svReportImprov_report_will_be_created') : '' }}">
-			<xf:option name="resolve_report" checked="{{ $xf.options.sv_default_resolve_report_on_warning ? '1' : '' }}" label="{{ phrase('svReportImprov_resolve_report') }}" />
-		</xf:checkboxrow>
+		<xf:macro template="svReportImprov_report_macros"
+				  name="resolve_report" 
+				  arg-report="{$warning.Report}"
+				  />
 	</div>
 </xf:if>

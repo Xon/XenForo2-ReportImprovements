@@ -37,24 +37,17 @@ class Thread extends XFCP_Thread
             return $replyBanSrv;
         }
 
-        if ($this->request()->exists('resolve_report') &&
-            $this->filter('resolve_report', 'bool'))
-        {
+        $replyBan = $replyBanSrv->getReplyBan();
+
+        /** @var \SV\ReportImprovements\XF\ControllerPlugin\Warn $warnPlugin */
+        $warnPlugin = $this->plugin('XF:Warn');
+        $warnPlugin->resolveReportFor($replyBan, null, function() use ($replyBan) {
             // TODO: fix me; racy
-            /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-            $report = $this->finder('XF:Report')
-                           ->where('content_type', 'user')
-                           ->where('content_id', $replyBanSrv->getUser()->user_id)
-                           ->fetchOne();
-            $resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
-        }
-        else
-        {
-            $resolveWarningReport = false;
-        }
-
-        $replyBanSrv->getReplyBan()->setOption('svResolveReport',  $resolveWarningReport);
-
+            return $this->finder('XF:Report')
+                        ->where('content_type', 'user')
+                        ->where('content_id', $replyBan->user_id)
+                        ->fetchOne();
+        });
 
         return $replyBanSrv;
     }

@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "preg_replace",
     "find": "#<xf:checkboxrow>.*?<xf:option name=\"send_alert\".*?>.*?<\\/xf:checkboxrow>#s",
-    "replace": "$0\n\n<xf:checkboxrow explain=\"{{ phrase('svReportImprov_report_will_be_created') }}\">\n\t<xf:option name=\"resolve_report\" checked=\"{{ $xf.options.sv_default_resolve_report_on_warning ? '1' : '' }}\" label=\"{{ phrase('svReportImprov_resolve_report') }}\" />\n</xf:checkboxrow>"
+    "replace": "$0\n\n<xf:macro template=\"svReportImprov_report_macros\"\n\t\t  name=\"resolve_report\" \n\t\t  arg-report=\"{{ null }}\"\n\t\t  />"
 }
