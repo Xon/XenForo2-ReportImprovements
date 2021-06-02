@@ -16,7 +16,7 @@ class ReportComment extends AbstractHandler
 {
     /**
      * @param Entity|ExtendedReportCommentEntity $entity
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      *
      * @return mixed
      */

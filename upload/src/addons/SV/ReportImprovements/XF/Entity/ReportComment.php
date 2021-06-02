@@ -47,7 +47,7 @@ class ReportComment extends XFCP_ReportComment
     }
 
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      *
      * @return bool
      */

@@ -13,11 +13,12 @@ use XF\Mvc\Entity\Structure;
 class User extends XFCP_User
 {
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
+     * @noinspection PhpUnusedParameterInspection
+     * @noinspection PhpMissingReturnTypeInspection
      */
-    public function canViewReports(/** @noinspection PhpUnusedParameterInspection */
-        &$error = null)
+    public function canViewReports(&$error = null)
     {
         $visitor = \XF::visitor();
 
@@ -32,7 +33,7 @@ class User extends XFCP_User
     /**
      * @return bool
      */
-    public function canReportSearch()
+    public function canReportSearch(): bool
     {
         if (!$this->getOption('reportSearch') || !$this->canSearch())
         {
@@ -43,11 +44,11 @@ class User extends XFCP_User
     }
 
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
+     * @noinspection PhpUnusedParameterInspection
      */
-    public function canViewConversationMessageReport(/** @noinspection PhpUnusedParameterInspection */
-        &$error = null)
+    public function canViewConversationMessageReport(&$error = null): bool
     {
         $visitor = \XF::visitor();
 
@@ -60,20 +61,20 @@ class User extends XFCP_User
     }
 
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
      */
-    public function canViewProfilePostCommentReport(&$error = null)
+    public function canViewProfilePostCommentReport(&$error = null): bool
     {
         return $this->canViewProfilePostReport($error);
     }
 
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
+     * @noinspection PhpUnusedParameterInspection
      */
-    public function canViewProfilePostReport(/** @noinspection PhpUnusedParameterInspection */
-        &$error = null)
+    public function canViewProfilePostReport(&$error = null): bool
     {
         $visitor = \XF::visitor();
 
@@ -86,11 +87,11 @@ class User extends XFCP_User
     }
 
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
+     * @noinspection PhpUnusedParameterInspection
      */
-    public function canViewUserReport(/** @noinspection PhpUnusedParameterInspection */
-        &$error = null)
+    public function canViewUserReport(&$error = null): bool
     {
         $visitor = \XF::visitor();
 
@@ -104,7 +105,7 @@ class User extends XFCP_User
 
     /**
      * @param int  $nodeId
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
@@ -128,11 +129,11 @@ class User extends XFCP_User
     }
 
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
+     * @noinspection PhpUnusedParameterInspection
      */
-    public function canViewReporter(/** @noinspection PhpUnusedParameterInspection */
-        &$error = null)
+    public function canViewReporter(&$error = null): bool
     {
         if (!$this->user_id)
         {
@@ -187,6 +188,7 @@ class User extends XFCP_User
     /**
      * @param Structure $structure
      * @return Structure
+     * @noinspection PhpMissingReturnTypeInspection
      */
     public static function getStructure(Structure $structure)
     {

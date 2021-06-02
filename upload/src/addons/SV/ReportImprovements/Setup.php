@@ -356,7 +356,7 @@ class Setup extends AbstractSetup
      * @param int|null $previousVersion
      * @return bool True if permissions were applied.
      */
-    protected function applyDefaultPermissions($previousVersion = null)
+    protected function applyDefaultPermissions(int $previousVersion = null): bool
     {
         $applied = false;
         $previousVersion = (int)$previousVersion;
@@ -564,10 +564,7 @@ class Setup extends AbstractSetup
         return $applied;
     }
 
-    /**
-     * @return array
-     */
-    protected function getTables()
+    protected function getTables(): array
     {
         $tables = [];
 
@@ -605,10 +602,7 @@ class Setup extends AbstractSetup
         return $tables;
     }
 
-    /**
-     * @return array
-     */
-    protected function getAlterTables()
+    protected function getAlterTables(): array
     {
         $tables = [];
 
@@ -640,10 +634,7 @@ class Setup extends AbstractSetup
         return $tables;
     }
 
-    /**
-     * @return array
-     */
-    protected function getRemoveAlterTables()
+    protected function getRemoveAlterTables(): array
     {
         $tables = [];
 

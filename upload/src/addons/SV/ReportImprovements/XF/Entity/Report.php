@@ -38,11 +38,11 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
+     * @noinspection PhpUnusedParameterInspection
      */
-    public function canComment(/** @noinspection PhpUnusedParameterInspection */
-        &$error = null)
+    public function canComment(&$error = null): bool
     {
         /** @var User $visitor */
         $visitor = \XF::visitor();
@@ -61,11 +61,11 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
+     * @noinspection PhpUnusedParameterInspection
      */
-    public function canUpdate(/** @noinspection PhpUnusedParameterInspection */
-        &$error = null)
+    public function canUpdate(&$error = null): bool
     {
         /** @var User $visitor */
         $visitor = \XF::visitor();
@@ -84,11 +84,11 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
+     * @noinspection PhpUnusedParameterInspection
      */
-    public function canAssign(/** @noinspection PhpUnusedParameterInspection */
-        &$error = null)
+    public function canAssign(&$error = null): bool
     {
         /** @var User $visitor */
         $visitor = \XF::visitor();
@@ -101,7 +101,7 @@ class Report extends XFCP_Report
         return $visitor->hasPermission('general', 'assignReport');
     }
 
-    public function canJoinConversation()
+    public function canJoinConversation(): bool
     {
         if ($this->content_type !== 'conversation_message')
         {
@@ -120,10 +120,10 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param null $error
+     * @param \XF\Phrase|String|null $error
      * @return bool
      */
-    public function canViewReporter(&$error = null)
+    public function canViewReporter(&$error = null): bool
     {
         /** @var User $visitor */
         $visitor = \XF::visitor();
@@ -131,11 +131,7 @@ class Report extends XFCP_Report
         return $visitor->canViewReporter($error);
     }
 
-    /**
-     * @param bool $includeSelf
-     * @return array
-     */
-    public function getBreadcrumbs($includeSelf = true)
+    public function getBreadcrumbs(bool $includeSelf = true): array
     {
         $breadcrumbs = [];
 
@@ -165,18 +161,12 @@ class Report extends XFCP_Report
         return $handler->getContentDate($this);
     }
 
-    /**
-     * @param Entity $content
-     */
     public function setContent(Entity $content = null)
     {
         $this->_valueCache['Content'] = $content;
     }
 
-    /**
-     * @return string
-     */
-    public function getMessage()
+    public function getMessage(): string
     {
         $handler = $this->Handler;
 
@@ -196,7 +186,7 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @return ReportComment
+     * @return ReportComment|null
      */
     public function getLastModified()
     {
@@ -230,9 +220,9 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @return array
+     * @return int[]
      */
-    public function getCommentIds()
+    public function getCommentIds(): array
     {
         return $this->db()->fetchAllColumn('
 			SELECT report_comment_id
@@ -243,9 +233,9 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @return array
+     * @return int[]
      */
-    public function getCommenterUserIds()
+    public function getCommenterUserIds(): array
     {
         return \array_keys(
             $this->db()->fetchAllKeyed('
@@ -256,7 +246,10 @@ class Report extends XFCP_Report
         );
     }
 
-    protected function getCommentWith()
+    /**
+     * @return string[]
+     */
+    protected function getCommentWith(): array
     {
         $with = ['User', 'User.Profile', 'User.Privacy'];
         if ($userId = \XF::visitor()->user_id)
@@ -277,7 +270,7 @@ class Report extends XFCP_Report
         return $with;
     }
 
-    public function getCommentsFinder()
+    public function getCommentsFinder(): \XF\Mvc\Entity\Finder
     {
         $direction = (\XF::app()->options()->sv_reverse_report_comment_order ?? false) ? 'DESC' : 'ASC';
 
@@ -290,13 +283,14 @@ class Report extends XFCP_Report
         return $finder;
     }
 
-    public function getComments()
+    public function getComments(): \XF\Mvc\Entity\AbstractCollection
     {
         return $this->getCommentsFinder()->fetch();
     }
 
     /**
      * @return string
+     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function getUsername()
     {
