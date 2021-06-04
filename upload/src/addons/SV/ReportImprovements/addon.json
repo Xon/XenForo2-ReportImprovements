@@ -2,7 +2,7 @@
     "legacy_addon_id": "SV_ReportImprovements",
     "title": "Report Improvements",
     "description": "Unifies reports with warnings, reply-bans and more",
-    "version_id": 2080000,
+    "version_id": 2080001,
     "version_string": "2.8.0",
     "dev": "Atelier Aphelion",
     "dev_url": "https://atelieraphelion.com",
@@ -16,8 +16,7 @@
     },
     "require-soft": {
         "SV/ContentRatings": ["2010500", "Content Rating 2.1.5+", true],
-        "SV/SearchImprovements": ["2030100", "Search Improvements 2.3.1+", true],
-        "SV/WarningImprovements": ["2000005", "Warning Improvements 2.0.0+"]
+        "SV/SearchImprovements": ["2030100", "Search Improvements 2.3.1+", true]
     },
     "icon": "fa-balance-scale"
 }
