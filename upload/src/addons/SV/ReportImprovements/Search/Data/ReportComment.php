@@ -378,7 +378,7 @@ class ReportComment extends AbstractData
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
 
-        if (!$visitor->canReportSearch())
+        if (!\is_callable([$visitor, 'canReportSearch']) || !$visitor->canReportSearch())
         {
             return null;
         }
