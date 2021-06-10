@@ -239,7 +239,7 @@ class ReportComment extends AbstractData
         {
             $query->withMetadata('thread', $threadId);
 
-            if (\XF::$versionId < 2020000 || is_callable([$query, 'inTitleOnly']))
+            if (\XF::$versionId < 2020000 || \is_callable([$query, 'inTitleOnly']))
             {
                 /** @noinspection PhpPossiblePolymorphicInvocationInspection
                  * @noinspection RedundantSuppression
@@ -250,7 +250,7 @@ class ReportComment extends AbstractData
 
         if ($constraints['c.warning.user'])
         {
-            $users = preg_split('/,\s*/', $constraints['c.warning.user'], -1, PREG_SPLIT_NO_EMPTY);
+            $users = \preg_split('/,\s*/', $constraints['c.warning.user'], -1, PREG_SPLIT_NO_EMPTY);
             if ($users)
             {
                 /** @var \XF\Repository\User $userRepo */
@@ -259,7 +259,7 @@ class ReportComment extends AbstractData
                 if ($notFound)
                 {
                     $query->error('users',
-                        \XF::phrase('following_members_not_found_x', ['members' => implode(', ', $notFound)])
+                        \XF::phrase('following_members_not_found_x', ['members' => \implode(', ', $notFound)])
                     );
                 }
                 else
@@ -269,7 +269,7 @@ class ReportComment extends AbstractData
                     {
                         $query->withMetadata('warned_user', $userIds);
                     }
-                    $urlConstraints['warning.user'] = implode(', ', $users);
+                    $urlConstraints['warning.user'] = \implode(', ', $users);
                 }
             }
         }

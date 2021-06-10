@@ -179,7 +179,7 @@ class Creator extends AbstractService
 
         if ($this->reportCommenter)
         {
-            if (is_callable([$this->reportCommenter, 'setAutoReport']))
+            if (\is_callable([$this->reportCommenter, 'setAutoReport']))
             {
                 $this->reportCommenter->setAutoReport(true);
             }
@@ -188,7 +188,7 @@ class Creator extends AbstractService
         }
         else if ($this->reportCreator)
         {
-            if (is_callable([$this->reportCreator, 'setAutoReport']))
+            if (\is_callable([$this->reportCreator, 'setAutoReport']))
             {
                 $this->reportCreator->setAutoReport(true);
             }

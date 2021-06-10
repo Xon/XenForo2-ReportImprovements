@@ -49,7 +49,7 @@ class Upgrade1090100Step1 extends AbstractRebuildJob
         if ($comment)
         {
             /** @noinspection RegExpRedundantEscape */
-            $output = preg_replace("/\@\[([^:]+):([^\]]+)\]/Uu", "[USER=$1]$2[/USER]", $comment['message']);
+            $output = \preg_replace("/\@\[([^:]+):([^\]]+)\]/Uu", "[USER=$1]$2[/USER]", $comment['message']);
             if ($output !== null && $output !== $comment['message'])
             {
                 $db->query(

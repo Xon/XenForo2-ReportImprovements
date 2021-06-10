@@ -99,7 +99,7 @@ class Listener
 
         if ($visitor->is_moderator ||
             !$session ||
-            !is_callable([$visitor,'canViewReports']) || !$visitor->canViewReports())
+            !\is_callable([$visitor,'canViewReports']) || !$visitor->canViewReports())
         {
             return;
         }
