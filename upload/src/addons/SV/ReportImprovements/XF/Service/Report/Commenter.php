@@ -71,13 +71,14 @@ class Commenter extends XFCP_Commenter
 
     protected function finalSetup()
     {
+        $comment = $this->comment;
         $sendAlert = $this->sendAlert;
         $this->sendAlert = false;
 
-        if ($sendAlert)
+        if ($sendAlert && $comment->isClosureComment())
         {
-            $this->comment->alertSent = true;
-            $this->comment->alertComment = $this->alertComment;
+            $comment->alertSent = true;
+            $comment->alertComment = $this->alertComment;
         }
 
         parent::finalSetup();
