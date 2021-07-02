@@ -1,0 +1,9 @@
+{
+    "template": "report_create",
+    "description": "Inject 'has been warned' notice (and has been reply-banned if SV/ThreadReplyBanTeeth add-on is installed)",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<div class=\"block-body\">",
+    "replace": "$0\n<xf:include template=\"svReportImprovements_report_create_notices\" />"
+}
