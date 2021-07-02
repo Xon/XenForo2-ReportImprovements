@@ -7,6 +7,7 @@
     ],
     "validation_class": "",
     "validation_method": "",
+    "advanced": false,
     "default_value": "[]",
     "relations": {
         "svReportImprovements": 310

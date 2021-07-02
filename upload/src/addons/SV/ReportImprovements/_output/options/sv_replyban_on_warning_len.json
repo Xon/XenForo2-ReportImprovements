@@ -8,6 +8,7 @@
     ],
     "validation_class": "",
     "validation_method": "",
+    "advanced": false,
     "default_value": "{\"value\":8,\"unit\":\"hours\"}",
     "relations": {
         "svReportImprovements": 330
