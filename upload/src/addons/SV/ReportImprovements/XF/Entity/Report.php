@@ -14,6 +14,7 @@ use XF\Mvc\Entity\Structure;
  * COLUMNS
  * @property int           last_modified_id
  * GETTERS
+ * @property string        title_string
  * @property string        username
  * @property array         commenter_user_ids
  * @property array         comment_ids
@@ -328,6 +329,19 @@ class Report extends XFCP_Report
         return parent::getRelationFinder($key, $type);
     }
 
+    protected function getTitleString(): string
+    {
+        /** @var \XF\Phrase|string|mixed $value */
+        $value = $this->title;
+
+        if ($value instanceof \XF\Phrase)
+        {
+            return $value->render('raw');
+        }
+
+        return \strval($value);
+    }
+
     /**
      * @param Structure $structure
      * @return Structure
@@ -359,6 +373,7 @@ class Report extends XFCP_Report
         $structure->getters['comment_ids'] = ['getter' => 'getCommentIds', 'cache' => true];
         $structure->getters['LastModified'] = ['getter' => 'getLastModified', 'cache' => true];
         $structure->getters['Comments'] = ['getter' => 'getComments', 'cache' => true];
+        $structure->getters['title_string'] = ['getter' => 'getTitleString', 'cache' => true];
 
         $structure->relations['LastModified'] = [
             'entity'     => 'XF:ReportComment',

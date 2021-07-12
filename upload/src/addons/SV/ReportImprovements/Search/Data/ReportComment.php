@@ -78,15 +78,15 @@ class ReportComment extends AbstractData
      */
     public function getIndexData(Entity $entity)
     {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         $report = $entity->Report;
         if (!$report)
         {
             return null;
         }
 
-
         return IndexRecord::create('report_comment', $entity->report_comment_id, [
-            'title'         => $report->title,
+            'title'         => $report->title_string,
             'message'       => $entity->message,
             'date'          => $entity->comment_date,
             'user_id'       => $entity->user_id,

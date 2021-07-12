@@ -60,11 +60,12 @@ class Report extends AbstractData
     }
 
     /**
-     * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
+     * @param Entity $entity
      * @return IndexRecord|null
      */
     public function getIndexData(Entity $entity)
     {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $entity */
         if (!$entity->Content)
         {
             return null;
@@ -77,7 +78,7 @@ class Report extends AbstractData
         }
 
         return IndexRecord::create('report', $entity->report_id, [
-            'title'         => $handler->getContentTitle($entity),
+            'title'         => $entity->title_string,
             'message'       => $handler->getContentMessage($entity),
             'date'          => $entity->first_report_date,
             'user_id'       => $entity->content_user_id,
