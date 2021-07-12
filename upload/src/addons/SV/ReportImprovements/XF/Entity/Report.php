@@ -353,13 +353,12 @@ class Report extends XFCP_Report
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
         $structure->getters['username'] = ['getter' => 'getUsername', 'cache' => true];
-        $structure->getters['content_date'] = true;
-        $structure->getters['message'] = true;
-        $structure->getters['commenter_user_ids'] = true;
-        $structure->getters['comment_ids'] = true;
-        $structure->getters['LastModified'] = true;
-        $structure->getters['Comments'] = true;
-        $structure->getters['LastModified'] = true;
+        $structure->getters['content_date'] = ['getter' => 'getContentDate', 'cache' => true];
+        $structure->getters['message'] = ['getter' => 'getMessage', 'cache' => true];
+        $structure->getters['commenter_user_ids'] = ['getter' => 'getCommenterUserIds', 'cache' => true];
+        $structure->getters['comment_ids'] = ['getter' => 'getCommentIds', 'cache' => true];
+        $structure->getters['LastModified'] = ['getter' => 'getLastModified', 'cache' => true];
+        $structure->getters['Comments'] = ['getter' => 'getComments', 'cache' => true];
 
         $structure->relations['LastModified'] = [
             'entity'     => 'XF:ReportComment',
