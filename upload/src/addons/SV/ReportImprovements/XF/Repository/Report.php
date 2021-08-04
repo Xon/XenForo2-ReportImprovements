@@ -299,10 +299,9 @@ class Report extends XFCP_Report
     public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        $nodeId = null;
-        if (isset($report->content_info['node_id']))
+        $nodeId = (int)($report->content_info['node_id'] ?? 0);
+        if ($nodeId !== 0)
         {
-            $nodeId = $report->content_info['node_id'];
             $this->app()->em()->find('XF:Forum', $nodeId);
         }
 
@@ -316,13 +315,10 @@ class Report extends XFCP_Report
                                     ->toArray();
 
         $permCombinationIds = [];
-        if ($nodeId)
+        foreach ($moderators AS $moderator)
         {
-            foreach ($moderators AS $moderator)
-            {
-                $id = $moderator->User->permission_combination_id;
-                $permCombinationIds[$id] = $id;
-            }
+            $id = $moderator->User->permission_combination_id;
+            $permCombinationIds[$id] = $id;
         }
 
         $fakeModerators = $this->getNonModeratorsWhoCanHandleReport($report);
@@ -349,9 +345,18 @@ class Report extends XFCP_Report
             }
         }
 
-        if ($permCombinationIds && $nodeId)
+        if (\count($permCombinationIds) !== 0)
         {
-            $this->app()->permissionCache()->cacheMultipleContentPermsForContent(\array_values($permCombinationIds), 'node', $nodeId);
+            $permCombinationIds = \array_keys($permCombinationIds);
+            if ($nodeId !== 0)
+            {
+                $this->app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'node', $nodeId);
+            }
+            $reportQueueId = (int)($report->queue_id ?? 0);
+            if ($reportQueueId !== 0)
+            {
+                $this->app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'report_queue', $reportQueueId);
+            }
         }
 
         foreach ($moderators AS $id => $moderator)
