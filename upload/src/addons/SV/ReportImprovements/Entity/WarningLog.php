@@ -71,7 +71,7 @@ class WarningLog extends Entity
             return $this->ReplyBan;
         }
 
-        if (!$this->ReplyBanThread)
+        if (!$this->reply_ban_thread_id || !$this->ReplyBanThread)
         {
             return null;
         }
@@ -98,7 +98,7 @@ class WarningLog extends Entity
             return $router->buildLink('canonical:threads', $this->ReplyBanPost);
         }
 
-        if ($this->ReplyBanThread)
+        if ($this->reply_ban_thread_id && $this->ReplyBanThread)
         {
             return $router->buildLink('canonical:threads', $this->ReplyBanThread);
         }
