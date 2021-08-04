@@ -157,7 +157,10 @@ class Report extends XFCP_Report
             return $visitor->hasContentPermission('report_queue', $reportQueueId, $permission);
         }
 
-        return $visitor->hasPermission('report_queue', $permission);
+        // content permissions are collapsed into a flat array, but general permissions are not
+        $group = $permission === 'viewReports' ? 'general' : 'report_queue';
+
+        return $visitor->hasPermission($group, $permission);
     }
 
     public function getBreadcrumbs(bool $includeSelf = true)

@@ -3,21 +3,22 @@
 namespace SV\ReportImprovements\Permission;
 
 use SV\ReportCentreEssentials\Entity\ReportQueue as ReportQueueEntity;
+use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 
 class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
 {
-    protected function getContentType()
+    protected function getContentType(): string
     {
         return 'report_queue';
     }
 
-    public function getAnalysisTypeTitle()
+    public function getAnalysisTypeTitle(): \XF\Phrase
     {
         return \XF::phrase('svReportImprovements_report_queue_permissions');
     }
 
-    public function getContentList()
+    public function getContentList(): AbstractCollection
     {
         $addOns = \XF::app()->container('addon.cache');
         if (isset($addOns['SV/ReportCentreEssentials']))
@@ -32,19 +33,19 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
         return $entryRepo->getFauxReportQueueList();
     }
 
-    public function getContentTitle(Entity $entity)
+    public function getContentTitle(Entity $entity): string
     {
         /** @var ReportQueueEntity $entity */
         return $entity->queue_name;
     }
 
-    public function isValidPermission(\XF\Entity\Permission $permission)
+    public function isValidPermission(\XF\Entity\Permission $permission): bool
     {
         return $permission->permission_group_id === 'report_queue' ||
                ($permission->permission_group_id === 'general' && $permission->permission_id === 'viewReports');
     }
 
-    protected function getFinalPerms($contentId, array $calculated, array &$childPerms)
+    protected function getFinalPerms($contentId, array $calculated, array &$childPerms): array
     {
         if (!isset($calculated['report_queue']))
         {
@@ -52,14 +53,18 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
         }
 
         $final = $this->builder->finalizePermissionValues($calculated['report_queue']);
+        $final = $final + $this->builder->finalizePermissionValues($calculated['general']);
 
         if (empty($final['viewReports']))
         {
             $childPerms['general']['viewReports'] = 'deny';
+            $final = [];
         }
+
+        return $final;
     }
 
-    protected function getFinalAnalysisPerms($contentId, array $calculated, array &$childPerms)
+    protected function getFinalAnalysisPerms($contentId, array $calculated, array &$childPerms): array
     {
         $final = $this->builder->finalizePermissionValues($calculated);
 
