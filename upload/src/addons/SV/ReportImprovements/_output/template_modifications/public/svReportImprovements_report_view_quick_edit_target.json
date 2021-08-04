@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Inject quick-edit target",
+    "execution_order": 6906,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<div class=\"message-cell message-cell--main",
+    "replace": "$0  js-quickEditTarget"
+}

@@ -1,0 +1,45 @@
+<xf:title>{{ phrase('svReportImprovements_edit_comment_in_report:') }} {$report.title}</xf:title>
+
+<xf:breadcrumb source="$comment.getBreadcrumbs()" />
+
+<xf:form action="{{ link('reports/comment/edit', $comment) }}" ajax="true" class="block"
+	data-xf-init="attachment-manager">
+
+	<div class="block-container">
+		<div class="block-body">
+			<span class="u-anchorTarget js-editContainer"></span>
+			<xf:editorrow name="message" value="{$comment.message}" attachments="{$attachmentData.attachments}"
+						  rowtype="fullWidth noLabel"
+						  data-min-height="{{ $quickEdit ? 100 : '' }}"
+						  label="{{ phrase('message') }}"
+						  data-preview-url="{{ link('reports/comment/preview', $comment) }}" />
+
+			<xf:formrow rowtype="{{ $quickEdit ? 'fullWidth noLabel mergePrev' : '' }}">
+				<xf:if is="$attachmentData">
+					<xf:macro template="helper_attach_upload" name="upload_block" arg-attachmentData="{$attachmentData}" />
+				</xf:if>
+			</xf:formrow>
+			
+			<xf:comment>
+			<xf:if is="$comment.canEditSilently()">
+				<xf:formrow rowtype="{{ $quickEdit ? 'fullWidth noLabel' : '' }}">
+					<xf:macro template="helper_action" name="edit_type" arg-canEditSilently="{$comment.canEditSilently()}" />
+				</xf:formrow>
+			</xf:if>
+
+			<xf:if is="$comment.canSendModeratorActionAlert()">
+				<xf:formrow rowtype="{{ $quickEdit ? 'fullWidth noLabel' : '' }}">
+					<xf:macro template="helper_action" name="author_alert" arg-row="{{ false }}" />
+				</xf:formrow>
+			</xf:if>
+			</xf:comment>
+		</div>
+		<xf:submitrow icon="save" sticky="true" rowtype="{{ $quickEdit ? 'simple' : '' }}">
+			<xf:html>
+				<xf:if is="$quickEdit">
+					<xf:button class="js-cancelButton" icon="cancel">{{ phrase('button.cancel') }}</xf:button>
+				</xf:if>
+			</xf:html>
+		</xf:submitrow>
+	</div>
+</xf:form>

@@ -3,9 +3,11 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\Attachment;
 use XF\Entity\ReactionTrait;
 use XF\Mvc\Entity\AbstractCollection as AbstractCollection;
+use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -245,6 +247,12 @@ class ReportComment extends XFCP_ReportComment
         return $report && $report->offsetExists('queue_name')
             ? $report->get('queue_name')
             : null;
+    }
+
+    public function getBreadcrumbs() : array
+    {
+        /** @var ReportCommentEntity $content */
+        return $this->Report->getBreadcrumbs();
     }
 
     protected function _postSave()

@@ -147,14 +147,12 @@ class Report extends XFCP_Report
         $report = $this->assertViewableReport($params->report_id);
         $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
 
-        $router = \XF::app()->router('public');
-
         if ($reportComment->report_id !== $report->report_id)
         {
-            $this->redirect($router->buildLink('canonical:reports/comment', $reportComment->Report, ['report_comment_id' => $reportComment->report_comment_id]));
+            $this->redirect($this->buildLink('canonical:reports/comment', $reportComment->Report, ['report_comment_id' => $reportComment->report_comment_id]));
         }
 
-        return $this->redirect($router->buildLink('canonical:reports', $reportComment->Report) . '#report-comment-' . $reportComment->report_comment_id);
+        return $this->redirect($this->buildLink('canonical:reports', $reportComment->Report) . '#report-comment-' . $reportComment->report_comment_id);
     }
 
     public function actionCommentIp(ParameterBag $params)
@@ -169,6 +167,86 @@ class Report extends XFCP_Report
         /** @var \XF\ControllerPlugin\Ip $ipPlugin */
         $ipPlugin = $this->plugin('XF:Ip');
         return $ipPlugin->actionIp($reportComment, $breadcrumbs);
+    }
+
+    public function actionCommentEdit(ParameterBag $params)
+    {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @noinspection PhpUndefinedFieldInspection */
+        $report = $this->assertViewableReport($params->report_id);
+        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
+        if (!$reportComment->canEdit($error))
+        {
+            return $this->noPermission($error);
+        }
+
+        if ($this->isPost())
+        {
+            $editor = $this->setupReportCommentEdit($reportComment);
+            if (!$editor->validate($errors))
+            {
+                return $this->error($errors);
+            }
+            $editor->save();
+
+            if ($this->filter('_xfWithData', 'bool') && $this->filter('_xfInlineEdit', 'bool'))
+            {
+                /** @var \XF\Repository\Attachment $attachmentRepo */
+                $attachmentRepo = $this->repository('XF:Attachment');
+                $attachmentRepo->addAttachmentsToContent([
+                    $reportComment->report_comment_id => $reportComment
+                ], 'conversation_message');
+
+                $viewParams = [
+                    'report'  => $report,
+                    'comment' => $reportComment
+                ];
+                $reply = $this->view('XF:Report\Comment\EditNewMessage', 'svReportImprovements_report_comment_edit_new_message', $viewParams);
+                $reply->setJsonParam('message', \XF::phrase('your_changes_have_been_saved'));
+
+                return $reply;
+            }
+            else
+            {
+                return $this->redirect($this->buildLink('canonical:reports', $reportComment->Report) . '#report-comment-' . $reportComment->report_comment_id);
+            }
+        }
+        else
+        {
+            if ($report->canUploadAndManageAttachments())
+            {
+                /** @var \XF\Repository\Attachment $attachmentRepo */
+                $attachmentRepo = $this->repository('XF:Attachment');
+                $attachmentData = $attachmentRepo->getEditorData('report_comment', $reportComment);
+            }
+            else
+            {
+                $attachmentData = null;
+            }
+
+            $viewParams = [
+                'report'  => $report,
+                'comment' => $reportComment,
+
+                'attachmentData' => $attachmentData,
+                'quickEdit'      => $this->filter('_xfWithData', 'bool'),
+            ];
+
+            return $this->view('XF:Report\Comment\Edit', 'svReportImprovements_report_comment_edit', $viewParams);
+        }
+    }
+
+    public function actionCommentHistory(ParameterBag $params)
+    {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @noinspection PhpUndefinedFieldInspection */
+        $this->assertViewableReport($params->report_id);
+        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
+
+        return $this->rerouteController('XF:EditHistory', 'index', [
+            'content_type' => 'report_comment',
+            'content_id' => $reportComment->report_comment_id
+        ]);
     }
 
     protected function getReplyAttachmentData(ExtendedReportEntity $report, $forceAttachmentHash = null)
@@ -191,6 +269,30 @@ class Report extends XFCP_Report
         }
 
         return null;
+    }
+
+    /**
+     * @param \XF\Entity\ReportComment|\SV\ReportImprovements\XF\Entity\ReportComment $reportComment
+     * @return \SV\ReportImprovements\Service\Report\CommentEditor
+     */
+    protected function setupReportCommentEdit(\XF\Entity\ReportComment $reportComment)
+    {
+        /** @var \XF\ControllerPlugin\Editor $editorPlugin */
+        $editorPlugin = $this->plugin('XF:Editor');
+        $message = $editorPlugin->fromInput('message');
+
+        /** @var \SV\ReportImprovements\Service\Report\CommentEditor $editor */
+        $editor = \XF::app()->service('SV\ReportImprovements:Report\CommentEditor', $reportComment);
+        $editor->setMessage($message);
+
+        $report = $reportComment->Report;
+
+        if ($report->canUploadAndManageAttachments())
+        {
+            $editor->setAttachmentHash($this->filter('attachment_hash', 'str'));
+        }
+
+        return $editor;
     }
 
     /**

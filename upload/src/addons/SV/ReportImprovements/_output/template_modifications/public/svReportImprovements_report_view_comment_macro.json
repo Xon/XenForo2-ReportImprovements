@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Rewrite the comment creation into a macro",
+    "execution_order": 2147483647,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(<xf:foreach loop=\"\\$comments\" value=\"\\$comment\">)(\\s*<article.*?</article>\\s*?)([\\t ]+</xf:foreach>.*)#si",
+    "replace": "$1\n<xf:macro name=\"comment\" \n\t\t  arg-comment=\"{$comment}\"\n\t\t  arg-report=\"{$report}\"\n\t\t  />\n$3\n<xf:macro name=\"comment\" \n\t\t  arg-comment=\"{$comment}\"\n\t\t  arg-report=\"{$report}\"\n\t\t  >\n$2\n</xf:macro>"
+}
