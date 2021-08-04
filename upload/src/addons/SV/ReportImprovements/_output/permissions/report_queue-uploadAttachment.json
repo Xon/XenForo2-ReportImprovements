@@ -1,0 +1,6 @@
+{
+    "permission_type": "flag",
+    "interface_group_id": "svReportCenterQueue",
+    "display_order": 550,
+    "depend_permission_id": ""
+}

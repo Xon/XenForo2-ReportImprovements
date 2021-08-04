@@ -676,6 +676,11 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'alertComment', 'MEDIUMTEXT')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'assigned_user_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'assigned_username', 'varchar', 50)->setDefault('');
+            $this->addOrChangeColumn($table, 'attach_count', 'smallint', 5)->setDefault(0);
+            $this->addOrChangeColumn($table, 'embed_metadata', 'blob')->nullable()->setDefault(null);
+            $this->addOrChangeColumn($table,'last_edit_date', 'int')->setDefault(0);
+            $this->addOrChangeColumn($table,'last_edit_user_id', 'int')->setDefault(0);
+            $this->addOrChangeColumn($table,'edit_count', 'int')->setDefault(0);
             $table->addKey('warning_log_id', 'warning_log_id');
         };
 
@@ -700,9 +705,19 @@ class Setup extends AbstractSetup
         };
 
         $tables['xf_report_comment'] = function (Alter $table) {
-            $table->dropColumns(['warning_log_id', 'reactions', 'reaction_users', 'alertSent', 'alertComment']);
+            $table->dropColumns([
+                'warning_log_id',
+                'reactions',
+                'reaction_users',
+                'alertSent',
+                'alertComment',
+                'attach_count',
+                'embed_metadata',
+                'last_edit_date',
+                'last_edit_user_id',
+                'edit_count',
+            ]);
         };
-
 
         return $tables;
     }

@@ -3,7 +3,10 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Globals;
+use XF\BbCode\RenderableContentInterface;
+use XF\Entity\Attachment;
 use XF\Entity\ReactionTrait;
+use XF\Mvc\Entity\AbstractCollection as AbstractCollection;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -20,14 +23,21 @@ use XF\Mvc\Entity\Structure;
  * @property string                                   alertComment
  * @property int|null                                 assigned_user_id
  * @property string                                   assigned_username
+ * @property int                                      attach_count
+ * @property array|null                               embed_metadata
+ * @property int                                      edit_count
+ * @property int                                      last_edit_user_id
+ * @property int                                      last_edit_date
  *
  * GETTERS
+ * @property array                                    Unfurls
  * @property string                                   ViewableUsername
  * @property User                                     ViewableUser
  * @property mixed reactions
  * @property mixed reaction_users
  *
  * RELATIONS
+ * @property AbstractCollection|Attachment[]          Attachments
  * @property \XF\Entity\LikedContent[]                Likes
  * @property \SV\ReportImprovements\Entity\WarningLog WarningLog
  * @property Report                                   Report
@@ -44,6 +54,135 @@ class ReportComment extends XFCP_ReportComment
         }
 
         return $this->Report->canView();
+    }
+
+    /**
+     * @param \XF\Phrase|String|null $error
+     * @return bool
+     */
+    public function canEdit(&$error = null): bool
+    {
+        $visitor = \XF::visitor();
+
+        if ($visitor->user_id === 0)
+        {
+            return false;
+        }
+
+        if ($this->hasReportPermission('editAny'))
+        {
+            return true;
+        }
+
+        if ($this->user_id === $visitor->user_id && $this->hasReportPermission('editAny'))
+        {
+            $editLimit = (int)$this->hasReportPermission('editOwnPostTimeLimit');
+            if ($editLimit !== -1 && ($editLimit === 0 || $this->comment_date < \XF::$time - 60 * $editLimit))
+            {
+                $error = \XF::phraseDeferred('message_edit_time_limit_expired', ['minutes' => $editLimit]);
+                return false;
+            }
+
+            if (!$this->Report->canComment($error))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        return true;
+    }
+
+    /** @noinspection PhpUnusedParameterInspection */
+    public function canViewAttachments(&$error = null): bool
+    {
+        $visitor = \XF::visitor();
+        if ($visitor->user_id === 0)
+        {
+            return false;
+        }
+
+        if (!$this->exists())
+        {
+            return false;
+        }
+
+        if (!$this->hasReportPermission('viewAttachment'))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public function canUploadAndManageAttachments(): bool
+    {
+        $visitor = \XF::visitor();
+
+        if ($visitor->user_id === 0)
+        {
+            return false;
+        }
+
+        if (!$this->exists())
+        {
+            return false;
+        }
+
+        if (!$this->hasReportPermission('uploadAttachment'))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function canUploadVideos(): bool
+    {
+        $visitor = \XF::visitor();
+
+        if ($visitor->user_id === 0)
+        {
+            return false;
+        }
+
+        if (!$this->exists())
+        {
+            return false;
+        }
+
+        $options = $this->app()->options();
+
+        if (empty($options->allowVideoUploads['enabled']))
+        {
+            return false;
+        }
+
+        if (!$this->hasReportPermission('uploadVideo'))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /** @noinspection PhpUnusedParameterInspection */
+    public function canViewHistory(&$error = null): bool
+    {
+        $visitor = \XF::visitor();
+        if ($visitor->user_id === 0)
+        {
+            return false;
+        }
+
+        if (!$this->app()->options()->editHistory['enabled'])
+        {
+            return false;
+        }
+
+        return $this->canEdit();
     }
 
     /**
@@ -81,6 +220,42 @@ class ReportComment extends XFCP_ReportComment
         }
 
         return $this->Report->hasReportPermission($permission);
+    }
+
+    public function isAttachmentEmbedded($attachmentId): bool
+    {
+        if (!$this->embed_metadata)
+        {
+            return false;
+        }
+
+        if ($attachmentId instanceof Attachment)
+        {
+            $attachmentId = $attachmentId->attachment_id;
+        }
+
+        return isset($this->embed_metadata['attachments'][$attachmentId]);
+    }
+
+    public function getBbCodeRenderOptions($context, $type)
+    {
+        $options = parent::getBbCodeRenderOptions($context, $type);
+
+        $options['attachments'] = $this->attach_count ? $this->Attachments : [];
+        $options['viewAttachments'] = $this->canViewAttachments();
+        $options['unfurls'] = $this->Unfurls ?? [];
+
+        return $options;
+    }
+
+    public function getUnfurls(): array
+    {
+        return $this->_getterCache['Unfurls'] ?? [];
+    }
+
+    public function setUnfurls(array $unfurls = null)
+    {
+        $this->_getterCache['Unfurls'] = $unfurls;
     }
 
     /**
@@ -160,6 +335,11 @@ class ReportComment extends XFCP_ReportComment
         {
             $this->Report->fastUpdate('first_report_date', $this->comment_date);
         }
+
+        if ($this->getOption('log_moderator'))
+        {
+            $this->app()->logger()->logModeratorChanges('report_comment', $this);
+        }
     }
 
     protected function _postDelete()
@@ -199,6 +379,13 @@ class ReportComment extends XFCP_ReportComment
         $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => true];
         $structure->columns['assigned_user_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
         $structure->columns['assigned_username'] = ['type' => self::STR, 'maxLength' => 50, 'default' => ''];
+        // edit support
+        $structure->columns['attach_count']   = ['type' => self::UINT, 'max' => 65535, 'default' => 0];
+        $structure->columns['embed_metadata'] = ['type' => self::JSON_ARRAY, 'nullable' => true, 'default' => null];
+        $structure->columns['last_edit_date'] = ['type' => self::UINT, 'default' => 0];
+        $structure->columns['last_edit_user_id'] = ['type' => self::UINT, 'default' => 0];
+        $structure->columns['edit_count'] = ['type' => self::UINT, 'forced' => true, 'default' => 0];
+
 
         $structure->behaviors['XF:Reactable'] = ['stateField' => ''];
         $structure->behaviors['XF:Indexable'] = [
@@ -206,6 +393,7 @@ class ReportComment extends XFCP_ReportComment
         ];
         $structure->getters['ViewableUsername'] = true;
         $structure->getters['ViewableUser'] = true;
+        $structure->getters['Unfurls'] = ['getter' => 'getUnfurls', 'cache' => true];
         $structure->relations['Reactions'] = [
             'entity'     => 'XF:ReactionContent',
             'type'       => self::TO_MANY,
@@ -228,6 +416,17 @@ class ReportComment extends XFCP_ReportComment
             'conditions' => [['user_id', '=', '$assigned_user_id']],
             'primary'    => true,
         ];
+        $structure->relations['Attachments'] = [
+            'entity'     => 'XF:Attachment',
+            'type'       => self::TO_MANY,
+            'conditions' => [
+                ['content_type', '=', 'report_comment'],
+                ['content_id', '=', '$report_comment_id']
+            ],
+            'with'       => 'Data',
+            'order'      => 'attach_date'
+        ];
+        $structure->options['log_moderator'] = true;
 
         $structure->defaultWith[] = 'WarningLog';
         $structure->defaultWith[] = 'WarningLog.Warning';
