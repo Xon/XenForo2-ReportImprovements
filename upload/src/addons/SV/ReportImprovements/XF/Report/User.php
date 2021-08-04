@@ -18,10 +18,11 @@ class User extends XFCP_User
      */
     public function canView(Report $report)
     {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
 
-        return $visitor->canViewUserReport();
+        return $visitor->canViewUserReport($report);
     }
 
     public function getContentLink(Report $report)

@@ -20,10 +20,11 @@ class ProfilePost extends XFCP_ProfilePost implements ContentInterface
      */
     public function canView(Report $report)
     {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
 
-        return $visitor->canViewProfilePostReport();
+        return $visitor->canViewProfilePostReport($report);
     }
 
     /**

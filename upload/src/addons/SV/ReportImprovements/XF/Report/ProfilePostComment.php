@@ -20,10 +20,11 @@ class ProfilePostComment extends XFCP_ProfilePostComment implements ContentInter
      */
     public function canView(Report $report)
     {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
 
-        return $visitor->canViewProfilePostCommentReport();
+        return $visitor->canViewProfilePostCommentReport($report);
     }
 
     /**

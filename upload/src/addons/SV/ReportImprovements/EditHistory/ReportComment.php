@@ -48,8 +48,8 @@ class ReportComment extends AbstractHandler
     {
         /** @var ReportCommentEntity $content */
 
-        /** @var \SV\ReportImprovements\Service\Report\CommentManager $editor */
-        $editor = \XF::app()->service('SV\ReportImprovements:Report\CommentManager', $content);
+        /** @var \SV\ReportImprovements\Service\Report\CommentEditor $editor */
+        $editor = \XF::app()->service('SV\ReportImprovements:Report\CommentEditor', $content);
 
         $editor->setLogEdit(false);
         $editor->setMessage($history->old_text, false, false);

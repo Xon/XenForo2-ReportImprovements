@@ -11,7 +11,7 @@ use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
 use XF\Service\Message\Preparer as MessagePreparerSvc;
 use XF\Service\ValidateAndSavableTrait;
 
-class CommentManager extends AbstractService
+class CommentEditor extends AbstractService
 {
     use ValidateAndSavableTrait;
 

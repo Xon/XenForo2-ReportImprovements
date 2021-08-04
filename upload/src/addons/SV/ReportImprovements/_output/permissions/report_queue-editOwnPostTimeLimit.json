@@ -1,5 +1,5 @@
 {
-    "permission_type": "flag",
+    "permission_type": "integer",
     "interface_group_id": "svReportCenterQueue",
     "display_order": 520,
     "depend_permission_id": "edit"

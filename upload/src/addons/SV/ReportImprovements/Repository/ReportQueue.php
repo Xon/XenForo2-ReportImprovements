@@ -2,7 +2,6 @@
 namespace SV\ReportImprovements\Repository;
 
 use XF\Mvc\Entity\AbstractCollection;
-use XF\Mvc\Entity\ArrayCollection;
 
 class ReportQueue
 {

@@ -3,7 +3,6 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Globals;
-use XF\BbCode\RenderableContentInterface;
 use XF\Entity\Attachment;
 use XF\Entity\ReactionTrait;
 use XF\Mvc\Entity\AbstractCollection as AbstractCollection;

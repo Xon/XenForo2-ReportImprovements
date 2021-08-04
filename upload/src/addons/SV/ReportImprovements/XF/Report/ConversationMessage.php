@@ -20,10 +20,11 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
      */
     public function canView(Report $report)
     {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
 
-        return $visitor->canViewConversationMessageReport();
+        return $visitor->canViewConversationMessageReport($report);
     }
 
     /**

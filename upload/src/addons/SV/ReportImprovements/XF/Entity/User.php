@@ -44,11 +44,12 @@ class User extends XFCP_User
     }
 
     /**
+     * @param Report                 $report
      * @param \XF\Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
-    public function canViewConversationMessageReport(&$error = null): bool
+    public function canViewConversationMessageReport(Report $report, &$error = null): bool
     {
         $visitor = \XF::visitor();
 
@@ -57,24 +58,26 @@ class User extends XFCP_User
             return false;
         }
 
-        return $visitor->hasPermission('conversation', 'viewReportConversation');
+        return $report->hasReportPermission('viewReportConversation');
     }
 
     /**
+     * @param Report                 $report
      * @param \XF\Phrase|String|null $error
      * @return bool
      */
-    public function canViewProfilePostCommentReport(&$error = null): bool
+    public function canViewProfilePostCommentReport(Report $report, &$error = null): bool
     {
-        return $this->canViewProfilePostReport($error);
+        return $this->canViewProfilePostReport($report,$error);
     }
 
     /**
+     * @param Report                 $report
      * @param \XF\Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
-    public function canViewProfilePostReport(&$error = null): bool
+    public function canViewProfilePostReport(Report $report, &$error = null): bool
     {
         $visitor = \XF::visitor();
 
@@ -83,15 +86,16 @@ class User extends XFCP_User
             return false;
         }
 
-        return $visitor->hasPermission('profilePost', 'viewReportProfilePost');
+        return $report->hasReportPermission('viewReportProfilePost');
     }
 
     /**
+     * @param Report                 $report
      * @param \XF\Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
-    public function canViewUserReport(&$error = null): bool
+    public function canViewUserReport(Report $report, &$error = null): bool
     {
         $visitor = \XF::visitor();
 
@@ -100,7 +104,7 @@ class User extends XFCP_User
             return false;
         }
 
-        return $visitor->hasPermission('report_queue', 'viewReportUser');
+        return $report->hasReportPermission('viewReportUser');
     }
 
     /**

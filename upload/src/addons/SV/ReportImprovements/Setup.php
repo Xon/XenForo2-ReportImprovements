@@ -297,6 +297,16 @@ class Setup extends AbstractSetup
             set permission_group_id = ?
             where permission_group_id = ? and permission_id in (' . $db->quote($permissions) . ')
         ', ['report_queue', 'general']);
+
+        $db->query('update xf_permission_entry
+            set permission_group_id = ?
+            where permission_group_id = ? and permission_id  = ?
+        ', ['report_queue', 'profilePost', 'viewReportProfilePost']);
+
+        $db->query('update xf_permission_entry
+            set permission_group_id = ?
+            where permission_group_id = ? and permission_id = ?
+        ', ['report_queue', 'conversation', 'viewReportConversation']);
     }
 
     /**
@@ -450,7 +460,8 @@ class Setup extends AbstractSetup
                         $permissionUpdater->updatePermissions($newGlobalPerms);
                     }
                 }
-                if ($newPermissions !== $permissions)
+                /** @noinspection PhpConditionAlreadyCheckedInspection */
+                if ($newPermissions != $permissions)
                 {
                     /** @var \XF\Service\UpdatePermissions $permissionUpdater */
                     $permissionUpdater = \XF::service('XF:UpdatePermissions');
@@ -539,8 +550,8 @@ class Setup extends AbstractSetup
                         }
                     }
                 }
-
-                if ($newPermissions !== $permissions)
+                /** @noinspection PhpConditionAlreadyCheckedInspection */
+                if ($newPermissions != $permissions)
                 {
                     /** @var \XF\Service\UpdatePermissions $permissionUpdater */
                     $permissionUpdater = \XF::service('XF:UpdatePermissions');
@@ -570,14 +581,14 @@ class Setup extends AbstractSetup
             );
             $db->query(
                 "INSERT IGNORE INTO xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
-                SELECT DISTINCT user_group_id, user_id, convert(permission_group_id USING utf8), 'viewReportConversation', permission_value, permission_value_int
+                SELECT DISTINCT user_group_id, user_id, 'report_queue', 'viewReportConversation', permission_value, permission_value_int
                 FROM xf_permission_entry
                 WHERE permission_group_id = 'conversation' AND permission_id IN ('alwaysInvite','editAnyPost','viewAny')
             "
             );
             $db->query(
                 "INSERT IGNORE INTO xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
-                SELECT DISTINCT user_group_id, user_id, convert(permission_group_id USING utf8), 'viewReportProfilePost', permission_value, permission_value_int
+                SELECT DISTINCT user_group_id, user_id, 'report_queue', 'viewReportProfilePost', permission_value, permission_value_int
                 FROM xf_permission_entry
                 WHERE permission_group_id = 'profilePost' AND permission_id IN ('warn','editAny','deleteAny')
             "
