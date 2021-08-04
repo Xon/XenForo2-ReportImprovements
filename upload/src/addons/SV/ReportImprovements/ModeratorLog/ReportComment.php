@@ -14,6 +14,11 @@ use XF\Mvc\Entity\Entity;
  */
 class ReportComment extends AbstractHandler
 {
+    public function isLoggableUser(\XF\Entity\User $actor)
+    {
+        return true;
+    }
+
     /**
      * @param Entity $content
      * @param string $field
