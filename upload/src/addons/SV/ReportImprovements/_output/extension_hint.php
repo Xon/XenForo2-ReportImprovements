@@ -5,6 +5,7 @@
 
 namespace SV\ReportImprovements\XF\ControllerPlugin
 {
+	class XFCP_Report extends \XF\ControllerPlugin\Report {}
 	class XFCP_Warn extends \XF\ControllerPlugin\Warn {}
 }
 
@@ -52,6 +53,7 @@ namespace SV\ReportImprovements\XF\Repository
 namespace SV\ReportImprovements\XF\Service\Report
 {
 	class XFCP_Commenter extends \XF\Service\Report\Commenter {}
+	class XFCP_CommentPreparer extends \XF\Service\Report\CommentPreparer {}
 	class XFCP_Creator extends \XF\Service\Report\Creator {}
 	class XFCP_CreatorPatch extends \XF\Service\Report\Creator {}
 	class XFCP_Notifier extends \XF\Service\Report\Notifier {}

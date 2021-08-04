@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Service\\Report\\CommentPreparer",
+    "to_class": "SV\\ReportImprovements\\XF\\Service\\Report\\CommentPreparer",
+    "execute_order": 6905,
+    "active": true
+}

@@ -7,8 +7,7 @@ use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Mvc\Entity\Repository;
 use XF\Repository\EditHistory as EditHistoryRepo;
 use XF\Service\AbstractService;
-use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
-use XF\Service\Message\Preparer as MessagePreparerSvc;
+use SV\ReportImprovements\XF\Service\Report\CommentPreparer;
 use XF\Service\ValidateAndSavableTrait;
 
 class CommentEditor extends AbstractService
@@ -18,7 +17,7 @@ class CommentEditor extends AbstractService
     /**
      * @var ReportCommentEntity
      */
-    protected $content;
+    protected $comment;
 
     /**
      * @var ReportEntity
@@ -41,26 +40,40 @@ class CommentEditor extends AbstractService
     protected $oldMessage = null;
 
     /**
-     * @var string|null
+     * @var CommentPreparer
      */
-    protected $attachmentHash;
+    protected $commentPreparer;
 
-    public function __construct(\XF\App $app, ReportCommentEntity $content)
+    public function __construct(\XF\App $app, ReportCommentEntity $comment)
     {
         parent::__construct($app);
 
-        $this->content = $content;
-        $this->report = $content->Report;
+        $this->comment = $comment;
+        $this->report = $comment->Report;
+        $this->commentPreparer = $this->service('XF:Report\CommentPreparer', $this->comment);
+        $this->setCommentDefaults();
     }
 
     public function getComment(): ReportCommentEntity
     {
-        return $this->content;
+        return $this->comment;
+    }
+
+    public function getCommentPreparer()
+    {
+        return $this->commentPreparer;
     }
 
     public function getReport(): ReportEntity
     {
         return $this->report;
+    }
+
+    protected function setCommentDefaults()
+    {
+        $visitor = \XF::visitor();
+
+        $this->commentPreparer->setUser($visitor);
     }
 
     public function setOldMessage(string $oldMessage = null): self
@@ -83,12 +96,12 @@ class CommentEditor extends AbstractService
      */
     public function getAttachmentHash()
     {
-        return $this->attachmentHash;
+        return $this->commentPreparer->getAttachmentHash();
     }
 
     public function setAttachmentHash(string $hash = null): self
     {
-        $this->attachmentHash = $hash;
+        $this->commentPreparer->setAttachmentHash($hash);
 
         return $this;
     }
@@ -135,30 +148,13 @@ class CommentEditor extends AbstractService
         }
     }
 
-    protected function getMessagePreparer(bool $format = true): MessagePreparerSvc
-    {
-        /** @var MessagePreparerSvc $preparer */
-        $preparer = $this->service('XF:Message\Preparer', 'report_comment', $this->getComment());
-        if (!$format)
-        {
-            $preparer->disableAllFilters();
-        }
-        //$preparer->setConstraint('allowEmpty', true);
-
-        return $preparer;
-    }
-
-    public function setMessage(string $rawText, bool $format = true, bool $checkValidity = true): self
+    public function setMessage(string $message, bool $format = true): self
     {
         $content = $this->getComment();
         $setupHistory = !$content->isChanged('message');
         $oldRawText = $content->message;
 
-        $preparer = $this->getMessagePreparer($format);
-        $content->message = $preparer->prepare($rawText, $checkValidity);
-        $content->embed_metadata = $preparer->getEmbedMetadata();
-
-        $preparer->pushEntityErrorIfInvalid($content);
+        $this->commentPreparer->setMessage($message, $format);
 
         if ($setupHistory && $content->isChanged('message') && ($oldRawText !== null))
         {
@@ -173,7 +169,7 @@ class CommentEditor extends AbstractService
 
     }
 
-    protected function postSave()
+    protected function afterUpdate()
     {
         $oldMessage = $this->getOldMessage();
         if ($oldMessage !== null)
@@ -189,25 +185,7 @@ class CommentEditor extends AbstractService
             );
         }
 
-        if ($this->attachmentHash)
-        {
-            $this->associateAttachments($this->attachmentHash);
-        }
-    }
-
-    protected function associateAttachments(string $hash)
-    {
-        $reportComment = $this->getComment();
-
-        $associated = $this->getAttachmentPreparerSvc()->associateAttachmentsWithContent(
-            $hash,
-            'report_comment',
-            $reportComment->report_comment_id
-        );
-        if ($associated)
-        {
-            $reportComment->fastUpdate('attach_count', $reportComment->attach_count + $associated);
-        }
+        $this->commentPreparer->afterUpdate();
     }
 
     protected function _validate() : array
@@ -229,7 +207,7 @@ class CommentEditor extends AbstractService
 
         $content->save(true, false);
 
-        $this->postSave();
+        $this->afterUpdate();
 
         $db->commit();
 
@@ -247,14 +225,5 @@ class CommentEditor extends AbstractService
     protected function getEditHistoryRepo() : EditHistoryRepo
     {
         return $this->repository('XF:EditHistory');
-    }
-
-    /**
-     * @return AbstractService|AttachmentPreparerSvc
-     * @noinspection PhpReturnDocTypeMismatchInspection
-     */
-    protected function getAttachmentPreparerSvc()
-    {
-        return $this->service('XF:Attachment\Preparer');
     }
 }

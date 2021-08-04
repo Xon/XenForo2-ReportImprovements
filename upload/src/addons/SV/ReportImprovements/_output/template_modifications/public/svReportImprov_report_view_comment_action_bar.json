@@ -1,9 +1,9 @@
 {
     "template": "report_view",
-    "description": "Add \"React\" button for report comments",
+    "description": "Add action bar for report comments",
     "execution_order": 6904,
     "enabled": true,
     "action": "preg_replace",
     "find": "#<xf:if is=\"\\$comment\\.message.*?\">.*?<\\/xf:if>.*?<\\/div>#s",
-    "replace": "$0\n<xf:include template=\"svReportImprov_report_view_report_comment_reaction\" />"
+    "replace": "$0\n<xf:include template=\"svReportImprov_report_view_report_actionBar\" />"
 }

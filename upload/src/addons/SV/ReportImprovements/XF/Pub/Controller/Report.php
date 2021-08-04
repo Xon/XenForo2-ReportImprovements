@@ -157,6 +157,20 @@ class Report extends XFCP_Report
         return $this->redirect($router->buildLink('canonical:reports', $reportComment->Report) . '#report-comment-' . $reportComment->report_comment_id);
     }
 
+    public function actionCommentIp(ParameterBag $params)
+    {
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @noinspection PhpUndefinedFieldInspection */
+        $report = $this->assertViewableReport($params->report_id);
+        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
+
+        $breadcrumbs = $report->getBreadcrumbs();
+
+        /** @var \XF\ControllerPlugin\Ip $ipPlugin */
+        $ipPlugin = $this->plugin('XF:Ip');
+        return $ipPlugin->actionIp($reportComment, $breadcrumbs);
+    }
+
     protected function getReplyAttachmentData(ExtendedReportEntity $report, $forceAttachmentHash = null)
     {
         if ($report->canUploadAndManageAttachments())
@@ -235,7 +249,7 @@ class Report extends XFCP_Report
         /** @var Commenter $editor */
         $editor = parent::setupReportComment($report);
 
-
+        $editor->logIp(true);
         if ($report->canUploadAndManageAttachments())
         {
             $editor->setAttachmentHash($this->filter('attachment_hash', 'str'));

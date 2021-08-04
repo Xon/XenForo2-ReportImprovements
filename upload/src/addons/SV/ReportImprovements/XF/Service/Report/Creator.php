@@ -8,11 +8,17 @@ use SV\ReportImprovements\XF\Entity\ReportComment;
 /**
  * Extends \XF\Service\Report\Creator
  *
- * @property Report        $report
- * @property ReportComment $comment
+ * @property Report          $report
+ * @property ReportComment   $comment
+ * @property CommentPreparer $commentPreparer
  */
 class Creator extends XFCP_Creator
 {
+    public function logIp(bool $logIp)
+    {
+        $this->commentPreparer->logIp($logIp);
+    }
+
     protected function setDefaults()
     {
         $applyXFWorkAround = $this->report->report_state === 'open';

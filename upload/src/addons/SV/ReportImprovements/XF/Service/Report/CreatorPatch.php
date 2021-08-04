@@ -6,6 +6,8 @@ use XF\Mvc\Entity\Entity;
 
 /**
  * Extends \XF\Service\Report\Creator
+ *
+ * @property CommentPreparer             $commentPreparer
  */
 class CreatorPatch extends XFCP_CreatorPatch
 {
@@ -35,6 +37,9 @@ class CreatorPatch extends XFCP_CreatorPatch
 
     protected function _save()
     {
+        $db = $this->db();
+        $db->beginTransaction();
+
         if ($this->threadCreator && (\XF::options()->svLogToReportCentreAndForum ?? false))
         {
             $threadCreator = $this->threadCreator;
@@ -49,6 +54,21 @@ class CreatorPatch extends XFCP_CreatorPatch
             $this->threadCreator = null;
         }
 
-        return parent::_save();
+        /** @var \XF\Entity\Report|\XF\Entity\Thread $reportOrThread */
+        $reportOrThread = parent::_save();
+
+        if ($reportOrThread instanceof \XF\Entity\Report)
+        {
+            $this->postSaveReport();
+        }
+
+        $db->commit();
+
+        return $reportOrThread;
+    }
+
+    protected function postSaveReport()
+    {
+        $this->commentPreparer->afterInsert();
     }
 }

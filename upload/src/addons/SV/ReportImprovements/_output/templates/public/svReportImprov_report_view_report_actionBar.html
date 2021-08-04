@@ -1,0 +1,77 @@
+<footer class="message-footer">
+	<xf:if contentcheck="true">
+		<div class="message-actionBar actionBar">
+			<xf:contentcheck>
+				<xf:macro name="report_comment_action_bar" 
+						  arg-comment="{$comment}" 
+						  arg-report="{$report}" />
+			</xf:contentcheck>
+		</div>
+	</xf:if>
+
+	<div class="reactionsBar js-reactionsList {{ $comment.reactions ? 'is-active' : '' }}">
+		<xf:reactions content="{$comment}" link="reports/reactions" params="{{ {'report_comment_id': $comment.report_comment_id} }}" />
+	</div>
+</footer>
+
+<xf:macro name="report_comment_action_bar" arg-comment="!" arg-report="!">
+	<xf:if contentcheck="true">
+		<div class="actionBar-set actionBar-set--external">
+		<xf:contentcheck>
+			<xf:react content="{$comment}" link="reports/react" params="{{ {'report_comment_id': $comment.report_comment_id} }}" list="< .js-reportComment | .js-reactionsList" />
+		</xf:contentcheck>
+		</div>
+	</xf:if>
+
+	<xf:if contentcheck="true">
+		<div class="actionBar-set actionBar-set--internal">
+		<xf:contentcheck>
+			<xf:set var="$hasActionBarMenu" value="{{ false }}" />
+			<xf:comment>
+			<xf:if is="$comment.canEdit()">
+				<xf:js src="xf/message.js" min="1" />
+				<a href="{{ link('reports/comment/edit', $comment) }}"
+					class="actionBar-action actionBar-action--edit actionBar-action--menuItem"
+					data-xf-click="quick-edit"
+					data-editor-target="#js-reportComment-{$post.post_id} .js-quickEditTarget"
+					data-menu-closer="true">{{ phrase('edit') }}</a>
+
+				<xf:set var="$hasActionBarMenu" value="{{ true }}" />
+			</xf:if>
+			<xf:if is="$comment.edit_count && $comment.canViewHistory()">
+				<a href="{{ link('reports/comment/history', $comment) }}"
+					class="actionBar-action actionBar-action--history actionBar-action--menuItem"
+					data-xf-click="toggle"
+					data-target="#js-reportComment-{$post.post_id} .js-historyTarget"
+					data-menu-closer="true">{{ phrase('history') }}</a>
+
+				<xf:set var="$hasActionBarMenu" value="{{ true }}" />
+			</xf:if>
+			</xf:comment>
+			<xf:if is="$xf.visitor.canViewIps() && $comment.ip_id">
+				<a href="{{ link('reports/comment/ip', $comment) }}"
+					class="actionBar-action actionBar-action--ip actionBar-action--menuItem"
+					data-xf-click="overlay">{{ phrase('ip') }}</a>
+
+				<xf:set var="$hasActionBarMenu" value="{{ true }}" />
+			</xf:if>
+			<xf:if is="$hasActionBarMenu">
+				<a class="actionBar-action actionBar-action--menuTrigger"
+					data-xf-click="menu"
+					title="{{ phrase('more_options')|for_attr }}"
+					role="button"
+					tabindex="0"
+					aria-expanded="false"
+					aria-haspopup="true">&#8226;&#8226;&#8226;</a>
+
+				<div class="menu" data-menu="menu" aria-hidden="true" data-menu-builder="actionBar">
+					<div class="menu-content">
+						<h4 class="menu-header">{{ phrase('more_options') }}</h4>
+						<div class="js-menuBuilderTarget"></div>
+					</div>
+				</div>
+			</xf:if>			
+		</xf:contentcheck>
+		</div>
+	</xf:if>
+</xf:macro>

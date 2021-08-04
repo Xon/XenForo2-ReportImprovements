@@ -6,8 +6,6 @@ use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use XF\Entity\ReportComment as ReportCommentEntity;
-use XF\Service\AbstractService;
-use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
 
 /**
  * Class Commenter
@@ -16,25 +14,26 @@ use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
  * @package SV\ReportImprovements\XF\Service\Report
  * @property ExtendedReportEntity        $report
  * @property ExtendedReportCommentEntity $comment
+ * @property CommentPreparer             $commentPreparer
  */
 class Commenter extends XFCP_Commenter
 {
-    /**
-     * @var string|null
-     */
-    protected $attachmentHash;
+    public function logIp(bool $logIp)
+    {
+        $this->commentPreparer->logIp($logIp);
+    }
 
     /**
      * @return string|null
      */
     public function getAttachmentHash()
     {
-        return $this->attachmentHash;
+        return $this->commentPreparer->getAttachmentHash();
     }
 
     public function setAttachmentHash(string $hash = null): self
     {
-        $this->attachmentHash = $hash;
+        $this->commentPreparer->setAttachmentHash($hash);
 
         return $this;
     }
@@ -109,30 +108,6 @@ class Commenter extends XFCP_Commenter
         $this->sendAlert = $sendAlert;
     }
 
-    protected function postSave()
-    {
-        if ($this->attachmentHash)
-        {
-            $this->associateAttachments($this->attachmentHash);
-        }
-    }
-
-    protected function associateAttachments(string $hash)
-    {
-        /** @var ExtendedReportCommentEntity $reportComment */
-        $reportComment = $this->getComment();
-
-        $associated = $this->getAttachmentPreparerSvc()->associateAttachmentsWithContent(
-            $hash,
-            'report_comment',
-            $reportComment->report_comment_id
-        );
-        if ($associated)
-        {
-            $reportComment->fastUpdate('attach_count', $reportComment->attach_count + $associated);
-        }
-    }
-
     protected function _save() : ReportCommentEntity
     {
         $db = $this->db();
@@ -140,7 +115,7 @@ class Commenter extends XFCP_Commenter
 
         $content = parent::_save();
 
-        $this->postSave();
+        $this->commentPreparer->afterInsert();
 
         $db->commit();
 
@@ -163,14 +138,5 @@ class Commenter extends XFCP_Commenter
         {
             Globals::$notifyReportUserIds = null;
         }
-    }
-
-    /**
-     * @return AbstractService|AttachmentPreparerSvc
-     * @noinspection PhpReturnDocTypeMismatchInspection
-     */
-    protected function getAttachmentPreparerSvc()
-    {
-        return $this->service('XF:Attachment\Preparer');
     }
 }

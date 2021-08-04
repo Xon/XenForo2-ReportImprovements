@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\ControllerPlugin\\Report",
+    "to_class": "SV\\ReportImprovements\\XF\\ControllerPlugin\\Report",
+    "execute_order": 6905,
+    "active": true
+}
