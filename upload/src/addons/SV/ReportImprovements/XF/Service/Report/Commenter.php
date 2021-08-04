@@ -3,19 +3,42 @@
 namespace SV\ReportImprovements\XF\Service\Report;
 
 use SV\ReportImprovements\Globals;
-use SV\ReportImprovements\XF\Entity\Report;
-use SV\ReportImprovements\XF\Entity\ReportComment;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use XF\Entity\ReportComment as ReportCommentEntity;
+use XF\Service\AbstractService;
+use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
 
 /**
  * Class Commenter
  * Extends \XF\Service\Report\Commenter
  *
  * @package SV\ReportImprovements\XF\Service\Report
- * @property Report        $report
- * @property ReportComment $comment
+ * @property ExtendedReportEntity        $report
+ * @property ExtendedReportCommentEntity $comment
  */
 class Commenter extends XFCP_Commenter
 {
+    /**
+     * @var string|null
+     */
+    protected $attachmentHash;
+
+    /**
+     * @return string|null
+     */
+    public function getAttachmentHash()
+    {
+        return $this->attachmentHash;
+    }
+
+    public function setAttachmentHash(string $hash = null): self
+    {
+        $this->attachmentHash = $hash;
+
+        return $this;
+    }
+
     protected function setCommentDefaults()
     {
         parent::setCommentDefaults();
@@ -86,6 +109,44 @@ class Commenter extends XFCP_Commenter
         $this->sendAlert = $sendAlert;
     }
 
+    protected function postSave()
+    {
+        if ($this->attachmentHash)
+        {
+            $this->associateAttachments($this->attachmentHash);
+        }
+    }
+
+    protected function associateAttachments(string $hash)
+    {
+        /** @var ExtendedReportCommentEntity $reportComment */
+        $reportComment = $this->getComment();
+
+        $associated = $this->getAttachmentPreparerSvc()->associateAttachmentsWithContent(
+            $hash,
+            'report_comment',
+            $reportComment->report_comment_id
+        );
+        if ($associated)
+        {
+            $reportComment->fastUpdate('attach_count', $reportComment->attach_count + $associated);
+        }
+    }
+
+    protected function _save() : ReportCommentEntity
+    {
+        $db = $this->db();
+        $db->beginTransaction();
+
+        $content = parent::_save();
+
+        $this->postSave();
+
+        $db->commit();
+
+        return $content;
+    }
+
     /**
      * @throws \Exception
      */
@@ -102,5 +163,14 @@ class Commenter extends XFCP_Commenter
         {
             Globals::$notifyReportUserIds = null;
         }
+    }
+
+    /**
+     * @return AbstractService|AttachmentPreparerSvc
+     * @noinspection PhpReturnDocTypeMismatchInspection
+     */
+    protected function getAttachmentPreparerSvc()
+    {
+        return $this->service('XF:Attachment\Preparer');
     }
 }

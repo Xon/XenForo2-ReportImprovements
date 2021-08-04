@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Add attachment/preview to reply comment form",
+    "execution_order": 6906,
+    "enabled": true,
+    "action": "str_replace",
+    "find": " action=\"{{ link('reports/update', $report) }}\"",
+    "replace": "$0 data-xf-init=\"attachment-manager\" data-preview-url=\"{{ link('reports/preview', $report) }}\"\n"
+}

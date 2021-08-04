@@ -141,6 +141,65 @@ class Report extends XFCP_Report
         return $visitor->canViewReporter($error);
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
+    public function canViewAttachments(&$error = null): bool
+    {
+        $visitor = \XF::visitor();
+        if ($visitor->user_id === 0)
+        {
+            return false;
+        }
+
+        if (!$this->hasReportPermission('viewAttachment'))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public function canUploadAndManageAttachments(): bool
+    {
+        $visitor = \XF::visitor();
+
+        if ($visitor->user_id === 0)
+        {
+            return false;
+        }
+
+        if (!$this->hasReportPermission('uploadAttachment'))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function canUploadVideos(): bool
+    {
+        $visitor = \XF::visitor();
+
+        if ($visitor->user_id === 0)
+        {
+            return false;
+        }
+
+        $options = $this->app()->options();
+
+        if (empty($options->allowVideoUploads['enabled']))
+        {
+            return false;
+        }
+
+        if (!$this->hasReportPermission('uploadVideo'))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * @param string $permission
      * @return bool|int

@@ -53,7 +53,7 @@ class CommentEditor extends AbstractService
         $this->report = $content->Report;
     }
 
-    public function getContent(): ReportCommentEntity
+    public function getComment(): ReportCommentEntity
     {
         return $this->content;
     }
@@ -86,6 +86,13 @@ class CommentEditor extends AbstractService
         return $this->attachmentHash;
     }
 
+    public function setAttachmentHash(string $hash = null): self
+    {
+        $this->attachmentHash = $hash;
+
+        return $this;
+    }
+
     public function setLogEdit(bool $logEdit): self
     {
         $this->logEdit = $logEdit;
@@ -112,7 +119,7 @@ class CommentEditor extends AbstractService
 
     protected function setupEditHistory(string $oldMessage)
     {
-        $content = $this->getContent();
+        $content = $this->getComment();
         $content->edit_count++;
 
         $options = \XF::options();
@@ -131,19 +138,19 @@ class CommentEditor extends AbstractService
     protected function getMessagePreparer(bool $format = true): MessagePreparerSvc
     {
         /** @var MessagePreparerSvc $preparer */
-        $preparer = $this->service('XF:Message\Preparer', 'report_comment', $this->getContent());
+        $preparer = $this->service('XF:Message\Preparer', 'report_comment', $this->getComment());
         if (!$format)
         {
             $preparer->disableAllFilters();
         }
-        $preparer->setConstraint('allowEmpty', true);
+        //$preparer->setConstraint('allowEmpty', true);
 
         return $preparer;
     }
 
     public function setMessage(string $rawText, bool $format = true, bool $checkValidity = true): self
     {
-        $content = $this->getContent();
+        $content = $this->getComment();
         $setupHistory = !$content->isChanged('message');
         $oldRawText = $content->message;
 
@@ -161,13 +168,6 @@ class CommentEditor extends AbstractService
         return $this;
     }
 
-    public function setAttachmentHash(string $hash = null): self
-    {
-        $this->attachmentHash = $hash;
-
-        return $this;
-    }
-
     protected function finalSetup()
     {
 
@@ -178,7 +178,7 @@ class CommentEditor extends AbstractService
         $oldMessage = $this->getOldMessage();
         if ($oldMessage !== null)
         {
-            $reportComment = $this->getContent();
+            $reportComment = $this->getComment();
 
             $this->getEditHistoryRepo()->insertEditHistory(
                 $reportComment->getEntityContentType(),
@@ -197,7 +197,7 @@ class CommentEditor extends AbstractService
 
     protected function associateAttachments(string $hash)
     {
-        $reportComment = $this->getContent();
+        $reportComment = $this->getComment();
 
         $associated = $this->getAttachmentPreparerSvc()->associateAttachmentsWithContent(
             $hash,
@@ -214,7 +214,7 @@ class CommentEditor extends AbstractService
     {
         $this->finalSetup();
 
-        $content = $this->getContent();
+        $content = $this->getComment();
         $content->preSave();
 
         return $content->getErrors();
@@ -225,7 +225,7 @@ class CommentEditor extends AbstractService
         $db = $this->db();
         $db->beginTransaction();
 
-        $content = $this->getContent();
+        $content = $this->getComment();
 
         $content->save(true, false);
 

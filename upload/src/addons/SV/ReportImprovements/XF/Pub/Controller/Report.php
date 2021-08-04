@@ -3,11 +3,17 @@
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Service\Report\Commenter;
+use XF\ControllerPlugin\BbCodePreview as BbCodePreviewPlugin;
 use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\ParameterBag;
+use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\View;
+use XF\Mvc\Reply\View as ViewReply;
 
 /**
  * Class Report
@@ -100,12 +106,32 @@ class Report extends XFCP_Report
         Globals::$shimCommentsFinder = true;
         try
         {
-            return parent::actionView($params);
+            $reply = parent::actionView($params);
         }
         finally
         {
             Globals::$shimCommentsFinder = false;
         }
+
+        if ($reply instanceof ViewReply &&
+            ($report = $reply->getParam('report')) &&
+            ($comments = $reply->getParam('comments')))
+        {
+            /** @var ExtendedReportEntity $report */
+            /** @var AbstractCollection comments */
+
+            /** @var \XF\Repository\Attachment $attachmentRepo */
+            $attachmentRepo = $this->repository('XF:Attachment');
+            $attachmentRepo->addAttachmentsToContent($comments, 'report_comment');
+
+            /** @var \XF\Repository\Unfurl $unfurlRepo */
+            $unfurlRepo = $this->repository('XF:Unfurl');
+            $unfurlRepo->addUnfurlsToContent($comments, $this->isRobot());
+
+            $reply->setParam('attachmentData', $this->getReplyAttachmentData($report));
+        }
+
+        return $reply;
     }
 
     public function actionComment(ParameterBag $params)
@@ -125,6 +151,28 @@ class Report extends XFCP_Report
         }
 
         return $this->redirect($router->buildLink('canonical:reports', $reportComment->Report) . '#report-comment-' . $reportComment->report_comment_id);
+    }
+
+    protected function getReplyAttachmentData(ExtendedReportEntity $report, $forceAttachmentHash = null)
+    {
+        if ($report->canUploadAndManageAttachments())
+        {
+            if ($forceAttachmentHash !== null)
+            {
+                $attachmentHash = $forceAttachmentHash;
+            }
+            else
+            {
+                /** @noinspection PhpUndefinedFieldInspection */
+                $attachmentHash = $report->draft_comment->attachment_hash;
+            }
+
+            /** @var \XF\Repository\Attachment $attachmentRepo */
+            $attachmentRepo = $this->repository('XF:Attachment');
+            return $attachmentRepo->getEditorData('report_comment', $report, $attachmentHash);
+        }
+
+        return null;
     }
 
     /**
@@ -180,7 +228,16 @@ class Report extends XFCP_Report
             );
         }
 
-        return parent::setupReportComment($report);
+        /** @var Commenter $editor */
+        $editor = parent::setupReportComment($report);
+
+
+        if ($report->canUploadAndManageAttachments())
+        {
+            $editor->setAttachmentHash($this->filter('attachment_hash', 'str'));
+        }
+
+        return $editor;
     }
 
     /**
@@ -304,6 +361,49 @@ class Report extends XFCP_Report
         ]);
     }
 
+    public function actionPreview(ParameterBag $params):AbstractReply
+    {
+        $this->assertPostOnly();
+
+        /** @var ExtendedReportEntity $report */
+        /** @noinspection PhpUndefinedFieldInspection */
+        $report = $this->assertViewableReport($params->report_id);
+        if (!$report->canComment())
+        {
+            return $this->noPermission();
+        }
+
+        $commenter = $this->setupReportComment($report);
+        if (!$commenter->validate($errors))
+        {
+            return $this->error($errors);
+        }
+        /** @var ExtendedReportCommentEntity $reportComment */
+        $reportComment = $commenter->getComment();
+
+        $attachments = [];
+        $tempHash = $this->filter('attachment_hash', 'str');
+
+        if ($report->canUploadAndManageAttachments())
+        {
+            /** @var \XF\Repository\Attachment $attachmentRepo */
+            $attachmentRepo = $this->repository('XF:Attachment');
+            $attachmentData = $attachmentRepo->getEditorData('report_comment', $reportComment, $tempHash);
+            $attachments = $attachmentData['attachments'];
+        }
+
+        /** @var BbCodePreviewPlugin $bbCodePreview */
+        $bbCodePreview = $this->plugin('XF:BbCodePreview');
+
+        return $bbCodePreview->actionPreview($reportComment->message, 'report_comment', $reportComment->User, $attachments, $report->canViewAttachments());
+    }
+
+    /**
+     * @param int   $reportId
+     * @param array $extraWith
+     * @return \XF\Entity\Report
+     * @throws \XF\Mvc\Reply\Exception
+     */
     protected function assertViewableReport($reportId, array $extraWith = [])
     {
         // avoid N+1 look up behaviour, just cache all node perms
@@ -315,12 +415,12 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param       $reportCommentId
+     * @param int   $reportCommentId
      * @param array $extraWith
-     * @return \SV\ReportImprovements\XF\Entity\ReportComment
+     * @return ExtendedReportCommentEntity
      * @throws \XF\Mvc\Reply\Exception
      */
-    protected function assertViewableReportComment($reportCommentId, array $extraWith = [])
+    protected function assertViewableReportComment(int $reportCommentId, array $extraWith = []): ExtendedReportCommentEntity
     {
         // avoid N+1 look up behaviour, just cache all node perms
         $visitor = \XF::visitor();
@@ -329,7 +429,7 @@ class Report extends XFCP_Report
         $extraWith[] = 'Report';
         $extraWith[] = 'Report.Permissions|' . $visitor->permission_combination_id;
 
-        /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
+        /** @var ExtendedReportCommentEntity $reportComment */
         $reportComment = $this->em()->find('XF:ReportComment', $reportCommentId, $extraWith);
         if (!$reportComment)
         {

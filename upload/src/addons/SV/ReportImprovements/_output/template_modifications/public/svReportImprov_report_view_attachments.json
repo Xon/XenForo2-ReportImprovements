@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Add attachment upload to reply comment form",
+    "execution_order": 6906,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(<xf:editorrow\\s+?)(.*?</xf:editorrow>)#si",
+    "replace": "$1 attachments=\"{$attachmentData.attachments}\" $2\n<xf:formrow rowtype=\"fullWidth noLabel\">\n\t<xf:if is=\"$attachmentData\">\n\t\t<xf:macro template=\"helper_attach_upload\" name=\"upload_block\"\n\t\t\t\t  arg-attachmentData=\"{$attachmentData}\"\n\t\t\t\t  arg-forceHash=\"{$conversation.draft_reply.attachment_hash}\" />\n\t</xf:if>\n</xf:formrow>"
+}
