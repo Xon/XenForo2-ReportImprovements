@@ -269,6 +269,36 @@ class Setup extends AbstractSetup
         $this->installStep2();
     }
 
+    public function upgrade2100000Step1()
+    {
+        $this->installStep1();
+    }
+
+    public function upgrade2100000Step2()
+    {
+        $this->installStep2();
+    }
+
+    public function upgrade2100000Step3()
+    {
+        $permissions = [
+            'assignReport',
+            'replyReport',
+            'replyReportClosed',
+            'reportReact',
+            'updateReport',
+            'viewReporterUsername',
+            'viewReportUser',
+        ];
+
+        $db = $this->db();
+
+        $db->query('update xf_permission_entry
+            set permission_group_id = ?
+            where permission_group_id = ? and permission_id in (' . $db->quote($permissions) . ')
+        ', ['report_queue', 'general']);
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -361,7 +391,8 @@ class Setup extends AbstractSetup
         $applied = false;
         $previousVersion = (int)$previousVersion;
         $db = $this->db();
-        $globalReportPerms = ['assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'viewReports', 'reportReact'];
+        $globalReportPerms = ['viewReports'];
+        $globalReportQueuePerms = ['assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'viewReports', 'reportReact'];
 
         // content/global moderators before bulk update
         if (!$previousVersion || ($previousVersion <= 1040002) || ($previousVersion >= 2000000 && $previousVersion <= 2011000))
@@ -397,13 +428,17 @@ class Setup extends AbstractSetup
                 {
                     $newPermissions['forum']['viewReportPost'] = 'content_allow';
                 }
-                if (isset($newPermissions['forum']['viewReportPost']) && $globalReportPerms)
+                if (isset($newPermissions['forum']['viewReportPost']) && $globalReportQueuePerms)
                 {
                     $globalPerms = $permissionEntryRepo->getGlobalUserPermissionEntries($user->user_id);
                     $newGlobalPerms = $globalPerms;
                     foreach ($globalReportPerms as $perm)
                     {
                         $newGlobalPerms['general'][$perm] = 'allow';
+                    }
+                    foreach ($globalReportQueuePerms as $perm)
+                    {
+                        $newGlobalPerms['report_queue'][$perm] = 'allow';
                     }
 
                     if ($newGlobalPerms !== $globalPerms)
@@ -433,6 +468,14 @@ class Setup extends AbstractSetup
                         'profilePost'  => ['warn', 'editAnyPost', 'viewAny'],
                     ],
                     ['general' => $globalReportPerms]
+                ],
+                [
+                    [
+                        'general'      => ['warn', 'editBasicProfile'],
+                        'conversation' => ['alwaysInvite', 'editAnyPost', 'viewAny'],
+                        'profilePost'  => ['warn', 'editAnyPost', 'viewAny'],
+                    ],
+                    ['report_queue' => $globalReportQueuePerms]
                 ],
                 [
                     [
@@ -550,6 +593,16 @@ class Setup extends AbstractSetup
         if ($previousVersion < 1020200)
         {
             foreach ($globalReportPerms as $perm)
+            {
+                $db->query(
+                    "INSERT IGNORE INTO xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
+                    SELECT DISTINCT user_group_id, user_id, convert(permission_group_id USING utf8), ?, permission_value, permission_value_int
+                    FROM xf_permission_entry
+                    WHERE permission_group_id = 'general' AND permission_id IN ('warn','editBasicProfile')
+                ", $perm
+                );
+            }
+            foreach ($globalReportQueuePerms as $perm)
             {
                 $db->query(
                     "INSERT IGNORE INTO xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)

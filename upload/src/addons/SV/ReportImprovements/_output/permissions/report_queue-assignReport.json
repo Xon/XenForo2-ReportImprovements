@@ -1,6 +1,6 @@
 {
     "permission_type": "flag",
-    "interface_group_id": "ri_ReportCenter",
-    "display_order": 60,
+    "interface_group_id": "svReportCenterQueue",
+    "display_order": 50,
     "depend_permission_id": "viewReports"
 }

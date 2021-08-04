@@ -29,8 +29,17 @@ class Report extends XFCP_Report
         /** @var User $visitor */
         $visitor = \XF::visitor();
 
-        if (!$visitor->user_id ||
-            !$visitor->canViewReports())
+        if ($visitor->user_id === 0)
+        {
+            return false;
+        }
+
+        if (!$visitor->canViewReports())
+        {
+            return false;
+        }
+
+        if (!$this->hasReportPermission('viewReports'))
         {
             return false;
         }
@@ -55,10 +64,10 @@ class Report extends XFCP_Report
 
         if ($this->isClosed())
         {
-            return $visitor->hasPermission('general', 'replyReportClosed');
+            return $this->hasReportPermission('replyReportClosed');
         }
 
-        return $visitor->hasPermission('general', 'replyReport');
+        return $this->hasReportPermission('replyReport');
     }
 
     /**
@@ -81,7 +90,7 @@ class Report extends XFCP_Report
             return true;
         }
 
-        return $visitor->hasPermission('general', 'updateReport');
+        return $this->hasReportPermission('updateReport');
     }
 
     /**
@@ -99,7 +108,7 @@ class Report extends XFCP_Report
             return false;
         }
 
-        return $visitor->hasPermission('general', 'assignReport');
+        return $this->hasReportPermission('assignReport');
     }
 
     public function canJoinConversation(): bool
@@ -130,6 +139,25 @@ class Report extends XFCP_Report
         $visitor = \XF::visitor();
 
         return $visitor->canViewReporter($error);
+    }
+
+    /**
+     * @param string $permission
+     * @return bool|int
+     */
+    public function hasReportPermission(string $permission)
+    {
+        $reportQueueId = (int)($this->queue_id ?? 0);
+
+        /** @var User $visitor */
+        $visitor = \XF::visitor();
+
+        if ($reportQueueId !== 0)
+        {
+            return $visitor->hasContentPermission('report_queue', $reportQueueId, $permission);
+        }
+
+        return $visitor->hasPermission('report_queue', $permission);
     }
 
     public function getBreadcrumbs(bool $includeSelf = true)

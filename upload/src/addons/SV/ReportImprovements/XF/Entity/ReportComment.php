@@ -66,7 +66,21 @@ class ReportComment extends XFCP_ReportComment
             return false;
         }
 
-        return $visitor->hasPermission('general', 'reportReact');
+        return $this->hasReportPermission('reportReact');
+    }
+
+    /**
+     * @param string $permission
+     * @return bool|int
+     */
+    public function hasReportPermission(string $permission)
+    {
+        if (!$this->Report)
+        {
+            return false;
+        }
+
+        return $this->Report->hasReportPermission($permission);
     }
 
     /**

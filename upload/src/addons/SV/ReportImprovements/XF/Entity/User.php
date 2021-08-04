@@ -100,7 +100,7 @@ class User extends XFCP_User
             return false;
         }
 
-        return $visitor->hasPermission('general', 'viewReportUser');
+        return $visitor->hasPermission('report_queue', 'viewReportUser');
     }
 
     /**
@@ -140,7 +140,7 @@ class User extends XFCP_User
             return false;
         }
 
-        return $this->hasPermission('general', 'viewReporterUsername');
+        return $this->hasPermission('report_queue', 'viewReporterUsername');
     }
 
     protected $wasCanBeAssignedReports = false;
@@ -155,7 +155,7 @@ class User extends XFCP_User
                 $this->is_moderator && !$this->getPreviousValue('is_moderator')
             ) &&
             $this->hasPermission('general', 'viewReports') &&
-            $this->hasPermission('general', 'updateReport');
+            $this->hasPermission('report_queue', 'updateReport');
     }
 
     protected function _postSave()
@@ -170,7 +170,7 @@ class User extends XFCP_User
             {
                 $newPermissions = \XF::permissionCache()->getPermissionSet($this->permission_combination_id);
                 if (!$newPermissions->hasGlobalPermission('general', 'viewReports') ||
-                    !$newPermissions->hasGlobalPermission('general', 'updateReport'))
+                    !$newPermissions->hasGlobalPermission('report_queue', 'updateReport'))
                 {
                     $doRebuild = true;
                 }
