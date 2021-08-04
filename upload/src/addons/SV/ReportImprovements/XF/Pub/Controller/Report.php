@@ -120,6 +120,10 @@ class Report extends XFCP_Report
             /** @var ExtendedReportEntity $report */
             /** @var AbstractCollection comments */
 
+            /** @var \SV\ReportImprovements\Repository\ReportQueue $reportQueueRepo */
+            $reportQueueRepo = $this->repository('SV\ReportImprovements:ReportQueue');
+            $reportQueueRepo->addReplyBansToComments($comments);
+
             /** @var \XF\Repository\Attachment $attachmentRepo */
             $attachmentRepo = $this->repository('XF:Attachment');
             $attachmentRepo->addAttachmentsToContent($comments, 'report_comment');

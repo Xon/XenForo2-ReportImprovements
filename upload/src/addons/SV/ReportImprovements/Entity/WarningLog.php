@@ -25,11 +25,12 @@ use XF\Mvc\Entity\Structure;
  * @property int                       expiry_date
  * @property int                       is_expired
  * @property string                    extra_user_group_ids
- * @property int                       reply_ban_thread_id
- * @property int                       reply_ban_post_id
+ * @property int|null                  reply_ban_thread_id
+ * @property int|null                  reply_ban_post_id
  * GETTERS
  * @property \XF\Entity\ThreadReplyBan ReplyBan
  * RELATIONS
+ * @property \XF\Entity\ThreadReplyBan ReplyBan_
  * @property \XF\Entity\Warning        Warning
  * @property \XF\Entity\User           User
  * @property \XF\Entity\Thread         ReplyBanThread
@@ -66,9 +67,9 @@ class WarningLog extends Entity
      */
     public function getReplyBan()
     {
-        if (isset($this->_relations['ReplyBan']))
+        if (\array_key_exists('ReplyBan', $this->_relations))
         {
-            return $this->ReplyBan;
+            return $this->ReplyBan_;
         }
 
         if (!$this->reply_ban_thread_id || !$this->ReplyBanThread)
