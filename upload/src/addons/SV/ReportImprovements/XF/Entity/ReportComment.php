@@ -361,7 +361,7 @@ class ReportComment extends XFCP_ReportComment
             'with'       => 'Data',
             'order'      => 'attach_date'
         ];
-        $structure->options['log_moderator'] = true;
+        $structure->options['log_moderator'] = false;
 
         $structure->defaultWith[] = 'WarningLog';
         $structure->defaultWith[] = 'WarningLog.Warning';

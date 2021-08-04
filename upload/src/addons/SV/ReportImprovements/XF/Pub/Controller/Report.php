@@ -351,6 +351,7 @@ class Report extends XFCP_Report
         /** @var Commenter $editor */
         $editor = parent::setupReportComment($report);
 
+        $editor->getComment()->setOption('log_moderator', 'true');
         $editor->logIp(true);
         if ($report->canUploadAndManageAttachments())
         {
