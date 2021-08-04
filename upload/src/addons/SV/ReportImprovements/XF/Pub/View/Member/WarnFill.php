@@ -15,7 +15,7 @@ class WarnFill extends XFCP_WarnFill
         $warningDefinition = $this->params['definition'];
         /** @var \SV\ReportImprovements\XF\Repository\Warning $repo */
         $repo = \XF::repository('XF:Warning');
-        $value = $repo->getReplyBanForWarningDefinition($warningDefinition);
+        $value = $repo->getReplyBanForWarningDefinition($warningDefinition->warning_definition_id ?? 0);
         $response['formValues']["input[name='ban_length'][value='{$value}']"] = 1;
 
         return $response;
