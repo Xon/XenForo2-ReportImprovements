@@ -60,7 +60,15 @@ class ReportComment extends AbstractData
      */
     public function getEntityWith($forView = false)
     {
-        return ['Report', 'User', 'WarningLog'];
+        $get = ['Report', 'User', 'WarningLog'];
+
+        if ($forView)
+        {
+            $visitor = \XF::visitor();
+            $get[] = 'Report.Permissions|' . $visitor->permission_combination_id;
+        }
+
+        return $get;
     }
 
     /**

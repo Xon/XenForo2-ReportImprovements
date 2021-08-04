@@ -412,6 +412,29 @@ class Report extends XFCP_Report
             'primary'    => true,
         ];
 
+        $addOns = \XF::app()->container('addon.cache');
+        if (isset($addOns['SV/ReportCentreEssentials']))
+        {
+            $contentId = '$queue_id';
+        }
+        else
+        {
+            $contentId = '0';
+            throw new \LogicException("Require Report Centre Essentials");
+        }
+
+        $structure->relations['Permissions'] = [
+            'entity' => 'XF:PermissionCacheContent',
+            'type' => self::TO_MANY,
+            'conditions' => [
+                ['content_type', '=', 'report_queue'],
+                ['content_id', '=', $contentId]
+            ],
+            'key' => 'permission_combination_id',
+            'proxy' => true
+        ];
+
+
         return $structure;
     }
 }

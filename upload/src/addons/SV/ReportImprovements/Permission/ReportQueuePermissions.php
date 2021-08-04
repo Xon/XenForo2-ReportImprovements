@@ -19,8 +19,8 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
 
     public function getContentList()
     {
-        $addonsCache = \XF::app()->container('addon.cache');
-        if (isset($addonsCache['SV/ReportCentreEssentials']))
+        $addOns = \XF::app()->container('addon.cache');
+        if (isset($addOns['SV/ReportCentreEssentials']))
         {
             /** @var \SV\ReportCentreEssentials\Repository\ReportQueue $entryRepo */
             $entryRepo = $this->builder->em()->getRepository('SV\ReportCentreEssentials:ReportQueue');

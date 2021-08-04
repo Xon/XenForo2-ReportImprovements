@@ -307,7 +307,9 @@ class Report extends XFCP_Report
     protected function assertViewableReport($reportId, array $extraWith = [])
     {
         // avoid N+1 look up behaviour, just cache all node perms
-        \XF::visitor()->cacheNodePermissions();
+        $visitor = \XF::visitor();
+        $visitor->cacheNodePermissions();
+        $extraWith[] = 'Permissions|' . $visitor->permission_combination_id;
 
         return parent::assertViewableReport($reportId, $extraWith);
     }
@@ -321,9 +323,11 @@ class Report extends XFCP_Report
     protected function assertViewableReportComment($reportCommentId, array $extraWith = [])
     {
         // avoid N+1 look up behaviour, just cache all node perms
-        \XF::visitor()->cacheNodePermissions();
+        $visitor = \XF::visitor();
+        $visitor->cacheNodePermissions();
 
         $extraWith[] = 'Report';
+        $extraWith[] = 'Report.Permissions|' . $visitor->permission_combination_id;
 
         /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
         $reportComment = $this->em()->find('XF:ReportComment', $reportCommentId, $extraWith);

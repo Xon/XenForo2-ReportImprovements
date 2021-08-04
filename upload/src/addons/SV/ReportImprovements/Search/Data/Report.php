@@ -51,6 +51,23 @@ class Report extends AbstractData
     }
 
     /**
+     * @param bool $forView
+     * @return array
+     */
+    public function getEntityWith($forView = false)
+    {
+        $get = [];
+
+        if ($forView)
+        {
+            $visitor = \XF::visitor();
+            $get[] = 'Permissions|' . $visitor->permission_combination_id;
+        }
+
+        return $get;
+    }
+
+    /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
      * @return int
      */
