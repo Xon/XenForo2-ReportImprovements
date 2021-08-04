@@ -1,0 +1,5 @@
+{
+    "content_type": "report_queue",
+    "field_name": "permission_handler_class",
+    "field_value": "SV\\ReportImprovements\\Permission\\ReportQueuePermissions"
+}
