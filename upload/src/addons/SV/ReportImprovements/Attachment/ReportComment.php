@@ -151,9 +151,9 @@ class ReportComment extends AbstractHandler
         $reportId = (int)($context['report_id'] ?? 0);
         if ($reportId)
         {
-            /** @var ReportEntity $report */
+            /** @var ReportEntity|null $report */
             $report = $em->find('XF:Report', $reportId, $this->getReportWith());
-            if (!$report || !$report->canView() || !$report->canComment())
+            if ($report === null || !$report->canView() || !$report->canComment())
             {
                 return null;
             }

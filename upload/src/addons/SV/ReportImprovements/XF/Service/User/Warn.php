@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Service\User;
 
+use SV\ReportImprovements\Entity\IReportResolver;
 use XF\Mvc\Entity\Entity;
 
 /**
@@ -27,12 +28,20 @@ class Warn extends XFCP_Warn
 
     public function setResolveReport(bool $resolveReport, bool $alert, string $comment = '')
     {
-        $this->warning->setOption('svResolveReport', $resolveReport);
-        $this->warning->setOption('svResolveReportAlert', $alert);
-        $this->warning->setOption('svResolveReportAlertComment', $comment);
+        /** @var IReportResolver $entity */
+        $entity = $this->replyBanSvc ? $this->replyBanSvc->getReplyBan() : null;
+        if ($entity === null)
+        {
+            $entity = $this->warning;
+        }
+
+        if ($entity)
+        {
+            $entity->resolveReportFor($resolveReport, $alert, $comment);
+        }
     }
 
-    public function setupReplyBan(bool $sendAlert, string $reason, int $banLengthValue = null, string $banLengthUnit = null, bool $resolveReport = false, bool $alert = false, string $alertComment = '')
+    public function setupReplyBan(bool $sendAlert, string $reason, int $banLengthValue = null, string $banLengthUnit = null)
     {
         if (!$this->content instanceof \XF\Entity\Post)
         {
@@ -50,10 +59,6 @@ class Warn extends XFCP_Warn
         $this->replyBanSvc->setPost($post);
         $this->replyBanSvc->setSendAlert($sendAlert);
         $this->replyBanSvc->setReason($reason);
-        $replyBan = $this->replyBanSvc->getReplyBan();
-        $replyBan->setOption('svResolveReport', $resolveReport);
-        $replyBan->setOption('svResolveReportAlert', $alert);
-        $replyBan->setOption('svResolveReportAlertComment', $alertComment);
     }
 
     /**

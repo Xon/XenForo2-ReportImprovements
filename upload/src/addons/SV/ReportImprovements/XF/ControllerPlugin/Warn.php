@@ -3,7 +3,6 @@
 namespace SV\ReportImprovements\XF\ControllerPlugin;
 
 use SV\ReportImprovements\Entity\IReportResolver;
-use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\View;
 
@@ -71,16 +70,6 @@ class Warn extends XFCP_Warn
         /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
         $warning = $warnService->getWarning();
-        $resolveWarningReport = false;
-
-        $resolveReport = (bool)($input['resolve_report'] ?? false);
-
-        if ($resolveReport && $warning->canResolveLinkedReport())
-        {
-            $resolveAlert = (bool)($input['resolve_alert'] ?? false);
-            $resolveAlertComment = (string)($input['resolve_alert_comment'] ?? '');
-            $warning->resolveReportFor(true, $resolveAlert, $resolveAlertComment);
-        }
 
         if ($contentType === 'post' &&
             isset($input['ban_length']) &&
@@ -105,12 +94,26 @@ class Warn extends XFCP_Warn
                 $input['reply_ban_send_alert'],
                 $input['reply_ban_reason'],
                 $input['ban_length_value'],
-                $input['ban_length_unit'],
-                $resolveWarningReport,
-                $alert,
-                $alertComment
+                $input['ban_length_unit']
             );
         }
+
+        $resolveReport = (bool)($input['resolve_report'] ?? false);
+        $resolveAlert = (bool)($input['resolve_alert'] ?? false);
+        $resolveAlertComment = (string)($input['resolve_alert_comment'] ?? '');
+
+        if ($resolveReport && $warning->canResolveLinkedReport())
+        {
+            $warnService->setResolveReport(true, $resolveAlert, $resolveAlertComment);
+        }
+        else
+        {
+            $resolveReport = false;
+            $resolveAlert = false;
+            $resolveAlertComment = '';
+        }
+
+        $warnService->setResolveReport($resolveReport, $resolveAlert, $resolveAlertComment);
 
         return $warnService;
     }

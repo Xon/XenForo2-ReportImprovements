@@ -53,10 +53,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
 
         if (Globals::$resolveReplyBanOnDelete)
         {
-            // TODO: fix me; racy
-            $report = $this->Report;
-
-            $resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
+            $resolveWarningReport = $this->canResolveLinkedReport();
             $this->setOption('svResolveReport', $resolveWarningReport);
             // triggers action in ReportResolver::_postDelete()
         }

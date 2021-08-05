@@ -4,25 +4,23 @@ namespace SV\ReportImprovements\Behavior;
 
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Globals;
-use XF\Entity\Report;
 use XF\Mvc\Entity\Behavior;
 use XF\Mvc\Entity\Entity;
 
 class ReportResolver extends Behavior
 {
     /**
-     * @param bool          $resolveReport
-     * @param bool          $alert
-     * @param string        $alertComment
-     * @return Report|null
+     * @param bool   $resolveReport
+     * @param bool   $alert
+     * @param string $alertComment
+     * @return \SV\ReportImprovements\XF\Entity\Report|null
      */
     public function resolveReportFor(bool $resolveReport, bool $alert, string $alertComment)
     {
         /** @var Entity|IReportResolver $entity */
         $entity = $this->entity;
-        $resolveWarningReport = $resolveReport && $entity->canResolveLinkedReport();
 
-        if ($resolveWarningReport)
+        if ($resolveReport)
         {
             $entity->setOption('svResolveReport', true);
             $entity->setOption('svResolveReportAlert', $alert);

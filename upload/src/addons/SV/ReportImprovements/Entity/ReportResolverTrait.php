@@ -3,7 +3,8 @@
 namespace SV\ReportImprovements\Entity;
 
 use SV\ReportImprovements\Behavior\ReportResolver;
-use SV\ReportImprovements\XF\Entity\Report as Report;
+use SV\ReportImprovements\XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\User;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
@@ -15,17 +16,20 @@ trait ReportResolverTrait
         $report = $this->getRelation('Report');
         if ($report === null)
         {
-            return true;
+            /** @var User $visitor */
+            $visitor = \XF::visitor();
+
+            return $visitor->canViewReports();
         }
 
         return $report->canView() && $report->canUpdate($error);
     }
 
     /**
-     * @param bool          $resolveReport
-     * @param bool          $alert
-     * @param string        $alertComment
-     * @return Report|null
+     * @param bool   $resolveReport
+     * @param bool   $alert
+     * @param string $alertComment
+     * @return \XF\Entity\Report|null
      */
     public function resolveReportFor(bool $resolveReport, bool $alert, string $alertComment)
     {

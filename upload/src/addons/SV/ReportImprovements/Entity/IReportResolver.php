@@ -2,11 +2,11 @@
 
 namespace SV\ReportImprovements\Entity;
 
-use XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\Report;
 use XF\Entity\User;
 
 /**
- * @property Report Report
+ * @property Report|null Report
  */
 interface IReportResolver
 {
