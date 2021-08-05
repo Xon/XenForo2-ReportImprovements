@@ -2,7 +2,9 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
-use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\Behavior\ReportResolver;
+use SV\ReportImprovements\Entity\IReportResolver;
+use SV\ReportImprovements\Entity\ReportResolverTrait;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -13,25 +15,25 @@ use XF\Mvc\Entity\Structure;
  * RELATIONS
  * @property Report Report
  */
-class Warning extends XFCP_Warning
+class Warning extends XFCP_Warning implements IReportResolver
 {
+    use ReportResolverTrait;
+
+    public function getSvLogOperationTypeForReportResolve(): string
+    {
+        return (string)$this->getSvLogOperationType();
+    }
+
     /**
-     * @return string
+     * Support for Warning Acknowledgments, do not change type signature!
+     *
+     * @return string|null
      */
     protected function getSvLogOperationType()
     {
-        $type = $this->isUpdate() ? 'edit' : 'new';
-        if ($type === 'edit' && !$this->getExistingValue('is_expired') && $this->is_expired)
-        {
-            $type = 'expire';
-        }
-
-        if (Globals::$expiringFromCron && $type === 'expire' && empty(\XF::options()->svReportImpro_logNaturalWarningExpiry))
-        {
-            return null;
-        }
-
-        return $type;
+        /** @var ReportResolver $behavior */
+        $behavior = $this->getBehavior('SV\ReportImprovements:ReportResolver');
+        return $behavior->getLogOperationType();
     }
 
     /** @var ThreadReplyBan */
@@ -55,41 +57,24 @@ class Warning extends XFCP_Warning
             $this->svReplyBan->saveIfChanged();
         }
 
-        if ($this->getOption('svLogWarningChanges'))
-        {
-            $type = $this->getSvLogOperationType();
-            if ($type)
-            {
-                /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
-                $warningRepo = $this->repository('XF:Warning');
-                $warningRepo->logOperation($this, $type,
-                    (bool)$this->getOption('svResolveReport'),
-                    (bool)$this->getOption('svResolveReportAlert'),
-                    $this->getOption('svResolveReportAlertComment')
-                );
-            }
-        }
-
         parent::_postSave();
     }
 
     /**
-     * @throws \Exception
+     * @return \XF\Entity\User|null
      */
-    protected function _postDelete()
+    public function getResolveUser()
     {
-        parent::_postDelete();
-
-        if ($this->getOption('svLogWarningChanges'))
+        $reporter = null;
+        if (!$this->User)
         {
-            /** @var \SV\ReportImprovements\XF\Repository\Warning $warningRepo */
-            $warningRepo = $this->repository('XF:Warning');
-            $warningRepo->logOperation($this, 'delete',
-                (bool)$this->getOption('svResolveReport'),
-                (bool)$this->getOption('svResolveReportAlert'),
-                $this->getOption('svResolveReportAlertComment')
-            );
+            $reporter = $this->User;
         }
+        if (!$reporter && $this->WarnedBy)
+        {
+            $reporter = $this->WarnedBy;
+        }
+        return $reporter;
     }
 
     /**
@@ -100,19 +85,11 @@ class Warning extends XFCP_Warning
     {
         $structure = parent::getStructure($structure);
 
-        $structure->relations['Report'] = [
-            'entity'     => 'XF:Report',
-            'type'       => self::TO_ONE,
-            'conditions' => [
-                ['content_type', '=', '$content_type'],
-                ['content_id', '=', '$content_id'],
-            ],
-        ];
-
-        $structure->options['svLogWarningChanges'] = true;
-        $structure->options['svResolveReport'] = false;
-        $structure->options['svResolveReportAlert'] = false;
-        $structure->options['svResolveReportAlertComment'] = '';
+        static::addReportResolverStructureElements($structure, [
+            ['content_type', '=', '$content_type'],
+            ['content_id', '=', '$content_id'],
+        ], [
+        ]);
 
         return $structure;
     }

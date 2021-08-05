@@ -41,61 +41,6 @@ class Warning extends XFCP_Warning
         }
     }
 
-    /**
-     * @param WarningEntity $warning
-     * @param string        $type
-     * @param boolean       $resolveReport
-     * @param bool          $alert
-     * @param string        $alertComment
-     * @throws \Exception
-     */
-    public function logOperation(WarningEntity $warning, string $type, bool $resolveReport, bool $alert, string $alertComment)
-    {
-        $reporter = \XF::visitor();
-        $options = \XF::options();
-        $expiringFromCron = Globals::$expiringFromCron;
-        if ($expiringFromCron || !$reporter->user_id)
-        {
-            $expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
-            $reporter = $this->app()->find('XF:User', $expireUserId);
-            if (!$reporter)
-            {
-                $reporter = $this->app()->find('XF:User', 1);
-            }
-            if (!$reporter && $warning->User)
-            {
-                $reporter = $warning->User;
-            }
-            if (!$reporter && $warning->WarnedBy)
-            {
-                $reporter = $warning->WarnedBy;
-            }
-            if (!$reporter)
-            {
-                $reporter = \XF::visitor();
-            }
-        }
-
-        \XF::asVisitor($reporter, function () use ($reporter, $warning, $type, $resolveReport, $expiringFromCron, $alert, $alertComment) {
-            /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
-            $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $warning, $type);
-            $warningLogCreator->setAutoResolve($resolveReport, $alert, $alertComment);
-            if ($expiringFromCron)
-            {
-                $warningLogCreator->setCanReopenReport(false);
-            }
-            if ($warningLogCreator->validate($errors))
-            {
-                $warningLogCreator->save();
-                \XF::runLater(function () use ($warningLogCreator, $reporter) {
-                    \XF::asVisitor($reporter, function () use ($warningLogCreator) {
-                        $warningLogCreator->sendNotifications();
-                    });
-                });
-            }
-        });
-    }
-
     public function getReplyBanForWarningDefinition(int $warningDefinitionId): string
     {
         $options = \XF::options();

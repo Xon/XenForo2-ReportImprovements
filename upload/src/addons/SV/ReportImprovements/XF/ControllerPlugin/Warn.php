@@ -2,9 +2,8 @@
 
 namespace SV\ReportImprovements\XF\ControllerPlugin;
 
+use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
-use XF\Entity\Warning as WarningEntity;
-use XF\Service\Thread\ReplyBan as ReplyBanEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\View;
 
@@ -17,25 +16,15 @@ use XF\Mvc\Reply\View;
 class Warn extends XFCP_Warn
 {
     /**
-     * @param WarningEntity|ReplyBanEntity $entity
+     * @param Entity|IReportResolver $entity
      */
-    public function resolveReportFor(Entity $entity, ExtendedReportEntity $report = null, callable $getReport = null)
+    public function resolveReportFor(Entity $entity)
     {
         if ($this->controller->request()->exists('resolve_report') &&
-            $this->filter('resolve_report', 'bool'))
+            $this->filter('resolve_report', 'bool') &&
+            $entity->canResolveLinkedReport())
         {
-            if (!$report && $getReport)
-            {
-                /** @var ExtendedReportEntity $report */
-                $report = $getReport();
-            }
-
-            if (!$report || ($report->canView() && $report->canUpdate($error)))
-            {
-                $entity->setOption('svResolveReport',true);
-                $entity->setOption('svResolveReportAlert', $this->filter('resolve_alert', 'bool'));
-                $entity->setOption('svResolveReportAlertComment', $this->filter('resolve_alert_comment', 'str'));
-            }
+            $entity->resolveReportFor(true, $this->filter('resolve_alert', 'bool'), $this->filter('resolve_alert_comment', 'str'));
         }
     }
 
@@ -81,29 +70,17 @@ class Warn extends XFCP_Warn
     {
         /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
-
+        $warning = $warnService->getWarning();
         $resolveWarningReport = false;
-        $alert = false;
-        $alertComment = '';
 
-        if (!empty($input['resolve_report']))
+        $resolveReport = (bool)($input['resolve_report'] ?? false);
+
+        if ($resolveReport && $warning->canResolveLinkedReport())
         {
-            // TODO: fix me; racy
-            /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-            $report = $this->finder('XF:Report')
-                           ->where('content_type', $contentType)
-                           ->where('content_id', $content->getEntityId())
-                           ->fetchOne();
-
-            $resolveWarningReport = !$report || $report->canView() && $report->canUpdate($error);
-
-            if ($resolveWarningReport)
-            {
-                $alert = (bool)($input['resolve_alert'] ?? false);
-                $alertComment = $input['resolve_alert_comment'] ?? '';
-            }
+            $resolveAlert = (bool)($input['resolve_alert'] ?? false);
+            $resolveAlertComment = (string)($input['resolve_alert_comment'] ?? '');
+            $warning->resolveReportFor(true, $resolveAlert, $resolveAlertComment);
         }
-        $warnService->setResolveReport($resolveWarningReport, $alert, $alertComment);
 
         if ($contentType === 'post' &&
             isset($input['ban_length']) &&

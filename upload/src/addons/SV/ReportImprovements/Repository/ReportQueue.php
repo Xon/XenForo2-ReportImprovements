@@ -1,13 +1,17 @@
 <?php
 namespace SV\ReportImprovements\Repository;
 
+use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\WarningLog;
+use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\Post;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\XF\Entity\Thread;
 use XF\Entity\ThreadReplyBan;
+use XF\Entity\Warning as WarningEntity;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
+use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Repository;
 
 class ReportQueue extends Repository
@@ -131,5 +135,61 @@ class ReportQueue extends Repository
                 }
             }
         }
+    }
+
+
+    /**
+     * @param Entity|IReportResolver $entity
+     * @param string                 $type
+     * @param boolean                $resolveReport
+     * @param bool                   $alert
+     * @param string                 $alertComment
+     * @throws \Exception
+     */
+    public function logToReport(IReportResolver $entity, string $type, bool $resolveReport, bool $alert, string $alertComment)
+    {
+        $reporter = \XF::visitor();
+        $options = \XF::options();
+        $expiringFromCron = Globals::$expiringFromCron ?? false;
+        if ($expiringFromCron || !$reporter->user_id)
+        {
+            $expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
+            $reporter = $this->app()->find('XF:User', $expireUserId);
+            if (!$reporter)
+            {
+                $reporter = $this->app()->find('XF:User', 1);
+            }
+            if (!$reporter)
+            {
+                $reporter = $entity->getResolveUser();
+            }
+            if (!$reporter)
+            {
+                $reporter = \SV\StandardLib\Helper::repo()->getUserEntity($entity);
+            }
+            if (!$reporter)
+            {
+                $reporter = \XF::visitor();
+            }
+        }
+
+        \XF::asVisitor($reporter, function () use ($reporter, $entity, $type, $resolveReport, $expiringFromCron, $alert, $alertComment) {
+            /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
+            $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $entity, $type);
+            $warningLogCreator->setAutoResolve($resolveReport, $alert, $alertComment);
+            if ($expiringFromCron)
+            {
+                $warningLogCreator->setCanReopenReport(false);
+            }
+            if ($warningLogCreator->validate($errors))
+            {
+                $warningLogCreator->save();
+                \XF::runLater(function () use ($warningLogCreator, $reporter) {
+                    \XF::asVisitor($reporter, function () use ($warningLogCreator) {
+                        $warningLogCreator->sendNotifications();
+                    });
+                });
+            }
+        });
     }
 }

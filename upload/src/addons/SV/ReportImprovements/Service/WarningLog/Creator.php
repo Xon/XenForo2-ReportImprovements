@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Service\WarningLog;
 
+use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
 use XF\Entity\ThreadReplyBan;
@@ -71,15 +72,22 @@ class Creator extends AbstractService
     /**
      * Creator constructor.
      *
-     * @param \XF\App $app
-     * @param Entity  $content
-     * @param         $operationType
+     * @param \XF\App         $app
+     * @param IReportResolver $content
+     * @param string          $operationType
      * @throws \Exception
      */
-    public function __construct(\XF\App $app, Entity $content, $operationType)
+    public function __construct(\XF\App $app, IReportResolver $content, string $operationType)
     {
         parent::__construct($app);
 
+        $this->operationType = $operationType;
+        $this->setContent($content);
+        $this->setupDefaults();
+    }
+
+    protected function setContent(IReportResolver $content)
+    {
         if ($content instanceof Warning)
         {
             $this->warning = $content;
@@ -92,9 +100,6 @@ class Creator extends AbstractService
         {
             throw new \LogicException('Unsupported content type provided.');
         }
-
-        $this->operationType = $operationType;
-        $this->setupDefaults();
     }
 
     public function setAutoResolve(bool $autoResolve, bool $alert, string $alertComment)

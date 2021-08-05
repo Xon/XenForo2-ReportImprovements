@@ -13,6 +13,14 @@ use XF\Mvc\Entity\Entity;
 class Warn extends XFCP_Warn
 {
     /**
+     * @return \ SV\ReportImprovements\XF\Entity\Warning|\XF\Entity\Warning|Entity|null
+     */
+    public function getWarning()
+    {
+        return $this->warning;
+    }
+
+    /**
      * @var \XF\Service\Thread\ReplyBan|\SV\ReportImprovements\XF\Service\Thread\ReplyBan
      */
     protected $replyBanSvc;

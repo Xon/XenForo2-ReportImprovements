@@ -41,13 +41,7 @@ class Thread extends XFCP_Thread
 
         /** @var \SV\ReportImprovements\XF\ControllerPlugin\Warn $warnPlugin */
         $warnPlugin = $this->plugin('XF:Warn');
-        $warnPlugin->resolveReportFor($replyBan, null, function() use ($replyBan) {
-            // TODO: fix me; racy
-            return $this->finder('XF:Report')
-                        ->where('content_type', 'user')
-                        ->where('content_id', $replyBan->user_id)
-                        ->fetchOne();
-        });
+        $warnPlugin->resolveReportFor($replyBan);
 
         return $replyBanSrv;
     }

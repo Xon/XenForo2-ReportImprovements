@@ -38,7 +38,7 @@ class Warning extends XFCP_Warning
 
         /** @var \SV\ReportImprovements\XF\ControllerPlugin\Warn $warnPlugin */
         $warnPlugin = $this->plugin('XF:Warn');
-        $warnPlugin->resolveReportFor($warning, $warning->Report);
+        $warnPlugin->resolveReportFor($warning);
 
         return parent::actionDelete($params);
     }
@@ -56,7 +56,7 @@ class Warning extends XFCP_Warning
 
         /** @var \SV\ReportImprovements\XF\ControllerPlugin\Warn $warnPlugin */
         $warnPlugin = $this->plugin('XF:Warn');
-        $warnPlugin->resolveReportFor($warning, $warning->Report);
+        $warnPlugin->resolveReportFor($warning);
 
         return parent::actionExpire($params);
     }
