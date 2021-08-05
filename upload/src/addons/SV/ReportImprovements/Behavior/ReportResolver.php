@@ -49,7 +49,10 @@ class ReportResolver extends Behavior
 
     public function postSave()
     {
-        if ($this->getOption('svLogWarningChanges'))
+        /** @var Entity|IReportResolver $entity */
+        $entity = $this->entity;
+
+        if ($entity->getOption('svLogWarningChanges'))
         {
             $this->logToReport($this->getSvLogOperationType());
         }
@@ -57,28 +60,13 @@ class ReportResolver extends Behavior
 
     public function postDelete()
     {
-        if ($this->getOption('svLogWarningChanges'))
+        /** @var Entity|IReportResolver $entity */
+        $entity = $this->entity;
+
+        if ($entity->getOption('svLogWarningChanges'))
         {
             $this->logToReport($this->getSvLogOperationType());
         }
-    }
-
-    /**
-     * @return int|null
-     */
-    protected function getExpiry()
-    {
-        $expiryField = $this->getConfig('expiryField') ?? '';
-        if (\strlen($expiryField) === 0 &&
-            !$this->entity->isValidGetter($expiryField) &&
-            !$this->entity->isValidColumn($expiryField))
-        {
-            return null;
-        }
-
-        $expiry = (int)$this->entity->get($expiryField);
-
-        return $expiry === 0 ? null : $expiry;
     }
 
     protected function isExpired(): bool
@@ -104,7 +92,7 @@ class ReportResolver extends Behavior
 
         $isExpired = false;
         $isExpiredField = $this->getConfig('isExpiredField') ?? '';
-        if (\strlen($isExpiredField) === 0 &&
+        if (\strlen($isExpiredField) !== 0 &&
             !$this->entity->isValidGetter($isExpiredField) &&
             !$this->entity->isValidColumn($isExpiredField))
         {

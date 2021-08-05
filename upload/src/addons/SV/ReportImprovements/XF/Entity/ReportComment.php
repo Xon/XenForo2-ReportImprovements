@@ -169,9 +169,18 @@ class ReportComment extends XFCP_ReportComment
     {
         $options = parent::getBbCodeRenderOptions($context, $type);
 
-        $options['attachments'] = $this->attach_count ? $this->Attachments : [];
-        $options['viewAttachments'] = $this->Report->canViewAttachments();
-        $options['unfurls'] = $this->Unfurls ?? [];
+        if ($this->is_report)
+        {
+            $options['attachments'] = 0;
+            $options['viewAttachments'] = false;
+            $options['unfurls'] = [];
+        }
+        else
+        {
+            $options['attachments'] = $this->attach_count ? $this->Attachments : [];
+            $options['viewAttachments'] = $this->Report && $this->Report->canViewAttachments();
+            $options['unfurls'] = $this->Unfurls ?? [];
+        }
 
         return $options;
     }
