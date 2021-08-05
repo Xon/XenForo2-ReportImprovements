@@ -97,7 +97,7 @@ class Commenter extends XFCP_Commenter
         $sendAlert = $this->sendAlert;
         $this->sendAlert = false;
 
-        if ($sendAlert && $comment->isClosureComment())
+        if ($sendAlert && $comment->isClosureComment() && !$this->report->isClosed())
         {
             $comment->alertSent = true;
             $comment->alertComment = $this->alertComment;
