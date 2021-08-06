@@ -14,7 +14,7 @@ class Report
         $options = \XF::options();
         $daysLimit = (int)($options->svReportImpro_autoExpireDays ?? 0);
         $expireAction = $options->svReportImpro_autoExpireAction ?? '';
-        if ($daysLimit <= 0 || !$expireAction)
+        if ($daysLimit <= 0 || \strlen($expireAction) === 0)
         {
             return;
         }

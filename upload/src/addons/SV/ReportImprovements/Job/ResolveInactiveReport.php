@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Job;
 
 use XF\Job\AbstractRebuildJob;
+use XF\Mvc\Entity\AbstractCollection;
 
 /**
  * Class ResolveInactiveReport
@@ -11,8 +12,35 @@ use XF\Job\AbstractRebuildJob;
  */
 class ResolveInactiveReport extends AbstractRebuildJob
 {
-    /** @var \XF\Entity\User */
-    protected $reporter;
+    /** @var \XF\Entity\User|null */
+    protected $reporter = null;
+
+    /**  @var int */
+    protected $daysLimit;
+    /** @var string */
+    protected $expireAction;
+    /**  @var int */
+    protected $expireUserId;
+
+    protected function setupData(array $data)
+    {
+        $options = $this->app->options();
+        $this->daysLimit = (int)($options->svReportImpro_autoExpireDays ?? 0);
+        $this->expireAction = (string)($options->svReportImpro_autoExpireAction ?? '');
+        $this->expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
+
+        $this->reporter = $this->app->find('XF:User', $this->expireUserId);
+        if (!$this->reporter)
+        {
+            $this->reporter = $this->app->find('XF:User', 1);
+        }
+        if (!$this->reporter)
+        {
+            \XF::logError('Require Comment Reporter (svReportImpro_expireUserId) to point to a valid user');
+        }
+
+        return parent::setupData($data);
+    }
 
     /**
      * @param int $start
@@ -21,24 +49,9 @@ class ResolveInactiveReport extends AbstractRebuildJob
      */
     protected function getNextIds($start, $batch)
     {
-        $options = $this->app->options();
-        $daysLimit = (int)($options->svReportImpro_autoExpireDays ?? 0);
-        $expireAction = $options->svReportImpro_autoExpireAction ?? '';
-        if ($daysLimit <= 0 || !$expireAction)
-        {
-            return null;
-        }
-
-        $app = $this->app;
-        $options = $app->options();
-        /** @var  $reporter */
-        $expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
-        $this->reporter = \XF::app()->find('XF:User', $expireUserId);
-        if (!$this->reporter)
-        {
-            $this->reporter = $app->find('XF:User', 1);
-        }
-        if (!$this->reporter)
+        if ($this->daysLimit <= 0 ||
+            \strlen($this->expireAction) === 0 ||
+            $this->reporter === null)
         {
             return null;
         }
@@ -54,7 +67,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
 				  AND last_modified_date <= ?
 				ORDER BY report_id
 			', $batch
-        ), [$start, 'open', \XF::$time - (60 * 60 * 24 * $daysLimit)]);
+        ), [$start, 'open', \XF::$time - (60 * 60 * 24 * $this->daysLimit)]);
     }
 
     /**
@@ -63,21 +76,39 @@ class ResolveInactiveReport extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        $expireAction = $options->svReportImpro_autoExpireAction ?? '';
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         $report = $this->app->em()->find('XF:Report', $id);
-        if ($report && $expireAction)
+        if ($report === null)
         {
-            \XF::asVisitor($this->reporter, function () use ($report, $expireAction) {
-                /** @var \SV\ReportImprovements\XF\Service\Report\Commenter $commenterService */
-                $commenterService = $this->app->service('XF:Report\Commenter', $report);
-                $commenterService->setReportState($expireAction);
-                if ($commenterService->validate($errors))
-                {
-                    $commenterService->save();
-                }
-            });
+            return;
         }
+
+        \XF::asVisitor($this->reporter, function () use ($report) {
+            /** @var \SV\ReportImprovements\XF\Service\Report\Commenter $commenterService */
+            $commenterService = $this->app->service('XF:Report\Commenter', $report);
+            $commenterService->setReportState($this->expireAction);
+            if ($commenterService->validate($errors))
+            {
+                $commenterService->save();
+            }
+            else
+            {
+                if ($errors instanceof AbstractCollection)
+                {
+                    $errors = $errors->toArray();
+                }
+                else if (!\is_array($errors))
+                {
+                    $errors = [$errors];
+                }
+
+                foreach ($errors as &$string)
+                {
+                    $string = (string)$string;
+                }
+                \XF::logError('Error resolving inactive report:' . \var_export($errors, true));
+            }
+        });
     }
 
     /**
