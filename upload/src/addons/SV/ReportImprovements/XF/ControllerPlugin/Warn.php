@@ -102,11 +102,7 @@ class Warn extends XFCP_Warn
         $resolveAlert = (bool)($input['resolve_alert'] ?? false);
         $resolveAlertComment = (string)($input['resolve_alert_comment'] ?? '');
 
-        if ($resolveReport && $warning->canResolveLinkedReport())
-        {
-            $warnService->setResolveReport(true, $resolveAlert, $resolveAlertComment);
-        }
-        else
+        if (!$resolveReport || !$warning->canResolveLinkedReport())
         {
             $resolveReport = false;
             $resolveAlert = false;
