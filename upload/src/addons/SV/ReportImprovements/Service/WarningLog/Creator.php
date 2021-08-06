@@ -483,7 +483,7 @@ class Creator extends AbstractService
             'state_change'   => $resolveState,
         ], ['forceSet' => true]);
 
-        if ($resolveState)
+        if (\strlen($resolveState) !== 0)
         {
             $report = $this->report;
             $report->set('report_state', $resolveState, ['forceSet' => true]);
@@ -505,10 +505,20 @@ class Creator extends AbstractService
             'state_change'   => $resolveState,
         ], ['forceSet' => true]);
 
-        if ($resolveState)
+        if (\strlen($resolveState) !== 0)
         {
             $this->report->set('report_state', $resolveState, ['forceSet' => true]);
             $this->reportComment->addCascadedSave($this->report);
+        }
+
+        // XF\Service\Report\Commenter::finalSetup skips recording/sending the alert, as the comment state hasn't been updated
+        if ($this->reportCommenter->isSendAlert() &&
+            !$this->reportComment->alertSent && $this->reportComment->isClosureComment())
+        {
+            $this->reportComment->bulkSet([
+                'alertSent' => true,
+                'alertComment' => $this->reportCommenter->getAlertComment(),
+            ], ['forceSet' => true]);
         }
     }
 

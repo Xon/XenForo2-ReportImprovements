@@ -38,6 +38,16 @@ class Commenter extends XFCP_Commenter
         return $this;
     }
 
+    public function isSendAlert(): bool
+    {
+        return $this->sendAlert;
+    }
+
+    public function getAlertComment(): string
+    {
+        return $this->alertComment;
+    }
+
     protected function setCommentDefaults()
     {
         parent::setCommentDefaults();
