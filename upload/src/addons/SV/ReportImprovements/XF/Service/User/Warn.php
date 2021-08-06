@@ -59,6 +59,8 @@ class Warn extends XFCP_Warn
         $this->replyBanSvc->setPost($post);
         $this->replyBanSvc->setSendAlert($sendAlert);
         $this->replyBanSvc->setReason($reason);
+        // prevent the warning from re-opening a resolved report
+        $this->warning->setOption('svCanReopenReport', true);
     }
 
     /**

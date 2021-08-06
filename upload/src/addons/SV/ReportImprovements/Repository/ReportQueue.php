@@ -141,16 +141,18 @@ class ReportQueue extends Repository
     /**
      * @param Entity|IReportResolver $entity
      * @param string                 $type
+     * @param bool                   $canReopenReport
      * @param boolean                $resolveReport
      * @param bool                   $alert
      * @param string                 $alertComment
      * @throws \Exception
      */
-    public function logToReport(IReportResolver $entity, string $type, bool $resolveReport, bool $alert, string $alertComment)
+    public function logToReport(IReportResolver $entity, string $type, bool $canReopenReport, bool $resolveReport, bool $alert, string $alertComment)
     {
         $reporter = \XF::visitor();
         $options = \XF::options();
         $expiringFromCron = Globals::$expiringFromCron ?? false;
+        $canReopenReport = !$expiringFromCron && $canReopenReport;
         if ($expiringFromCron || !$reporter->user_id)
         {
             $expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
@@ -173,14 +175,11 @@ class ReportQueue extends Repository
             }
         }
 
-        \XF::asVisitor($reporter, function () use ($reporter, $entity, $type, $resolveReport, $expiringFromCron, $alert, $alertComment) {
+        \XF::asVisitor($reporter, function () use ($reporter, $entity, $type, $resolveReport, $canReopenReport, $alert, $alertComment) {
             /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
             $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $entity, $type);
             $warningLogCreator->setAutoResolve($resolveReport, $alert, $alertComment);
-            if ($expiringFromCron)
-            {
-                $warningLogCreator->setCanReopenReport(false);
-            }
+            $warningLogCreator->setCanReopenReport($canReopenReport);
             if ($warningLogCreator->validate($errors))
             {
                 $warningLogCreator->save();

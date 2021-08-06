@@ -46,6 +46,7 @@ trait ReportResolverTrait
             'conditions' => $reportRelationConditions,
         ];
 
+        $structure->options['svCanReopenReport'] = true;
         $structure->options['svResolveReport'] = false;
         $structure->options['svResolveReportAlert'] = false;
         $structure->options['svResolveReportAlertComment'] = '';
