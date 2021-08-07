@@ -93,7 +93,7 @@ class ReportComment extends XFCP_ReportComment
             return true;
         }
 
-        return true;
+        return false;
     }
 
     /** @noinspection PhpUnusedParameterInspection */
