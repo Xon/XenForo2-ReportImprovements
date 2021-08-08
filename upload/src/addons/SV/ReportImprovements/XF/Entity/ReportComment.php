@@ -76,7 +76,7 @@ class ReportComment extends XFCP_ReportComment
             return true;
         }
 
-        if ($this->user_id === $visitor->user_id && $this->hasReportPermission('editAny'))
+        if ($this->user_id === $visitor->user_id && $this->hasReportPermission('edit'))
         {
             $editLimit = (int)$this->hasReportPermission('editOwnPostTimeLimit');
             if ($editLimit !== -1 && ($editLimit === 0 || $this->comment_date < \XF::$time - 60 * $editLimit))
