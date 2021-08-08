@@ -69,12 +69,11 @@ class ReportResolver extends Behavior
         }
     }
 
-    protected function isExpired(): bool
+    protected function isJustExpired(): bool
     {
         $expiryField = $this->getConfig('expiryField') ?? '';
         if (\strlen($expiryField) === 0 &&
-            !$this->entity->isValidGetter($expiryField) &&
-            !$this->entity->isValidColumn($expiryField))
+            (!$this->entity->isValidGetter($expiryField) || !$this->entity->isValidColumn($expiryField)))
         {
             return false;
         }
@@ -85,22 +84,27 @@ class ReportResolver extends Behavior
             return false;
         }
 
+        $isExpired = false;
+        $wasExpired = false;
+        $isExpiredField = $this->getConfig('isExpiredField') ?? '';
+        if (\strlen($isExpiredField) !== 0 &&
+            (!$this->entity->isValidGetter($isExpiredField) || !$this->entity->isValidColumn($isExpiredField)))
+        {
+            $isExpired = (bool)$this->entity->get($isExpiredField);
+            $wasExpired = (bool)$this->entity->getPreviousValue($isExpiredField);
+        }
+
+        if ($isExpired && $wasExpired)
+        {
+            return false;
+        }
+
         if (\XF::$time >= $expiryDate)
         {
             return true;
         }
 
-        $isExpired = false;
-        $isExpiredField = $this->getConfig('isExpiredField') ?? '';
-        if (\strlen($isExpiredField) !== 0 &&
-            !$this->entity->isValidGetter($isExpiredField) &&
-            !$this->entity->isValidColumn($isExpiredField))
-        {
-            $isExpired = (bool)$this->entity->get($isExpiredField);
-        }
-
-
-        return $isExpired;
+        return false;
     }
 
     protected function getSvLogOperationType(): string
@@ -123,7 +127,7 @@ class ReportResolver extends Behavior
             $type = 'new';
         }
         // it is deliberate that isExpiry check occurs before delete/edit
-        else if ($this->isExpired())
+        else if ($this->isJustExpired())
         {
             $type = 'expire';
 
