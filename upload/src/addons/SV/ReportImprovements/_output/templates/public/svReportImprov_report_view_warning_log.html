@@ -3,10 +3,21 @@
 	<dd class="warning_{$comment.WarningLog.operation_type}">{{ $comment.WarningLog.OperationTypePhrase }}</dd>
 </dl>
 
+<xf:set var="$warningTitle" value="{$comment.WarningLog.title}" />
+<xf:set var="$publicBanner" value="{$comment.WarningLog.public_banner}" />
 <dl class="pairs pairs--justified fauxBlockLink">
-	<dt>{{ phrase('warning') }}</dt>
-	<dd>{$comment.WarningLog.title}</dd>
+	<dt>{{ phrase('warning') }}{{ ($publicBanner !== null && $publicBanner !== $warningTitle) 
+		? ' / ' . phrase('svReportImprove_public_banner') 
+		: '' }}</dt>
+	<dd>{$warningTitle}</dd>
 </dl>
+
+<xf:if is="$publicBanner !== null && $publicBanner !== $warningTitle">
+<dl class="pairs pairs--justified fauxBlockLink">
+	<dt>{{ phrase('svReportImprove_public_banner') }}</dt>
+	<dd>{$publicBanner}</dd>
+</dl>
+</xf:if>
 
 <dl class="pairs pairs--justified fauxBlockLink">
 	<dt>{{ phrase('points') }}</dt>

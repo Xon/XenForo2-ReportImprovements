@@ -309,6 +309,11 @@ class Setup extends AbstractSetup
         ', ['report_queue', 'conversation', 'viewReportConversation']);
     }
 
+    public function upgrade2100100Step1()
+    {
+        $this->installStep1();
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -654,6 +659,7 @@ class Setup extends AbstractSetup
 
             $this->addOrChangeColumn($table, 'reply_ban_thread_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'reply_ban_post_id', 'int')->nullable(true)->setDefault(null);
+            $this->addOrChangeColumn($table, 'public_banner', 'varchar', 255)->nullable()->setDefault(null);
 
             $table->addKey('warning_id');
             $table->addKey(['content_type', 'content_id'], 'content_type_id');

@@ -117,6 +117,13 @@ class ReportResolver extends Behavior
         return $this->getLogOperationType();
     }
 
+    protected function entityHasChangesToLog(): bool
+    {
+        $entity = $this->entity;
+
+        return $entity->hasChanges() || $entity->getOption('svPublicBanner') !== null;
+    }
+
     public function getLogOperationType(): string
     {
         $entity = $this->entity;
@@ -136,7 +143,7 @@ class ReportResolver extends Behavior
                 $type = '';
             }
         }
-        else if ($entity->isUpdate() && $entity->hasChanges())
+        else if ($entity->isUpdate() && $this->entityHasChangesToLog())
         {
             $type = 'edit';
         }

@@ -247,6 +247,7 @@ class Creator extends AbstractService
                 $warningLog->set($field, $fieldValue);
             }
         }
+        $warningLog->public_banner = $warning->getOption('svPublicBanner');
 
         if ($report)
         {
@@ -295,6 +296,7 @@ class Creator extends AbstractService
         $warningLog->content_type = $content->getEntityContentType();
         $warningLog->content_id = $content->getExistingEntityId();
         $warningLog->content_title = $contentTitle;
+        $warningLog->public_banner = $threadReplyBan->getOption('svPublicBanner');
         $warningLog->expiry_date = (int)$threadReplyBan->expiry_date;
         $warningLog->is_expired = $threadReplyBan->expiry_date > \XF::$time;
         $warningLog->reply_ban_thread_id = $threadReplyBan->thread_id;

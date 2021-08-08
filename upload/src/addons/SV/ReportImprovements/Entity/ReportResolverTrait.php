@@ -52,6 +52,7 @@ trait ReportResolverTrait
         $structure->options['svResolveReportAlertComment'] = '';
 
         $structure->options['svLogWarningChanges'] = true;
+        $structure->options['svPublicBanner'] = null;
         $structure->behaviors['SV\ReportImprovements:ReportResolver'] = $behaviourOptions;
     }
 }

@@ -27,6 +27,7 @@ use XF\Mvc\Entity\Structure;
  * @property string                    extra_user_group_ids
  * @property int|null                  reply_ban_thread_id
  * @property int|null                  reply_ban_post_id
+ * @property string|null               public_banner
  * GETTERS
  * @property \XF\Entity\ThreadReplyBan ReplyBan
  * RELATIONS
@@ -133,6 +134,7 @@ class WarningLog extends Entity
             'content_type'          => ['type' => self::BINARY, 'maxLength' => 25, 'required' => true],
             'content_id'            => ['type' => self::UINT, 'required' => true],
             'content_title'         => ['type' => self::STR, 'maxLength' => 255, 'default' => ''],
+            'public_banner'         => ['type' => self::STR, 'maxLength' => 255, 'nullable' => true, 'default' => null],
             'user_id'               => ['type' => self::UINT, 'required' => true],
             'warning_date'          => ['type' => self::UINT, 'required' => true],
             'warning_user_id'       => ['type' => self::UINT, 'required' => true],
