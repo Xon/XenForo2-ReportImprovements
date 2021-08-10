@@ -8,6 +8,9 @@ use XF\Mvc\Entity\Entity;
 
 class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
 {
+    protected $privatePermissionGroupId = 'general';
+    protected $privatePermissionId = 'viewReports';
+
     protected function getContentType(): string
     {
         return 'report_queue';
@@ -42,7 +45,7 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
     public function isValidPermission(\XF\Entity\Permission $permission): bool
     {
         return $permission->permission_group_id === 'report_queue' ||
-               ($permission->permission_group_id === 'general' && $permission->permission_id === 'viewReports');
+               ($permission->permission_group_id === $this->privatePermissionGroupId && $permission->permission_id === $this->privatePermissionId);
     }
 
     protected function getFinalPerms($contentId, array $calculated, array &$childPerms): array
@@ -53,11 +56,14 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
         }
 
         $final = $this->builder->finalizePermissionValues($calculated['report_queue']);
-        $final = $final + $this->builder->finalizePermissionValues($calculated['general']);
-
-        if (empty($final['viewReports']))
+        if ($this->privatePermissionGroupId !== 'report_queue')
         {
-            $childPerms['general']['viewReports'] = 'deny';
+            $final = $final + $this->builder->finalizePermissionValues($calculated[$this->privatePermissionGroupId]);
+        }
+
+        if (empty($final[$this->privatePermissionId]))
+        {
+            $childPerms[$this->privatePermissionGroupId][$this->privatePermissionId] = 'deny';
             $final = [];
         }
 
@@ -68,9 +74,9 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
     {
         $final = $this->builder->finalizePermissionValues($calculated);
 
-        if (empty($final['general']['viewReports']))
+        if (empty($final[$this->privatePermissionGroupId][$this->privatePermissionId]))
         {
-            $childPerms['general']['viewReports'] = 'deny';
+            $childPerms[$this->privatePermissionGroupId][$this->privatePermissionId] = 'deny';
         }
 
         return $final;
