@@ -213,6 +213,12 @@ class Report extends XFCP_Report
 
         if ($reportQueueId !== 0)
         {
+            // When Report Centre Essentials is installed, the per-queue view permission is changed
+            if ($permission === 'viewReports')
+            {
+                $permission = 'view';
+            }
+
             return $visitor->hasContentPermission('report_queue', $reportQueueId, $permission);
         }
 
