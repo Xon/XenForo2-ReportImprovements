@@ -457,14 +457,8 @@ class Creator extends AbstractService
         $report = $this->report;
         if ($newReportState === '' && ($report->report_state === 'resolved' || $report->report_state === 'rejected'))
         {
-            // re-open an existing report
-            $newReportState = $report->assigned_user_id
-                ? 'assigned'
-                : 'open';
-            if ($newReportState === 'open' && !$this->canReopenReport)
-            {
-                $newReportState = '';
-            }
+            // re-open an existing report. If assigned, do not change to an 'assigned' state
+            $newReportState = $this->canReopenReport ? 'open' : '';
         }
         // do not change the report state to something it already is
         if ($newReportState !== '' && $report->report_state === $newReportState)
