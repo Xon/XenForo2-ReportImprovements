@@ -18,7 +18,7 @@
 				<a href="{{ link('reports', $report) }}#report-comment-{$reportComment.report_comment_id}">{{ snippet($report.title_string, 100, {'term': $options.term, 'fromStart': true, 'stripPlainTag': true}) }}</a>
 			</h3>
 			
-			<div class="contentRow-snippet">{{ snippet($reportComment.message, 300, {'term': $options.term, 'stripPlainTag': true}) }}</div>
+			<div class="contentRow-snippet">{{ snippet($reportComment.message, 300, {'term': $options.term, 'stripQuote': true}) }}</div>
 
 			<div class="contentRow-minor contentRow-minor--hideLinks">
 				<ul class="listInline listInline--bullet">
