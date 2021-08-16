@@ -8,7 +8,6 @@ use SV\ReportImprovements\XF\Entity\Post;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\XF\Entity\Thread;
 use XF\Entity\ThreadReplyBan;
-use XF\Entity\Warning as WarningEntity;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
@@ -18,9 +17,7 @@ class ReportQueue extends Repository
 {
     public function getFauxReportQueueList(): AbstractCollection
     {
-        // todo - implement a stub
-        //return new ArrayCollection([]);
-        throw new \LogicException("Require Report Centre Essentials");
+        return new ArrayCollection([]);
     }
 
     /**

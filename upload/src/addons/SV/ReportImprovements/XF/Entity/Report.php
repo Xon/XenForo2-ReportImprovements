@@ -488,7 +488,6 @@ class Report extends XFCP_Report
         else
         {
             $contentId = '0';
-            throw new \LogicException("Require Report Centre Essentials");
         }
 
         $structure->relations['Permissions'] = [
