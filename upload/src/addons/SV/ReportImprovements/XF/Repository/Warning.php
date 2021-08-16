@@ -4,7 +4,6 @@ namespace SV\ReportImprovements\XF\Repository;
 
 use SV\ReportImprovements\Globals;
 use XF\Entity\User as UserEntity;
-use XF\Entity\Warning as WarningEntity;
 
 /**
  * Class Warning

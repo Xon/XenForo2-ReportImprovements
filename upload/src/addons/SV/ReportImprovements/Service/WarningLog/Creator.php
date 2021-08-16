@@ -7,7 +7,6 @@ use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
 use XF\Entity\ThreadReplyBan;
 use XF\Entity\Warning;
-use XF\Mvc\Entity\Entity;
 use XF\Service\AbstractService;
 use XF\Service\ValidateAndSavableTrait;
 
@@ -272,7 +271,6 @@ class Creator extends AbstractService
         $warningLog->warning_date = \XF::$time;
 
         $report = $threadReplyBan->Report;
-        /** @var \XF\Entity\User $user */
         $user = $threadReplyBan->User;
         $content = $user;
         $contentTitle = $user->username;

@@ -50,6 +50,10 @@ class CommentEditor extends AbstractService
 
         $this->comment = $comment;
         $this->report = $comment->Report;
+        if ($this->report === null)
+        {
+            throw new \LogicException('Report comment requires a report when editing');
+        }
         $this->commentPreparer = $this->service('XF:Report\CommentPreparer', $this->comment);
         $this->setCommentDefaults();
     }

@@ -52,13 +52,13 @@ class ReportComment extends AbstractHandler
         $editor = \XF::app()->service('SV\ReportImprovements:Report\CommentEditor', $content);
 
         $editor->setLogEdit(false);
-        $editor->setMessage($history->old_text, false, false);
+        $editor->setMessage($history->old_text, false);
 
-        if (!$previous || $previous->edit_user_id != $content->user_id)
+        if (!$previous || $previous->edit_user_id !== $content->user_id)
         {
             $content->last_edit_date = 0;
         }
-        else if ($previous->edit_user_id === $content->user_id)
+        else
         {
             $content->last_edit_date = $previous->edit_date;
             $content->last_edit_user_id = $previous->edit_user_id;

@@ -7,7 +7,6 @@ use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\Attachment;
 use XF\Entity\ReactionTrait;
 use XF\Mvc\Entity\AbstractCollection as AbstractCollection;
-use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
