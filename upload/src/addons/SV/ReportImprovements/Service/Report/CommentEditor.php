@@ -179,14 +179,30 @@ class CommentEditor extends AbstractService
         if ($oldMessage !== null)
         {
             $reportComment = $this->getComment();
-
-            $this->getEditHistoryRepo()->insertEditHistory(
-                $reportComment->getEntityContentType(),
-                $reportComment->getEntityId(),
-                \XF::visitor(),
-                $oldMessage,
-                $this->app()->request()->getIp()
-            );
+            // suppress the "required" flag which blocks "empty" content being saved to edit history
+            $structure = $this->em()->getEntityStructure('XF:EditHistory');
+            $oldMessageRequired = $structure->columns['old_text']['required'] ?? false;
+            if ($oldMessageRequired)
+            {
+                $structure->columns['old_text']['required'] = false;
+            }
+            try
+            {
+                $this->getEditHistoryRepo()->insertEditHistory(
+                    $reportComment->getEntityContentType(),
+                    $reportComment->getEntityId(),
+                    \XF::visitor(),
+                    $oldMessage,
+                    $this->app()->request()->getIp()
+                );
+            }
+            finally
+            {
+                if ($oldMessageRequired)
+                {
+                    $structure->columns['old_text']['required'] = $oldMessageRequired;
+                }
+            }
         }
 
         $this->commentPreparer->afterUpdate();
