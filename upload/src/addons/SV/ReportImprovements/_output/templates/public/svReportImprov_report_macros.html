@@ -87,3 +87,18 @@
 		</dl>		
 	</xf:if>
 </xf:macro>
+
+<xf:macro name="view_report_comment_extras"
+		  arg-comment="!">
+	<xf:if is="$comment.alertSent">
+		<div class="message-minorHighlight">{{ phrase('svReportImprov_report_alert:') }} {$comment.alertComment}</div>
+	</xf:if>
+	<xf:if is="$comment.WarningLog">
+		<article class="message-body">
+			<xf:include template="svReportImprov_report_view_warning_log" />
+		</article>
+		<xf:if is="$comment.message">
+			<hr class="formRowSep" />
+		</xf:if>
+	</xf:if>
+</xf:macro>

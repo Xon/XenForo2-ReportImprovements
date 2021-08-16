@@ -1,9 +1,9 @@
 {
     "template": "report_view",
-    "description": "Show alert send if report state was changed",
+    "description": "Show warning log/alert for report comment",
     "execution_order": 6904,
     "enabled": true,
-    "action": "str_replace",
-    "find": "<xf:if is=\"$comment.message\">",
-    "replace": "<xf:if is=\"$comment.alertSent\">\n\t<div class=\"message-minorHighlight\">{{ phrase('svReportImprov_report_alert:') }} {$comment.alertComment}</div>\n</xf:if>\n$0"
+    "action": "preg_replace",
+    "find": "#[\\t ]+<xf:if is=\"\\$comment\\.message#si",
+    "replace": "<xf:macro template=\"svReportImprov_report_macros\"\n\t\t  name=\"view_report_comment_extras\"\n\t\t  arg-comment=\"{$comment}\"\n\t\t  />\n$0"
 }
