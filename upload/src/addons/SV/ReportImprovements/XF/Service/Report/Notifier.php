@@ -86,16 +86,31 @@ class Notifier extends XFCP_Notifier
             return [];
         }
 
-        $usersWhoHaveAlreadyAlertedOnce = \array_keys($this->db()->fetchAllKeyed('
-            SELECT user_alert.alerted_user_id
-            FROM xf_user_alert AS user_alert
-            INNER JOIN xf_report_comment AS report_comment
-              ON (report_comment.report_comment_id = user_alert.content_id)
-            WHERE user_alert.view_date = 0
-              AND user_alert.content_type = ?
-              AND report_comment.report_id = ?
-              AND user_alert.action = ?
-        ', 'alerted_user_id', ['report_comment', $this->comment->report_id, 'insert']));
+        $addOns = \XF::app()->container('addon.cache');
+        if (($addOns['SV/PersistentAlerts'] ?? 0) >= 2030000)
+        {
+            $usersWhoHaveAlreadyAlertedOnce = \array_keys($this->db()->fetchAllKeyed('
+                SELECT alerted_user_id
+                FROM xf_user_alert
+                WHERE view_date = 0
+                  AND content_type = ?
+                  AND sv_container_id = ?
+                  AND action = ?
+            ', 'alerted_user_id', ['report_comment', $this->comment->report_id, 'insert']));
+        }
+        else
+        {
+            $usersWhoHaveAlreadyAlertedOnce = \array_keys($this->db()->fetchAllKeyed('
+                SELECT user_alert.alerted_user_id
+                FROM xf_user_alert AS user_alert
+                INNER JOIN xf_report_comment AS report_comment
+                  ON (report_comment.report_comment_id = user_alert.content_id)
+                WHERE user_alert.view_date = 0
+                  AND user_alert.content_type = ?
+                  AND report_comment.report_id = ?
+                  AND user_alert.action = ?
+            ', 'alerted_user_id', ['report_comment', $this->comment->report_id, 'insert']));
+        }
 
         $userIds = \array_fill_keys($userIds, true);
         foreach($usersWhoHaveAlreadyAlertedOnce as $userId)
