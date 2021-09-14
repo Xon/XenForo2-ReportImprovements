@@ -80,7 +80,10 @@ class ReportQueue extends Repository
                 $thread = $threads[$threadId] ?? null;
 
                 $warningLog->hydrateRelation('ReplyBanThread', $thread);
-                $thread->hydrateRelation('ReplyBans', new ArrayCollection([]));
+                if ($thread !== null)
+                {
+                    $thread->hydrateRelation('ReplyBans', new ArrayCollection([]));
+                }
             }
         }
 
