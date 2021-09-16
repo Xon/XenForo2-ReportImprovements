@@ -449,19 +449,27 @@ class Creator extends AbstractService
         // don't re-open the report when a warning expires naturally.
         if ($this->operationType === 'expire' || $this->operationType === 'acknowledge')
         {
-            return '';
+            $newReportState = '';
+        }
+        else
+        {
+            $report = $this->report;
+            if ($newReportState === '' && ($report->report_state === 'resolved' || $report->report_state === 'rejected'))
+            {
+                // re-open an existing report. If assigned, do not change to an 'assigned' state
+                $newReportState = $this->canReopenReport ? 'open' : '';
+            }
+            // do not change the report state to something it already is
+            if ($newReportState !== '' && $report->report_state === $newReportState)
+            {
+                $newReportState = '';
+            }
         }
 
-        $report = $this->report;
-        if ($newReportState === '' && ($report->report_state === 'resolved' || $report->report_state === 'rejected'))
+        if ($this->report->report_state !== 'resolved' &&
+            ($this->reportComment->state_change === 'resolved' || $newReportState === 'resolved'))
         {
-            // re-open an existing report. If assigned, do not change to an 'assigned' state
-            $newReportState = $this->canReopenReport ? 'open' : '';
-        }
-        // do not change the report state to something it already is
-        if ($newReportState !== '' && $report->report_state === $newReportState)
-        {
-            $newReportState = '';
+            $newReportState = 'resolved';
         }
 
         return $newReportState;
