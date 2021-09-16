@@ -55,6 +55,7 @@ class Warning extends XFCP_Warning implements IReportResolver
         if ($this->svReplyBan)
         {
             $this->svReplyBan->saveIfChanged();
+            $this->hydrateRelation('Report', $this->svReplyBan->Report);
         }
 
         parent::_postSave();

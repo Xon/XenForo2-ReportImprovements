@@ -28,23 +28,23 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
      */
     protected function getReport()
     {
-        $report = null;
-        if ($this->post_id)
+        if (\array_key_exists('Report', $this->_relations))
         {
-            $report = $this->finder('XF:Report')
-                           ->where('content_type', 'post')
-                           ->where('content_id', $this->post_id)
-                           ->fetchOne();
-        }
-        if (!$report)
-        {
-            $report = $this->finder('XF:Report')
-                           ->where('content_type', 'user')
-                           ->where('content_id', $this->user_id)
-                           ->fetchOne();
+            return $this->_relations['Report'];
         }
 
-        return $report;
+        if ($this->post_id !== null)
+        {
+            return $this->finder('XF:Report')
+                        ->where('content_type', 'post')
+                        ->where('content_id', $this->post_id)
+                        ->fetchOne();
+        }
+
+        return $this->finder('XF:Report')
+                    ->where('content_type', 'user')
+                    ->where('content_id', $this->user_id)
+                    ->fetchOne();
     }
 
     protected function _postDelete()

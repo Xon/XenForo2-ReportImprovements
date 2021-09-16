@@ -256,6 +256,9 @@ class Creator extends AbstractService
         {
             $this->reportCreator = $this->service('XF:Report\Creator', $warning->content_type, $warning->Content);
             $report = $this->reportCreator->getReport();
+
+            $warning->clearCache('Report');
+            $warning->hydrateRelation('Report', $report);
         }
 
         return $report;
@@ -315,6 +318,7 @@ class Creator extends AbstractService
             $report = $this->reportCreator->getReport();
         }
 
+        $threadReplyBan->clearCache('Report');
         $threadReplyBan->hydrateRelation('Report', $report);
 
         return $report;
@@ -422,9 +426,18 @@ class Creator extends AbstractService
             $report = $comment ? $comment->Report : null;
         }
 
-        if ($report && $this->warning && !$this->warning->Report)
+        if ($report)
         {
-            $this->warning->hydrateRelation('Report', $report);
+            if ($this->warning)
+            {
+                $this->warning->clearCache('Report');
+                $this->warning->hydrateRelation('Report', $report);
+            }
+            else if ($this->threadReplyBan)
+            {
+                $this->threadReplyBan->clearCache('Report');
+                $this->threadReplyBan->hydrateRelation('Report', $report);
+            }
         }
 
         $this->db()->commit();
