@@ -374,11 +374,11 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param ParameterBag $parameterBag
+     * @param ParameterBag $params
      * @return \XF\Mvc\Reply\AbstractReply
      * @throws \XF\Mvc\Reply\Exception
      */
-    public function actionReact(ParameterBag $params)
+    public function actionCommentReact(ParameterBag $params)
     {
         $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
         if (!$reportComment->canReact($error))
@@ -386,15 +386,15 @@ class Report extends XFCP_Report
             return $this->noPermission($error);
         }
 
-        $reactionLinkParams = ['report_comment_id' => $reportComment->report_comment_id];
+        $reactionLinkParams = [];
 
         /** @var ReactionControllerPlugin $reactionControllerPlugin */
         $reactionControllerPlugin = $this->plugin('XF:Reaction');
         return $reactionControllerPlugin->actionReact(
             $reportComment,
             $this->buildLink('reports/comment', $reportComment),
-            $this->buildLink('reports/react', $reportComment, $reactionLinkParams),
-            $this->buildLink('reports/reactions', $reportComment, $reactionLinkParams)
+            $this->buildLink('reports/comment/react', $reportComment, $reactionLinkParams),
+            $this->buildLink('reports/comment/reactions', $reportComment, $reactionLinkParams)
         );
     }
 
@@ -403,9 +403,8 @@ class Report extends XFCP_Report
      *
      * @return \XF\Mvc\Reply\AbstractReply
      * @throws \XF\Mvc\Reply\Exception
-     * @noinspection PhpUnusedParameterInspection
      */
-    public function actionReactions(ParameterBag $params)
+    public function actionCommentReactions(ParameterBag $params)
     {
         $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
 
@@ -416,10 +415,10 @@ class Report extends XFCP_Report
         $reactionControllerPlugin = $this->plugin('XF:Reaction');
         return $reactionControllerPlugin->actionReactions(
             $reportComment,
-            'reports/reactions',
+            'reports/comment/reactions',
             $title,
             $breadcrumbs,
-            ['report_comment_id' => $reportComment->report_comment_id]
+            []
         );
     }
 

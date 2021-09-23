@@ -10,7 +10,7 @@
 	</xf:if>
 
 	<div class="reactionsBar js-reactionsList {{ $comment.reactions ? 'is-active' : '' }}">
-		<xf:reactions content="{$comment}" link="reports/reactions" params="{{ {'report_comment_id': $comment.report_comment_id} }}" />
+		<xf:reactions content="{$comment}" link="reports/comment/reactions" />
 	</div>
 
 	<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
@@ -20,7 +20,7 @@
 	<xf:if contentcheck="true">
 		<div class="actionBar-set actionBar-set--external">
 		<xf:contentcheck>
-			<xf:react content="{$comment}" link="reports/react" params="{{ {'report_comment_id': $comment.report_comment_id} }}" list="< .js-reportComment | .js-reactionsList" />
+			<xf:react content="{$comment}" link="reports/comment/react" list="< .js-reportComment | .js-reactionsList" />
 		</xf:contentcheck>
 		</div>
 	</xf:if>
