@@ -140,16 +140,17 @@ class Report extends XFCP_Report
 
     public function actionComment(ParameterBag $params)
     {
-        // this function is to ensure XF1.x links work
+        $reportCommentId = $this->filter('report_comment_id', 'uint');
+        $reportCommentId = $reportCommentId ?: (int)$params->get('report_comment_id'); // support older style links
 
+        $reportComment = $this->assertViewableReportComment($reportCommentId);
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        /** @noinspection PhpUndefinedFieldInspection */
-        $report = $this->assertViewableReport($params->report_id);
-        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
+        $reportId = (int)$params->get('report_id');
+        $report = $reportId ? $this->assertViewableReport($reportId) : $reportComment->Report;
 
         if ($reportComment->report_id !== $report->report_id)
         {
-            $this->redirect($this->buildLink('canonical:reports/comment', $reportComment->Report, ['report_comment_id' => $reportComment->report_comment_id]));
+            return $this->redirect($this->buildLink('canonical:reports/comment', $reportComment));
         }
 
         return $this->redirect($this->buildLink('canonical:reports', $reportComment->Report) . '#report-comment-' . $reportComment->report_comment_id);
@@ -157,12 +158,8 @@ class Report extends XFCP_Report
 
     public function actionCommentIp(ParameterBag $params)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        /** @noinspection PhpUndefinedFieldInspection */
-        $report = $this->assertViewableReport($params->report_id);
-        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
-
-        $breadcrumbs = $report->getBreadcrumbs();
+        $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
+        $breadcrumbs = $reportComment->getBreadcrumbs();
 
         /** @var \XF\ControllerPlugin\Ip $ipPlugin */
         $ipPlugin = $this->plugin('XF:Ip');
@@ -171,10 +168,8 @@ class Report extends XFCP_Report
 
     public function actionCommentEdit(ParameterBag $params)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        /** @noinspection PhpUndefinedFieldInspection */
-        $report = $this->assertViewableReport($params->report_id);
-        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
+        $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
+        $report = $reportComment->Report;
         if (!$reportComment->canEdit($error))
         {
             return $this->noPermission($error);
@@ -208,12 +203,12 @@ class Report extends XFCP_Report
             }
             else
             {
-                return $this->redirect($this->buildLink('canonical:reports', $reportComment->Report) . '#report-comment-' . $reportComment->report_comment_id);
+                return $this->redirect($this->buildLink('canonical:reports/comment', $reportComment));
             }
         }
         else
         {
-            if ($report->canUploadAndManageAttachments())
+            if ($reportComment->Report->canUploadAndManageAttachments())
             {
                 /** @var \XF\Repository\Attachment $attachmentRepo */
                 $attachmentRepo = $this->repository('XF:Attachment');
@@ -238,10 +233,7 @@ class Report extends XFCP_Report
 
     public function actionCommentHistory(ParameterBag $params)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        /** @noinspection PhpUndefinedFieldInspection */
-        $this->assertViewableReport($params->report_id);
-        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
+        $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
 
         return $this->rerouteController('XF:EditHistory', 'index', [
             'content_type' => 'report_comment',
@@ -383,16 +375,12 @@ class Report extends XFCP_Report
 
     /**
      * @param ParameterBag $parameterBag
-     *
      * @return \XF\Mvc\Reply\AbstractReply
      * @throws \XF\Mvc\Reply\Exception
      */
-    public function actionReact(ParameterBag $parameterBag)
+    public function actionReact(ParameterBag $params)
     {
-        /** @noinspection PhpUndefinedFieldInspection */
-        $this->assertViewableReport($parameterBag->report_id);
-
-        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
+        $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
         if (!$reportComment->canReact($error))
         {
             return $this->noPermission($error);
@@ -404,7 +392,7 @@ class Report extends XFCP_Report
         $reactionControllerPlugin = $this->plugin('XF:Reaction');
         return $reactionControllerPlugin->actionReact(
             $reportComment,
-            $this->buildLink('reports', $reportComment->Report) . '#report-comment-' . $reportComment->report_comment_id,
+            $this->buildLink('reports/comment', $reportComment),
             $this->buildLink('reports/react', $reportComment, $reactionLinkParams),
             $this->buildLink('reports/reactions', $reportComment, $reactionLinkParams)
         );
@@ -415,15 +403,13 @@ class Report extends XFCP_Report
      *
      * @return \XF\Mvc\Reply\AbstractReply
      * @throws \XF\Mvc\Reply\Exception
+     * @noinspection PhpUnusedParameterInspection
      */
     public function actionReactions(ParameterBag $params)
     {
-        /** @noinspection PhpUndefinedFieldInspection */
-        $this->assertViewableReport($params->report_id);
+        $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
 
-        $reportComment = $this->assertViewableReportComment($this->filter('report_comment_id', 'uint'));
-
-        $breadcrumbs = $reportComment->Report->getBreadcrumbs();
+        $breadcrumbs = $reportComment->getBreadcrumbs();
         $title = \XF::phrase('sv_members_who_reacted_this_report_comment');
 
         /** @var ReactionControllerPlugin $reactionControllerPlugin */

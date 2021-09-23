@@ -1,0 +1,11 @@
+{
+    "route_type": "public",
+    "route_prefix": "reports",
+    "sub_name": "comment",
+    "format": "comment/:+int<report_comment_id>",
+    "build_class": "",
+    "build_method": "",
+    "controller": "XF:Report",
+    "context": "reports",
+    "action_prefix": "comment"
+}
