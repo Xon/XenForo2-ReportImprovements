@@ -16,7 +16,7 @@ class ReportComment extends AbstractHandler
     public function getContainerLink(Entity $container, array $extraParams = [])
     {
         /** @var ReportCommentEntity $container */
-        return \XF::app()->router()->buildLink('reports', $container->Report) . '#report-comment-' . $container->report_comment_id;
+        return \XF::app()->router()->buildLink('reports/comment', $container);
     }
 
     public function getContainerWith()

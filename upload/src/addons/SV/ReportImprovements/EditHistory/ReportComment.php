@@ -25,7 +25,7 @@ class ReportComment extends AbstractHandler
     public function getBreadcrumbs(Entity $content) : array
     {
         /** @var ReportCommentEntity $content */
-        return $content->Report->getBreadcrumbs();
+        return $content->getBreadcrumbs();
     }
 
     public function getEntityWith() : array
@@ -93,7 +93,7 @@ class ReportComment extends AbstractHandler
     {
         /** @var ReportCommentEntity $content */
 
-        return \XF::app()->router()->buildLink('reports', $content->Report) . '#report-comment-' . $content->report_comment_id;
+        return \XF::app()->router()->buildLink('reports/comment');
     }
 
     /**

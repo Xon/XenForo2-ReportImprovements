@@ -49,7 +49,7 @@ class ReportComment extends AbstractHandler
         $log->content_user_id = $content->user_id ?? 0;
         $log->content_username = $content->User ? $content->User->username : \XF::phrase('guest');
         $log->content_title = $report->title;
-        $log->content_url = \XF::app()->router('public')->buildLink('nopath:reports', $report) . '#report-comment-' . $content->report_comment_id;
+        $log->content_url = \XF::app()->router('public')->buildLink('nopath:reports/comment', $content);
         $log->discussion_content_type = 'report';
         $log->discussion_content_id = $report->report_id;
     }

@@ -3,14 +3,14 @@
 		<xf:if is="$comment.user_id && $comment.user_id === $xf.visitor.user_id">
 			{{ phrase('svReportImprov_x_reacted_to_your_comment_in_y_report', {
 				'name': username_link($reactionUser, false, {'defaultname': $fallbackName}),
-				'report_params': 'href="' . link('reports', $comment.Report) . '#report-comment-' . $comment.report_comment_id . '"',
+				'report_params': 'href="' . link('reports/comment', $comment) . '"',
 				'report_title': $content.Report.title,
 				'reaction': alert_reaction($reactionId, 'medium')|preescaped
 			}) }}
 		<xf:else />
 			{{ phrase('svReportImprov_x_reacted_to_ys_comment_in_y_report', {
 				'name': username_link($reactionUser, false, {'defaultname': $fallbackName}),
-				'report_params': 'href="' . link('reports', $comment.Report) . '#report-comment-' . $comment.report_comment_id . '"',
+				'report_params': 'href="' . link('reports/comment', $comment) . '"',
 				'poster': $comment.username,
 				'report_title': $content.Report.title,
 				'reaction': alert_reaction($reactionId, 'medium')|preescaped
