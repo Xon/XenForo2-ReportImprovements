@@ -1,18 +1,19 @@
 <xf:if is="$content instanceof '\XF\Entity\Post'">
-	<xf:if contentcheck="true">
+	<xf:set var="$post" value="{$content}" />
+	<xf:set var="$reportBannerHtml">
+		<xf:if is="is_addon_active('SV/ThreadReplyBanTeeth')">
+			<xf:include template="svThreadReplyBanTeeth_post_macros" />
+		</xf:if>
+		<xf:if is="$post.warning_message">
+			<div class="messageNotice messageNotice--warning">
+				{{ phrase('svReportImprove_user_is_warned' )}}
+			</div>
+		</xf:if>
+	</xf:set>
+	<xf:if is="trim($reportBannerHtml)">
 		<xf:css src="message.less" />
-		<xf:contentcheck>
-			<xf:formrow>
-				<xf:set var="$post" value="{$content}" />
-				<xf:if is="is_addon_active('SV/ThreadReplyBanTeeth')">
-					<xf:include template="svThreadReplyBanTeeth_post_macros" />
-				</xf:if>
-				<xf:if is="$post.warning_message">
-					<div class="messageNotice messageNotice--warning">
-						{{ phrase('svReportImprove_user_is_warned' )}}
-					</div>
-				</xf:if>
-			</xf:formrow>
-		</xf:contentcheck>
+		<xf:formrow>
+			{$reportBannerHtml|raw}
+		</xf:formrow>
 	</xf:if>
 </xf:if>
