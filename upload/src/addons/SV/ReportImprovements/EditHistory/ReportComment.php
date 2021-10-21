@@ -44,7 +44,7 @@ class ReportComment extends AbstractHandler
         return $content->message;
     }
 
-    public function revertToVersion(Entity $content, EditHistory $history, EditHistory $previous = null): bool
+    public function revertToVersion(Entity $content, EditHistory $history, EditHistory $previous = null)
     {
         /** @var ReportCommentEntity $content */
 
@@ -64,7 +64,9 @@ class ReportComment extends AbstractHandler
             $content->last_edit_user_id = $previous->edit_user_id;
         }
 
-        return $editor->save();
+        $editor->save();
+
+        return $content;
     }
 
     /**
