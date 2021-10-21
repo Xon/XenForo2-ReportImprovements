@@ -215,6 +215,18 @@ class ReportComment extends XFCP_ReportComment
      */
     public function getViewableUser()
     {
+        if ($this->User === null)
+        {
+            $username = $this->Report->canViewReporter($error)
+                ? $this->username
+                : $this->ViewableUsername;
+
+            /** @var \XF\Repository\User $userRepo */
+            $userRepo = $this->repository('XF:User');
+
+            return $userRepo->getGuestUser($username);
+        }
+
         if (!$this->is_report)
         {
             return $this->User;
