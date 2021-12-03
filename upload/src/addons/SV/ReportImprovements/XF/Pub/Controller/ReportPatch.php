@@ -21,7 +21,7 @@ use XF\Mvc\Reply\View as ViewReply;
  *
  * @package SV\ReportImprovements\XF\Pub\Controller
  */
-class ReportPatch extends XFCP_Report
+class ReportPatch extends XFCP_ReportPatch
 {
     public function actionView(ParameterBag $params)
     {
