@@ -103,15 +103,7 @@ class Report extends XFCP_Report
 
     public function actionView(ParameterBag $params)
     {
-        Globals::$shimCommentsFinder = true;
-        try
-        {
-            $reply = parent::actionView($params);
-        }
-        finally
-        {
-            Globals::$shimCommentsFinder = false;
-        }
+        $reply = parent::actionView($params);
 
         if ($reply instanceof ViewReply &&
             ($report = $reply->getParam('report')) &&

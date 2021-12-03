@@ -417,12 +417,13 @@ class Report extends XFCP_Report
 
     public function getRelationFinder($key, $type = 'current')
     {
+        $finder = parent::getRelationFinder($key, $type);
         if (Globals::$shimCommentsFinder && $key === 'Comments')
         {
-            return $this->getCommentsFinder();
+            $finder->whereImpossible();
         }
 
-        return parent::getRelationFinder($key, $type);
+        return $finder;
     }
 
     protected function getTitleString(): string
