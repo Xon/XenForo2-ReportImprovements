@@ -54,16 +54,6 @@ class Setup extends AbstractSetup
         $this->applyDefaultPermissions();
     }
 
-    public function installStep4()
-    {
-        $this->upgrade1090100Step1();
-    }
-
-    public function installStep5()
-    {
-        $this->upgrade1090200Step1();
-    }
-
     public function installStep6()
     {
         /** @noinspection SqlResolve */
@@ -345,26 +335,41 @@ class Setup extends AbstractSetup
 
     public function postInstall(array &$stateChanges)
     {
-        \XF::app()->jobManager()->enqueueUnique(
-            'warningLogMigration',
-            'SV\ReportImprovements:WarningLogMigration',
-            []
-        );
-
+        $atomicJobs = [];
         $this->cleanupPermissionChecks();
+
+        $atomicJobs[] = 'SV\ReportImprovements:Upgrades\Upgrade1090100Step1';
+        $atomicJobs[] = 'SV\ReportImprovements:Upgrades\Upgrade1090200Step1';
+        $atomicJobs[] = 'SV\ReportImprovements:WarningLogMigration';
+
+        if ($atomicJobs)
+        {
+            \XF::app()->jobManager()->enqueueUnique(
+                'report-improvements-installer',
+                'XF:Atomic', ['execute' => $atomicJobs]
+            );
+        }
     }
 
     public function postUpgrade($previousVersion, array &$stateChanges)
     {
-        $this->applyDefaultPermissions($previousVersion);
-
-        \XF::app()->jobManager()->enqueueUnique(
-            'warningLogMigration',
-            'SV\ReportImprovements:WarningLogMigration',
-            []
-        );
-
+        $atomicJobs = [];
         $this->cleanupPermissionChecks();
+
+        $atomicJobs[] = 'SV\ReportImprovements:WarningLogMigration';
+
+        if ($this->applyDefaultPermissions($previousVersion))
+        {
+            $atomicJobs[] = 'XF:PermissionRebuild';
+        }
+
+        if ($atomicJobs)
+        {
+            \XF::app()->jobManager()->enqueueUnique(
+                'report-improvements-installer',
+                'XF:Atomic', ['execute' => $atomicJobs]
+            );
+        }
     }
 
     protected function cleanupPermissionChecks()
@@ -565,6 +570,8 @@ class Setup extends AbstractSetup
                     $permissionUpdater->updatePermissions($newPermissions);
                 }
             }
+
+            $applied = true;
         }
 
         if (!$previousVersion)
@@ -605,6 +612,7 @@ class Setup extends AbstractSetup
                 WHERE permission_group_id = 'general' AND  permission_id IN ('warn','editBasicProfile')
             "
             );
+            $applied = true;
         }
         if ($previousVersion < 1020200)
         {
@@ -628,6 +636,7 @@ class Setup extends AbstractSetup
                 ", $perm
                 );
             }
+            $applied = true;
         }
 
         return $applied;
