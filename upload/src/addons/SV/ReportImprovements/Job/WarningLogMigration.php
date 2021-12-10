@@ -42,11 +42,11 @@ class WarningLogMigration extends AbstractRebuildJob
         $warning = $this->app->em()->find('XF:Warning', $id, ['User', 'WarnedBy']);
         if ($warning !== null)
         {
-            // avoid known cases where a post is detached from a thread, as this causes an error in setupReportEntityContent
+            // On a detached thread, just pretend the post no longer exists
             $content = $warning->Content ?? null;
             if ($content instanceof \XF\Entity\Post && $content->Thread === null)
             {
-                return;
+                $warning->setContent(null);
             }
             Globals::$expiringFromCron = false;
             $user = $warning->WarnedBy;
