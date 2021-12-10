@@ -175,9 +175,9 @@ class Report extends XFCP_Report
             $db->query("
                 INSERT INTO xf_sv_non_moderator_report_users_view (user_id, canView)
                 SELECT DISTINCT gr.user_id, if(permission_value = 'allow', 1, 0)
-                FROM xf_permission_entry AS groupPerm
-                JOIN xf_user_group_relation AS gr ON groupPerm.user_group_id = gr.user_group_id
-                JOIN xf_user AS xu ON gr.user_id = xu.user_id
+                FROM xf_permission_entry AS groupPerm use index (permission_group_id_permission_id)
+                STRAIGHT_JOIN xf_user_group_relation AS gr use index (user_group_id_is_primary) ON groupPerm.user_group_id = gr.user_group_id
+                STRAIGHT_JOIN xf_user AS xu ON gr.user_id = xu.user_id
                 WHERE xu.is_moderator = 0 AND xu.user_state = 'valid' AND
                      groupPerm.permission_group_id = 'general' AND groupPerm.permission_id = 'viewReports'
                 ON DUPLICATE KEY UPDATE
@@ -186,8 +186,8 @@ class Report extends XFCP_Report
             $db->query("
                 INSERT INTO xf_sv_non_moderator_report_users_view (user_id, canView)
                 SELECT DISTINCT userPerm.user_id, if(permission_value = 'allow', 1, 0)
-                FROM xf_permission_entry AS userPerm
-                JOIN xf_user AS xu ON userPerm.user_id = xu.user_id
+                FROM xf_permission_entry AS userPerm use index (permission_group_id_permission_id)
+                STRAIGHT_JOIN xf_user AS xu ON userPerm.user_id = xu.user_id
                 WHERE xu.is_moderator = 0 AND xu.user_state = 'valid' AND
                       userPerm.permission_group_id = 'general' AND userPerm.permission_id = 'viewReports'
                 ON DUPLICATE KEY UPDATE
