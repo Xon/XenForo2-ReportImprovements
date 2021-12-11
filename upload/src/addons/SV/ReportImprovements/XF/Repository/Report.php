@@ -166,8 +166,8 @@ class Report extends XFCP_Report
             // this can still be slow-ish initially, so cache.
             // Note; to avoid catastrophically poor performance in older versions of MySQL, do this incrementally via explicit temp tables
 
-            $db->query('DROP TABLE IF EXISTS xf_sv_non_moderator_report_users_view');
-            $db->query('DROP TABLE IF EXISTS xf_sv_non_moderator_report_users_update');
+            $db->query('DROP TEMPORARY TABLE IF EXISTS xf_sv_non_moderator_report_users_view');
+            $db->query('DROP TEMPORARY TABLE IF EXISTS xf_sv_non_moderator_report_users_update');
 
             // canView/canUpdate values (in order of priority);
             // 0    - denied
