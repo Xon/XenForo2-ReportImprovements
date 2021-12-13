@@ -197,7 +197,7 @@ class Report extends XFCP_Report
                 STRAIGHT_JOIN xf_user AS xu ON xu.user_id = a.user_id
                 WHERE xu.is_moderator = 0 AND xu.user_state = 'valid'
                 ON DUPLICATE KEY UPDATE
-                    canView = if(canView = 0 OR groupPerm.permission_value = 'never', 0, if(groupPerm.permission_value = 'allow', 1, NULL))
+                    canView = if(canView = 0 OR groupPerm.permission_value = 'never' OR groupPerm.permission_value = 'reset', 0, if(groupPerm.permission_value = 'allow', 1, NULL))
             ");
             $db->query("
                 INSERT INTO xf_sv_non_moderator_report_users_view (user_id, canView)
@@ -207,7 +207,7 @@ class Report extends XFCP_Report
                 WHERE $contentFilterSql xu.is_moderator = 0 AND xu.user_state = 'valid' AND
                       userPerm.permission_group_id = 'general' AND userPerm.permission_id = 'viewReports'
                 ON DUPLICATE KEY UPDATE
-                    canView = if(canView = 0 OR userPerm.permission_value = 'never', 0, if(userPerm.permission_value = 'allow', 1, NULL))
+                    canView = if(canView = 0 OR userPerm.permission_value = 'never' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow', 1, NULL))
             ");
             // prune the set
             $db->query("
@@ -225,7 +225,7 @@ class Report extends XFCP_Report
                 JOIN xf_sv_non_moderator_report_users_view AS reportUsers ON reportUsers.user_id = gr.user_id
                 WHERE $contentFilterSql groupPerm.permission_group_id = 'general' AND groupPerm.permission_id = 'updateReport'
                 ON DUPLICATE KEY UPDATE
-                    canUpdate = if(canUpdate = 0 OR groupPerm.permission_value = 'never', 0, if(groupPerm.permission_value = 'allow', 1, NULL))
+                    canUpdate = if(canUpdate = 0 OR groupPerm.permission_value = 'never' OR groupPerm.permission_value = 'reset', 0, if(groupPerm.permission_value = 'allow', 1, NULL))
             ");
             $db->query("
                 INSERT INTO xf_sv_non_moderator_report_users_update (user_id, canUpdate)
@@ -234,7 +234,7 @@ class Report extends XFCP_Report
                 JOIN xf_sv_non_moderator_report_users_view AS reportUsers ON reportUsers.user_id = userPerm.user_id
                 WHERE $contentFilterSql userPerm.permission_group_id = 'general' AND userPerm.permission_id = 'updateReport'
                 ON DUPLICATE KEY UPDATE
-                    canUpdate = if(canUpdate = 0 OR userPerm.permission_value = 'never', 0, if(userPerm.permission_value = 'allow', 1, NULL))
+                    canUpdate = if(canUpdate = 0 OR userPerm.permission_value = 'never' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow', 1, NULL))
             ");
 
             $userIds = $db->fetchAllColumn('SELECT user_id FROM xf_sv_non_moderator_report_users_update where canUpdate = 1 and user_id <> 0');
