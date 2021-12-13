@@ -34,6 +34,20 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
         return $entity->queue_name;
     }
 
+    public function rebuildCombination(\XF\Entity\PermissionCombination $combination, array $basePerms)
+    {
+        // being notified on bulk permission changes is surprisingly challenging
+
+        /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
+        $repo = \XF::repository('XF:Report');
+        if (\is_callable([$repo, 'deferResetNonModeratorsWhoCanHandleReportCache']))
+        {
+            $repo->deferResetNonModeratorsWhoCanHandleReportCache();
+        }
+
+        parent::rebuildCombination($combination, $basePerms);
+    }
+
     public function isValidPermission(\XF\Entity\Permission $permission): bool
     {
         return $permission->permission_group_id === 'report_queue' ||

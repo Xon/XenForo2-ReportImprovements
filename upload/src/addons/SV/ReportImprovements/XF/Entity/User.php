@@ -168,7 +168,7 @@ class User extends XFCP_User
 
         if ($this->wasCanBeAssignedReports)
         {
-            $doRebuild = $this->isChanged('user_state') || $this->isChanged('is_moderator');
+            $doRebuild = $this->isChanged(['user_state', 'is_moderator', 'permission_combination_id']);
             // check for permission change
             if ($this->isChanged(['user_group_id', 'secondary_group_ids']))
             {
