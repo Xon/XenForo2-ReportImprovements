@@ -162,51 +162,33 @@ class Report extends XFCP_Report
 
         if (!\is_array($userIds))
         {
-            $db = \XF::db();
-            if ($reportQueueId === 0)
-            {
-                $table = 'xf_permission_entry';
-                $hint = 'use index (permission_group_id_permission_id)';
-                $contentFilterSql = '';
-            }
-            else
-            {
-                $table = 'xf_permission_entry_content';
-                $hint = '';
-                $contentFilterSql = 'content_type = \'report_queue\' and content_id = '.$db->quote($reportQueueId). ' and ';
-            }
             // find users with groups with the update report, or via direct permission assignment but aren't moderators
             // ensure they can view the report centre, or this might return more users than expected
             // this requires an index on xf_permission_entry.permission_group_id/xf_permission_entry.permission_id to be effective
             // this can still be slow-ish initially, so cache.
             // Note; to avoid catastrophically poor performance in older versions of MySQL, do this incrementally via explicit temp tables
-
-            $db->query('DROP TEMPORARY TABLE IF EXISTS xf_sv_non_moderator_report_users_view');
-            $db->query('DROP TEMPORARY TABLE IF EXISTS xf_sv_non_moderator_report_users_update');
+            $db = \XF::db();
+            $db->query('DROP TEMPORARY TABLE IF EXISTS xf_sv_non_moderator_report_users');
 
             // canView/canUpdate values (in order of priority);
             // 0    - denied
             // 1    - allowed
             // null - not yet denied
             $db->query('
-            CREATE TEMPORARY TABLE xf_sv_non_moderator_report_users_view (
+            CREATE TEMPORARY TABLE xf_sv_non_moderator_report_users (
                 user_id int UNSIGNED NOT NULL PRIMARY KEY,
-                canView tinyint(10) DEFAULT NULL
-            )');
-            $db->query('
-            CREATE TEMPORARY TABLE xf_sv_non_moderator_report_users_update (
-                user_id int UNSIGNED NOT NULL PRIMARY KEY,
+                canView tinyint(10) DEFAULT NULL,
                 canUpdate tinyint(10) DEFAULT NULL
             )');
-            // build the initial list of users who can view reports
+            // build the initial list of users who can view the report centre
             $db->query("
-                INSERT INTO xf_sv_non_moderator_report_users_view (user_id, canView)
+                INSERT INTO xf_sv_non_moderator_report_users (user_id, canView)
                 SELECT a.user_id, if(a.permission_value = 'allow', 1, 0) as val
                 FROM (
                     SELECT DISTINCT gr.user_id, groupPerm.permission_value 
-                    FROM $table AS groupPerm $hint
+                    FROM xf_permission_entry AS groupPerm use index (permission_group_id_permission_id)
                     STRAIGHT_JOIN xf_user_group_relation AS gr use index (user_group_id_is_primary) ON groupPerm.user_group_id = gr.user_group_id
-                    WHERE $contentFilterSql
+                    WHERE 
                          groupPerm.permission_group_id = 'general' AND groupPerm.permission_id = 'viewReports'
                 ) a
                 STRAIGHT_JOIN xf_user AS xu ON xu.user_id = a.user_id
@@ -215,11 +197,11 @@ class Report extends XFCP_Report
                     canView = if(canView = 0 OR a.permission_value = 'never' OR a.permission_value = 'reset', 0, if(a.permission_value = 'allow', 1, NULL))
             ");
             $db->query("
-                INSERT INTO xf_sv_non_moderator_report_users_view (user_id, canView)
+                INSERT INTO xf_sv_non_moderator_report_users (user_id, canView)
                 SELECT DISTINCT userPerm.user_id, if(permission_value = 'allow', 1, 0) as val
-                FROM $table AS userPerm $hint
+                FROM xf_permission_entry AS userPerm use index (permission_group_id_permission_id)
                 STRAIGHT_JOIN xf_user AS xu ON userPerm.user_id = xu.user_id
-                WHERE $contentFilterSql xu.is_moderator = 0 AND xu.user_state = 'valid' AND
+                WHERE xu.is_moderator = 0 AND xu.user_state = 'valid' AND
                       userPerm.permission_group_id = 'general' AND userPerm.permission_id = 'viewReports'
                 ON DUPLICATE KEY UPDATE
                     canView = if(canView = 0 OR userPerm.permission_value = 'never' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow', 1, NULL))
@@ -227,32 +209,60 @@ class Report extends XFCP_Report
             // prune the set
             $db->query("
                 DELETE reportUsers
-                FROM xf_sv_non_moderator_report_users_view AS reportUsers
+                FROM xf_sv_non_moderator_report_users AS reportUsers
                 WHERE canView = 0 or canView is null
             ");
 
-            // merge in the list of users who can update reports
-            $db->query("
-                INSERT INTO xf_sv_non_moderator_report_users_update (user_id, canUpdate)
-                SELECT DISTINCT groupPerm.user_id, if(permission_value = 'allow', 1, 0) as val
-                FROM $table AS groupPerm
-                JOIN xf_user_group_relation AS gr ON groupPerm.user_group_id = gr.user_group_id
-                JOIN xf_sv_non_moderator_report_users_view AS reportUsers ON reportUsers.user_id = gr.user_id
-                WHERE $contentFilterSql groupPerm.permission_group_id = 'report_queue' AND groupPerm.permission_id = 'updateReport'
-                ON DUPLICATE KEY UPDATE
-                    canUpdate = if(canUpdate = 0 OR groupPerm.permission_value = 'never' OR groupPerm.permission_value = 'reset', 0, if(groupPerm.permission_value = 'allow', 1, NULL))
-            ");
-            $db->query("
-                INSERT INTO xf_sv_non_moderator_report_users_update (user_id, canUpdate)
-                SELECT DISTINCT userPerm.user_id, if(permission_value = 'allow', 1, 0) as val
-                FROM $table AS userPerm
-                JOIN xf_sv_non_moderator_report_users_view AS reportUsers ON reportUsers.user_id = userPerm.user_id
-                WHERE $contentFilterSql userPerm.permission_group_id = 'report_queue' AND userPerm.permission_id = 'updateReport'
-                ON DUPLICATE KEY UPDATE
-                    canUpdate = if(canUpdate = 0 OR userPerm.permission_value = 'never' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow', 1, NULL))
-            ");
+            $tablesToCheck = [
+                'xf_permission_entry' => '',
+            ];
+            if ($reportQueueId !== 0)
+            {
+                $tablesToCheck['xf_permission_entry_content'] = 'content_type = \'report_queue\' AND content_id = '.$db->quote($reportQueueId). ' AND ';
 
-            $userIds = $db->fetchAllColumn('SELECT user_id FROM xf_sv_non_moderator_report_users_update where canUpdate = 1 and user_id <> 0');
+                // merge in the list of users who can view reports in a given report queue, checking the global report_queue.view permission as well
+                foreach ($tablesToCheck as $table => $contentFilterSql)
+                {
+                    $db->query("
+                        UPDATE xf_sv_non_moderator_report_users as reportUsers
+                        JOIN xf_user_group_relation AS gr ON reportUsers.user_id = gr.user_id
+                        JOIN $table AS groupPerm On groupPerm.user_group_id = gr.user_group_id                
+                        set reportUsers.canView = if(canView = 0 OR groupPerm.permission_value = 'never' OR groupPerm.permission_value = 'reset', 0, if(groupPerm.permission_value = 'allow', 1, NULL))
+                        WHERE $contentFilterSql groupPerm.permission_group_id = 'report_queue' AND groupPerm.permission_id = 'view'
+                    ");
+                    $db->query("
+                        UPDATE xf_sv_non_moderator_report_users as reportUsers
+                        JOIN $table AS userPerm On reportUsers.user_id = userPerm.user_id                
+                        set reportUsers.canView = if(canView = 0 OR userPerm.permission_value = 'never' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow', 1, NULL))
+                        WHERE $contentFilterSql userPerm.permission_group_id = 'report_queue' AND userPerm.permission_id = 'view'
+                    ");
+                }
+
+                $db->query("
+                    DELETE reportUsers
+                    FROM xf_sv_non_moderator_report_users AS reportUsers
+                    WHERE canView = 0 or canView is null
+                ");
+            }
+            // merge in the list of users who can update reports
+            foreach ($tablesToCheck as $table => $contentFilterSql)
+            {
+                $db->query("
+                    UPDATE xf_sv_non_moderator_report_users as reportUsers
+                    JOIN xf_user_group_relation AS gr ON reportUsers.user_id = gr.user_id
+                    JOIN $table AS groupPerm On groupPerm.user_group_id = gr.user_group_id                
+                    set reportUsers.canUpdate = if(canUpdate = 0 OR groupPerm.permission_value = 'never' OR groupPerm.permission_value = 'reset', 0, if(groupPerm.permission_value = 'allow', 1, NULL))
+                    WHERE $contentFilterSql groupPerm.permission_group_id = 'report_queue' AND groupPerm.permission_id = 'updateReport'
+                ");
+                $db->query("
+                    UPDATE xf_sv_non_moderator_report_users as reportUsers
+                    JOIN $table AS userPerm On reportUsers.user_id = userPerm.user_id                
+                    set reportUsers.canUpdate = if(canUpdate = 0 OR userPerm.permission_value = 'never' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow', 1, NULL))
+                    WHERE $contentFilterSql userPerm.permission_group_id = 'report_queue' AND userPerm.permission_id = 'updateReport'
+                ");
+            }
+
+            $userIds = $db->fetchAllColumn('SELECT user_id FROM xf_sv_non_moderator_report_users where canUpdate = 1 and user_id <> 0');
 
 
 //            $userIds = \XF::db()->fetchAllColumn("
