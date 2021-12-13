@@ -15,6 +15,19 @@ use XF\Mvc\Entity\Repository;
 
 class ReportQueue extends Repository
 {
+    public function getReportQueueList(): AbstractCollection
+    {
+        $addOns = \XF::app()->container('addon.cache');
+        if (isset($addOns['SV/ReportCentreEssentials']))
+        {
+            /** @var \SV\ReportCentreEssentials\Repository\ReportQueue $entryRepo */
+            $entryRepo = $this->repository('SV\ReportCentreEssentials:ReportQueue');
+            return $entryRepo->findReportQueues()->fetch();
+        }
+
+        return $this->getFauxReportQueueList();
+    }
+
     public function getFauxReportQueueList(): AbstractCollection
     {
         return new ArrayCollection([]);

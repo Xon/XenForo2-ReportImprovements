@@ -93,14 +93,15 @@ class Report extends XFCP_Report
         return $finder;
     }
 
-    protected function getReportAssignableNonModeratorsCacheTime(): int
+    /** @noinspection PhpUnusedParameterInspection */
+    protected function getReportAssignableNonModeratorsCacheTime(int $reportQueueId): int
     {
         return 86400; // 1 day
     }
 
-    protected function getReportAssignableNonModeratorsCacheKey(): string
+    protected function getReportAssignableNonModeratorsCacheKey(int $reportQueueId): string
     {
-        return 'reports-non-mods-assignable';
+        return 'reports-non-mods-assignable-' . $reportQueueId;
     }
 
     public function deferResetNonModeratorsWhoCanHandleReportCache()
@@ -112,11 +113,25 @@ class Report extends XFCP_Report
 
     public function resetNonModeratorsWhoCanHandleReportCache()
     {
-        $key = $this->getReportAssignableNonModeratorsCacheKey();
         $cache = \XF::app()->cache();
-        if ($cache && $key)
+        if ($cache === null)
         {
-            $cache->delete($key);
+            return;
+        }
+
+        /** @var \SV\ReportImprovements\Repository\ReportQueue $entryRepo */
+        $entryRepo = $this->repository('SV\ReportImprovements:ReportQueue');
+        /** @var int[] $reportQueueIds */
+        $reportQueueIds = $entryRepo->getReportQueueList()->keys();
+        $reportQueueIds[] = 0;
+
+        foreach($reportQueueIds as $reportQueueId)
+        {
+            $key = $this->getReportAssignableNonModeratorsCacheKey($reportQueueId);
+            if ($key)
+            {
+                $cache->delete($key);
+            }
         }
     }
 
@@ -128,8 +143,9 @@ class Report extends XFCP_Report
      */
     protected function getNonModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
-        $key = $this->getReportAssignableNonModeratorsCacheKey();
-        $cacheTime = $this->getReportAssignableNonModeratorsCacheTime();
+        $reportQueueId = (int)($report->queue_id ?? 0);
+        $key = $this->getReportAssignableNonModeratorsCacheKey($reportQueueId);
+        $cacheTime = $this->getReportAssignableNonModeratorsCacheTime($reportQueueId);
         $cache = \XF::app()->cache();
 
         $userIds = null;
@@ -147,7 +163,6 @@ class Report extends XFCP_Report
         if (!\is_array($userIds))
         {
             $db = \XF::db();
-            $reportQueueId = (int)($report->queue_id ?? 0);
             if ($reportQueueId === 0)
             {
                 $table = 'xf_permission_entry';
