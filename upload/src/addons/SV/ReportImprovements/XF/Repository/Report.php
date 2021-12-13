@@ -264,53 +264,6 @@ class Report extends XFCP_Report
 
             $userIds = $db->fetchAllColumn('SELECT user_id FROM xf_sv_non_moderator_report_users where canUpdate = 1 and user_id <> 0');
 
-
-//            $userIds = \XF::db()->fetchAllColumn("
-//                SELECT xu.user_id
-//                FROM xf_user xu
-//                WHERE xu.is_moderator = 0 AND xu.user_state = 'valid' AND (
-//                      NOT exists(SELECT notExistsGroupPerm.user_id
-//                            FROM xf_permission_entry AS notExistsGroupPerm
-//                            WHERE notExistsGroupPerm.user_id = xu.user_id AND
-//                                  notExistsGroupPerm.permission_group_id = 'general' AND notExistsGroupPerm.permission_id = 'viewReports' AND notExistsGroupPerm.permission_value = 'never') OR
-//                      NOT exists(SELECT gr.user_id
-//                            FROM xf_permission_entry AS notExistsUserPerm
-//                            JOIN xf_user_group_relation gr ON notExistsUserPerm.user_group_id = gr.user_group_id
-//                            WHERE gr.user_id = xu.user_id AND
-//                                  notExistsUserPerm.permission_group_id = 'general' AND notExistsUserPerm.permission_id = 'viewReports' AND notExistsUserPerm.permission_value = 'never')
-//                      ) AND (
-//                      exists(SELECT existsUserPerm.user_id
-//                            FROM xf_permission_entry AS existsUserPerm
-//                            WHERE existsUserPerm.user_id = xu.user_id AND
-//                                  existsUserPerm.permission_group_id = 'general' AND existsUserPerm.permission_id = 'viewReports' AND existsUserPerm.permission_value = 'allow') OR
-//                      exists(SELECT gr.user_id
-//                            FROM xf_permission_entry AS existsUserPerm
-//                            JOIN xf_user_group_relation gr ON existsUserPerm.user_group_id = gr.user_group_id
-//                            WHERE gr.user_id = xu.user_id AND
-//                                  existsUserPerm.permission_group_id = 'general' AND existsUserPerm.permission_id = 'viewReports' AND existsUserPerm.permission_value = 'allow')
-//                      ) AND (
-//                      NOT exists(SELECT notExistsUserPerm.user_id
-//                            FROM xf_permission_entry AS notExistsUserPerm
-//                            WHERE notExistsUserPerm.user_id = xu.user_id AND
-//                                  notExistsUserPerm.permission_group_id = 'report_queue' AND notExistsUserPerm.permission_id = 'updateReport' AND notExistsUserPerm.permission_value = 'never') OR
-//                      NOT exists(SELECT gr.user_id
-//                            FROM xf_permission_entry AS notExistsGroupPerm
-//                            JOIN xf_user_group_relation gr ON notExistsGroupPerm.user_group_id = gr.user_group_id
-//                            WHERE gr.user_id = xu.user_id AND
-//                                  notExistsGroupPerm.permission_group_id = 'report_queue' AND notExistsGroupPerm.permission_id = 'updateReport' AND notExistsGroupPerm.permission_value = 'never')
-//                      ) AND (
-//                      exists(SELECT existsUserPerm.user_id
-//                            FROM xf_permission_entry AS existsUserPerm
-//                            WHERE existsUserPerm.user_id = xu.user_id AND
-//                                  existsUserPerm.permission_group_id = 'report_queue' AND existsUserPerm.permission_id = 'updateReport' AND existsUserPerm.permission_value = 'allow') OR
-//                      exists(SELECT gr.user_id
-//                            FROM xf_permission_entry AS existsGroupPerm
-//                            JOIN xf_user_group_relation gr ON existsGroupPerm.user_group_id = gr.user_group_id
-//                            WHERE gr.user_id = xu.user_id AND
-//                                  existsGroupPerm.permission_group_id = 'report_queue' AND existsGroupPerm.permission_id = 'updateReport' AND existsGroupPerm.permission_value = 'allow')
-//                      )
-//            ");
-
             if ($cache && $key && $cacheTime)
             {
                 $cache->save($key, $userIds, $cacheTime);
