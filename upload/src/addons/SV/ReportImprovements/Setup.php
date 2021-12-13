@@ -715,6 +715,9 @@ class Setup extends AbstractSetup
             $table->addKey(['permission_group_id','permission_id']);
         };
 
+        $tables['xf_permission_entry_content'] = function (Alter $table) {
+            $table->addKey(['permission_group_id','permission_id']);
+        };
 
         return $tables;
     }
