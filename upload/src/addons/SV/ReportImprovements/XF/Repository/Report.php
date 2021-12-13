@@ -238,7 +238,7 @@ class Report extends XFCP_Report
                 FROM $table AS groupPerm
                 JOIN xf_user_group_relation AS gr ON groupPerm.user_group_id = gr.user_group_id
                 JOIN xf_sv_non_moderator_report_users_view AS reportUsers ON reportUsers.user_id = gr.user_id
-                WHERE $contentFilterSql groupPerm.permission_group_id = 'general' AND groupPerm.permission_id = 'updateReport'
+                WHERE $contentFilterSql groupPerm.permission_group_id = 'report_queue' AND groupPerm.permission_id = 'updateReport'
                 ON DUPLICATE KEY UPDATE
                     canUpdate = if(canUpdate = 0 OR groupPerm.permission_value = 'never' OR groupPerm.permission_value = 'reset', 0, if(groupPerm.permission_value = 'allow', 1, NULL))
             ");
@@ -247,7 +247,7 @@ class Report extends XFCP_Report
                 SELECT DISTINCT userPerm.user_id, if(permission_value = 'allow', 1, 0) as val
                 FROM $table AS userPerm
                 JOIN xf_sv_non_moderator_report_users_view AS reportUsers ON reportUsers.user_id = userPerm.user_id
-                WHERE $contentFilterSql userPerm.permission_group_id = 'general' AND userPerm.permission_id = 'updateReport'
+                WHERE $contentFilterSql userPerm.permission_group_id = 'report_queue' AND userPerm.permission_id = 'updateReport'
                 ON DUPLICATE KEY UPDATE
                     canUpdate = if(canUpdate = 0 OR userPerm.permission_value = 'never' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow', 1, NULL))
             ");
@@ -282,22 +282,22 @@ class Report extends XFCP_Report
 //                      NOT exists(SELECT notExistsUserPerm.user_id
 //                            FROM xf_permission_entry AS notExistsUserPerm
 //                            WHERE notExistsUserPerm.user_id = xu.user_id AND
-//                                  notExistsUserPerm.permission_group_id = 'general' AND notExistsUserPerm.permission_id = 'updateReport' AND notExistsUserPerm.permission_value = 'never') OR
+//                                  notExistsUserPerm.permission_group_id = 'report_queue' AND notExistsUserPerm.permission_id = 'updateReport' AND notExistsUserPerm.permission_value = 'never') OR
 //                      NOT exists(SELECT gr.user_id
 //                            FROM xf_permission_entry AS notExistsGroupPerm
 //                            JOIN xf_user_group_relation gr ON notExistsGroupPerm.user_group_id = gr.user_group_id
 //                            WHERE gr.user_id = xu.user_id AND
-//                                  notExistsGroupPerm.permission_group_id = 'general' AND notExistsGroupPerm.permission_id = 'updateReport' AND notExistsGroupPerm.permission_value = 'never')
+//                                  notExistsGroupPerm.permission_group_id = 'report_queue' AND notExistsGroupPerm.permission_id = 'updateReport' AND notExistsGroupPerm.permission_value = 'never')
 //                      ) AND (
 //                      exists(SELECT existsUserPerm.user_id
 //                            FROM xf_permission_entry AS existsUserPerm
 //                            WHERE existsUserPerm.user_id = xu.user_id AND
-//                                  existsUserPerm.permission_group_id = 'general' AND existsUserPerm.permission_id = 'updateReport' AND existsUserPerm.permission_value = 'allow') OR
+//                                  existsUserPerm.permission_group_id = 'report_queue' AND existsUserPerm.permission_id = 'updateReport' AND existsUserPerm.permission_value = 'allow') OR
 //                      exists(SELECT gr.user_id
 //                            FROM xf_permission_entry AS existsGroupPerm
 //                            JOIN xf_user_group_relation gr ON existsGroupPerm.user_group_id = gr.user_group_id
 //                            WHERE gr.user_id = xu.user_id AND
-//                                  existsGroupPerm.permission_group_id = 'general' AND existsGroupPerm.permission_id = 'updateReport' AND existsGroupPerm.permission_value = 'allow')
+//                                  existsGroupPerm.permission_group_id = 'report_queue' AND existsGroupPerm.permission_id = 'updateReport' AND existsGroupPerm.permission_value = 'allow')
 //                      )
 //            ");
 
