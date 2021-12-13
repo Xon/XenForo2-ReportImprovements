@@ -186,9 +186,9 @@ class Report extends XFCP_Report
             // build the initial list of users who can view reports
             $db->query("
                 INSERT INTO xf_sv_non_moderator_report_users_view (user_id, canView)
-                SELECT a.*
+                SELECT a.user_id, if(a.permission_value = 'allow', 1, 0) as val
                 FROM (
-                    SELECT DISTINCT gr.user_id, if(permission_value = 'allow', 1, 0) as val
+                    SELECT DISTINCT gr.user_id, groupPerm.permission_value 
                     FROM $table AS groupPerm $hint
                     STRAIGHT_JOIN xf_user_group_relation AS gr use index (user_group_id_is_primary) ON groupPerm.user_group_id = gr.user_group_id
                     WHERE $contentFilterSql
@@ -197,7 +197,7 @@ class Report extends XFCP_Report
                 STRAIGHT_JOIN xf_user AS xu ON xu.user_id = a.user_id
                 WHERE xu.is_moderator = 0 AND xu.user_state = 'valid'
                 ON DUPLICATE KEY UPDATE
-                    canView = if(canView = 0 OR groupPerm.permission_value = 'never' OR groupPerm.permission_value = 'reset', 0, if(groupPerm.permission_value = 'allow', 1, NULL))
+                    canView = if(canView = 0 OR a.permission_value = 'never' OR a.permission_value = 'reset', 0, if(a.permission_value = 'allow', 1, NULL))
             ");
             $db->query("
                 INSERT INTO xf_sv_non_moderator_report_users_view (user_id, canView)
