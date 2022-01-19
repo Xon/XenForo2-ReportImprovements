@@ -304,6 +304,18 @@ class Setup extends AbstractSetup
         $this->installStep1();
     }
 
+    public function upgrade2101200Step1()
+    {
+        $this->db()->query('
+            DELETE modLog
+            FROM xf_moderator_log AS modLog
+            JOIN xf_report_comment as reportComment ON modLog.content_id = reportComment.report_comment_id
+            WHERE modLog.content_type = \'report_comment\' AND 
+                  modLog.action = \'edit\' AND
+                  modLog.log_date = reportComment.comment_date 
+        ');
+    }
+
     /**
      * Drops add-on tables.
      */
