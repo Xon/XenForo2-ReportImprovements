@@ -290,7 +290,7 @@ class ReportComment extends XFCP_ReportComment
             $this->Report->fastUpdate('first_report_date', $this->comment_date);
         }
 
-        if ($this->getOption('log_moderator'))
+        if ($this->isUpdate() && $this->getOption('log_moderator'))
         {
             $this->app()->logger()->logModeratorChanges('report_comment', $this);
         }
