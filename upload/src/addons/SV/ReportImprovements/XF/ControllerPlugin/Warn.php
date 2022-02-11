@@ -3,6 +3,8 @@
 namespace SV\ReportImprovements\XF\ControllerPlugin;
 
 use SV\ReportImprovements\Entity\IReportResolver;
+use SV\WarningImprovements\XF\Entity\WarningDefinition;
+use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\View;
 
@@ -134,11 +136,41 @@ class Warn extends XFCP_Warn
                                   ->with(['LastModified', 'LastModifiedUser'])
                                   ->fetchOne();
 
+            /** @var \XF\Repository\Warning $warningRepo */
+            $warningRepo = $this->repository('XF:Warning');
+            $warningHandler = $warningRepo->getWarningHandler($contentType, true);
+            $user = $response->getParam('user');
+            $warning = null;
+            /** @var AbstractCollection|null $warningDefs */
+            $warningDefs = $response->getParam('warnings');
+            if ($user != null && $warningDefs !== null)
+            {
+                $addOns = \XF::app()->container('addon.cache');
+                if (isset($addOns['SV/WarningImprovements']))
+                {
+                    $category = reset($warningDefs);
+                    $warningDef = $category !== null ? reset($category) : null;
+                }
+                else
+                {
+                    $warningDef = is_array($warningDefs) ? reset($warningDefs) : $warningDefs->first();
+                }
+                /** @var WarningDefinition|null $warningDef */
+                if ($warningDef !== null)
+                {
+                    $input = $this->getWarnSubmitInput();
+                    $input['warning_definition_id'] = $input['filled_warning_definition_id'] = $warningDef->warning_definition_id;
+                    $warnService = $this->setupWarnService($warningHandler, $user, $contentType, $content, $input);
+                    $warning = $warnService->getWarning();
+                }
+            }
+
             $response->setParams([
                 'content'     => $content,
                 'report'      => $contentReport,
                 'contentType' => $contentType,
                 'contentId'   => $content->getEntityId(),
+                'warning'     => $warning,
             ]);
         }
 
