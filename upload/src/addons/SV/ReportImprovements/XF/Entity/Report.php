@@ -391,7 +391,7 @@ class Report extends XFCP_Report
      */
     protected function getUsername()
     {
-        if (\is_callable('parent::getUsername'))
+        if (\is_callable(parent::class.'::getUsername'))
         {
             /** @noinspection PhpUndefinedMethodInspection */
             return parent::getUsername();
