@@ -158,9 +158,9 @@ class Warn extends XFCP_Warn
                 /** @var WarningDefinition|null $warningDef */
                 if ($warningDef !== null)
                 {
-                    $input = $this->getWarnSubmitInput();
-                    $input['warning_definition_id'] = $input['filled_warning_definition_id'] = $warningDef->warning_definition_id;
-                    $warnService = $this->setupWarnService($warningHandler, $user, $contentType, $content, $input);
+                    /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
+                    $warnService = $this->service('XF:User\Warn', $user, $contentType, $content, \XF::visitor());
+                    $warnService->setFromDefinition($warningDef, 0, 0);
                     $warning = $warnService->getWarning();
                 }
             }
