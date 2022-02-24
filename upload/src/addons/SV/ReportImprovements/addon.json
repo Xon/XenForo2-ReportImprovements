@@ -10,7 +10,7 @@
     "support_url": "https://xenforo.com/community/resources/report-improvements-by-xon.6905/",
     "extra_urls": [],
     "require": {
-        "XF": [2010070, "XenForo 2.1.0+"],
+        "XF": [2020070, "XenForo 2.2.0+"],
         "php": ["7.0.0", "PHP 7.0.0+"],
         "SV/StandardLib": [1010000,"Standard Library by Xon v1.1.0+"]
     },
