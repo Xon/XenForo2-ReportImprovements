@@ -247,11 +247,8 @@ class ReportComment extends AbstractData
         {
             $query->withMetadata('thread', $threadId);
 
-            if (\XF::$versionId < 2020000 || \is_callable([$query, 'inTitleOnly']))
+            if (\is_callable([$query, 'inTitleOnly']))
             {
-                /** @noinspection PhpPossiblePolymorphicInvocationInspection
-                 * @noinspection RedundantSuppression
-                 */
                 $query->inTitleOnly(false);
             }
         }
