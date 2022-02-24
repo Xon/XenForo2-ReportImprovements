@@ -45,7 +45,10 @@ class Setup extends AbstractSetup
 
         foreach ($this->getAlterTables() as $tableName => $callback)
         {
-            $sm->alterTable($tableName, $callback);
+            if ($sm->tableExists($tableName))
+            {
+                $sm->alterTable($tableName, $callback);
+            }
         }
     }
 
@@ -314,6 +317,11 @@ class Setup extends AbstractSetup
                   modLog.action = \'edit\' AND
                   modLog.log_date = reportComment.comment_date 
         ');
+    }
+
+    public function upgrade2110000Step1()
+    {
+        $this->installStep2();
     }
 
     /**
@@ -719,7 +727,7 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'last_edit_date', 'int')->setDefault(0);
             $this->addOrChangeColumn($table, 'last_edit_user_id', 'int')->setDefault(0);
             $this->addOrChangeColumn($table, 'edit_count', 'int')->setDefault(0);
-            $this->addOrChangeColumn($table, 'ip_id', 'int')->nullable()->setDefault(null);
+            $this->addOrChangeColumn($table, 'ip_id', 'bigint')->nullable()->setDefault(null);
             $table->addKey('warning_log_id', 'warning_log_id');
         };
 

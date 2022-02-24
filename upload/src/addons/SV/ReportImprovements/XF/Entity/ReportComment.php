@@ -334,7 +334,8 @@ class ReportComment extends XFCP_ReportComment
         $structure->columns['assigned_user_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
         $structure->columns['assigned_username'] = ['type' => self::STR, 'maxLength' => 50, 'default' => ''];
         // edit support
-        $structure->columns['ip_id'] = ['type' => self::UINT, 'nullable' => true, 'default' => null];
+        // Pre-XF2.2.9 bug, where UINT assumes 32bit value, so explicitly set 'max'
+        $structure->columns['ip_id'] = ['type' => self::UINT, 'max' => \PHP_INT_MAX, 'nullable' => true, 'default' => null];
         $structure->columns['attach_count']   = ['type' => self::UINT, 'max' => 65535, 'default' => 0];
         $structure->columns['embed_metadata'] = ['type' => self::JSON_ARRAY, 'nullable' => true, 'default' => null];
         $structure->columns['last_edit_date'] = ['type' => self::UINT, 'default' => 0];
