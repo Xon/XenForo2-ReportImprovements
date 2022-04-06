@@ -110,7 +110,7 @@ class Report extends XFCP_Report
             ($comments = $reply->getParam('comments')))
         {
             /** @var ExtendedReportEntity $report */
-            /** @var AbstractCollection comments */
+            /** @var AbstractCollection|array $comments */
 
             /** @var \SV\ReportImprovements\Repository\ReportQueue $reportQueueRepo */
             $reportQueueRepo = $this->repository('SV\ReportImprovements:ReportQueue');

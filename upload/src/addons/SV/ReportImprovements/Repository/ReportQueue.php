@@ -36,7 +36,7 @@ class ReportQueue extends Repository
     /**
      * @param AbstractCollection|ReportComment[] $comments
      */
-    public function addReplyBansToComments(AbstractCollection $comments)
+    public function addReplyBansToComments($comments)
     {
         $postIds = [];
         $threadIds = [];
