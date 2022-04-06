@@ -2,7 +2,6 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
-use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Service\Report\Commenter;

@@ -3,15 +3,8 @@
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
 use SV\ReportImprovements\Globals;
-use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
-use SV\ReportImprovements\XF\Service\Report\Commenter;
-use XF\ControllerPlugin\BbCodePreview as BbCodePreviewPlugin;
-use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
-use XF\Mvc\Entity\AbstractCollection;
-use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\ParameterBag;
-use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\View;
 use XF\Mvc\Reply\View as ViewReply;
 

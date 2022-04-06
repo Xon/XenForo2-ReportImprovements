@@ -136,9 +136,6 @@ class Warn extends XFCP_Warn
                                   ->with(['LastModified', 'LastModifiedUser'])
                                   ->fetchOne();
 
-            /** @var \XF\Repository\Warning $warningRepo */
-            $warningRepo = $this->repository('XF:Warning');
-            $warningHandler = $warningRepo->getWarningHandler($contentType, true);
             $user = $response->getParam('user');
             $warning = null;
             /** @var AbstractCollection|null $warningDefs */

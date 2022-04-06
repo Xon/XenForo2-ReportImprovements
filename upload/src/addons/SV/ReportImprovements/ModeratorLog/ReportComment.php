@@ -25,6 +25,7 @@ class ReportComment extends AbstractHandler
      * @param mixed $newValue
      * @param mixed $oldValue
      * @return bool|string
+     * @noinspection PhpSwitchStatementWitSingleBranchInspection
      */
     protected function getLogActionForChange(Entity $content, $field, $newValue, $oldValue)
     {
