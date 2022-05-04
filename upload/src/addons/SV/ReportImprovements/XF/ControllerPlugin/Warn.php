@@ -167,7 +167,7 @@ class Warn extends XFCP_Warn
                 'report'      => $contentReport,
                 'contentType' => $contentType,
                 'contentId'   => $content->getEntityId(),
-                'warning'     => $warning,
+                'proposedWarning' => $warning,
             ]);
         }
 
