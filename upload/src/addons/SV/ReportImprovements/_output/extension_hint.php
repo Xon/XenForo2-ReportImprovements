@@ -22,6 +22,7 @@ namespace SV\ReportImprovements\XF\Entity
 
 namespace SV\ReportImprovements\XF\Pub\Controller
 {
+	class XFCP_ApprovalQueue extends \XF\Pub\Controller\ApprovalQueue {}
 	class XFCP_Member extends \XF\Pub\Controller\Member {}
 	class XFCP_Report extends \XF\Pub\Controller\Report {}
 	class XFCP_ReportPatch extends \XF\Pub\Controller\Report {}
