@@ -11,12 +11,14 @@ namespace SV\ReportImprovements\XF\ControllerPlugin
 
 namespace SV\ReportImprovements\XF\Entity
 {
+	class XFCP_ApprovalQueue extends \XF\Entity\ApprovalQueue {}
 	class XFCP_Post extends \XF\Entity\Post {}
 	class XFCP_Report extends \XF\Entity\Report {}
 	class XFCP_ReportComment extends \XF\Entity\ReportComment {}
 	class XFCP_Thread extends \XF\Entity\Thread {}
 	class XFCP_ThreadReplyBan extends \XF\Entity\ThreadReplyBan {}
 	class XFCP_User extends \XF\Entity\User {}
+	class XFCP_UserOption extends \XF\Entity\UserOption {}
 	class XFCP_Warning extends \XF\Entity\Warning {}
 }
 
@@ -46,6 +48,7 @@ namespace SV\ReportImprovements\XF\Report
 
 namespace SV\ReportImprovements\XF\Repository
 {
+	class XFCP_ApprovalQueue extends \XF\Repository\ApprovalQueue {}
 	class XFCP_PermissionCombination extends \XF\Repository\PermissionCombination {}
 	class XFCP_Report extends \XF\Repository\Report {}
 	class XFCP_ThreadReplyBan extends \XF\Repository\ThreadReplyBan {}

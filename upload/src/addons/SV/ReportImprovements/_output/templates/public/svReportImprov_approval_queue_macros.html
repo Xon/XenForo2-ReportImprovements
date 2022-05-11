@@ -1,0 +1,29 @@
+<xf:macro name="filters_above" arg-filters="!">
+    <div class="menu-row menu-row--separated">
+        <xf:hiddenval name="include_reported">0</xf:hiddenval>
+        <xf:checkbox>
+            <xf:option name="include_reported" selected="{{ $filters is not empty ? $filters.include_reported : 0 }}">{{ phrase('svReportImprov_include_reported_content') }}</xf:option>
+            <!--[XF:filter_menu:filters_extra]-->
+        </xf:checkbox>
+    </div>
+</xf:macro>
+
+<xf:macro name="filter_bar" arg-filters="!">
+    <xf:if is="$filters.include_reported">
+        <li><a href="{{ link('approval-queue', null, $filters|replace({'include_reported': null})) }}"
+               class="filterBar-filterToggle" data-xf-init="tooltip" title="{{ phrase('remove_this_filter')|for_attr }}">
+            <span class="filterBar-filterToggle-label">{{ phrase('svReportImprov_include_reported_content:') }}</span>
+            {{ phrase('yes') }}
+        </a></li>
+    </xf:if>
+</xf:macro>
+
+<xf:macro name="footer">
+    <div class="menu-row menu-row--separated">
+        <xf:checkbox>
+            <xf:option name="save"
+                       label="{{ phrase('save_as_default') }}"
+                       hint="{{ phrase('these_filters_will_be_used_by_default_whenever_you_return') }}" />
+        </xf:checkbox>
+    </div>
+</xf:macro>

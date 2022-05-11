@@ -1,6 +1,6 @@
 {
     "from_class": "XF\\Pub\\Controller\\ApprovalQueue",
     "to_class": "SV\\ReportImprovements\\XF\\Pub\\Controller\\ApprovalQueue",
-    "execute_order": 6905,
+    "execute_order": 1,
     "active": true
 }

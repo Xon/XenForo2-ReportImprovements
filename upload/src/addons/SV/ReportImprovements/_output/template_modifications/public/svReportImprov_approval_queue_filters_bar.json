@@ -1,0 +1,9 @@
+{
+    "template": "approval_queue",
+    "description": "Add filter bar extension to Approval Queue",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:if is=\"$filters.content_type\">",
+    "replace": "<xf:macro name=\"svReportImprov_approval_queue_macros::filter_bar\"\n\t\t  arg-filters=\"{$filters}\" />\n\n\t\t\t\t\t\t\t$0"
+}

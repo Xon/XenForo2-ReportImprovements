@@ -324,6 +324,11 @@ class Setup extends AbstractSetup
         $this->installStep2();
     }
 
+    public function upgrade2110300Step1()
+    {
+        $this->installStep2();
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -739,6 +744,10 @@ class Setup extends AbstractSetup
             $table->addKey(['permission_group_id','permission_id']);
         };
 
+        $tables['xf_user_option'] = function (Alter $table) {
+            $this->addOrChangeColumn($table, 'sv_reportimprov_approval_filters', 'blob');
+        };
+
         return $tables;
     }
 
@@ -767,6 +776,10 @@ class Setup extends AbstractSetup
                 'last_edit_user_id',
                 'edit_count',
             ]);
+        };
+
+        $tables['xf_user_option'] = function (Alter $table) {
+            $table->dropColumns(['sv_reportimprov_approval_filters']);
         };
 
         return $tables;

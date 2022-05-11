@@ -1,0 +1,9 @@
+{
+    "template": "approval_queue_filters",
+    "description": "Add new filters to Approval Queue",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<!--[XF:above_content_type]-->",
+    "replace": "$0\n\n\t<xf:macro name=\"svReportImprov_approval_queue_macros::filters_above\"\n\t\t\t  arg-filters=\"{$filters}\" />"
+}

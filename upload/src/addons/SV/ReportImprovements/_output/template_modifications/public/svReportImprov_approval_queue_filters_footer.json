@@ -1,0 +1,9 @@
+{
+    "template": "approval_queue_filters",
+    "description": "Add \"Save as default\" footer to Approval Queue filters",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<div class=\"menu-footer",
+    "replace": "<xf:macro name=\"svReportImprov_approval_queue_macros::footer\" />\n\n\t$0"
+}
