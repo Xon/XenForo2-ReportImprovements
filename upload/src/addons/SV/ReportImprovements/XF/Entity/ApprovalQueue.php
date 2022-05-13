@@ -15,6 +15,13 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 {
     public function canReport(&$error = null)
     {
+        /** @var \XF\Repository\Report $reportRepo */
+        $reportRepo = $this->repository('XF:Report');
+        if (!$reportRepo->getReportHandler($this->content_type))
+        {
+            return false;
+        }
+
         if (\is_callable($this->Content, 'canReport'))
         {
             $canReport = $this->Content->canReport($error);
