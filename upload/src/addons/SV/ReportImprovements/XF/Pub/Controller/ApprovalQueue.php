@@ -31,7 +31,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $approvalQueueRepo->addContentToUnapprovedItems($unapprovedItems);
         $approvalQueueRepo->cleanUpInvalidRecords($unapprovedItems);
         $unapprovedItems = $approvalQueueRepo->filterViewableUnapprovedItems($unapprovedItems);
-        $unapprovedItemsSliced = $unapprovedItems->slice(0, 1);
+        $unapprovedItemsSliced = $unapprovedItems->slice(0, 50);
 
         $viewParams = [
             'filters' => $filters,
