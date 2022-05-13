@@ -319,11 +319,6 @@ class Setup extends AbstractSetup
         ');
     }
 
-    public function upgrade2110000Step1()
-    {
-        $this->installStep2();
-    }
-
     public function upgrade2110300Step1()
     {
         $this->installStep2();
