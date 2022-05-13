@@ -1,0 +1,9 @@
+{
+    "template": "approval_queue",
+    "description": "Add scroll anchor to approval queue",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "js-approvalQueue-item",
+    "replace": "$0 js-approvalQueue-scrollAnchor-{$unapprovedItem.content_type}-{$unapprovedItem.content_id}"
+}

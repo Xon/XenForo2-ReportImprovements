@@ -1,7 +1,7 @@
 {
     "template": "approval_queue",
     "description": "Add filter bar extension to Approval Queue",
-    "execution_order": 10,
+    "execution_order": 6905,
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:if is=\"$filters.content_type\">",

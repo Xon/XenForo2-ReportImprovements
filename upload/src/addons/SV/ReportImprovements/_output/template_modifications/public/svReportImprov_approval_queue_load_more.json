@@ -1,0 +1,9 @@
+{
+    "template": "approval_queue",
+    "description": "Append \"Load more\" if needed",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "</xf:foreach>",
+    "replace": "$0\n\n\t\t\t<div class=\"block js-approvalQueueLoadMore\">\n\t\t\t\t<div class=\"block-container\">\n\t\t\t\t\t<div class=\"block-footer block-footer--split\">\n\t\t\t\t\t\t<span class=\"block-footer-counter\">{{ display_totals($count, $total) }}</span>\n\t\t\t\t\t\t<xf:if is=\"$hasMore\">\n\t\t\t\t\t\t\t<span class=\"block-footer-controls\"><xf:button href=\"{{ link('approval-queue/load-more', null, {'last_date': $last.content_date} + $filters) }}\"\n\t\t\t\t\t\t\t\tdata-xf-click=\"inserter\"\n\t\t\t\t\t\t\t\tdata-append=\".js-approvalQueueItemTarget\"\n\t\t\t\t\t\t\t\tdata-replace=\".js-approvalQueueLoadMore\"\n\t\t\t\t\t\t\t\tdata-scroll-target=\".js-approvalQueue-scrollAnchor-{$last.content_type}-{$last.content_id}\"\n\t\t\t\t\t\t\t\tdata-animate-replace=\"false\">\n\t\t\t\t\t\t\t\t{{ phrase('more') }}\n\t\t\t\t\t\t\t</xf:button></span>\n\t\t\t\t\t\t</xf:if>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>"
+}

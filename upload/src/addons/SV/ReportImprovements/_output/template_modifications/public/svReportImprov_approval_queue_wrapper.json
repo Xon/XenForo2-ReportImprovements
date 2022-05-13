@@ -1,0 +1,9 @@
+{
+    "template": "approval_queue",
+    "description": "Add wrapper to approval queue",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "/<xf:foreach loop=\"\\$unapprovedItems\".*<\\/xf:foreach>/isU",
+    "replace": "<div class=\"blocks js-approvalQueueItemTarget\">$0</div>"
+}

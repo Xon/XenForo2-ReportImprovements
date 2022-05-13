@@ -6,10 +6,79 @@ use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\AbstractReply;
 
 /**
- * Extends \XF\Pub\Controller\ApprovalQueue
+ * @see \XF\Pub\Controller\ApprovalQueue
  */
 class ApprovalQueue extends XFCP_ApprovalQueue
 {
+    public function actionIndex()
+    {
+        $approvalQueueRepo = $this->getApprovalQueueRepo();
+
+        $unapprovedFinder = $approvalQueueRepo->findUnapprovedContent();
+
+        $filters = $this->getQueueFilterInput();
+        $this->applyQueueFilters($unapprovedFinder, $filters);
+
+        /** @var \XF\Entity\ApprovalQueue[]|\XF\Mvc\Entity\ArrayCollection $unapprovedItems */
+        $unapprovedItems = $unapprovedFinder->fetch();
+        $numUnapprovedItems = $unapprovedItems->count();
+
+        if ($numUnapprovedItems != $this->app->unapprovedCounts['total'])
+        {
+            $approvalQueueRepo->rebuildUnapprovedCounts();
+        }
+
+        $approvalQueueRepo->addContentToUnapprovedItems($unapprovedItems);
+        $approvalQueueRepo->cleanUpInvalidRecords($unapprovedItems);
+        $unapprovedItems = $approvalQueueRepo->filterViewableUnapprovedItems($unapprovedItems);
+        $unapprovedItemsSliced = $unapprovedItems->slice(0, 1);
+
+        $viewParams = [
+            'filters' => $filters,
+            'count' => $unapprovedItemsSliced->count(),
+            'total' => $numUnapprovedItems,
+            'hasMore' => $unapprovedItemsSliced->count() < $numUnapprovedItems,
+            'last' => $unapprovedItemsSliced->last(),
+            'unapprovedItems' => $unapprovedItemsSliced,
+        ];
+        return $this->view('XF:ApprovalQueue\Listing', 'approval_queue', $viewParams);
+    }
+
+    public function actionLoadMore(ParameterBag $params): AbstractReply
+    {
+        $approvalQueueRepo = $this->getApprovalQueueRepo();
+
+        $unapprovedFinder = $approvalQueueRepo->findUnapprovedContent();
+        $unapprovedFinder->where('content_date', '>', $this->filter('last_date', 'uint'));
+
+        $filters = $this->getQueueFilterInput();
+        $this->applyQueueFilters($unapprovedFinder, $filters);
+
+        /** @var \XF\Entity\ApprovalQueue[]|\XF\Mvc\Entity\ArrayCollection $unapprovedItems */
+        $unapprovedItems = $unapprovedFinder->fetch();
+        $numUnapprovedItems = $unapprovedItems->count();
+
+        $approvalQueueRepo->addContentToUnapprovedItems($unapprovedItems);
+        $approvalQueueRepo->cleanUpInvalidRecords($unapprovedItems);
+
+        $unapprovedItems = $approvalQueueRepo->filterViewableUnapprovedItems($unapprovedItems);
+        $unapprovedItemsSliced = $unapprovedItems->slice(0, 50);
+
+        $viewParams = [
+            'filters' => $filters,
+            'count' => $unapprovedItemsSliced->count(),
+            'total' => $numUnapprovedItems,
+            'hasMore' => $unapprovedItemsSliced->count() < $numUnapprovedItems,
+            'last' => $unapprovedItemsSliced->last(),
+            'unapprovedItems' => $unapprovedItemsSliced,
+        ];
+        return $this->view(
+            'SV\ReportImprovements:ApprovalQueue\Update',
+            'approval_queue',
+            $viewParams
+        );
+    }
+
     protected function getQueueFilterInputDefinitions()
     {
         return [

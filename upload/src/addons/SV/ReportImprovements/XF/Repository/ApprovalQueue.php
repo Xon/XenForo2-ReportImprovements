@@ -4,7 +4,7 @@ namespace SV\ReportImprovements\XF\Repository;
 
 /**
  * Class ApprovalQueue
- * Extends \XF\Repository\ApprovalQueue
+ * @see \XF\Repository\ApprovalQueue
  *
  * @package SV\ReportImprovements\XF\Repository
  */
