@@ -22,7 +22,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             return false;
         }
 
-        if (\is_callable($this->Content, 'canReport'))
+        if (\is_callable([$this->Content, 'canReport']))
         {
             $canReport = $this->Content->canReport($error);
         }
