@@ -21,7 +21,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
         /** @var \XF\Entity\ApprovalQueue[]|\XF\Mvc\Entity\ArrayCollection $unapprovedItems */
         $unapprovedItems = $unapprovedFinder->fetch();
-        $numUnapprovedItems = $unapprovedItems->count();
+        $numUnapprovedItems = $unapprovedFinder->total();
 
         if ($numUnapprovedItems != $this->app->unapprovedCounts['total'])
         {
