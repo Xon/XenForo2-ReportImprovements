@@ -415,6 +415,19 @@ class Report extends XFCP_Report
         return '';
     }
 
+    public function getTitle()
+    {
+        try
+        {
+            return parent::getTitle();
+        }
+        catch (\Exception $e)
+        {
+            \XF::logException($e, false, 'Error accessing title for report ('.$this->report_id.')');
+            return '';
+        }
+    }
+
     public function getRelationFinder($key, $type = 'current')
     {
         $finder = parent::getRelationFinder($key, $type);

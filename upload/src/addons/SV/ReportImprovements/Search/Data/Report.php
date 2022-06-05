@@ -94,9 +94,19 @@ class Report extends AbstractData
             return null;
         }
 
+        try
+        {
+            $message = $handler->getContentMessage($entity);
+        }
+        catch (\Exception $e)
+        {
+            \XF::logException($e, false, 'Error accessing reported content for report ('.$entity->report_id.')');
+            $message = '';
+        }
+
         return IndexRecord::create('report', $entity->report_id, [
             'title'         => $entity->title_string,
-            'message'       => $handler->getContentMessage($entity),
+            'message'       => $message,
             'date'          => $entity->first_report_date,
             'user_id'       => $entity->content_user_id,
             'discussion_id' => $entity->report_id,
