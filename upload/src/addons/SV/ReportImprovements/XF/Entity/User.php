@@ -147,6 +147,27 @@ class User extends XFCP_User
         return $this->hasPermission('report_queue', 'viewReporterUsername');
     }
 
+    /**
+     * @param \XF\Phrase|String|null $error
+     * @return bool
+     * @noinspection PhpUnusedParameterInspection
+     */
+    public function canReportFromApprovalQueue(&$error = null): bool
+    {
+        $visitor = \XF::visitor();
+        if (!$visitor->user_id)
+        {
+            return false;
+        }
+
+        if (!$visitor->hasPermission('general', 'report'))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     protected $wasCanBeAssignedReports = false;
 
     protected function _preSave()
