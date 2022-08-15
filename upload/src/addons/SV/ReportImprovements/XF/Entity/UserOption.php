@@ -15,7 +15,7 @@ class UserOption extends XFCP_UserOption
     {
         $structure = parent::getStructure($structure);
 
-        $structure->columns['sv_reportimprov_approval_filters'] = ['type' => self::JSON_ARRAY, 'default' => []];
+        $structure->columns['sv_reportimprov_approval_filters'] = ['type' => self::JSON_ARRAY, 'default' => null, 'nullable' => true];
 
         return $structure;
     }

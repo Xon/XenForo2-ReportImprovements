@@ -17,7 +17,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
     public function saveUserDefaultFilters(\XF\Entity\User $user, array $filters)
     {
-        $user->Option->fastUpdate('sv_reportimprov_approval_filters', $filters);
+        $user->Option->fastUpdate('sv_reportimprov_approval_filters', $filters ?: null);
     }
 
     public function findUnapprovedContent()

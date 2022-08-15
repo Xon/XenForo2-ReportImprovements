@@ -319,7 +319,7 @@ class Setup extends AbstractSetup
         ');
     }
 
-    public function upgrade2110300Step1()
+    public function upgrade2120300Step1()
     {
         $this->installStep2();
     }
@@ -716,8 +716,8 @@ class Setup extends AbstractSetup
         $tables['xf_report_comment'] = function (Alter $table) {
             $this->addOrChangeColumn($table, 'warning_log_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'reaction_score', 'int')->unsigned(false)->setDefault(0);
-            $this->addOrChangeColumn($table, 'reactions', 'blob')->nullable();
-            $this->addOrChangeColumn($table, 'reaction_users', 'blob')->nullable();
+            $this->addOrChangeColumn($table, 'reactions', 'blob')->nullable()->setDefault(null);
+            $this->addOrChangeColumn($table, 'reaction_users', 'blob')->nullable()->setDefault(null);
             $this->addOrChangeColumn($table, 'alertSent', 'tinyint', 3)->setDefault(0);
             $this->addOrChangeColumn($table, 'alertComment', 'MEDIUMTEXT')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'assigned_user_id', 'int')->nullable(true)->setDefault(null);
@@ -740,7 +740,7 @@ class Setup extends AbstractSetup
         };
 
         $tables['xf_user_option'] = function (Alter $table) {
-            $this->addOrChangeColumn($table, 'sv_reportimprov_approval_filters', 'blob');
+            $this->addOrChangeColumn($table, 'sv_reportimprov_approval_filters', 'blob')->nullable(true)->setDefault(null);
         };
 
         return $tables;
