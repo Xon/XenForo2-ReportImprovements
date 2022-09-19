@@ -373,6 +373,7 @@ class Setup extends AbstractSetup
 
     public function postUpgrade($previousVersion, array &$stateChanges)
     {
+        $previousVersion = (int)$previousVersion;
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
 
@@ -426,10 +427,9 @@ class Setup extends AbstractSetup
      * @param int|null $previousVersion
      * @return bool True if permissions were applied.
      */
-    protected function applyDefaultPermissions(int $previousVersion = null): bool
+    protected function applyDefaultPermissions(int $previousVersion = 0): bool
     {
         $applied = false;
-        $previousVersion = (int)$previousVersion;
         $db = $this->db();
         $globalReportPerms = ['viewReports'];
         $globalReportQueuePerms = ['assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'viewReports', 'reportReact'];
@@ -499,6 +499,7 @@ class Setup extends AbstractSetup
                     $permissionUpdater->setContent($contentModerator->content_type, $contentModerator->content_id);
                     $permissionUpdater->updatePermissions($newPermissions);
                 }
+                \XF::triggerRunOnce();
             }
 
             $globalReportPermsChecks = [
@@ -591,6 +592,7 @@ class Setup extends AbstractSetup
                 }
             }
 
+            \XF::triggerRunOnce();
             $applied = true;
         }
 
