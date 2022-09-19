@@ -432,7 +432,10 @@ class Setup extends AbstractSetup
         $applied = false;
         $db = $this->db();
         $globalReportPerms = ['viewReports'];
-        $globalReportQueuePerms = ['assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'viewReports', 'reportReact'];
+        $globalReportQueuePerms = [
+            'view', 'edit', 'viewAttachment',
+            'assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'reportReact',
+        ];
 
         // content/global moderators before bulk update
         if (!$previousVersion || ($previousVersion <= 1040002) || ($previousVersion >= 2000000 && $previousVersion <= 2011000))
