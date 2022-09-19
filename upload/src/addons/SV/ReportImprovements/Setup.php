@@ -433,7 +433,7 @@ class Setup extends AbstractSetup
         $db = $this->db();
         $globalReportPerms = ['viewReports'];
         $globalReportQueuePerms = [
-            'view', 'edit', 'viewAttachment',
+            'view', 'edit', 'viewAttachment','uploadAttachment', 'uploadVideo',
             'assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'reportReact',
         ];
 
