@@ -210,7 +210,7 @@ class Report extends XFCP_Report
             $db->query("
                 DELETE reportUsers
                 FROM xf_sv_non_moderator_report_users AS reportUsers
-                WHERE canView = 0 or canView is null
+                WHERE canView = 0 or canView is null or user_id = 0
             ");
 
             $tablesToCheck = [
