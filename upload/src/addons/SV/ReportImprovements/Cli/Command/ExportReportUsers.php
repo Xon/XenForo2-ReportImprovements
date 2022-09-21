@@ -20,6 +20,8 @@ class ExportReportUsers extends Command
                 'report-id',
                 InputArgument::REQUIRED,
                 'The report to export users for'
+            )->addOption(
+                'cache', null, InputOption::VALUE_OPTIONAL,'Fetch user list from cache', true
             );
     }
 
@@ -36,8 +38,19 @@ class ExportReportUsers extends Command
         $reportRepo = \XF::repository('XF:Report');
         assert($reportRepo instanceof \SV\ReportImprovements\XF\Repository\Report);
 
+        $cache = (bool)$input->getOption('cache');
+
+        if ($cache)
+        {
+            $output->writeln("Fetching from cache");
+        }
+        else
+        {
+            $output->writeln("Skipping cache");
+        }
+
         \XF::options()->offsetSet('svNonModeratorReportHandlingLimit', 0);
-        $userIds = $reportRepo->getNonModeratorsWhoCanHandleReport($report, false);
+        $userIds = $reportRepo->getNonModeratorsWhoCanHandleReport($report, $cache);
         if (count($userIds) === 0)
         {
             $output->writeln("No non-moderator users detected for report {$report->report_id}.");
