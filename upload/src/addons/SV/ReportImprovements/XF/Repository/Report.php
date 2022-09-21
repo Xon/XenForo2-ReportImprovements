@@ -5,6 +5,7 @@ namespace SV\ReportImprovements\XF\Repository;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
+use function sort;
 
 /**
  * Class Report
@@ -162,6 +163,29 @@ class Report extends XFCP_Report
 
         if (!\is_array($userIds))
         {
+            // sanity check permissions have the expected range of values
+            foreach ([
+                         'XF:PermissionEntry' => ['unset', 'allow', 'deny', 'use_int'],
+                         'XF:PermissionEntryContent' => ['unset', 'reset', 'content_allow', 'deny', 'use_int'],
+                     ] as $entityName => $expected)
+            {
+                $structure = $this->app()->em()->getEntityStructure($entityName);
+                $allowedValues = array_values(($structure->columns['permission_value']['allowedValues'] ?? []));
+                sort($allowedValues);
+                sort($expected);
+                if ($allowedValues !== $expected)
+                {
+                    $error = "Unexpected {$entityName} configuration, expected ";
+                    if (\XF::$debugMode)
+                    {
+                        \trigger_error($error, E_USER_WARNING);
+                    }
+                    \XF::logError($error);
+
+                    return [];
+                }
+            }
+
             // find users with groups with the update report, or via direct permission assignment but aren't moderators
             // ensure they can view the report centre, or this might return more users than expected
             // this requires an index on xf_permission_entry.permission_group_id/xf_permission_entry.permission_id to be effective
