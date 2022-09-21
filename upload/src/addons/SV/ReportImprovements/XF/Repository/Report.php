@@ -170,6 +170,7 @@ class Report extends XFCP_Report
             $db = \XF::db();
             $db->query('DROP TEMPORARY TABLE IF EXISTS xf_sv_non_moderator_report_users');
 
+            // Report queues are "flat" and can not be nested within each other. As such do not need to worry about how unbound permission overriding works
             // canView/canUpdate values (in order of priority);
             // 0    - denied
             // 1    - allowed
