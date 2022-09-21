@@ -436,6 +436,7 @@ class Setup extends AbstractSetup
             'view', 'edit', 'viewAttachment','uploadAttachment', 'uploadVideo',
             'assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'reportReact',
         ];
+        $whiteListedGroups = [\XF\Entity\User::GROUP_MOD, \XF\Entity\User::GROUP_ADMIN];
 
         // content/global moderators before bulk update
         if (!$previousVersion || ($previousVersion <= 1040002) || ($previousVersion >= 2000000 && $previousVersion <= 2011000))
@@ -606,6 +607,7 @@ class Setup extends AbstractSetup
                 SELECT DISTINCT content_type, content_id, user_group_id, user_id, convert(permission_group_id USING utf8), 'viewReportPost', permission_value, permission_value_int
                 FROM xf_permission_entry_content
                 WHERE permission_group_id = 'forum' AND permission_id IN ('warn','editAnyPost','deleteAnyPost')
+                    AND user_group_id in ({$db->quote($whiteListedGroups)})
             "
             );
 
@@ -614,6 +616,7 @@ class Setup extends AbstractSetup
                 SELECT DISTINCT user_group_id, user_id, convert(permission_group_id USING utf8), 'viewReportPost', permission_value, permission_value_int
                 FROM xf_permission_entry
                 WHERE permission_group_id = 'forum' AND permission_id IN ('warn','editAnyPost','deleteAnyPost')
+                    AND user_group_id in ({$db->quote($whiteListedGroups)})
             "
             );
             $db->query(
@@ -621,6 +624,7 @@ class Setup extends AbstractSetup
                 SELECT DISTINCT user_group_id, user_id, 'report_queue', 'viewReportConversation', permission_value, permission_value_int
                 FROM xf_permission_entry
                 WHERE permission_group_id = 'conversation' AND permission_id IN ('alwaysInvite','editAnyPost','viewAny')
+                    AND user_group_id in ({$db->quote($whiteListedGroups)})
             "
             );
             $db->query(
@@ -628,6 +632,7 @@ class Setup extends AbstractSetup
                 SELECT DISTINCT user_group_id, user_id, 'report_queue', 'viewReportProfilePost', permission_value, permission_value_int
                 FROM xf_permission_entry
                 WHERE permission_group_id = 'profilePost' AND permission_id IN ('warn','editAny','deleteAny')
+                    AND user_group_id in ({$db->quote($whiteListedGroups)})
             "
             );
             $db->query(
@@ -635,6 +640,7 @@ class Setup extends AbstractSetup
                 SELECT DISTINCT user_group_id, user_id, convert(permission_group_id USING utf8), 'viewReportUser', permission_value, permission_value_int
                 FROM xf_permission_entry
                 WHERE permission_group_id = 'general' AND  permission_id IN ('warn','editBasicProfile')
+                    AND user_group_id in ({$db->quote($whiteListedGroups)})
             "
             );
             $applied = true;
@@ -648,6 +654,7 @@ class Setup extends AbstractSetup
                     SELECT DISTINCT user_group_id, user_id, convert(permission_group_id USING utf8), ?, permission_value, permission_value_int
                     FROM xf_permission_entry
                     WHERE permission_group_id = 'general' AND permission_id IN ('warn','editBasicProfile')
+                        AND user_group_id in ({$db->quote($whiteListedGroups)})
                 ", $perm
                 );
             }
@@ -658,6 +665,7 @@ class Setup extends AbstractSetup
                     SELECT DISTINCT user_group_id, user_id, convert(permission_group_id USING utf8), ?, permission_value, permission_value_int
                     FROM xf_permission_entry
                     WHERE permission_group_id = 'general' AND permission_id IN ('warn','editBasicProfile')
+                        AND user_group_id in ({$db->quote($whiteListedGroups)})
                 ", $perm
                 );
             }
