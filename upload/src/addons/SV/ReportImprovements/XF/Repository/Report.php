@@ -141,7 +141,7 @@ class Report extends XFCP_Report
      * @noinspection PhpDocMissingThrowsInspection
      * @noinspection SqlResolve
      */
-    protected function getNonModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
+    public function getNonModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
         $reportQueueId = (int)($report->queue_id ?? 0);
         $key = $this->getReportAssignableNonModeratorsCacheKey($reportQueueId);
