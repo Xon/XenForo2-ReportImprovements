@@ -141,7 +141,7 @@ class Report extends XFCP_Report
      * @noinspection PhpDocMissingThrowsInspection
      * @noinspection SqlResolve
      */
-    public function getNonModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
+    public function getNonModeratorsWhoCanHandleReport(\XF\Entity\Report $report, bool $doCache = true)
     {
         $reportQueueId = (int)($report->queue_id ?? 0);
         $key = $this->getReportAssignableNonModeratorsCacheKey($reportQueueId);
@@ -149,7 +149,7 @@ class Report extends XFCP_Report
         $cache = \XF::app()->cache();
 
         $userIds = null;
-        if ($cache && $key && $cacheTime)
+        if ($doCache && $cache && $key && $cacheTime)
         {
             $userIds = @$cache->fetch($key);
             $userIds = \is_array($userIds) ? $userIds : null;

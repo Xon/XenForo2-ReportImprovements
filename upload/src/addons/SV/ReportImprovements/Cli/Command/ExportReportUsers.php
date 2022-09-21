@@ -37,7 +37,7 @@ class ExportReportUsers extends Command
         assert($reportRepo instanceof \SV\ReportImprovements\XF\Repository\Report);
 
         \XF::options()->offsetSet('svNonModeratorReportHandlingLimit', 0);
-        $userIds = $reportRepo->getNonModeratorsWhoCanHandleReport($report);
+        $userIds = $reportRepo->getNonModeratorsWhoCanHandleReport($report, false);
         if (count($userIds) === 0)
         {
             $output->writeln("No non-moderator users detected for report {$report->report_id}.");
