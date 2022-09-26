@@ -75,9 +75,6 @@ class CommentEditor extends AbstractService
 
     protected function setCommentDefaults()
     {
-        $visitor = \XF::visitor();
-
-        $this->commentPreparer->setUser($visitor);
     }
 
     public function setOldMessage(string $oldMessage = null): self
