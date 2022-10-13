@@ -286,22 +286,22 @@ class ReportComment extends AbstractData
             // do not simplify these imports! Otherwise it will convert the soft-dependency into a hard dependency
             if ($constraints['c.warning.points.lower'] && $constraints['c.warning.points.upper'])
             {
-                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('points', [
+                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint('points', [
                     $constraints['c.warning.points.upper'],
                     $constraints['c.warning.points.lower'],
-                ],\SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_BETWEEN, $this->getWarningLogQueryTableReference(), $source));
+                ],\SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint::MATCH_BETWEEN, $this->getWarningLogQueryTableReference(), $source));
             }
             else if ($constraints['c.warning.points.lower'])
             {
                 unset($urlConstraints['warning']['points']['upper']);
-                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('points', $constraints['c.warning.points.lower'],
-                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference(), $source));
+                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint('points', $constraints['c.warning.points.lower'],
+                    \SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference(), $source));
             }
             else if ($constraints['c.warning.points.upper'])
             {
                 unset($urlConstraints['warning']['points']['lower']);
-                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('points', $constraints['c.warning.points.upper'],
-                    \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference(), $source));
+                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint('points', $constraints['c.warning.points.upper'],
+                    \SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference(), $source));
             }
             else
             {
