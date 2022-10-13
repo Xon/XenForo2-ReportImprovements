@@ -293,14 +293,26 @@ class ReportComment extends AbstractData
             }
             else if ($constraints['c.warning.points.lower'])
             {
+                unset($urlConstraints['warning']['points']['upper']);
                 $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('points', $constraints['c.warning.points.lower'],
                     \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference(), $source));
             }
             else if ($constraints['c.warning.points.upper'])
             {
+                unset($urlConstraints['warning']['points']['lower']);
                 $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint('points', $constraints['c.warning.points.upper'],
                     \SV\SearchImprovements\XF\Search\Query\RangeMetadataConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference(), $source));
             }
+            else
+            {
+                unset($urlConstraints['warning']['points']['upper']);
+                unset($urlConstraints['warning']['points']['lower']);
+            }
+        }
+        else
+        {
+            unset($urlConstraints['warning']['points']['upper']);
+            unset($urlConstraints['warning']['points']['lower']);
         }
     }
 
