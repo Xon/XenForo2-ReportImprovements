@@ -23,6 +23,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $unapprovedItems = $unapprovedFinder->fetch();
         $numUnapprovedItems = $unapprovedFinder->total();
 
+        /** @noinspection PhpUndefinedFieldInspection */
         if ($numUnapprovedItems != $this->app->unapprovedCounts['total'])
         {
             $approvalQueueRepo->rebuildUnapprovedCounts();
@@ -44,6 +45,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         return $this->view('XF:ApprovalQueue\Listing', 'approval_queue', $viewParams);
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     public function actionLoadMore(ParameterBag $params): AbstractReply
     {
         $approvalQueueRepo = $this->getApprovalQueueRepo();
@@ -109,7 +111,10 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
         if ($loadSaved)
         {
-            $savedFilters = $this->getApprovalQueueRepo()->getUserDefaultFilters(\XF::visitor());
+            /** @var \SV\ReportImprovements\XF\Repository\ApprovalQueue $approvalQueueRepo */
+            $approvalQueueRepo = $this->repository('XF:ApprovalQueue');
+
+            $savedFilters = $approvalQueueRepo->getUserDefaultFilters(\XF::visitor());
             $input = array_replace($input, $savedFilters);
 
             if (isset($savedFilters['include_reported']))
@@ -175,7 +180,9 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             if ($this->filter('save', 'bool') && $this->isPost())
             {
                 $filters = $this->getQueueFilterInput();
-                $this->getApprovalQueueRepo()->saveUserDefaultFilters(\XF::visitor(), $filters);
+                /** @var \SV\ReportImprovements\XF\Repository\ApprovalQueue $approvalQueueRepo */
+                $approvalQueueRepo = $this->repository('XF:ApprovalQueue');
+                $approvalQueueRepo->saveUserDefaultFilters(\XF::visitor(), $filters);
             }
         }
 

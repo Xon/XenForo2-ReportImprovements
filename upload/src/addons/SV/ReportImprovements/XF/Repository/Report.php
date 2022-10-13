@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Repository;
 
+use XF\Db\Exception;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
@@ -138,7 +139,9 @@ class Report extends XFCP_Report
 
     /**
      * @param \XF\Entity\Report $report
+     * @param bool              $doCache
      * @return int[]
+     * @throws Exception
      * @noinspection PhpDocMissingThrowsInspection
      * @noinspection SqlResolve
      */
