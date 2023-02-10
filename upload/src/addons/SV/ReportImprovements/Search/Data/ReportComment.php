@@ -274,7 +274,7 @@ class ReportComment extends AbstractData
                     {
                         $query->withMetadata('warned_user', $userIds);
                     }
-                    $urlConstraints['warning.user'] = \implode(', ', $users);
+                    $urlConstraints['warning']['user'] = \implode(', ', $users);
                 }
             }
         }

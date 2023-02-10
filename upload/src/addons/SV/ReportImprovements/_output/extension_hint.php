@@ -1,5 +1,6 @@
 <?php
 
+/** @noinspection PhpIllegalPsrClassPathInspection */
 // ################## THIS IS A GENERATED FILE ##################
 // DO NOT EDIT DIRECTLY. EDIT THE CLASS EXTENSIONS IN THE CONTROL PANEL.
 
@@ -15,6 +16,7 @@ namespace SV\ReportImprovements\XF\Entity
 	class XFCP_Post extends \XF\Entity\Post {}
 	class XFCP_Report extends \XF\Entity\Report {}
 	class XFCP_ReportComment extends \XF\Entity\ReportComment {}
+	class XFCP_Search extends \XF\Entity\Search {}
 	class XFCP_Thread extends \XF\Entity\Thread {}
 	class XFCP_ThreadReplyBan extends \XF\Entity\ThreadReplyBan {}
 	class XFCP_User extends \XF\Entity\User {}
