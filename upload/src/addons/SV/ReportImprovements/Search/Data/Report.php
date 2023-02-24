@@ -124,6 +124,7 @@ class Report extends AbstractData
             'report'              => $entity->report_id,
             'report_state'        => $entity->report_state,
             'assigned_user'       => $entity->assigned_user_id,
+            'assigner_user'       => $entity->assigner_user_id,
             'is_report'           => ReportComment::REPORT_TYPE_IS_REPORT,
             'report_content_type' => $entity->content_type,
         ];
@@ -159,6 +160,7 @@ class Report extends AbstractData
         $structure->addField('report_state', MetadataStructure::KEYWORD);
         $structure->addField('report_content_type', MetadataStructure::KEYWORD);
         $structure->addField('assigned_user', MetadataStructure::INT);
+        $structure->addField('assigner_user', MetadataStructure::INT);
         // must be an int, as ElasticSearch single index has this all mapped to the same type
         $structure->addField('is_report', MetadataStructure::INT);
     }

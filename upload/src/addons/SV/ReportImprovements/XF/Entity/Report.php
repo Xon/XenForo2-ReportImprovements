@@ -13,6 +13,8 @@ use XF\Mvc\Entity\Structure;
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
  * @property int                $last_modified_id
+ * @property int|null           $assigned_date
+ * @property int|null           $assigner_user_id
  * GETTERS
  * @property-read string        $title_string
  * @property-read string        $username
@@ -474,6 +476,8 @@ class Report extends XFCP_Report
             'checkForUpdates'  => ['report_id', 'is_report'],
         ];
 
+        $structure->columns['assigned_date'] = ['type' => self::UINT, 'default' => 0];
+        $structure->columns['assigner_user_id'] = ['type' => self::UINT, 'default' => 0];
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
         $structure->getters['username'] = ['getter' => 'getUsername', 'cache' => true];

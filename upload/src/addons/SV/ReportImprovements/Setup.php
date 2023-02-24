@@ -2,6 +2,10 @@
 
 namespace SV\ReportImprovements;
 
+use SV\ReportImprovements\Job\Upgrades\EnrichReportPostInstall;
+use SV\ReportImprovements\Job\Upgrades\Upgrade1090100Step1;
+use SV\ReportImprovements\Job\Upgrades\Upgrade1090200Step1;
+use SV\ReportImprovements\Job\WarningLogMigration;
 use SV\StandardLib\InstallerHelper;
 use XF\AddOn\AbstractSetup;
 use XF\AddOn\StepRunnerInstallTrait;
@@ -358,9 +362,10 @@ class Setup extends AbstractSetup
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
 
-        $atomicJobs[] = 'SV\ReportImprovements:Upgrades\Upgrade1090100Step1';
-        $atomicJobs[] = 'SV\ReportImprovements:Upgrades\Upgrade1090200Step1';
-        $atomicJobs[] = 'SV\ReportImprovements:WarningLogMigration';
+        $atomicJobs[] = EnrichReportPostInstall::class;
+        $atomicJobs[] = Upgrade1090100Step1::class;
+        $atomicJobs[] = Upgrade1090200Step1::class;
+        $atomicJobs[] = WarningLogMigration::class;
 
         if ($atomicJobs)
         {
@@ -377,7 +382,12 @@ class Setup extends AbstractSetup
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
 
-        $atomicJobs[] = 'SV\ReportImprovements:WarningLogMigration';
+        if ($previousVersion < 2140000)
+        {
+            $atomicJobs[] = EnrichReportPostInstall::class;
+        }
+
+        $atomicJobs[] = WarningLogMigration::class;
 
         if ($this->applyDefaultPermissions($previousVersion))
         {
@@ -559,7 +569,7 @@ class Setup extends AbstractSetup
                 $newPermissions = $permissions;
                 foreach ($globalReportPermsChecks as $raw)
                 {
-                    list($checks, $assignments) = $raw;
+                    [$checks, $assignments] = $raw;
                     foreach ($checks as $category => $permToTests)
                     {
                         if (isset($newPermissions[$category]))
@@ -724,6 +734,8 @@ class Setup extends AbstractSetup
 
         $tables['xf_report'] = function (Alter $table) {
             $this->addOrChangeColumn($table, 'last_modified_id', 'int')->setDefault(0);
+            $this->addOrChangeColumn($table, 'assigned_date', 'int')->nullable(true)->setDefault(null);
+            $this->addOrChangeColumn($table, 'assigner_user_id', 'int')->nullable(true)->setDefault(null);
         };
 
         $tables['xf_report_comment'] = function (Alter $table) {

@@ -96,8 +96,19 @@ class Commenter extends XFCP_Commenter
 
         if ($this->report->isChanged('assigned_user_id'))
         {
-            $this->comment->assigned_user_id = $assignedUser ? $assignedUser->user_id : null;
-            $this->comment->assigned_username = $assignedUser ? $assignedUser->username : '';
+            if ($assignedUser === null)
+            {
+                $this->comment->assigned_user_id = null;
+                $this->comment->assigned_username = null;
+            }
+            else
+            {
+                $this->comment->assigned_user_id = $assignedUser->user_id;
+                $this->comment->assigned_username = $assignedUser->username;
+            }
+            // tracks unassignments, not just assignments
+            $this->report->assigned_date = \XF::$time;
+            $this->report->assigner_user_id = \XF::visitor()->user_id;
         }
     }
 
