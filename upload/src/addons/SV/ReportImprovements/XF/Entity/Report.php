@@ -473,7 +473,7 @@ class Report extends XFCP_Report
         $structure->behaviors['XF:IndexableContainer'] = [
             'childContentType' => 'report_comment',
             'childIds'         => function ($report) { return $report->comment_ids; },
-            'checkForUpdates'  => ['report_id', 'is_report'],
+            'checkForUpdates'  => ['report_id', 'is_report', 'report_state', 'assigned_user_id', 'assigned_date', 'assigner_user_id'],
         ];
 
         $structure->columns['assigned_date'] = ['type' => self::UINT, 'default' => 0];

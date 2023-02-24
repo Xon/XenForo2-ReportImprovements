@@ -114,14 +114,20 @@ class ReportComment extends AbstractData
      */
     protected function getMetaData(\XF\Entity\ReportComment $entity)
     {
+        $report = $entity->Report;
         $metaData = [
-            'report'       => $entity->report_id,
-            'state_change' => $entity->state_change ?: '',
-            'is_report'    => $entity->is_report ? static::REPORT_TYPE_USER_REPORT : static::REPORT_TYPE_COMMENT, // must be an int
+            'report'              => $entity->report_id,
+            'report_state'        => $report->report_state,
+            'assigned_user'       => $report->assigned_user_id,
+            'assigner_user'       => $report->assigner_user_id,
+            'report_content_type' => $report->content_type,
+            'state_change'        => $entity->state_change ?: '',
+            'is_report'           => $entity->is_report ? static::REPORT_TYPE_USER_REPORT : static::REPORT_TYPE_COMMENT, // must be an int
+            'report_user'         => $report->content_user_id,
         ];
 
         $warningLog = $entity->WarningLog;
-        if ($warningLog)
+        if ($warningLog !== null)
         {
             if ($warningLog->points)
             {
@@ -150,7 +156,7 @@ class ReportComment extends AbstractData
             }
         }
 
-        if ($report = $entity->Report)
+        if ($report !== null)
         {
             if (isset($report->content_info['thread_id']))
             {
@@ -196,9 +202,15 @@ class ReportComment extends AbstractData
      */
     public function setupMetadataStructure(MetadataStructure $structure)
     {
+        $structure->addField('report_user', MetadataStructure::INT);
+        // shared with Report
         $structure->addField('thread', MetadataStructure::INT);
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('state_change', MetadataStructure::KEYWORD);
+        $structure->addField('report_state', MetadataStructure::KEYWORD);
+        $structure->addField('report_content_type', MetadataStructure::KEYWORD);
+        $structure->addField('assigned_user', MetadataStructure::INT);
+        $structure->addField('assigner_user', MetadataStructure::INT);
         // must be an int, as ElasticSearch single index has this all mapped to the same type
         $structure->addField('is_report', MetadataStructure::INT);
         // warning bits
