@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\Globals;
+use SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\Data\AbstractData;
@@ -287,25 +288,24 @@ class ReportComment extends AbstractData
         if (isset($addOns['SV/SearchImprovements']))
         {
             $source = isset($addOns['SV/XFES']) ? 'search_index' : 'warning_log';
-            // do not simplify these imports! Otherwise it will convert the soft-dependency into a hard dependency
             if ($constraints['c.warning.points.lower'] && $constraints['c.warning.points.upper'])
             {
-                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint('points', [
+                $query->withMetadata(new RangeConstraint('points', [
                     $constraints['c.warning.points.upper'],
                     $constraints['c.warning.points.lower'],
-                ],\SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint::MATCH_BETWEEN, $this->getWarningLogQueryTableReference(), $source));
+                ], RangeConstraint::MATCH_BETWEEN, $this->getWarningLogQueryTableReference(), $source));
             }
             else if ($constraints['c.warning.points.lower'])
             {
                 unset($urlConstraints['warning']['points']['upper']);
-                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint('points', $constraints['c.warning.points.lower'],
-                    \SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference(), $source));
+                $query->withMetadata(new RangeConstraint('points', $constraints['c.warning.points.lower'],
+                    RangeConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference(), $source));
             }
             else if ($constraints['c.warning.points.upper'])
             {
                 unset($urlConstraints['warning']['points']['lower']);
-                $query->withMetadata(new \SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint('points', $constraints['c.warning.points.upper'],
-                    \SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference(), $source));
+                $query->withMetadata(new RangeConstraint('points', $constraints['c.warning.points.upper'],
+                    RangeConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference(), $source));
             }
             else
             {
