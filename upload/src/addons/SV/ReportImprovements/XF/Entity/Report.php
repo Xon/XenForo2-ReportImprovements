@@ -12,15 +12,15 @@ use XF\Mvc\Entity\Structure;
  *
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
- * @property int           last_modified_id
+ * @property int                $last_modified_id
  * GETTERS
- * @property string        title_string
- * @property string        username
- * @property array         commenter_user_ids
- * @property array         comment_ids
- * @property ReportComment LastModified
+ * @property-read string        $title_string
+ * @property-read string        $username
+ * @property-read array         $commenter_user_ids
+ * @property-read array         $comment_ids
+ * @property-read ReportComment $LastModified
  * RELATIONS
- * @property ReportComment LastModified_
+ * @property-read ReportComment $LastModified_
  */
 class Report extends XFCP_Report
 {

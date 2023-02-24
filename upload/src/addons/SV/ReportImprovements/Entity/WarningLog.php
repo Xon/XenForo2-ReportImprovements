@@ -2,40 +2,45 @@
 
 namespace SV\ReportImprovements\Entity;
 
+use XF\Entity\Post;
+use XF\Entity\Thread;
+use XF\Entity\ThreadReplyBan;
+use XF\Entity\User;
+use XF\Entity\Warning;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
  * COLUMNS
  *
- * @property int                       warning_log_id
- * @property int                       warning_edit_date
- * @property string                    operation_type
- * @property int                       warning_id
- * @property string                    content_type
- * @property int                       content_id
- * @property string                    content_title
- * @property int                       user_id
- * @property int                       warning_date
- * @property int                       warning_user_id
- * @property int                       warning_definition_id
- * @property string                    title
- * @property string                    notes
- * @property int                       points
- * @property int                       expiry_date
- * @property int                       is_expired
- * @property string                    extra_user_group_ids
- * @property int|null                  reply_ban_thread_id
- * @property int|null                  reply_ban_post_id
- * @property string|null               public_banner
+ * @property int            $warning_log_id
+ * @property int            $warning_edit_date
+ * @property string         $operation_type
+ * @property int            $warning_id
+ * @property string         $content_type
+ * @property int            $content_id
+ * @property string         $content_title
+ * @property int            $user_id
+ * @property int            $warning_date
+ * @property int            $warning_user_id
+ * @property int            $warning_definition_id
+ * @property string         $title
+ * @property string         $notes
+ * @property int            $points
+ * @property int            $expiry_date
+ * @property int            $is_expired
+ * @property string         $extra_user_group_ids
+ * @property int|null       $reply_ban_thread_id
+ * @property int|null       $reply_ban_post_id
+ * @property string|null    $public_banner
  * GETTERS
- * @property \XF\Entity\ThreadReplyBan ReplyBan
+ * @property ThreadReplyBan $ReplyBan
  * RELATIONS
- * @property \XF\Entity\ThreadReplyBan ReplyBan_
- * @property \XF\Entity\Warning        Warning
- * @property \XF\Entity\User           User
- * @property \XF\Entity\Thread         ReplyBanThread
- * @property \XF\Entity\Post           ReplyBanPost
+ * @property ThreadReplyBan $ReplyBan_
+ * @property Warning        $Warning
+ * @property User           $User
+ * @property Thread         $ReplyBanThread
+ * @property Post           $ReplyBanPost
  */
 class WarningLog extends Entity
 {
@@ -64,7 +69,7 @@ class WarningLog extends Entity
     }
 
     /**
-     * @return \XF\Entity\ThreadReplyBan|null
+     * @return ThreadReplyBan|null
      */
     public function getReplyBan()
     {

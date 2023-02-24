@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\Attachment;
@@ -15,33 +16,31 @@ use XF\Mvc\Entity\Structure;
  *
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
- * @property int reaction_score
- * @property array reactions_
- * @property array reaction_users_
- * @property int                                      warning_log_id
- * @property bool                                     alertSent
- * @property string                                   alertComment
- * @property int|null                                 assigned_user_id
- * @property string                                   assigned_username
- * @property int                                      attach_count
- * @property array|null                               embed_metadata
- * @property int                                      edit_count
- * @property int                                      last_edit_user_id
- * @property int                                      last_edit_date
- * @property int|null                                 ip_id
- *
+ * @property int                                  $reaction_score
+ * @property array                                $reactions_
+ * @property array                                $reaction_users_
+ * @property int                                  $warning_log_id
+ * @property bool                                 $alertSent
+ * @property string                               $alertComment
+ * @property int|null                             $assigned_user_id
+ * @property string                               $assigned_username
+ * @property int                                  $attach_count
+ * @property array|null                           $embed_metadata
+ * @property int                                  $edit_count
+ * @property int                                  $last_edit_user_id
+ * @property int                                  $last_edit_date
+ * @property int|null                             $ip_id
  * GETTERS
- * @property array                                    Unfurls
- * @property string                                   ViewableUsername
- * @property User                                     ViewableUser
- * @property mixed reactions
- * @property mixed reaction_users
- *
+ * @property-read array                           $Unfurls
+ * @property-read string                          $ViewableUsername
+ * @property-read User                            $ViewableUser
+ * @property mixed                                $reactions
+ * @property mixed                                $reaction_users
  * RELATIONS
- * @property AbstractCollection|Attachment[]          Attachments
- * @property \XF\Entity\LikedContent[]                Likes
- * @property \SV\ReportImprovements\Entity\WarningLog WarningLog
- * @property Report                                   Report
+ * @property-read AbstractCollection|Attachment[] $Attachments
+ * @property-read \XF\Entity\LikedContent[]       $Likes
+ * @property-read WarningLog                      $WarningLog
+ * @property-read Report                          $Report
  */
 class ReportComment extends XFCP_ReportComment
 {

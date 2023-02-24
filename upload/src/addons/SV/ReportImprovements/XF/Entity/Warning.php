@@ -13,7 +13,7 @@ use XF\Mvc\Entity\Structure;
  *
  * @package SV\ReportImprovements\XF\Entity
  * RELATIONS
- * @property Report Report
+ * @property-read Report $Report
  */
 class Warning extends XFCP_Warning implements IReportResolver
 {

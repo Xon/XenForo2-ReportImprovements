@@ -9,7 +9,7 @@ use XF\Mvc\Entity\Structure;
  * Extends \XF\Entity\ApprovalQueue
  *
  * @package SV\ReportImprovements\XF\Entity
- * @property Report Report
+ * @property-read Report $Report
  */
 class ApprovalQueue extends XFCP_ApprovalQueue
 {

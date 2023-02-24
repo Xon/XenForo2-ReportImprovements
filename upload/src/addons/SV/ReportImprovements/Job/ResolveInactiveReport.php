@@ -93,6 +93,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
             }
             else
             {
+                /** @var AbstractCollection|array|string $errors */
                 if ($errors instanceof AbstractCollection)
                 {
                     $errors = $errors->toArray();
@@ -106,6 +107,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
                 {
                     $string = (string)$string;
                 }
+                /** @var array<string> $errors */
                 \XF::logError('Error resolving inactive report:' . \var_export($errors, true));
             }
         });
