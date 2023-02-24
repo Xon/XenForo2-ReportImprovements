@@ -19,6 +19,10 @@ use XF\Search\Query\TableReference;
  */
 class ReportComment extends AbstractData
 {
+    const REPORT_TYPE_COMMENT = 0;
+    const REPORT_TYPE_USER_REPORT = 1;
+    const REPORT_TYPE_IS_REPORT = 2;
+
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
      * @param null                                                  $error
@@ -112,7 +116,7 @@ class ReportComment extends AbstractData
         $metaData = [
             'report'       => $entity->report_id,
             'state_change' => $entity->state_change ?: '',
-            'is_report'    => $entity->is_report ? 1 : 0, // must be an int
+            'is_report'    => $entity->is_report ? static::REPORT_TYPE_USER_REPORT : static::REPORT_TYPE_COMMENT, // must be an int
         ];
 
         $warningLog = $entity->WarningLog;
@@ -224,17 +228,17 @@ class ReportComment extends AbstractData
         $isReport = [];
         if ($constraints['c.report.comments'])
         {
-            $isReport[] = 0;
+            $isReport[] = static::REPORT_TYPE_COMMENT;
         }
 
         if ($constraints['c.report.user_reports'])
         {
-            $isReport[] = 1;
+            $isReport[] = static::REPORT_TYPE_USER_REPORT;
         }
 
         if ($constraints['c.report.contents'])
         {
-            $isReport[] = 2;
+            $isReport[] = static::REPORT_TYPE_IS_REPORT;
         }
 
         if (\count($isReport))
@@ -361,7 +365,7 @@ class ReportComment extends AbstractData
         if (!$visitor->canViewReporter())
         {
             return [
-                new MetadataConstraint('is_report', [1], 'none'),
+                new MetadataConstraint('is_report', [static::REPORT_TYPE_USER_REPORT], 'none'),
             ];
         }
 

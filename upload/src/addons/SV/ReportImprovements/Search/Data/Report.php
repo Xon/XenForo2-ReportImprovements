@@ -124,7 +124,7 @@ class Report extends AbstractData
             'report'              => $entity->report_id,
             'report_state'        => $entity->report_state,
             'assigned_user'       => $entity->assigned_user_id,
-            'is_report'           => 2,
+            'is_report'           => ReportComment::REPORT_TYPE_IS_REPORT,
             'report_content_type' => $entity->content_type,
         ];
 
