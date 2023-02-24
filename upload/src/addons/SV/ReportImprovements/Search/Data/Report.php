@@ -133,6 +133,10 @@ class Report extends AbstractData
         {
             $metaData['thread'] = $entity->content_info['thread_id'];
         }
+        if (isset($entity->content_info['node_id']))
+        {
+            $metaData['node'] = $entity->content_info['node_id'];
+        }
 
         return $metaData;
     }
@@ -155,6 +159,7 @@ class Report extends AbstractData
      */
     public function setupMetadataStructure(MetadataStructure $structure)
     {
+        $structure->addField('node', MetadataStructure::INT);
         $structure->addField('thread', MetadataStructure::INT);
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('report_state', MetadataStructure::KEYWORD);

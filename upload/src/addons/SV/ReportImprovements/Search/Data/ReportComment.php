@@ -162,6 +162,10 @@ class ReportComment extends AbstractData
             {
                 $metaData['thread'] = $report->content_info['thread_id'];
             }
+            if (isset($report->content_info['node_id']))
+            {
+                $metaData['node'] = $report->content_info['node_id'];
+            }
         }
 
         return $metaData;
@@ -204,6 +208,7 @@ class ReportComment extends AbstractData
     {
         $structure->addField('report_user', MetadataStructure::INT);
         // shared with Report
+        $structure->addField('node', MetadataStructure::INT);
         $structure->addField('thread', MetadataStructure::INT);
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('state_change', MetadataStructure::KEYWORD);
