@@ -476,8 +476,8 @@ class Report extends XFCP_Report
             'checkForUpdates'  => ['report_id', 'is_report', 'report_state', 'assigned_user_id', 'assigned_date', 'assigner_user_id'],
         ];
 
-        $structure->columns['assigned_date'] = ['type' => self::UINT, 'default' => 0];
-        $structure->columns['assigner_user_id'] = ['type' => self::UINT, 'default' => 0];
+        $structure->columns['assigned_date'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
+        $structure->columns['assigner_user_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
         $structure->getters['username'] = ['getter' => 'getUsername', 'cache' => true];
