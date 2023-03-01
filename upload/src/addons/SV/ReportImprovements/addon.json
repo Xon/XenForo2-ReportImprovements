@@ -12,12 +12,12 @@
     "require": {
         "XF": [2020070, "XenForo 2.2.0+"],
         "php": ["7.2.0", "PHP 7.2.0+"],
-        "SV/StandardLib": [1010000,"Standard Library by Xon v1.1.0+"]
+        "SV/StandardLib": [1010000,"Standard Library by Xon v1.1.0+"],
+        "SV/SearchImprovements": [2090000, "Search Improvements 2.9.0+", true]
     },
     "require-soft": {
         "SV/ThreadReplyBanTeeth": [2050000, "Thread Reply Ban Teeth v2.5.0+"],
-        "SV/ContentRatings": [2010500, "Content Rating 2.1.5+", true],
-        "SV/SearchImprovements": [2060000, "Search Improvements 2.6.0+", true]
+        "SV/ContentRatings": [2010500, "Content Rating 2.1.5+", true]
     },
     "icon": "fa-balance-scale"
 }

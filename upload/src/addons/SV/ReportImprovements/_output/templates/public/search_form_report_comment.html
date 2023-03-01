@@ -16,7 +16,6 @@
 			   value="{$input.c.report.user_reports}"/>
 </xf:checkboxrow>
 
-<xf:if is="is_addon_active('SV/SearchImprovements')">
 <xf:formrow label="{{ phrase('warning_points') }}">
 	<div class="inputGroup">
 		<xf:numberbox name="c[warning][points][lower]" value="{$input.c.warning.points.lower}" size="5" min="0" step="1" />
@@ -28,7 +27,6 @@
 		</span>
 	</div>
 </xf:formrow>
-</xf:if>
 
 <xf:macro template="search_form_macros" name="order"
 	arg-isRelevanceSupported="{$isRelevanceSupported}"

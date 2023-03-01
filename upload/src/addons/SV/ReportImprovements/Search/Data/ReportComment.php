@@ -301,34 +301,25 @@ class ReportComment extends AbstractData
             }
         }
 
-        $addOns = \XF::app()->container('addon.cache');
-        if (isset($addOns['SV/SearchImprovements']))
+        $source = isset($addOns['SV/XFES']) ? 'search_index' : 'warning_log';
+        if ($constraints['c.warning.points.lower'] && $constraints['c.warning.points.upper'])
         {
-            $source = isset($addOns['SV/XFES']) ? 'search_index' : 'warning_log';
-            if ($constraints['c.warning.points.lower'] && $constraints['c.warning.points.upper'])
-            {
-                $query->withMetadata(new RangeConstraint('points', [
-                    $constraints['c.warning.points.upper'],
-                    $constraints['c.warning.points.lower'],
-                ], RangeConstraint::MATCH_BETWEEN, $this->getWarningLogQueryTableReference(), $source));
-            }
-            else if ($constraints['c.warning.points.lower'])
-            {
-                unset($urlConstraints['warning']['points']['upper']);
-                $query->withMetadata(new RangeConstraint('points', $constraints['c.warning.points.lower'],
-                    RangeConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference(), $source));
-            }
-            else if ($constraints['c.warning.points.upper'])
-            {
-                unset($urlConstraints['warning']['points']['lower']);
-                $query->withMetadata(new RangeConstraint('points', $constraints['c.warning.points.upper'],
-                    RangeConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference(), $source));
-            }
-            else
-            {
-                unset($urlConstraints['warning']['points']['upper']);
-                unset($urlConstraints['warning']['points']['lower']);
-            }
+            $query->withMetadata(new RangeConstraint('points', [
+                $constraints['c.warning.points.upper'],
+                $constraints['c.warning.points.lower'],
+            ], RangeConstraint::MATCH_BETWEEN, $this->getWarningLogQueryTableReference(), $source));
+        }
+        else if ($constraints['c.warning.points.lower'])
+        {
+            unset($urlConstraints['warning']['points']['upper']);
+            $query->withMetadata(new RangeConstraint('points', $constraints['c.warning.points.lower'],
+                RangeConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference(), $source));
+        }
+        else if ($constraints['c.warning.points.upper'])
+        {
+            unset($urlConstraints['warning']['points']['lower']);
+            $query->withMetadata(new RangeConstraint('points', $constraints['c.warning.points.upper'],
+                RangeConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference(), $source));
         }
         else
         {
