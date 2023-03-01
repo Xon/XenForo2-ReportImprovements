@@ -28,6 +28,10 @@
 	</div>
 </xf:formrow>
 
-<xf:macro template="search_form_macros" name="order"
-	arg-isRelevanceSupported="{$isRelevanceSupported}"
-	arg-input="{$input}" />
+<xf:macro template="search_form_macros"
+		  name="order"
+		  arg-isRelevanceSupported="{$isRelevanceSupported}"
+		  arg-options="{{ {
+					   'replies': phrase('most_replies')
+					   } }}"
+		  arg-input="{$input}" />

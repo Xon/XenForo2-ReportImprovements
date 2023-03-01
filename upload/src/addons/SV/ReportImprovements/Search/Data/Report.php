@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\SearchImprovements\Search\DiscussionTrait;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\Data\AbstractData;
@@ -15,6 +16,9 @@ use XF\Search\MetadataStructure;
  */
 class Report extends AbstractData
 {
+    protected static $svDiscussionEntity = \XF\Entity\Report::class;
+    use DiscussionTrait;
+
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
      * @param null                                           $error
@@ -138,6 +142,8 @@ class Report extends AbstractData
             $metaData['node'] = $entity->content_info['node_id'];
         }
 
+        $this->populateDiscussionMetaData($entity, $metaData);
+
         return $metaData;
     }
 
@@ -168,5 +174,7 @@ class Report extends AbstractData
         $structure->addField('assigner_user', MetadataStructure::INT);
         // must be an int, as ElasticSearch single index has this all mapped to the same type
         $structure->addField('is_report', MetadataStructure::INT);
+
+        $this->setupDiscussionMetadataStructure($structure);
     }
 }

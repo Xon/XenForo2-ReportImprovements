@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Globals;
+use SV\SearchImprovements\Search\Features\ISearchableReplyCount;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
@@ -24,7 +25,7 @@ use XF\Mvc\Entity\Structure;
  * RELATIONS
  * @property-read ReportComment $LastModified_
  */
-class Report extends XFCP_Report
+class Report extends XFCP_Report implements ISearchableReplyCount
 {
     public function canView()
     {
@@ -452,6 +453,11 @@ class Report extends XFCP_Report
         }
 
         return \strval($value);
+    }
+
+    public function getReplyCountForSearch(): int
+    {
+        return $this->report_count + $this->comment_count;
     }
 
     /**

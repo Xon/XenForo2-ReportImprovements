@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\Globals;
+use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
@@ -20,6 +21,9 @@ use XF\Search\Query\TableReference;
  */
 class ReportComment extends AbstractData
 {
+    protected static $svDiscussionEntity = \XF\Entity\Report::class;
+    use DiscussionTrait;
+
     const REPORT_TYPE_COMMENT = 0;
     const REPORT_TYPE_USER_REPORT = 1;
     const REPORT_TYPE_IS_REPORT = 2;
@@ -168,6 +172,8 @@ class ReportComment extends AbstractData
             }
         }
 
+        $this->populateDiscussionMetaData($entity, $metaData);
+
         return $metaData;
     }
 
@@ -224,6 +230,8 @@ class ReportComment extends AbstractData
         $structure->addField('warned_user', MetadataStructure::INT);
         $structure->addField('thread_reply_ban', MetadataStructure::INT);
         $structure->addField('post_reply_ban', MetadataStructure::INT);
+
+        $this->setupDiscussionMetadataStructure($structure);
     }
 
     /**
