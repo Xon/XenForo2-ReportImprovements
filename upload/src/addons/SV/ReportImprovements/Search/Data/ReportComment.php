@@ -309,7 +309,7 @@ class ReportComment extends AbstractData
             }
         }
 
-        $source = isset($addOns['SV/XFES']) ? 'search_index' : 'warning_log';
+        $source = \SV\SearchImprovements\Globals::isUsingElasticSearch() ? 'search_index' : 'warning_log';
         if ($constraints['c.warning.points.lower'] && $constraints['c.warning.points.upper'])
         {
             $query->withMetadata(new RangeConstraint('points', [
