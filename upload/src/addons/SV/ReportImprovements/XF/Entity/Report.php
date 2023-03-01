@@ -525,6 +525,11 @@ class Report extends XFCP_Report implements ISearchableReplyCount
             'proxy' => true
         ];
 
+        if (\SV\SearchImprovements\Globals::isUsingElasticSearch())
+        {
+            $structure->behaviors['XF:IndexableContainer']['checkForUpdates'][] = 'report_count';
+            $structure->behaviors['XF:IndexableContainer']['checkForUpdates'][] = 'comment_count';
+        }
 
         return $structure;
     }
