@@ -309,31 +309,24 @@ class ReportComment extends AbstractData
             }
         }
 
-        $source = \SV\SearchImprovements\Globals::isUsingElasticSearch() ? 'search_index' : 'warning_log';
-        if ($constraints['c.warning.points.lower'] && $constraints['c.warning.points.upper'])
-        {
-            $query->withMetadata(new RangeConstraint('points', [
-                $constraints['c.warning.points.upper'],
-                $constraints['c.warning.points.lower'],
-            ], RangeConstraint::MATCH_BETWEEN, $this->getWarningLogQueryTableReference(), $source));
-        }
-        else if ($constraints['c.warning.points.lower'])
-        {
-            unset($urlConstraints['warning']['points']['upper']);
-            $query->withMetadata(new RangeConstraint('points', $constraints['c.warning.points.lower'],
-                RangeConstraint::MATCH_GREATER, $this->getWarningLogQueryTableReference(), $source));
-        }
-        else if ($constraints['c.warning.points.upper'])
-        {
-            unset($urlConstraints['warning']['points']['lower']);
-            $query->withMetadata(new RangeConstraint('points', $constraints['c.warning.points.upper'],
-                RangeConstraint::MATCH_LESSER, $this->getWarningLogQueryTableReference(), $source));
-        }
-        else
-        {
-            unset($urlConstraints['warning']['points']['upper']);
-            unset($urlConstraints['warning']['points']['lower']);
-        }
+
+        $repo = \SV\SearchImprovements\Globals::repo();
+
+        $repo->applyRepliesConstraint($query, $request,
+            function () use (&$urlConstraints) {
+                unset($urlConstraints['replies']['upper']);
+            }, function () use (&$urlConstraints) {
+                unset($urlConstraints['replies']['lower']);
+            }, [$this->getReportQueryTableReference()]);
+
+        $repo->applyRangeConstraint($query, $request, 'points',
+            'c.warning.points.lower',
+            'c.warning.points.upper',
+            function () use (&$urlConstraints) {
+                unset($urlConstraints['warning']['points']['upper']);
+            }, function () use (&$urlConstraints) {
+                unset($urlConstraints['warning']['points']['lower']);
+            }, $this->getWarningLogQueryTableReference(), 'warning_log');
     }
 
     /**
@@ -386,6 +379,15 @@ class ReportComment extends AbstractData
         }
 
         return [];
+    }
+
+    protected function getReportQueryTableReference(): TableReference
+    {
+        return new TableReference(
+            'report',
+            'xf_report',
+            'report.report_id = search_index.discussion_id'
+        );
     }
 
     /**
