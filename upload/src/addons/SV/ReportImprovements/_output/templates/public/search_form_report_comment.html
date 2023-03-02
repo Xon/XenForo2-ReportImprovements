@@ -16,17 +16,12 @@
 			   value="{$input.c.report.user_reports}"/>
 </xf:checkboxrow>
 
-<xf:formrow label="{{ phrase('warning_points') }}">
-	<div class="inputGroup">
-		<xf:numberbox name="c[warning][points][lower]" value="{$input.c.warning.points.lower}" size="5" min="0" step="1" />
-
-		<span class="inputGroup-text">-</span>
-
-		<span class="inputGroup" dir="ltr">
-			<xf:numberbox name="c[warning][points][upper]" value="{$input.c.warning.points.upper}" size="5" min="0" step="1" />
-		</span>
-	</div>
-</xf:formrow>
+<xf:macro template="svSearchImprov_macros" name="range" 
+		  arg-label="{{ phrase('warning_points') }}"
+		  arg-fieldPrefix="c[warning][points]"
+		  arg-lowerBoundValue="{$input.c.warning.points.lower}"
+		  arg-upperBoundValue="{$input.c.warning.points.upper}"
+		  />
 
 <xf:macro template="search_form_macros"
 		  name="order"
