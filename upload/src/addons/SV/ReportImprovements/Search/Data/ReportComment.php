@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint;
@@ -102,14 +103,47 @@ class ReportComment extends AbstractData
             return null;
         }
 
+        $message = $entity->message;
+
+        $warningLog = $entity->WarningLog;
+        if ($warningLog !== null)
+        {
+            $message = $this->addWarningLogToMessage($warningLog, $message);
+        }
+
         return IndexRecord::create('report_comment', $entity->report_comment_id, [
             'title'         => $report->title_string,
-            'message'       => $entity->message,
+            'message'       => $message,
             'date'          => $entity->comment_date,
             'user_id'       => $entity->user_id,
             'discussion_id' => $entity->report_id,
             'metadata'      => $this->getMetaData($entity),
         ]);
+    }
+
+    protected function addWarningLogToMessage(WarningLog $warningLog, string $message): string
+    {
+        foreach ($warningLog->structure()->columns as $column => $schema)
+        {
+            if (
+                ($schema['type'] ?? '') !== Entity::STR ||
+                empty($schema['allowedValues']) || // aka enums
+                ($schema['noIndex'] ?? false)
+            )
+            {
+                continue;
+            }
+
+            $value = $warningLog->get($column);
+            if ($value === null || $value === '')
+            {
+                continue;
+            }
+
+            $message .= "\n" . $value;
+        }
+
+        return $message;
     }
 
     /**
