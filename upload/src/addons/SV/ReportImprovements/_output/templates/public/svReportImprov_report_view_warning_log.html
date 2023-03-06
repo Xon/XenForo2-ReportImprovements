@@ -4,15 +4,15 @@
 </dl>
 
 <xf:set var="$warningTitle" value="{$comment.WarningLog.title}" />
-<xf:set var="$publicBanner" value="{$comment.WarningLog.public_banner}" />
+<xf:set var="$publicBanner" value="{{ ''.$comment.WarningLog.public_banner }}" />
 <dl class="pairs pairs--justified fauxBlockLink">
-	<dt>{{ phrase('warning') }}{{ ($publicBanner !== null && $publicBanner === $warningTitle) 
+	<dt>{{ phrase('warning') }}{{ ($publicBanner !== '' && $publicBanner === $warningTitle) 
 		? ' / ' . phrase('svReportImprove_public_banner') 
 		: '' }}</dt>
 	<dd>{$warningTitle}</dd>
 </dl>
 
-<xf:if is="$publicBanner !== null && $publicBanner !== $warningTitle">
+<xf:if is="$publicBanner !== '' && $publicBanner !== $warningTitle">
 <dl class="pairs pairs--justified fauxBlockLink">
 	<dt>{{ phrase('svReportImprove_public_banner') }}</dt>
 	<dd>{$publicBanner}</dd>
