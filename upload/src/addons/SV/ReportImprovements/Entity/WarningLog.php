@@ -33,6 +33,7 @@ use XF\Mvc\Entity\Structure;
  * @property int|null       $reply_ban_thread_id
  * @property int|null       $reply_ban_post_id
  * @property string|null    $public_banner
+ * @property string|null    $public_banner_
  * GETTERS
  * @property ThreadReplyBan $ReplyBan
  * RELATIONS
@@ -120,6 +121,14 @@ class WarningLog extends Entity
                 return $this->warning_log_id;
             }, 'save'
         );
+    }
+
+    protected function _preSave()
+    {
+        if ($this->public_banner_ === '')
+        {
+            $this->public_banner = null;
+        }
     }
 
     /**
