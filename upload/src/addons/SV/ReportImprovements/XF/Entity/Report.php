@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Globals;
+use SV\SearchImprovements\Search\Features\ISearchableDiscussionUser;
 use SV\SearchImprovements\Search\Features\ISearchableReplyCount;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
@@ -25,7 +26,7 @@ use XF\Mvc\Entity\Structure;
  * RELATIONS
  * @property-read ReportComment $LastModified_
  */
-class Report extends XFCP_Report implements ISearchableReplyCount
+class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDiscussionUser
 {
     public function canView()
     {
@@ -337,13 +338,25 @@ class Report extends XFCP_Report implements ISearchableReplyCount
      */
     public function getCommenterUserIds(): array
     {
-        return \array_keys(
-            $this->db()->fetchAllKeyed('
+        return
+            $this->db()->fetchAllColumn('
               SELECT DISTINCT user_id
-              FROM xf_report_comment AS report_comment
-              WHERE report_comment.report_id = ?
-        ', 'user_id', $this->report_id)
-        );
+              FROM xf_report_comment
+              WHERE report_id = ?
+        ', $this->report_id);
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getDiscussionUserIds(): array
+    {
+        $userIds = $this->commenter_user_ids;
+        $userIds[] = $this->content_user_id;
+        $userIds[] = $this->assigner_user_id;
+        $userIds[] = $this->assigned_user_id;
+
+        return $userIds;
     }
 
     /**
