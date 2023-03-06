@@ -197,9 +197,9 @@ class WarningLog extends Entity
         ];
         $structure->defaultWith[] = 'Warning';
         $structure->getters = [
-            'OperationTypePhrase' => true,
-            'ReplyBan'            => true,
-            'ReplyBanLink'        => true,
+            'OperationTypePhrase' => ['getter' => 'getOperationTypePhrase', 'cache' => true],
+            'ReplyBan'            => ['getter' => 'getReplyBan','cache' => true],
+            'ReplyBanLink'        => ['getter' => 'getReplyBanLink','cache' => true],
         ];
 
         return $structure;

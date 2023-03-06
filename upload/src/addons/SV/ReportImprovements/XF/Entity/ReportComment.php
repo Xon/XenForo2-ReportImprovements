@@ -346,8 +346,8 @@ class ReportComment extends XFCP_ReportComment
         $structure->behaviors['XF:Indexable'] = [
             'checkForUpdates' => ['message', 'user_id', 'report_id', 'comment_date', 'state_change', 'is_report'],
         ];
-        $structure->getters['ViewableUsername'] = true;
-        $structure->getters['ViewableUser'] = true;
+        $structure->getters['ViewableUsername'] = ['getter' => 'getViewableUsername', 'cache' => true];
+        $structure->getters['ViewableUser'] = ['getter' => 'getViewableUser', 'cache' => true];
         $structure->getters['Unfurls'] = ['getter' => 'getUnfurls', 'cache' => true];
         $structure->relations['Reactions'] = [
             'entity'     => 'XF:ReactionContent',
