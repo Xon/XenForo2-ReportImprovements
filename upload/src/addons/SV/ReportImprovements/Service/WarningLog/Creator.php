@@ -227,6 +227,31 @@ class Creator extends AbstractService
     }
 
     /**
+     * @return string|null
+     */
+    protected function getWarnedContentPublicBanner()
+    {
+        /** @var ?string $publicBanner */
+        $publicBanner = $this->warning->getOption('svPublicBanner');
+        if ($publicBanner === null)
+        {
+            $content = $this->warning->Content ?? null;
+            if ($content !== null && $content->isValidColumn('warning_message') || $content->isValidGetter('warning_message'))
+            {
+                /** @var ?string $publicBanner */
+                $publicBanner = $content->get('warning_message');
+            }
+        }
+
+        if ($publicBanner === '')
+        {
+            $publicBanner = null;
+        }
+
+        return $publicBanner;
+    }
+
+    /**
      * @return \SV\ReportImprovements\XF\Entity\Report|\XF\Entity\Report|null
      */
     protected function setupDefaultsForWarning()
@@ -246,7 +271,7 @@ class Creator extends AbstractService
                 $warningLog->set($field, $fieldValue);
             }
         }
-        $warningLog->public_banner = $warning->getOption('svPublicBanner');
+        $warningLog->public_banner = $this->getWarnedContentPublicBanner();
 
         if ($report)
         {

@@ -33,6 +33,7 @@ use XF\Mvc\Entity\Structure;
  * @property int|null       $reply_ban_thread_id
  * @property int|null       $reply_ban_post_id
  * @property string|null    $public_banner
+ * @property string|null    $public_banner_
  * GETTERS
  * @property ThreadReplyBan $ReplyBan
  * RELATIONS
@@ -122,6 +123,14 @@ class WarningLog extends Entity
         );
     }
 
+    protected function _preSave()
+    {
+        if ($this->public_banner_ === '')
+        {
+            $this->public_banner = null;
+        }
+    }
+
     /**
      * @param Structure $structure
      * @return Structure
@@ -197,9 +206,9 @@ class WarningLog extends Entity
         ];
         $structure->defaultWith[] = 'Warning';
         $structure->getters = [
-            'OperationTypePhrase' => true,
-            'ReplyBan'            => true,
-            'ReplyBanLink'        => true,
+            'OperationTypePhrase' => ['getter' => 'getOperationTypePhrase', 'cache' => true],
+            'ReplyBan'            => ['getter' => 'getReplyBan','cache' => true],
+            'ReplyBanLink'        => ['getter' => 'getReplyBanLink','cache' => true],
         ];
 
         return $structure;

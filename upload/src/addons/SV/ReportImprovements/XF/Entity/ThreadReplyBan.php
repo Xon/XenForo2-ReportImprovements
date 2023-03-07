@@ -93,7 +93,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
             'primary'    => true,
         ];
 
-        $structure->getters['Report'] = true;
+        $structure->getters['Report'] = ['getter' => 'getReport', 'cache' => true];
         $structure->options['svLogWarningChanges'] = true;
 
         static::addReportResolverStructureElements($structure, [
