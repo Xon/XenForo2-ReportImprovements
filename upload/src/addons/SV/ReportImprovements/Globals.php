@@ -7,7 +7,7 @@ namespace SV\ReportImprovements;
  *
  * @package SV\ReportImprovements
  */
-class Globals
+abstract class Globals
 {
     /**
      * @var bool
@@ -35,4 +35,6 @@ class Globals
 
     /** @var int[] */
     public static $notifyReportUserIds = [];
+
+    private function __construct() { }
 }
