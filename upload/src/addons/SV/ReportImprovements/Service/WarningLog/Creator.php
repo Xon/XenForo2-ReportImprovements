@@ -235,12 +235,7 @@ class Creator extends AbstractService
         $publicBanner = $this->warning->getOption('svPublicBanner');
         if ($publicBanner === null)
         {
-            $content = $this->warning->Content ?? null;
-            if ($content !== null && $content->isValidColumn('warning_message') || $content->isValidGetter('warning_message'))
-            {
-                /** @var ?string $publicBanner */
-                $publicBanner = $content->get('warning_message');
-            }
+            $publicBanner = (string)($this->warning->Content->warning_message ?? '');
         }
 
         if ($publicBanner === '')
