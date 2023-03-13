@@ -276,6 +276,9 @@ class ReportComment extends AbstractData
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
         $constraints = $request->filter([
+            'c.replies.lower'       => 'uint',
+            'c.replies.upper'       => 'uint',
+
             'c.report.contents'     => 'bool',
             'c.report.comments'     => 'bool',
             'c.report.user_reports' => 'bool',
@@ -317,49 +320,33 @@ class ReportComment extends AbstractData
             }
         }
 
-        if ($constraints['c.warning.user'])
-        {
-            $users = \preg_split('/,\s*/', $constraints['c.warning.user'], -1, PREG_SPLIT_NO_EMPTY);
-            if ($users)
-            {
-                /** @var \XF\Repository\User $userRepo */
-                $userRepo = \XF::repository('XF:User');
-                $matchedUsers = $userRepo->getUsersByNames($users, $notFound);
-                if ($notFound)
-                {
-                    $query->error('users',
-                        \XF::phrase('following_members_not_found_x', ['members' => \implode(', ', $notFound)])
-                    );
-                }
-                else
-                {
-                    $userIds = $matchedUsers->keys();
-                    if ($userIds)
-                    {
-                        $query->withMetadata('warned_user', $userIds);
-                    }
-                    $urlConstraints['warning']['user'] = \implode(', ', $users);
-                }
-            }
-        }
-
-
         $repo = \SV\SearchImprovements\Globals::repo();
 
-        $repo->applyRepliesConstraint($query, $request,
+        $repo->applyUserConstraint($query,
+            'warned_user', $constraints['c.warning.user'],
             function () use (&$urlConstraints) {
-                unset($urlConstraints['replies']['upper']);
-            }, function () use (&$urlConstraints) {
+                unset($urlConstraints['warning']['user']);
+            }, function (string $value) use (&$urlConstraints) {
+                $urlConstraints['warning']['user'] = $value;
+            });
+
+        $repo->applyRangeConstraint($query,
+            'replies',
+            $constraints['c.replies.lower'], $constraints['c.replies.upper'],
+            function () use (&$urlConstraints) {
                 unset($urlConstraints['replies']['lower']);
+            }, function () use (&$urlConstraints) {
+                unset($urlConstraints['replies']['upper']);
             }, [$this->getReportQueryTableReference()]);
 
-        $repo->applyRangeConstraint($query, $request, 'points',
-            'c.warning.points.lower',
-            'c.warning.points.upper',
+        $repo->applyRangeConstraint($query,
+            'points',
+            $constraints['c.warning.points.lower'],
+            $constraints['c.warning.points.upper'],
             function () use (&$urlConstraints) {
-                unset($urlConstraints['warning']['points']['upper']);
-            }, function () use (&$urlConstraints) {
                 unset($urlConstraints['warning']['points']['lower']);
+            }, function () use (&$urlConstraints) {
+                unset($urlConstraints['warning']['points']['upper']);
             }, $this->getWarningLogQueryTableReference(), 'warning_log');
     }
 
