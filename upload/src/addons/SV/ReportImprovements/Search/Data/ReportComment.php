@@ -5,7 +5,6 @@ namespace SV\ReportImprovements\Search\Data;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
 use SV\SearchImprovements\Search\DiscussionTrait;
-use SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\Data\AbstractData;
@@ -14,6 +13,8 @@ use XF\Search\MetadataStructure;
 use XF\Search\Query\MetadataConstraint;
 use XF\Search\Query\Query;
 use XF\Search\Query\TableReference;
+use function count;
+use function is_callable;
 
 /**
  * Class ReportComment
@@ -304,17 +305,17 @@ class ReportComment extends AbstractData
             $isReport[] = static::REPORT_TYPE_IS_REPORT;
         }
 
-        if (\count($isReport))
+        if (count($isReport) !== 0)
         {
             $query->withMetadata('is_report', $isReport);
         }
 
-        $threadId = $request->filter('c.thread', 'uint');
-        if ($threadId)
+        $threadId = (int)$request->filter('c.thread', 'uint');
+        if ($threadId !== 0)
         {
             $query->withMetadata('thread', $threadId);
 
-            if (\is_callable([$query, 'inTitleOnly']))
+            if (is_callable([$query, 'inTitleOnly']))
             {
                 $query->inTitleOnly(false);
             }
@@ -322,32 +323,17 @@ class ReportComment extends AbstractData
 
         $repo = \SV\SearchImprovements\Globals::repo();
 
-        $repo->applyUserConstraint($query,
-            'warned_user', $constraints['c.warning.user'],
-            function () use (&$urlConstraints) {
-                unset($urlConstraints['warning']['user']);
-            }, function (string $value) use (&$urlConstraints) {
-                $urlConstraints['warning']['user'] = $value;
-            });
-
-        $repo->applyRangeConstraint($query,
-            'replies',
-            $constraints['c.replies.lower'], $constraints['c.replies.upper'],
-            function () use (&$urlConstraints) {
-                unset($urlConstraints['replies']['lower']);
-            }, function () use (&$urlConstraints) {
-                unset($urlConstraints['replies']['upper']);
-            }, [$this->getReportQueryTableReference()]);
-
-        $repo->applyRangeConstraint($query,
-            'points',
-            $constraints['c.warning.points.lower'],
-            $constraints['c.warning.points.upper'],
-            function () use (&$urlConstraints) {
-                unset($urlConstraints['warning']['points']['lower']);
-            }, function () use (&$urlConstraints) {
-                unset($urlConstraints['warning']['points']['upper']);
-            }, $this->getWarningLogQueryTableReference(), 'warning_log');
+        $repo->applyUserConstraint($query, $constraints, $urlConstraints,
+            'c.warning.user', 'warned_user'
+        );
+        $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
+            'c.replies.lower', 'c.replies.upper', 'replies',
+            [$this->getReportQueryTableReference()]
+        );
+        $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
+            'c.warning.points.lower', 'c.warning.points.upper', 'points',
+            $this->getWarningLogQueryTableReference(), 'warning_log'
+        );
     }
 
     /**
