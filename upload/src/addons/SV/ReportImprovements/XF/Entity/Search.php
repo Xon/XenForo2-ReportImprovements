@@ -21,6 +21,7 @@ class Search extends XFCP_Search
 
         $this->svUserConstraint[] = 'warning_user';
         $this->svIgnoreConstraint[] = 'report_state';
+        $this->svIgnoreConstraint[] = 'report_type';
     }
 
     protected function expandStructuredSearchConstraint(array &$query, string $key, $value): bool
@@ -36,6 +37,22 @@ class Search extends XFCP_Search
                 $id = (string)$id;
                 $query[$key . '_' . $id] = \XF::phrase('svSearchConstraint.report_state', [
                     'value' => $states[$id] ?? $id,
+                ]);
+            }
+
+            return true;
+        }
+        else if ($key === 'report_type' && is_array($value))
+        {
+            $reportRepo = \XF::repository('XF:Report');
+            assert($reportRepo instanceof ReportRepo);
+            $states = $reportRepo->getReportTypes();
+
+            foreach ($value as $id)
+            {
+                $id = (string)$id;
+                $query[$key . '_' . $id] = \XF::phrase('svSearchConstraint.report_type', [
+                    'value' => $states[$id]['phrases'] ?? $id,
                 ]);
             }
 

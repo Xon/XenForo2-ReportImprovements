@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
@@ -17,12 +18,12 @@ use XF\Search\Query\Query;
 use XF\Search\Query\TableReference;
 use function array_filter;
 use function array_key_exists;
+use function array_merge;
 use function array_unique;
 use function assert;
 use function count;
 use function in_array;
 use function is_array;
-use function is_callable;
 
 /**
  * Class ReportComment
@@ -299,6 +300,7 @@ class ReportComment extends AbstractData
             'c.replies.lower'       => 'uint',
             'c.replies.upper'       => 'uint',
 
+            'c.report.type'         => 'array-str',
             'c.report.state'        => 'array-str',
             'c.report.contents'     => 'bool',
             'c.report.comments'     => 'bool',
@@ -349,23 +351,44 @@ class ReportComment extends AbstractData
             else
             {
                 $query->withMetadata('report_state', $reportStates);
-
                 Arr::setUrlConstraint($urlConstraints, 'c.report.state', $reportStates);
             }
         }
         else
         {
-            Arr::unsetUrlConstraint($urlConstraints, 'c.report_state');
+            Arr::unsetUrlConstraint($urlConstraints, 'c.report.state');
         }
 
-        $threadId = (int)$request->filter('c.thread', 'uint');
-        if ($threadId !== 0)
-        {
-            $query->withMetadata('thread', $threadId);
+        $reportRepo = \XF::repository('XF:Report');
+        assert($reportRepo instanceof ReportRepo);
 
-            if (is_callable([$query, 'inTitleOnly']))
+        $reportTypes = $constraints['c.report.type'];
+        if (count($reportTypes) !== 0)
+        {
+            $types = [];
+            foreach ($reportRepo->getReportTypes() as $contentType => $rec)
             {
-                $query->inTitleOnly(false);
+                if (!in_array($contentType, $reportTypes, true))
+                {
+                    continue;
+                }
+
+                $handler = $rec['handler'];
+                if ($handler instanceof ReportSearchFormInterface)
+                {
+                    $types[] = $contentType;
+                    $handler->applySearchTypeConstraintsFromInput($query, $request, $urlConstraints);
+                }
+            }
+
+            if (count($types) !== 0)
+            {
+                $query->withMetadata('report_content_type', $types);
+                Arr::setUrlConstraint($urlConstraints, 'c.report.type', $types);
+            }
+            else
+            {
+                Arr::unsetUrlConstraint($urlConstraints, 'c.report.type');
             }
         }
 
@@ -494,6 +517,15 @@ class ReportComment extends AbstractData
         assert($reportRepo instanceof ReportRepo);
 
         $form['reportStates'] = $reportRepo->getReportStatePairs();
+        $form['reportTypes'] = $reportRepo->getReportTypes();
+        foreach ($form['reportTypes'] as $rec)
+        {
+            $handler = $rec['handler'];
+            if ($handler instanceof ReportSearchFormInterface)
+            {
+                $form = array_merge($form, $handler->getSearchFormData());
+            }
+        }
 
         return $form;
     }

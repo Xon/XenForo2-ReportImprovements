@@ -1,0 +1,20 @@
+<xf:set var="$forumsControlId" value="{{ unique_id() }}" />
+<xf:formrow rowtype="input"
+			label="{{ phrase('search_in_forums') }}" controlid="{$forumsControlId}">
+
+	<ul class="inputList">
+		<li>
+			<xf:select name="c[nodes][]" size="7" multiple="multiple" value="{$input.c.nodes|default([0])}" id="{$forumsControlId}">
+				<xf:option value="">{{ phrase('all_forums') }}</xf:option>
+				<xf:foreach loop="$nodeTree.getFlattened(0)" value="$treeEntry">
+					<xf:option value="{$treeEntry.record.node_id}">{{ repeat('&nbsp;&nbsp;', $treeEntry.depth)|raw }} {$treeEntry.record.title}</xf:option>
+				</xf:foreach>
+			</xf:select>
+		</li>
+		<li>
+			<xf:checkbox standalone="true">
+				<xf:option name="c[child_nodes]" selected="{{ (!$input.c || $input.c.child_nodes) }}" label="{{ phrase('search_sub_forums_as_well') }}" />
+			</xf:checkbox>
+		</li>
+	</ul>
+</xf:formrow>

@@ -6,6 +6,7 @@ use XF\Db\Exception;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
+use XF\Report\AbstractHandler;
 use function sort;
 
 /**
@@ -607,5 +608,30 @@ class Report extends XFCP_Report
         }
 
         return $states;
+    }
+
+    /**
+     * @return array<string,array{handler: AbstractHandler, phrase: \XF\Phrase}>
+     */
+    public function getReportTypes(): array
+    {
+        $contentTypes = [];
+        $app = $this->app();
+
+        foreach ($app->getContentTypeField('report_handler_class') as $contentType => $className)
+        {
+            $handler = $this->getReportHandler($contentType, false);
+            if ($handler === null)
+            {
+                continue;
+            }
+            $contentTypes[$contentType] = [
+                'handler' => $handler,
+                'phrase'  => $app->getContentTypePhrase($contentType),
+                'phrases'  => $app->getContentTypePhrase($contentType, true),
+            ];
+        }
+
+        return $contentTypes;
     }
 }
