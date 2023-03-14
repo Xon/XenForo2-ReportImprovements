@@ -24,6 +24,15 @@
 			   value="{$input.c.report.user_reports}"/>
 </xf:checkboxrow>
 
+<xf:if is="$reportStates is not empty">
+	<xf:selectrow name="c[report_state][]" size="{{ 1+count($reportStates) }}" multiple="true" value="{$input.c.report_state|default(['0'])}"
+		label="{{ phrase('svReportImprov_with_report_state') }}">
+
+		<xf:option value="0">{{ phrase('(any)') }}</xf:option>
+		<xf:options source="$reportStates" />
+	</xf:selectrow>
+</xf:if>
+
 <xf:macro template="svSearchImprov_macros" name="range" 
 		  arg-label="{{ phrase('warning_points') }}"
 		  arg-fieldPrefix="c[warning][points]"

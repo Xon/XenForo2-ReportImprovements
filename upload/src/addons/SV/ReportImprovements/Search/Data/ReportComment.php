@@ -4,7 +4,9 @@ namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Search\DiscussionTrait;
+use SV\SearchImprovements\Util\Arr;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\Data\AbstractData;
@@ -13,7 +15,13 @@ use XF\Search\MetadataStructure;
 use XF\Search\Query\MetadataConstraint;
 use XF\Search\Query\Query;
 use XF\Search\Query\TableReference;
+use function array_filter;
+use function array_key_exists;
+use function array_unique;
+use function assert;
 use function count;
+use function in_array;
+use function is_array;
 use function is_callable;
 
 /**
@@ -47,7 +55,7 @@ class ReportComment extends AbstractData
 
         if ($entities instanceof AbstractCollection)
         {
-            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+            /** @var ReportRepo $reportRepo */
             $reportRepo = \XF::repository('XF:Report');
             $reportRepo->svPreloadReportComments($entities);
         }
@@ -58,7 +66,7 @@ class ReportComment extends AbstractData
     public function getContentInRange($lastId, $amount, $forView = false)
     {
         $contents = parent::getContentInRange($lastId, $amount, $forView);
-        /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+        /** @var ReportRepo $reportRepo */
         $reportRepo = \XF::repository('XF:Report');
         $reportRepo->svPreloadReportComments($contents);
 
@@ -287,6 +295,7 @@ class ReportComment extends AbstractData
         $constraints = $request->filter([
             'c.assigned'         => 'str',
             'c.assigner'         => 'str',
+            'c.report_state'     => 'array-str',
 
             'c.replies.lower'       => 'uint',
             'c.replies.upper'       => 'uint',
@@ -319,6 +328,34 @@ class ReportComment extends AbstractData
         if (count($isReport) !== 0)
         {
             $query->withMetadata('is_report', $isReport);
+        }
+
+        $reportStates = $constraints['c.report_state'];
+        assert(is_array($reportStates));
+        if (count($reportStates) !== 0 && !in_array('0', $reportStates, true))
+        {
+            $reportStates = array_unique($reportStates);
+            $reportRepo = \XF::repository('XF:Report');
+            assert($reportRepo instanceof ReportRepo);
+
+            $states = $reportRepo->getReportStatePairs();
+            $badReportStates = array_filter($reportStates, function(string $state) use(&$states) : bool {
+                return !array_key_exists($state, $states);
+            });
+            if (count($badReportStates) !== 0)
+            {
+                $query->error('report_state', \XF::phrase('svReportImprov_unknown_report_states', ['values' => implode(', ', $badReportStates)]));
+            }
+            else
+            {
+                $query->withMetadata('report_state', $reportStates);
+
+                Arr::setUrlConstraint($urlConstraints, 'c.report_state', $reportStates);
+            }
+        }
+        else
+        {
+            Arr::unsetUrlConstraint($urlConstraints, 'c.report_state');
         }
 
         $threadId = (int)$request->filter('c.thread', 'uint');
@@ -433,10 +470,7 @@ class ReportComment extends AbstractData
         ];
     }
 
-    /**
-     * @return array|null
-     */
-    public function getSearchFormTab()
+    public function getSearchFormTab(): ?array
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
@@ -450,5 +484,17 @@ class ReportComment extends AbstractData
             'title' => \XF::phrase('svReportImprov_search_reports'),
             'order' => 250,
         ];
+    }
+
+    public function getSearchFormData(): array
+    {
+        $form = parent::getSearchFormData();
+
+        $reportRepo = \XF::repository('XF:Report');
+        assert($reportRepo instanceof ReportRepo);
+
+        $form['reportStates'] = $reportRepo->getReportStatePairs();
+
+        return $form;
     }
 }

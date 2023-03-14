@@ -582,4 +582,30 @@ class Report extends XFCP_Report
             'lastBuilt' => $registryReportCounts['lastModified'],
         ];
     }
+
+    /**
+     * @return array<string>
+     */
+    public function getReportStates(): array
+    {
+        $structure = \XF::app()->em()->getEntityStructure('XF:Report');
+        $states = $structure->columns['report_state']['allowedValues'] ?? [];
+        assert(is_array($states) && count($states) > 0);
+
+        return $states;
+    }
+
+    /**
+     * @return array<string,\XF\Phrase>
+     */
+    public function getReportStatePairs(): array
+    {
+        $states = [];
+        foreach ($this->getReportStates() as $state)
+        {
+            $states[$state] = \XF::phrase('report_state.' . $state);
+        }
+
+        return $states;
+    }
 }
