@@ -4,6 +4,12 @@
 <xf:macro name="user_field" arg-name="assigner" arg-label="{{ phrase('svReportImprov_by_assigner_user') }}" arg-input="{$input}" />
 <xf:macro template="search_form_macros" name="date" arg-input="{$input}" />
 
+<xf:if is="$input.c.thread">
+	<xf:checkboxrow>
+		<xf:option name="c[thread]" value="{$input.c.thread}" selected="true">{{ phrase('restrict_search_to_specified_thread') }}</xf:option>
+	</xf:checkboxrow>
+</xf:if>
+
 <xf:checkboxrow>
 	<xf:option name="c[report][contents]"
 			   label="{{ phrase('svReportImprov_include_reported_content') }}"
@@ -12,7 +18,7 @@
 	<xf:option name="c[report][comments]"
 			   label="{{ phrase('svReportImprov_include_report_comments') }}"
 			   value="{$input.c.report.comments}"/>
-	
+
 	<xf:option name="c[report][user_reports]"
 			   label="{{ phrase('svReportImprov_include_user_reports') }}"
 			   value="{$input.c.report.user_reports}"/>
