@@ -40,26 +40,23 @@ class ProfilePostComment extends XFCP_ProfilePostComment implements ContentInter
         $report->content_info = $contentInfo;
     }
 
-    /**
-     * @param Report $report
-     * @return int
-     */
-    public function getContentDate(Report $report)
+    public function getContentDate(Report $report): ?int
     {
-        if (!isset($report->content_info['comment_date']))
+        $contentDate = $report->content_info['comment_date'] ?? null;
+        if ($contentDate === null)
         {
-            /** @var \XF\Entity\ProfilePostComment $content $content */
+            /** @var \XF\Entity\ProfilePostComment|null $content */
             $content = $report->getContent();
-            if (!$content)
+            if ($content === null)
             {
-                return 0;
+                return null;
             }
 
             $contentInfo = $report->content_info;
-            $contentInfo['comment_date'] = $content->comment_date;
+            $contentInfo['comment_date'] = $contentDate = $content->comment_date;
             $report->fastUpdate('content_info', $contentInfo);
         }
 
-        return $report->content_info['comment_date'];
+        return $contentDate;
     }
 }

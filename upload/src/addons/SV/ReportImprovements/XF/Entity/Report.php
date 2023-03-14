@@ -23,6 +23,7 @@ use XF\Mvc\Entity\Structure;
  * @property-read array         $commenter_user_ids
  * @property-read array         $comment_ids
  * @property-read ReportComment $LastModified
+ * @property-read ?int          $content_date
  * RELATIONS
  * @property-read User          $AssignerUser
  * @property-read ReportComment $LastModified_
@@ -248,16 +249,13 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         return $breadcrumbs;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getContentDate()
+    public function getContentDate(): ?int
     {
         $handler = $this->Handler;
 
         if (!($handler instanceof \SV\ReportImprovements\Report\ContentInterface))
         {
-            return 0;
+            return null;
         }
 
         return $handler->getContentDate($this);

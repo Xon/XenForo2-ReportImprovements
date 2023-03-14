@@ -40,26 +40,23 @@ class ProfilePost extends XFCP_ProfilePost implements ContentInterface
         $report->content_info = $contentInfo;
     }
 
-    /**
-     * @param Report $report
-     * @return int
-     */
-    public function getContentDate(Report $report)
+    public function getContentDate(Report $report): ?int
     {
-        if (!isset($report->content_info['post_date']))
+        $contentDate = $report->content_info['post_date'] ?? null;
+        if ($contentDate === null)
         {
-            /** @var \XF\Entity\ProfilePost $content $content */
+            /** @var \XF\Entity\ProfilePost|null $content */
             $content = $report->getContent();
-            if (!$content)
+            if ($content === null)
             {
-                return 0;
+                return null;
             }
 
             $contentInfo = $report->content_info;
-            $contentInfo['post_date'] = $content->post_date;
+            $contentInfo['post_date'] = $contentDate = $content->post_date;
             $report->fastUpdate('content_info', $contentInfo);
         }
 
-        return $report->content_info['post_date'];
+        return $contentDate;
     }
 }

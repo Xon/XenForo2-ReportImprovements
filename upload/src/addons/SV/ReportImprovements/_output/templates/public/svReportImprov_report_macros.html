@@ -1,10 +1,12 @@
 <xf:macro name="reportInfo" 
 		  arg-report="!"
 		  >
-	<dl class="pairs pairs--inline" style="display:block;">
-		<dt>{{ phrase('svReportImprov_content_date') }}</dt>
-		<dd><xf:date time="$report.content_date" /></dd>
-	</dl>
+	<xf:if is="$report.content_date">
+		<dl class="pairs pairs--inline" style="display:block;">
+			<dt>{{ phrase('svReportImprov_content_date') }}</dt>
+			<dd><xf:date time="$report.content_date" /></dd>
+		</dl>
+	</xf:if>
 </xf:macro>
 
 <xf:macro name="resolve_report"

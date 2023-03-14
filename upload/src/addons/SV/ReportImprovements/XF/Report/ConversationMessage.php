@@ -40,27 +40,24 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
         $report->content_info = $contentInfo;
     }
 
-    /**
-     * @param Report $report
-     * @return int
-     */
-    public function getContentDate(Report $report)
+    public function getContentDate(Report $report): ?int
     {
-        if (!isset($report->content_info['message_date']))
+        $contentDate = $report->content_info['message_date'] ?? null;
+        if ($contentDate === null)
         {
-            /** @var \XF\Entity\ConversationMessage $content $content */
+            /** @var \XF\Entity\ConversationMessage|null $content */
             $content = $report->getContent();
-            if (!$content)
+            if ($content === null)
             {
-                return 0;
+                return null;
             }
 
             $contentInfo = $report->content_info;
-            $contentInfo['message_date'] = $content->message_date;
+            $contentInfo['message_date'] = $contentDate = $content->message_date;
             $report->fastUpdate('content_info', $contentInfo);
         }
 
-        return $report->content_info['message_date'];
+        return $contentDate;
     }
 
     public function getContentLink(Report $report)
