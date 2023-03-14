@@ -285,6 +285,9 @@ class ReportComment extends AbstractData
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
         $constraints = $request->filter([
+            'c.assigned'         => 'str',
+            'c.assigner'         => 'str',
+
             'c.replies.lower'       => 'uint',
             'c.replies.upper'       => 'uint',
 
