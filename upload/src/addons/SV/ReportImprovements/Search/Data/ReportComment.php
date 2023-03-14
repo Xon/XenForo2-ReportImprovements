@@ -332,6 +332,12 @@ class ReportComment extends AbstractData
         $repo = \SV\SearchImprovements\Globals::repo();
 
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
+            'c.assigned', 'assigned_user'
+        );
+        $repo->applyUserConstraint($query, $constraints, $urlConstraints,
+            'c.assigner', 'assigner_user'
+        );
+        $repo->applyUserConstraint($query, $constraints, $urlConstraints,
             'c.warning.user', 'warned_user'
         );
         $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
