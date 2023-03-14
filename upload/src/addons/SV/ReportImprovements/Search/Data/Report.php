@@ -127,11 +127,19 @@ class Report extends AbstractData
         $metaData = [
             'report'              => $entity->report_id,
             'report_state'        => $entity->report_state,
-            'assigned_user'       => $entity->assigned_user_id,
-            'assigner_user'       => $entity->assigner_user_id,
             'report_content_type' => $entity->content_type,
             'is_report'           => ReportComment::REPORT_TYPE_IS_REPORT,
         ];
+
+        if ($entity->assigner_user_id)
+        {
+            $metaData['assigner_user'] = $entity->assigner_user_id;
+        }
+
+        if ($entity->assigned_user_id)
+        {
+            $metaData['assigned_user'] = $entity->assigned_user_id;
+        }
 
         if (isset($entity->content_info['thread_id']))
         {

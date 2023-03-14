@@ -157,13 +157,21 @@ class ReportComment extends AbstractData
         $metaData = [
             'report'              => $entity->report_id,
             'report_state'        => $report->report_state,
-            'assigned_user'       => $report->assigned_user_id,
-            'assigner_user'       => $report->assigner_user_id,
             'report_content_type' => $report->content_type,
             'state_change'        => $entity->state_change ?: '',
             'is_report'           => $entity->is_report ? static::REPORT_TYPE_USER_REPORT : static::REPORT_TYPE_COMMENT, // must be an int
             'report_user'         => $report->content_user_id,
         ];
+
+        if ($report->assigner_user_id)
+        {
+            $metaData['assigner_user'] = $report->assigner_user_id;
+        }
+
+        if ($report->assigned_user_id)
+        {
+            $metaData['assigned_user'] = $report->assigned_user_id;
+        }
 
         $warningLog = $entity->WarningLog;
         if ($warningLog !== null)
