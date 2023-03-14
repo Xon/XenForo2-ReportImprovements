@@ -24,6 +24,7 @@ use XF\Mvc\Entity\Structure;
  * @property-read array         $comment_ids
  * @property-read ReportComment $LastModified
  * RELATIONS
+ * @property-read User          $AssignerUser
  * @property-read ReportComment $LastModified_
  */
 class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDiscussionUser
@@ -515,6 +516,15 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
                 ['report_comment_id', '=', '$last_modified_id'],
             ],
             'primary'    => true,
+        ];
+
+        $structure->relations['AssignerUser'] = [
+            'entity' => 'XF:User',
+            'type' => self::TO_ONE,
+            'conditions' => [
+                ['user_id', '=', '$assigner_user_id']
+            ],
+            'primary' => true
         ];
 
         $addOns = \XF::app()->container('addon.cache');

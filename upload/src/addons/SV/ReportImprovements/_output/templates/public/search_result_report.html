@@ -15,6 +15,12 @@
 					<li><xf:username user="{$report.User}" defaultname="{{ phrase('guest') }}" /></li>
 					<li>{{ phrase('report') }}</li>
 					<li><xf:date time="{$report.first_report_date}" /></li>
+					<xf:if is="$report.assigned_user_id && $report.AssignedUser">
+						<li>{{ phrase('svReportImprov_assigned_to:') }} <xf:username user="{$report.AssignedUser}"/></li>
+						<xf:if is="$report.assigned_user_id !== $report.assigner_user_id && $report.AssignerUser">
+						<li>{{ phrase('svReportImprov_assigner_by:') }} <xf:username user="{$report.AssignerUser}"/></li>
+						</xf:if>
+					</xf:if>
 				</ul>
 			</div>
 		</div>
