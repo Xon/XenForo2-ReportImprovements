@@ -295,11 +295,11 @@ class ReportComment extends AbstractData
         $constraints = $request->filter([
             'c.assigned'         => 'str',
             'c.assigner'         => 'str',
-            'c.report_state'     => 'array-str',
 
             'c.replies.lower'       => 'uint',
             'c.replies.upper'       => 'uint',
 
+            'c.report.state'        => 'array-str',
             'c.report.contents'     => 'bool',
             'c.report.comments'     => 'bool',
             'c.report.user_reports' => 'bool',
@@ -330,7 +330,7 @@ class ReportComment extends AbstractData
             $query->withMetadata('is_report', $isReport);
         }
 
-        $reportStates = $constraints['c.report_state'];
+        $reportStates = $constraints['c.report.state'];
         assert(is_array($reportStates));
         if (count($reportStates) !== 0 && !in_array('0', $reportStates, true))
         {
@@ -344,13 +344,13 @@ class ReportComment extends AbstractData
             });
             if (count($badReportStates) !== 0)
             {
-                $query->error('report_state', \XF::phrase('svReportImprov_unknown_report_states', ['values' => implode(', ', $badReportStates)]));
+                $query->error('report.state', \XF::phrase('svReportImprov_unknown_report_states', ['values' => implode(', ', $badReportStates)]));
             }
             else
             {
                 $query->withMetadata('report_state', $reportStates);
 
-                Arr::setUrlConstraint($urlConstraints, 'c.report_state', $reportStates);
+                Arr::setUrlConstraint($urlConstraints, 'c.report.state', $reportStates);
             }
         }
         else

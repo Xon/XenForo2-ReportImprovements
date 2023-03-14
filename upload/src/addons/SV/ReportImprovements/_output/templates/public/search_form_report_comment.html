@@ -25,7 +25,7 @@
 </xf:checkboxrow>
 
 <xf:if is="$reportStates is not empty">
-	<xf:selectrow name="c[report_state][]" size="{{ 1+count($reportStates) }}" multiple="true" value="{$input.c.report_state|default(['0'])}"
+	<xf:selectrow name="c[report][state][]" size="{{ 1+count($reportStates) }}" multiple="true" value="{$input.c.report.state|default(['0'])}"
 		label="{{ phrase('svReportImprov_with_report_state') }}">
 
 		<xf:option value="0">{{ phrase('(any)') }}</xf:option>
