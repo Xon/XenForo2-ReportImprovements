@@ -4,7 +4,10 @@ namespace SV\ReportImprovements\Job\Upgrades;
 
 use SV\ReportImprovements\XF\Entity\Report;
 use SV\ReportImprovements\XF\Entity\ReportComment;
+use SV\ReportImprovements\XF\Entity\Thread;
 use XF\Job\AbstractRebuildJob;
+use function array_key_exists;
+use function assert;
 
 class EnrichReportPostInstall extends AbstractRebuildJob
 {
@@ -40,6 +43,23 @@ class EnrichReportPostInstall extends AbstractRebuildJob
                 $report->last_modified_id = $lastModified->report_comment_id;
             }
         }
+
+        $content = $report->Content;
+        $contentInfo = $report->content_info;
+        if ($content instanceof \XF\Entity\Post)
+        {
+            if (!array_key_exists('post_date', $contentInfo))
+            {
+                $contentInfo['post_date'] = $content->post_date;
+            }
+            if (!array_key_exists('prefix_id', $contentInfo))
+            {
+                /** @var Thread|\SV\MultiPrefix\XF\Entity\Thread $thread */
+                $thread = $content->Thread;
+                $contentInfo['prefix_id'] = $thread->sv_prefix_ids ?? $thread->prefix_id;
+            }
+        }
+        $report->content_info = $contentInfo;
 
         if ($report->assigned_user_id !== 0 || $report->assigned_date === null)
         {

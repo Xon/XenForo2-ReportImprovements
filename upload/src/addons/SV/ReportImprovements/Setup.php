@@ -382,7 +382,7 @@ class Setup extends AbstractSetup
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
 
-        if ($previousVersion < 2140000)
+        if ($previousVersion < 2140002)
         {
             $atomicJobs[] = EnrichReportPostInstall::class;
         }
