@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Report;
 
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
+use SV\ReportImprovements\XF\Entity\Thread;
 use XF\Entity\Report;
 use XF\Mvc\Entity\Entity;
 use XF\Search\MetadataStructure;
@@ -39,6 +40,9 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
 
         $contentInfo = $report->content_info;
         $contentInfo['post_date'] = $content->post_date;
+        /** @var Thread|\SV\MultiPrefix\XF\Entity\Thread $thread */
+        $thread = $content->Thread;
+        $contentInfo['prefix_id'] = $thread->sv_prefix_ids ?? $thread->prefix_id;
         $report->content_info = $contentInfo;
     }
 
@@ -110,8 +114,16 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         $handler->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
     }
 
+    public function setupMetadataStructure(MetadataStructure $structure): void
+    {
+        $handler = \XF::app()->search()->handler($this->contentType);
+        assert($handler instanceof \XF\Search\Data\Post);
+        $handler->setupMetadataStructure($structure);
+    }
+
     public function populateMetaData(\XF\Entity\Report $entity, array &$metaData): void
     {
+        // see setupReportEntityContent for attributes cached on the report
         $threadId = $entity->content_info['thread_id'] ?? null;
         if ($threadId !== null)
         {
@@ -123,11 +135,11 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         {
             $metaData['node'] = $nodeId;
         }
-    }
 
-    public function setupMetadataStructure(MetadataStructure $structure): void
-    {
-        $structure->addField('node', MetadataStructure::INT);
-        $structure->addField('thread', MetadataStructure::INT);
+        $prefixId = $entity->content_info['prefix_id'] ?? null;
+        if ($prefixId !== null)
+        {
+            $metaData['prefix'] = $prefixId;
+        }
     }
 }
