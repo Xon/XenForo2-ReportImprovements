@@ -471,7 +471,8 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
 
     public function getReplyCountForSearch(): int
     {
-        return $this->report_count + $this->comment_count;
+        // do not consider the report count, since that doesn't signal much that is useful
+        return $this->comment_count;
     }
 
     public function svDisableIndexing(): void
