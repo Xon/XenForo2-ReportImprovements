@@ -10,18 +10,33 @@
 	</xf:checkboxrow>
 </xf:if>
 
-<xf:checkboxrow name="c[report][type]"
-				label="{{ phrase('svReportImprove_content_in') }}">
-	<xf:foreach loop="$reportTypes" key="$key" value="$rec">
-		<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report.type) }}" data-hide="true">
-			<xf:dependent>
-				<xf:if is="callable($rec.handler, 'getSearchFormTemplate')">
-					<xf:include template="{$rec.handler.getSearchFormTemplate()}" />
-				</xf:if>
-			</xf:dependent>
-		</xf:option>
-	</xf:foreach>
-</xf:checkboxrow>
+<xf:if is="$isUsingElasticSearch">
+	<xf:checkboxrow name="c[report][type]"
+					label="{{ phrase('svReportImprove_content_in') }}">
+		<xf:foreach loop="$reportTypes" key="$key" value="$rec">
+			<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report.type) }}" data-hide="true">
+				<xf:dependent>
+					<xf:if is="callable($rec.handler, 'getSearchFormTemplate')">
+						<xf:include template="{$rec.handler.getSearchFormTemplate()}" />
+					</xf:if>
+				</xf:dependent>
+			</xf:option>
+		</xf:foreach>
+	</xf:checkboxrow>
+<xf:else />
+	<xf:radiorow name="c[report][type][]"
+					label="{{ phrase('svReportImprove_content_in') }}">
+		<xf:foreach loop="$reportTypes" key="$key" value="$rec">
+			<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report.type) }}" data-hide="true">
+				<xf:dependent>
+					<xf:if is="callable($rec.handler, 'getSearchFormTemplate')">
+						<xf:include template="{$rec.handler.getSearchFormTemplate()}" />
+					</xf:if>
+				</xf:dependent>
+			</xf:option>
+		</xf:foreach>
+	</xf:radiorow>
+</xf:if>
 
 <xf:checkboxrow>
 	<xf:option name="c[report][contents]"

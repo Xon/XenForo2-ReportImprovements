@@ -5,9 +5,12 @@ namespace SV\ReportImprovements\Search\Data;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
+use SV\ReportImprovements\Search\QueryAccessor;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
+use SV\SearchImprovements\XF\Search\Query\Constraints\AndConstraint;
+use SV\SearchImprovements\XF\Search\Query\Constraints\OrConstraint;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\Data\AbstractData;
@@ -18,12 +21,15 @@ use XF\Search\Query\Query;
 use XF\Search\Query\TableReference;
 use function array_filter;
 use function array_key_exists;
+use function array_keys;
 use function array_merge;
 use function array_unique;
 use function assert;
 use function count;
 use function in_array;
 use function is_array;
+use function key;
+use function reset;
 
 /**
  * Class ReportComment
@@ -304,6 +310,7 @@ class ReportComment extends AbstractData
      */
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
+        $isUsingElasticSearch = \SV\SearchImprovements\Globals::repo()->isUsingElasticSearch();
         $constraints = $request->filter([
             'c.assigned'         => 'str',
             'c.assigner'         => 'str',
@@ -368,24 +375,63 @@ class ReportComment extends AbstractData
             Arr::unsetUrlConstraint($urlConstraints, 'c.report.state');
         }
 
-
         $reportTypes = $constraints['c.report.type'];
+        assert(is_array($reportTypes));
         if (count($reportTypes) !== 0)
         {
-            $types = [];
-            foreach ($this->reportRepo->getReportHandlers() as $contentType => $handler)
+            // MySQL backend doesn't support composing multiple queries atm
+            if (!$isUsingElasticSearch && count($reportTypes) > 1)
             {
-                if (in_array($contentType, $reportTypes, true) && ($handler instanceof ReportSearchFormInterface))
+                $query->error('c.report.type', \XF::phrase('svReportImprov_only_single_report_type_permitted'));
+                $reportTypes = [];
+            }
+
+            $types = [];
+            $handlers = $this->reportRepo->getReportHandlers();
+            foreach ($reportTypes as $reportType)
+            {
+                $handler = $handlers[$reportType] ?? null;
+                if ($handler instanceof ReportSearchFormInterface)
                 {
-                    $types[] = $contentType;
+                    $oldConstraints = $query->getMetadataConstraints();
+                    QueryAccessor::setMetadataConstraints($query, []);
+
                     $handler->applySearchTypeConstraintsFromInput($query, $request, $urlConstraints);
+                    $types[$reportType] = $query->getMetadataConstraints();
+
+                    QueryAccessor::setMetadataConstraints($query, $oldConstraints);
+                }
+                else
+                {
+                    $types[$reportType] = [];
                 }
             }
 
             if (count($types) !== 0)
             {
-                $query->withMetadata('report_content_type', $types);
-                Arr::setUrlConstraint($urlConstraints, 'c.report.type', $types);
+                if (count($types) > 1)
+                {
+                    $constraints = [];
+                    foreach ($types as $contentType => $nestedConstraints)
+                    {
+                        $constraints[] = new AndConstraint(
+                            new MetadataConstraint('report_content_type', $contentType),
+                            ...$nestedConstraints
+                        );
+                    }
+                    $query->withMetadata(new OrConstraint(...$constraints));
+                }
+                else
+                {
+                    $constraint = reset($types);
+                    $query->withMetadata('report_content_type', array_keys($types));
+                    if (count($constraint) !== 0)
+                    {
+                        $query->withMetadata($constraint);
+                    }
+                }
+
+                Arr::setUrlConstraint($urlConstraints, 'c.report.type', array_keys($types));
             }
             else
             {
