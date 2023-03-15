@@ -13,7 +13,7 @@
 <xf:checkboxrow name="c[report][type]"
 				label="{{ phrase('svReportImprove_content_in') }}">
 	<xf:foreach loop="$reportTypes" key="$key" value="$rec">
-		<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report) }}" data-hide="true">
+		<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report.type) }}" data-hide="true">
 			<xf:dependent>
 				<xf:if is="callable($rec.handler, 'getSearchFormTemplate')">
 					<xf:include template="{$rec.handler.getSearchFormTemplate()}" />
