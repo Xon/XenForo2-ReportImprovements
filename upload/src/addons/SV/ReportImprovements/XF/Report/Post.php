@@ -86,25 +86,9 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
 
     public function getSearchFormData(): array
     {
-        return [
-            'nodeTree' => $this->getSearchableNodeTree()
-        ];
-    }
-
-    protected function getSearchableNodeTree(): \XF\Tree
-    {
-        /** @var \XF\Repository\Node $nodeRepo */
-        $nodeRepo = \XF::repository('XF:Node');
-        $nodeTree = $nodeRepo->createNodeTree($nodeRepo->getNodeList());
-
-        // only list nodes that are forums or contain forums
-        /** @noinspection PhpUnnecessaryLocalVariableInspection */
-        $nodeTree = $nodeTree->filter(null, function(int $id, \XF\Entity\Node $node, int $depth, array $children, \XF\Tree $tree): bool
-        {
-            return ($children || $node->node_type_id == 'Forum');
-        });
-
-        return $nodeTree;
+        $handler = \XF::app()->search()->handler($this->contentType);
+        assert($handler instanceof \XF\Search\Data\Post);
+        return $handler->getSearchFormData();
     }
 
     public function applySearchTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array $urlConstraints): void
