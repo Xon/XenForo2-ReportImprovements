@@ -16,6 +16,7 @@
         "SV/SearchImprovements": [2090004, "Search Improvements 2.9.0+", true]
     },
     "require-soft": {
+        "NF/Tickets": [2060000, "Tickets v2.6.0+", false],
         "SV/ThreadReplyBanTeeth": [2050000, "Thread Reply Ban Teeth v2.5.0+"],
         "SV/ContentRatings": [2010500, "Content Rating 2.1.5+", true]
     },

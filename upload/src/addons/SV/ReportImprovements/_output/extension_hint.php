@@ -4,6 +4,11 @@
 // ################## THIS IS A GENERATED FILE ##################
 // DO NOT EDIT DIRECTLY. EDIT THE CLASS EXTENSIONS IN THE CONTROL PANEL.
 
+namespace SV\ReportImprovements\NF\Tickets\Report
+{
+	class XFCP_Message extends \NF\Tickets\Report\Message {}
+}
+
 namespace SV\ReportImprovements\XF\ControllerPlugin
 {
 	class XFCP_Report extends \XF\ControllerPlugin\Report {}

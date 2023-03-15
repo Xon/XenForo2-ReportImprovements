@@ -62,6 +62,20 @@ class EnrichReportPostInstall extends AbstractRebuildJob
                 $hasChanges = true;
             }
         }
+        else if ($content instanceof \NF\Tickets\Entity\Message)
+        {
+            if (!array_key_exists('message_date', $contentInfo))
+            {
+                $contentInfo['message_date'] = $content->message_date;
+                $hasChanges = true;
+            }
+            if (!array_key_exists('ticket_status_id', $contentInfo))
+            {
+                $ticket = $content->Ticket;
+                $contentInfo['ticket_status_id'] = $ticket->status_id;
+                $hasChanges = true;
+            }
+        }
         if ($hasChanges)
         {
             $report->content_info = $contentInfo;

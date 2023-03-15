@@ -1,0 +1,9 @@
+{
+    "template": "report_content_nf_tickets_message",
+    "description": "Show post date",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#(<div class=\"block-row block-row--separated block-row--minor.*?\".*?>)(.*?)(<\\/div>)#s",
+    "replace": "$1$2\n<xf:macro template=\"svReportImprov_report_macros\" \n\t\t  name=\"reportInfo\" \n\t\t  arg-report=\"{$report}\"\n\t\t  />\n$3"
+}
