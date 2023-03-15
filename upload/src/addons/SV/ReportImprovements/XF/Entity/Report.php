@@ -7,6 +7,8 @@ use SV\SearchImprovements\Search\Features\ISearchableDiscussionUser;
 use SV\SearchImprovements\Search\Features\ISearchableReplyCount;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
+use function array_key_exists;
+use function assert;
 
 /**
  * Class Report
@@ -470,6 +472,26 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     public function getReplyCountForSearch(): int
     {
         return $this->report_count + $this->comment_count;
+    }
+
+    public function svDisableIndexing(): void
+    {
+        $this->getBehaviors();
+    }
+
+    public function svEnableIndexing(): void
+    {
+        $this->getBehaviors();
+        if (!array_key_exists('XF:IndexableContainer', $this->_behaviors))
+        {
+            $class = \XF::extendClass(\XF\Behavior\IndexableContainer::class);
+
+            $behavior = new $class($this, $this->structure()->behaviors['XF:IndexableContainer']);
+            assert($behavior instanceof \XF\Behavior\IndexableContainer);
+            $behavior->onSetup();
+
+            $this->_behaviors['XF:IndexableContainer'] = $behavior;
+        }
     }
 
     /**

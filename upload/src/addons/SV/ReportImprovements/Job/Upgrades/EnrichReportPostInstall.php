@@ -46,22 +46,28 @@ class EnrichReportPostInstall extends AbstractRebuildJob
 
         $content = $report->Content;
         $contentInfo = $report->content_info;
+        $hasChanges = false;
         if ($content instanceof \XF\Entity\Post)
         {
             if (!array_key_exists('post_date', $contentInfo))
             {
                 $contentInfo['post_date'] = $content->post_date;
+                $hasChanges = true;
             }
             if (!array_key_exists('prefix_id', $contentInfo))
             {
                 /** @var Thread|\SV\MultiPrefix\XF\Entity\Thread $thread */
                 $thread = $content->Thread;
                 $contentInfo['prefix_id'] = $thread->sv_prefix_ids ?? $thread->prefix_id;
+                $hasChanges = true;
             }
         }
-        $report->content_info = $contentInfo;
+        if ($hasChanges)
+        {
+            $report->content_info = $contentInfo;
+        }
 
-        if ($report->assigned_user_id !== 0 || $report->assigned_date === null)
+        if ($report->assigned_user_id !== 0 && $report->assigned_date === null)
         {
             // Xenforo doesn't accurate track which report comment assigns (or unassigns) a report :(
             $reportComment = \XF::app()->finder('XF:ReportComment')
@@ -87,13 +93,16 @@ class EnrichReportPostInstall extends AbstractRebuildJob
                 $reportComment->saveIfChanged();
             }
         }
-        else
+        else if ($report->assigner_user_id === 0 && $report->assigned_date !== null)
         {
             $report->assigned_date = null;
-            $report->assigner_user_id = null;
         }
 
-        $report->saveIfChanged();
+        if ($report->hasChanges())
+        {
+            $report->svDisableIndexing();
+            $report->save();
+        }
     }
 
     protected function getStatusType()
