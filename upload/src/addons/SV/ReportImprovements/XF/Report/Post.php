@@ -4,16 +4,10 @@ namespace SV\ReportImprovements\XF\Report;
 
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
-use SV\SearchImprovements\Util\Arr;
 use XF\Entity\Report;
 use XF\Mvc\Entity\Entity;
-use function array_fill_keys;
-use function array_keys;
-use function array_unique;
-use function array_values;
-use function count;
-use function in_array;
-use function is_callable;
+use XF\Search\MetadataStructure;
+use function assert;
 
 /**
  * Class Post
@@ -111,56 +105,29 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
 
     public function applySearchTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array $urlConstraints): void
     {
-        $threadId = (int)$request->filter('c.thread', 'uint');
-        if ($threadId !== 0)
+        $handler = \XF::app()->search()->handler($this->contentType);
+        assert($handler instanceof \XF\Search\Data\Post);
+        $handler->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
+    }
+
+    public function populateMetaData(\XF\Entity\Report $entity, array &$metaData): void
+    {
+        $threadId = $entity->content_info['thread_id'] ?? null;
+        if ($threadId !== null)
         {
-            $query->withMetadata('thread', $threadId);
-
-            if (is_callable([$query, 'inTitleOnly']))
-            {
-                $query->inTitleOnly(false);
-            }
+            $metaData['thread'] = $threadId;
         }
-        else
+
+        $nodeId = $entity->content_info['node_id'] ?? null;
+        if ($nodeId !== null)
         {
-            Arr::unsetUrlConstraint($urlConstraints, 'c.thread');
-
-            $nodeIds = $request->filter('c.nodes', 'array-uint');
-            $nodeIds = array_values(array_unique($nodeIds));
-            if (count($nodeIds) !== 0 && !in_array(0, $nodeIds, true))
-            {
-                if ($request->filter('c.child_nodes', 'bool'))
-                {
-                    /** @var \XF\Repository\Node $nodeRepo */
-                    $nodeRepo = \XF::repository('XF:Node');
-                    $nodeTree = $nodeRepo->createNodeTree($nodeRepo->getFullNodeListWithTypeData()->filterViewable());
-
-                    $searchNodeIds = array_fill_keys($nodeIds, true);
-                    $nodeTree->traverse(function (int $id, \XF\Entity\Node $node) use (&$searchNodeIds): void {
-                        if (isset($searchNodeIds[$id]) || isset($searchNodeIds[$node->parent_node_id]))
-                        {
-                            // if we're in the search node list, the user selected the node explicitly
-                            // if the parent is in the list, then that node was selected via traversal so we're included too
-                            $searchNodeIds[$id] = true;
-                        }
-                        // we still need to traverse children though, as children may be selected
-                    });
-
-                    $nodeIds = array_unique(array_keys($searchNodeIds));
-                }
-                else
-                {
-                    Arr::unsetUrlConstraint($urlConstraints, 'c.child_nodes');
-                }
-
-                $query->withMetadata('node', $nodeIds);
-                Arr::setUrlConstraint($urlConstraints, 'c.nodes', $nodeIds);
-            }
-            else
-            {
-                Arr::unsetUrlConstraint($urlConstraints, 'c.nodes');
-                Arr::unsetUrlConstraint($urlConstraints, 'c.child_nodes');
-            }
+            $metaData['node'] = $nodeId;
         }
+    }
+
+    public function setupMetadataStructure(MetadataStructure $structure): void
+    {
+        $structure->addField('node', MetadataStructure::INT);
+        $structure->addField('thread', MetadataStructure::INT);
     }
 }

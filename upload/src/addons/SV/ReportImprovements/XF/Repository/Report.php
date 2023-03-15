@@ -634,4 +634,25 @@ class Report extends XFCP_Report
 
         return $contentTypes;
     }
+
+    /**
+     * @return array<string, AbstractHandler>
+     */
+    public function getReportHandlers(): array
+    {
+        $contentTypes = [];
+        $app = $this->app();
+
+        foreach ($app->getContentTypeField('report_handler_class') as $contentType => $className)
+        {
+            $handler = $this->getReportHandler($contentType, false);
+            if ($handler === null)
+            {
+                continue;
+            }
+            $contentTypes[$contentType] = $handler;
+        }
+
+        return $contentTypes;
+    }
 }

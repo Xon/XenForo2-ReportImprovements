@@ -39,6 +39,16 @@ class ReportComment extends AbstractData
     const REPORT_TYPE_USER_REPORT = 1;
     const REPORT_TYPE_IS_REPORT = 2;
 
+    /** @var \SV\ReportImprovements\XF\Repository\Report */
+    protected $reportRepo;
+
+    public function __construct($contentType, \XF\Search\Search $searcher)
+    {
+        parent::__construct($contentType, $searcher);
+
+        $this->reportRepo = \XF::repository('XF:Report');
+    }
+
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
      * @param null                                                  $error
@@ -212,16 +222,10 @@ class ReportComment extends AbstractData
             }
         }
 
-        if ($report !== null)
+        $reportHandler = $this->reportRepo->getReportHandler($report->content_type, null);
+        if ($reportHandler instanceof ReportSearchFormInterface)
         {
-            if (isset($report->content_info['thread_id']))
-            {
-                $metaData['thread'] = $report->content_info['thread_id'];
-            }
-            if (isset($report->content_info['node_id']))
-            {
-                $metaData['node'] = $report->content_info['node_id'];
-            }
+            $reportHandler->populateMetaData($report, $metaData);
         }
 
         $this->populateDiscussionMetaData($entity, $metaData);
@@ -264,10 +268,17 @@ class ReportComment extends AbstractData
      */
     public function setupMetadataStructure(MetadataStructure $structure)
     {
+        $this->reportRepo->getReportHandlers();
+
         $structure->addField('report_user', MetadataStructure::INT);
         // shared with Report
-        $structure->addField('node', MetadataStructure::INT);
-        $structure->addField('thread', MetadataStructure::INT);
+        foreach ($this->reportRepo->getReportHandlers() as $handler)
+        {
+            if ($handler instanceof ReportSearchFormInterface)
+            {
+                $handler->setupMetadataStructure($structure);
+            }
+        }
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('state_change', MetadataStructure::KEYWORD);
         $structure->addField('report_state', MetadataStructure::KEYWORD);
@@ -337,10 +348,8 @@ class ReportComment extends AbstractData
         if (count($reportStates) !== 0 && !in_array('0', $reportStates, true))
         {
             $reportStates = array_unique($reportStates);
-            $reportRepo = \XF::repository('XF:Report');
-            assert($reportRepo instanceof ReportRepo);
 
-            $states = $reportRepo->getReportStatePairs();
+            $states = $this->reportRepo->getReportStatePairs();
             $badReportStates = array_filter($reportStates, function(string $state) use(&$states) : bool {
                 return !array_key_exists($state, $states);
             });
@@ -359,22 +368,14 @@ class ReportComment extends AbstractData
             Arr::unsetUrlConstraint($urlConstraints, 'c.report.state');
         }
 
-        $reportRepo = \XF::repository('XF:Report');
-        assert($reportRepo instanceof ReportRepo);
 
         $reportTypes = $constraints['c.report.type'];
         if (count($reportTypes) !== 0)
         {
             $types = [];
-            foreach ($reportRepo->getReportTypes() as $contentType => $rec)
+            foreach ($this->reportRepo->getReportHandlers() as $contentType => $handler)
             {
-                if (!in_array($contentType, $reportTypes, true))
-                {
-                    continue;
-                }
-
-                $handler = $rec['handler'];
-                if ($handler instanceof ReportSearchFormInterface)
+                if (in_array($contentType, $reportTypes, true) && ($handler instanceof ReportSearchFormInterface))
                 {
                     $types[] = $contentType;
                     $handler->applySearchTypeConstraintsFromInput($query, $request, $urlConstraints);

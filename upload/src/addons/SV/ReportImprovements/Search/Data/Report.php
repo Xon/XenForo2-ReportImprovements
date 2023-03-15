@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
@@ -17,7 +18,18 @@ use XF\Search\MetadataStructure;
 class Report extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
+
     use DiscussionTrait;
+
+    /** @var \SV\ReportImprovements\XF\Repository\Report */
+    protected $reportRepo;
+
+    public function __construct($contentType, \XF\Search\Search $searcher)
+    {
+        parent::__construct($contentType, $searcher);
+
+        $this->reportRepo = \XF::repository('XF:Report');
+    }
 
     /**
      * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
@@ -39,7 +51,6 @@ class Report extends AbstractData
             $reportRepo = \XF::repository('XF:Report');
             $reportRepo->svPreloadReports($entities);
         }
-
 
         return $entities;
     }
@@ -141,13 +152,10 @@ class Report extends AbstractData
             $metaData['assigned_user'] = $entity->assigned_user_id;
         }
 
-        if (isset($entity->content_info['thread_id']))
+        $reportHandler = $this->reportRepo->getReportHandler($entity->content_type, null);
+        if ($reportHandler instanceof ReportSearchFormInterface)
         {
-            $metaData['thread'] = $entity->content_info['thread_id'];
-        }
-        if (isset($entity->content_info['node_id']))
-        {
-            $metaData['node'] = $entity->content_info['node_id'];
+            $reportHandler->populateMetaData($entity, $metaData);
         }
 
         $this->populateDiscussionMetaData($entity, $metaData);
@@ -173,8 +181,13 @@ class Report extends AbstractData
      */
     public function setupMetadataStructure(MetadataStructure $structure)
     {
-        $structure->addField('node', MetadataStructure::INT);
-        $structure->addField('thread', MetadataStructure::INT);
+        foreach ($this->reportRepo->getReportHandlers() as $handler)
+        {
+            if ($handler instanceof ReportSearchFormInterface)
+            {
+                $handler->setupMetadataStructure($structure);
+            }
+        }
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('report_state', MetadataStructure::KEYWORD);
         $structure->addField('report_content_type', MetadataStructure::KEYWORD);
