@@ -1,1 +1,1 @@
-Warning points: < {value}
+Warning points: <= {value}

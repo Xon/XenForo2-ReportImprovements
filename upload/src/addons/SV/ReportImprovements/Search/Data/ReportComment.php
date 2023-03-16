@@ -316,7 +316,7 @@ class ReportComment extends AbstractData
             'c.assigner'         => 'str',
 
             'c.replies.lower'       => 'uint',
-            'c.replies.upper'       => 'uint',
+            'c.replies.upper'       => '?uint',
 
             'c.report.type'         => 'array-str',
             'c.report.state'        => 'array-str',
@@ -326,7 +326,7 @@ class ReportComment extends AbstractData
 
             'c.warning.user'         => 'str',
             'c.warning.points.lower' => 'uint',
-            'c.warning.points.upper' => 'uint',
+            'c.warning.points.upper' => '?uint',
         ]);
 
         $isReport = [];
