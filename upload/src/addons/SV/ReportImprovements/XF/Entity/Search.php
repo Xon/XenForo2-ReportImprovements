@@ -21,6 +21,7 @@ class Search extends XFCP_Search
         parent::setupConstraintFields();
 
         $this->svUserConstraint[] = 'warning_user';
+        $this->svUserConstraint[] = 'participants';
         $this->svIgnoreConstraint[] = 'report_state';
         $this->svIgnoreConstraint[] = 'report_type';
         $this->svIgnoreConstraint[] = 'child_categories';

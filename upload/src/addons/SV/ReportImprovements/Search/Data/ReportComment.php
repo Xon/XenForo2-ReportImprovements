@@ -314,6 +314,7 @@ class ReportComment extends AbstractData
         $constraints = $request->filter([
             'c.assigned'         => 'str',
             'c.assigner'         => 'str',
+            'c.participants'     => 'str',
 
             'c.replies.lower'       => 'uint',
             'c.replies.upper'       => '?uint',
@@ -446,6 +447,9 @@ class ReportComment extends AbstractData
         );
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
             'c.assigner', 'assigner_user'
+        );
+        $repo->applyUserConstraint($query, $constraints, $urlConstraints,
+            'c.participants', 'discussion_user'
         );
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
             'c.warning.user', 'warned_user'
