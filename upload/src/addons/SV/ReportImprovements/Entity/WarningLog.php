@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Entity;
 
+use SV\ReportImprovements\XF\Entity\ReportComment;
 use XF\Entity\Post;
 use XF\Entity\Thread;
 use XF\Entity\ThreadReplyBan;
@@ -42,6 +43,7 @@ use XF\Mvc\Entity\Structure;
  * @property-read User|null           $User
  * @property-read Thread|null         $ReplyBanThread
  * @property-read Post|null           $ReplyBanPost
+ * @property-read ReportComment|null  $ReportComment
  */
 class WarningLog extends Entity
 {
@@ -166,6 +168,12 @@ class WarningLog extends Entity
             'reply_ban_post_id'     => ['type' => self::UINT, 'default' => null, 'nullable' => true],
         ];
         $structure->relations = [
+            'ReportComment' => [
+                'entity'     => 'XF:ReportComment',
+                'type'       => self::TO_ONE,
+                'conditions' => 'warning_log_id',
+                'primary'    => true,
+            ],
             'Warning'        => [
                 'entity'     => 'XF:Warning',
                 'type'       => self::TO_ONE,
