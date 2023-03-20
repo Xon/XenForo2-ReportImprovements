@@ -333,6 +333,23 @@ class Setup extends AbstractSetup
         $this->installStep2();
     }
 
+    public function upgrade2140005Step2(): void
+    {
+        $this->db()->query('
+            UPDATE xf_report_comment
+            SET warning_log_id = NULL
+            WHERE warning_log_id = 0
+        ');
+    }
+
+    public function upgrade2140005Step3(): void
+    {
+        $this->renamePhrases([
+            'svReportImprov_search_reports' => 'svReportImprov_search.reports',
+            'svReportImprove_content_in' => 'svReportImprove_reported_content_in',
+        ]);
+    }
+
     /**
      * Drops add-on tables.
      */

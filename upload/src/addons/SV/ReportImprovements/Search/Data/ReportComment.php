@@ -2,7 +2,6 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
-use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\Search\QueryAccessor;
@@ -28,7 +27,6 @@ use function assert;
 use function count;
 use function in_array;
 use function is_array;
-use function key;
 use function reset;
 
 /**
@@ -129,47 +127,20 @@ class ReportComment extends AbstractData
             return null;
         }
 
-        $message = $entity->message;
-
         $warningLog = $entity->WarningLog;
         if ($warningLog !== null)
         {
-            $message = $this->addWarningLogToMessage($warningLog, $message);
+            return $this->searcher->handler('warning')->getIndexData($warningLog);
         }
 
         return IndexRecord::create('report_comment', $entity->report_comment_id, [
             'title'         => $report->title_string,
-            'message'       => $message,
+            'message'       => $entity->message,
             'date'          => $entity->comment_date,
             'user_id'       => $entity->user_id,
             'discussion_id' => $entity->report_id,
             'metadata'      => $this->getMetaData($entity),
         ]);
-    }
-
-    protected function addWarningLogToMessage(WarningLog $warningLog, string $message): string
-    {
-        foreach ($warningLog->structure()->columns as $column => $schema)
-        {
-            if (
-                ($schema['type'] ?? '') !== Entity::STR ||
-                empty($schema['allowedValues']) || // aka enums
-                ($schema['noIndex'] ?? false)
-            )
-            {
-                continue;
-            }
-
-            $value = $warningLog->get($column);
-            if ($value === null || $value === '')
-            {
-                continue;
-            }
-
-            $message .= "\n" . $value;
-        }
-
-        return $message;
     }
 
     /**
@@ -196,36 +167,6 @@ class ReportComment extends AbstractData
         if ($report->assigned_user_id)
         {
             $metaData['assigned_user'] = $report->assigned_user_id;
-        }
-
-        $warningLog = $entity->WarningLog;
-        if ($warningLog !== null)
-        {
-            if ($warningLog->points)
-            {
-                $metaData['points'] = $warningLog->points;
-            }
-
-            if ($warningLog->expiry_date)
-            {
-                $metaData['expiry_date'] = $warningLog->expiry_date;
-            }
-
-            $warning = $warningLog->Warning;
-            if ($warning && $warning->user_id)
-            {
-                $metaData['warned_user'] = $warning->user_id;
-            }
-
-            if ($warningLog->reply_ban_thread_id)
-            {
-                $metaData['thread_reply_ban'] = $warningLog->reply_ban_thread_id;
-            }
-
-            if ($warningLog->reply_ban_post_id)
-            {
-                $metaData['post_reply_ban'] = $warningLog->reply_ban_post_id;
-            }
         }
 
         $reportHandler = $this->reportRepo->getReportHandler($report->content_type, null);
@@ -258,7 +199,7 @@ class ReportComment extends AbstractData
      */
     public function getSearchableContentTypes()
     {
-        return ['report_comment', 'report'];
+        return ['report_comment', 'warning', 'report'];
     }
 
     /**
@@ -274,8 +215,6 @@ class ReportComment extends AbstractData
      */
     public function setupMetadataStructure(MetadataStructure $structure)
     {
-        $this->reportRepo->getReportHandlers();
-
         $structure->addField('report_user', MetadataStructure::INT);
         // shared with Report
         foreach ($this->reportRepo->getReportHandlers() as $handler)
@@ -293,12 +232,6 @@ class ReportComment extends AbstractData
         $structure->addField('assigner_user', MetadataStructure::INT);
         // must be an int, as ElasticSearch single index has this all mapped to the same type
         $structure->addField('is_report', MetadataStructure::INT);
-        // warning bits
-        $structure->addField('points', MetadataStructure::INT);
-        $structure->addField('expiry_date', MetadataStructure::INT);
-        $structure->addField('warned_user', MetadataStructure::INT);
-        $structure->addField('thread_reply_ban', MetadataStructure::INT);
-        $structure->addField('post_reply_ban', MetadataStructure::INT);
 
         $this->setupDiscussionMetadataStructure($structure);
     }
@@ -324,10 +257,6 @@ class ReportComment extends AbstractData
             'c.report.contents'     => 'bool',
             'c.report.comments'     => 'bool',
             'c.report.user_reports' => 'bool',
-
-            'c.warning.user'         => 'str',
-            'c.warning.points.lower' => 'uint',
-            'c.warning.points.upper' => '?uint',
         ]);
 
         $isReport = [];
@@ -454,16 +383,9 @@ class ReportComment extends AbstractData
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
             'c.participants', 'discussion_user'
         );
-        $repo->applyUserConstraint($query, $constraints, $urlConstraints,
-            'c.warning.user', 'warned_user'
-        );
         $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
             'c.replies.lower', 'c.replies.upper', 'replies',
             [$this->getReportQueryTableReference()]
-        );
-        $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
-            'c.warning.points.lower', 'c.warning.points.upper', 'points',
-            $this->getWarningLogQueryTableReference(), 'warning_log'
         );
     }
 
@@ -558,7 +480,7 @@ class ReportComment extends AbstractData
         }
 
         return [
-            'title' => \XF::phrase('svReportImprov_search_reports'),
+            'title' => \XF::phrase('svReportImprov_search.reports'),
             'order' => 250,
         ];
     }
