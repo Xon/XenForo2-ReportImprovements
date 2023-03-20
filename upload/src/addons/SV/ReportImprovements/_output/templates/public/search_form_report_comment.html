@@ -1,5 +1,6 @@
 <xf:macro template="search_form_macros" name="keywords" arg-input="{$input}" arg-canTitleLimit="{{ false }}" />
 <xf:macro template="search_form_macros" name="user" arg-input="{$input}" />
+<xf:macro name="user_field" arg-name="report_user" arg-label="{{ phrase('svReportImprov_reported_user') }}" arg-input="{$input}" />
 <xf:macro name="user_field" arg-name="assigned" arg-label="{{ phrase('svReportImprov_with_assigned_user') }}" arg-input="{$input}" />
 <xf:macro name="user_field" arg-name="assigner" arg-label="{{ phrase('svReportImprov_by_assigner_user') }}" arg-input="{$input}" />
 <xf:macro name="user_field" arg-name="participants" arg-label="{{ phrase('svReportImprov_participants') }}" arg-input="{$input}" arg-single="{{ false }}"/>
