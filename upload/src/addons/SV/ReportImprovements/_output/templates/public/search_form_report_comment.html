@@ -1,9 +1,9 @@
 <xf:macro template="search_form_macros" name="keywords" arg-input="{$input}" arg-canTitleLimit="{{ false }}" />
 <xf:macro template="search_form_macros" name="user" arg-input="{$input}" />
-<xf:macro name="user_field" arg-name="report_user" arg-label="{{ phrase('svReportImprov_reported_user') }}" arg-input="{$input}" />
-<xf:macro name="user_field" arg-name="assigned" arg-label="{{ phrase('svReportImprov_with_assigned_user') }}" arg-input="{$input}" />
-<xf:macro name="user_field" arg-name="assigner" arg-label="{{ phrase('svReportImprov_by_assigner_user') }}" arg-input="{$input}" />
-<xf:macro name="user_field" arg-name="participants" arg-label="{{ phrase('svReportImprov_participants') }}" arg-input="{$input}" arg-single="{{ false }}"/>
+<xf:macro name="user_field" arg-name="report_user" arg-label="{{ phrase('svReportImprov_reported_user') }}" />
+<xf:macro name="user_field" arg-name="assigned" arg-label="{{ phrase('svReportImprov_with_assigned_user') }}" />
+<xf:macro name="user_field" arg-name="assigner" arg-label="{{ phrase('svReportImprov_by_assigner_user') }}" />
+<xf:macro name="user_field" arg-name="participants" arg-label="{{ phrase('svReportImprov_participants') }}" arg-single="{{ false }}"/>
 <xf:macro template="search_form_macros" name="date" arg-input="{$input}" />
 
 <xf:if is="$input.c.thread">
@@ -12,33 +12,9 @@
 	</xf:checkboxrow>
 </xf:if>
 
-<xf:if is="$isUsingElasticSearch">
-	<xf:checkboxrow name="c[report][type]"
-					label="{{ phrase('svReportImprove_content_in') }}">
-		<xf:foreach loop="$reportTypes" key="$key" value="$rec">
-			<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report.type) }}" data-hide="true">
-				<xf:dependent>
-					<xf:if is="callable($rec.handler, 'getSearchFormTemplate')">
-						<xf:include template="{$rec.handler.getSearchFormTemplate()}" />
-					</xf:if>
-				</xf:dependent>
-			</xf:option>
-		</xf:foreach>
-	</xf:checkboxrow>
-<xf:else />
-	<xf:radiorow name="c[report][type][]"
-					label="{{ phrase('svReportImprove_content_in') }}">
-		<xf:foreach loop="$reportTypes" key="$key" value="$rec">
-			<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report.type) }}" data-hide="true">
-				<xf:dependent>
-					<xf:if is="callable($rec.handler, 'getSearchFormTemplate')">
-						<xf:include template="{$rec.handler.getSearchFormTemplate()}" />
-					</xf:if>
-				</xf:dependent>
-			</xf:option>
-		</xf:foreach>
-	</xf:radiorow>
-</xf:if>
+<xf:macro name="search_form_report_comment::report_type"
+		  arg-label="{{ phrase('svReportImprove_reported_content_in') }}"
+		  arg-reportTypes="{$reportTypes}"/>
 
 <xf:macro template="svSearchImprov_macros" name="replies" arg-input="{$input}" />
 
@@ -65,13 +41,6 @@
 	</xf:selectrow>
 </xf:if>
 
-<xf:macro template="svSearchImprov_macros" name="range" 
-		  arg-label="{{ phrase('warning_points') }}"
-		  arg-fieldPrefix="c[warning][points]"
-		  arg-lowerBoundValue="{$input.c.warning.points.lower}"
-		  arg-upperBoundValue="{$input.c.warning.points.upper}"
-		  />
-
 <xf:macro template="search_form_macros"
 		  name="order"
 		  arg-isRelevanceSupported="{$isRelevanceSupported}"
@@ -80,7 +49,38 @@
 					   } }}"
 		  arg-input="{$input}" />
 
-<xf:macro name="user_field" arg-name="!" arg-label="{{ [] }}" arg-input="{{ [] }}" arg-single="{{ true}}">
+<xf:macro name="report_type" global="1" arg-label="!">
+	<xf:comment>Note; pre-render code pushes globals into this macro's local variables for getSearchFormTemplate</xf:comment>
+	<xf:if is="$__globals.isUsingElasticSearch">
+		<xf:checkboxrow name="c[report][type]"
+						label="{$label}">
+			<xf:foreach loop="$reportTypes" key="$key" value="$rec">
+				<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report.type) }}" data-hide="true">
+					<xf:dependent>
+						<xf:if is="callable($rec.handler, 'getSearchFormTemplate')">
+							<xf:include template="{$rec.handler.getSearchFormTemplate()}" />
+						</xf:if>
+					</xf:dependent>
+				</xf:option>
+			</xf:foreach>
+		</xf:checkboxrow>
+	<xf:else />
+		<xf:radiorow name="c[report][type][]"
+					 label="{$label}">
+			<xf:foreach loop="$reportTypes" key="$key" value="$rec">
+				<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report.type) }}" data-hide="true">
+					<xf:dependent>
+						<xf:if is="callable($rec.handler, 'getSearchFormTemplate')">
+							<xf:include template="{$rec.handler.getSearchFormTemplate()}" />
+						</xf:if>
+					</xf:dependent>
+				</xf:option>
+			</xf:foreach>
+		</xf:radiorow>
+	</xf:if>
+</xf:macro>
+
+<xf:macro name="user_field" global="1" arg-name="!" arg-label="{{ [] }}" arg-single="{{ true }}">
 	<xf:textboxrow name="c[{$name}]" value="{$input.c.{$name}}" ac="true"
 		label="{{ $label }}"
 		explain="{{ $single ? '' : phrase('separate_names_with_comma') }}" />
