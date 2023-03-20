@@ -13,11 +13,11 @@ use XF\Mvc\Entity\Structure;
  *
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
- * @property int    $post_id
+ * @property int|null         $post_id
  * GETTERS
- * @property-read Report $Report
+ * @property-read Report|null $Report
  * RELATIONS
- * @property-read Post   $Post
+ * @property-read Post|null   $Post
  */
 class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
 {

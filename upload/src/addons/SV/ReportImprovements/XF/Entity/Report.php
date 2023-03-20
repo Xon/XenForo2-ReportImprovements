@@ -27,7 +27,7 @@ use function assert;
  * @property-read ReportComment $LastModified
  * @property-read ?int          $content_date
  * RELATIONS
- * @property-read User          $AssignerUser
+ * @property-read User|null     $AssignerUser
  * @property-read ReportComment $LastModified_
  */
 class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDiscussionUser

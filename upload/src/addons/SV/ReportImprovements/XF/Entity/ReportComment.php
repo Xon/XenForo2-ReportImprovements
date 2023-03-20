@@ -19,9 +19,9 @@ use XF\Mvc\Entity\Structure;
  * @property int                                  $reaction_score
  * @property array                                $reactions_
  * @property array                                $reaction_users_
- * @property int                                  $warning_log_id
+ * @property int|null                             $warning_log_id
  * @property bool                                 $alertSent
- * @property string                               $alertComment
+ * @property string|null                          $alertComment
  * @property int|null                             $assigned_user_id
  * @property string                               $assigned_username
  * @property int                                  $attach_count
@@ -39,8 +39,8 @@ use XF\Mvc\Entity\Structure;
  * RELATIONS
  * @property-read AbstractCollection|Attachment[] $Attachments
  * @property-read \XF\Entity\LikedContent[]       $Likes
- * @property-read WarningLog                      $WarningLog
- * @property-read Report                          $Report
+ * @property-read WarningLog|null                 $WarningLog
+ * @property-read Report|null                     $Report
  */
 class ReportComment extends XFCP_ReportComment
 {

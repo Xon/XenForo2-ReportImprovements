@@ -8,6 +8,8 @@ use XF\Mvc\Entity\Structure;
  * Class UserOption
  *
  * @package SV\ReportImprovements\XF\Entity
+ *
+ * @property array|null $sv_reportimprov_approval_filters
  */
 class UserOption extends XFCP_UserOption
 {

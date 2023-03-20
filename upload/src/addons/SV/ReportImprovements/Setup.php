@@ -328,6 +328,11 @@ class Setup extends AbstractSetup
         $this->installStep2();
     }
 
+    public function upgrade2140005Step1(): void
+    {
+        $this->installStep2();
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -701,10 +706,10 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'user_id', 'int');
             $this->addOrChangeColumn($table, 'warning_date', 'int');
             $this->addOrChangeColumn($table, 'warning_user_id', 'int');
-            $this->addOrChangeColumn($table, 'warning_definition_id', 'int')->nullable(true)->setDefault(null);
+            $this->addOrChangeColumn($table, 'warning_definition_id', 'int')->setDefault(0);
             $this->addOrChangeColumn($table, 'title', 'varchar', 255);
             $this->addOrChangeColumn($table, 'notes', 'text');
-            $this->addOrChangeColumn($table, 'points', 'smallint')->nullable(true)->setDefault(null);
+            $this->addOrChangeColumn($table, 'points', 'smallint')->setDefault(0);
             $this->addOrChangeColumn($table, 'expiry_date', 'int');
             $this->addOrChangeColumn($table, 'is_expired', 'tinyint', 3);
             $this->addOrChangeColumn($table, 'extra_user_group_ids', 'varbinary', 255);

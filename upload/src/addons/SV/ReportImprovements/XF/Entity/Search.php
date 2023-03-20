@@ -6,7 +6,6 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
-use SV\Threadmarks\Repository\ThreadmarkCategory as ThreadmarkCategoryRepo;
 use XF\Entity\LinkableInterface;
 use function assert;
 use function is_array;

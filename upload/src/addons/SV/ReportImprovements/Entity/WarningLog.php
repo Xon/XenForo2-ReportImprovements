@@ -16,7 +16,7 @@ use XF\Mvc\Entity\Structure;
  * @property int            $warning_log_id
  * @property int            $warning_edit_date
  * @property string         $operation_type
- * @property int            $warning_id
+ * @property int|null       $warning_id
  * @property string         $content_type
  * @property int            $content_id
  * @property string         $content_title
@@ -35,13 +35,13 @@ use XF\Mvc\Entity\Structure;
  * @property string|null    $public_banner
  * @property string|null    $public_banner_
  * GETTERS
- * @property ThreadReplyBan $ReplyBan
+ * @property-read ThreadReplyBan|null $ReplyBan
  * RELATIONS
- * @property ThreadReplyBan $ReplyBan_
- * @property Warning        $Warning
- * @property User           $User
- * @property Thread         $ReplyBanThread
- * @property Post           $ReplyBanPost
+ * @property-read ThreadReplyBan|null $ReplyBan_
+ * @property-read Warning|null        $Warning
+ * @property-read User|null           $User
+ * @property-read Thread|null         $ReplyBanThread
+ * @property-read Post|null           $ReplyBanPost
  */
 class WarningLog extends Entity
 {
