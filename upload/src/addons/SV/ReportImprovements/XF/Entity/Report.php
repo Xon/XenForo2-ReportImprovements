@@ -9,6 +9,7 @@ use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 use function array_key_exists;
 use function assert;
+use function is_callable;
 
 /**
  * Class Report
@@ -265,7 +266,14 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
 
     public function setContent(Entity $content = null)
     {
-        $this->_valueCache['Content'] = $content;
+        // XF2.2.9 Adds this function, so we can't depend on it existing all the time
+        if (is_callable([parent::class,'setContent']))
+        {
+            parent::setContent($content);
+        }
+
+        // pre-XF2.2.8 support
+        $this->_getterCache['Content'] = $content;
     }
 
     public function getMessage(): string
