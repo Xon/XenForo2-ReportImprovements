@@ -49,7 +49,6 @@ class Report extends XFCP_Report
             $reportsByContentType[$contentType][$report->content_id] = $report;
 
             // preload title, this only triggers phrase loading if touched in a stringy context
-            /** @noinspection PhpExpressionResultUnusedInspection */
             $report->title;
         }
 
@@ -415,7 +414,6 @@ class Report extends XFCP_Report
         /** @var \XF\Entity\Report $report */
         foreach ($reports as $report)
         {
-            /** @noinspection PhpExpressionResultUnusedInspection */
             $report->title;
             $userIds[$report->content_user_id] = true;
             $userIds[$report->assigned_user_id] = true;

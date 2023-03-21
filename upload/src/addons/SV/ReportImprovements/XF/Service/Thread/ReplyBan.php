@@ -4,6 +4,9 @@ namespace SV\ReportImprovements\XF\Service\Thread;
 
 use SV\ReportImprovements\Globals;
 use XF\Entity\Post;
+use XF\Entity\ThreadReplyBan;
+use XF\Mvc\Entity\Entity;
+use XF\PrintableException;
 
 /**
  * Class ReplyBan
@@ -48,7 +51,8 @@ class ReplyBan extends XFCP_ReplyBan
     }
 
     /**
-     * @return \XF\Entity\ThreadReplyBan|\XF\Mvc\Entity\Entity|null
+     * @return ThreadReplyBan|Entity|null
+     * @throws PrintableException
      */
     protected function _save()
     {

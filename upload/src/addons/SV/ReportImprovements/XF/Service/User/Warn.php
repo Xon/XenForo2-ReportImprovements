@@ -3,7 +3,9 @@
 namespace SV\ReportImprovements\XF\Service\User;
 
 use SV\ReportImprovements\Entity\IReportResolver;
+use XF\Entity\Warning;
 use XF\Mvc\Entity\Entity;
+use XF\PrintableException;
 
 /**
  * Class Warn
@@ -79,7 +81,8 @@ class Warn extends XFCP_Warn
     }
 
     /**
-     * @return \XF\Entity\Warning|Entity
+     * @return Warning|Entity
+     * @throws PrintableException
      */
     protected function _save()
     {
