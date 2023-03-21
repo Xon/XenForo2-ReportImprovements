@@ -48,6 +48,10 @@ class ReportComment extends AbstractData
     /** @var ReportRepo */
     protected $reportRepo;
 
+    /**
+     * @param string            $contentType
+     * @param \XF\Search\Search $searcher
+     */
     public function __construct($contentType, \XF\Search\Search $searcher)
     {
         parent::__construct($contentType, $searcher);
@@ -80,8 +84,6 @@ class ReportComment extends AbstractData
 
         if ($entities instanceof AbstractCollection)
         {
-            /** @var ReportRepo $reportRepo */
-            $reportRepo = \XF::repository('XF:Report');
             $reportRepo->svPreloadReportComments($entities);
         }
 
@@ -123,7 +125,7 @@ class ReportComment extends AbstractData
         return $get;
     }
 
-    public function getResultDate(Entity $entity)
+    public function getResultDate(Entity $entity): int
     {
         assert($entity instanceof ReportCommentEntity);
         return $entity->comment_date;
@@ -205,7 +207,7 @@ class ReportComment extends AbstractData
         return $metaData;
     }
 
-    public function getTemplateData(Entity $entity, array $options = [])
+    public function getTemplateData(Entity $entity, array $options = []): array
     {
         assert($entity instanceof ReportCommentEntity);
         return [

@@ -3,12 +3,17 @@
 namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
+use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
+use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use XF\Mvc\Entity\AbstractCollection;
+use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\Data\AbstractData;
 use XF\Search\IndexRecord;
 use XF\Search\MetadataStructure;
+use function assert;
+use function is_array;
 
 /**
  * Class Report
@@ -21,9 +26,13 @@ class Report extends AbstractData
 
     use DiscussionTrait;
 
-    /** @var \SV\ReportImprovements\XF\Repository\Report */
+    /** @var ReportRepo */
     protected $reportRepo;
 
+    /**
+     * @param string            $contentType
+     * @param \XF\Search\Search $searcher
+     */
     public function __construct($contentType, \XF\Search\Search $searcher)
     {
         parent::__construct($contentType, $searcher);
@@ -31,35 +40,53 @@ class Report extends AbstractData
         $this->reportRepo = \XF::repository('XF:Report');
     }
 
-    /**
-     * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
-     * @param null                                           $error
-     * @return bool
-     */
-    public function canViewContent(Entity $entity, &$error = null)
+    public function canViewContent(Entity $entity, &$error = null): bool
     {
+        assert($entity instanceof ReportEntity);
         return $entity->canView();
     }
 
+    /**
+     * @param int|int[] $id
+     * @param bool $forView
+     * @return AbstractCollection|array|Entity|null
+     */
     public function getContent($id, $forView = false)
     {
+        $reportRepo = \XF::repository('XF:Report');
+        if (!($reportRepo instanceof ReportRepo))
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing
+            return is_array($id) ? [] : null;
+        }
+
         $entities = parent::getContent($id, $forView);
 
         if ($entities instanceof AbstractCollection)
         {
-            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
-            $reportRepo = \XF::repository('XF:Report');
             $reportRepo->svPreloadReports($entities);
         }
 
         return $entities;
     }
 
+    /**
+     * @param int $lastId
+     * @param int $amount
+     * @param bool $forView
+     * @return AbstractCollection
+     */
     public function getContentInRange($lastId, $amount, $forView = false)
     {
-        $contents = parent::getContentInRange($lastId, $amount, $forView);
-        /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
         $reportRepo = \XF::repository('XF:Report');
+        if (!($reportRepo instanceof ReportRepo))
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing
+            return new ArrayCollection([]);
+        }
+
+        $contents = parent::getContentInRange($lastId, $amount, $forView);
+
         $reportRepo->svPreloadReports($contents);
 
         return $contents;
@@ -69,7 +96,7 @@ class Report extends AbstractData
      * @param bool $forView
      * @return array
      */
-    public function getEntityWith($forView = false)
+    public function getEntityWith($forView = false): array
     {
         $get = [];
 
@@ -82,12 +109,9 @@ class Report extends AbstractData
         return $get;
     }
 
-    /**
-     * @param Entity|\SV\ReportImprovements\XF\Entity\Report $entity
-     * @return int
-     */
-    public function getResultDate(Entity $entity)
+    public function getResultDate(Entity $entity): int
     {
+        assert($entity instanceof ReportEntity);
         return $entity->first_report_date;
     }
 
@@ -95,16 +119,20 @@ class Report extends AbstractData
      * @param Entity $entity
      * @return IndexRecord|null
      */
-    public function getIndexData(Entity $entity)
+    public function getIndexData(Entity $entity): ?IndexRecord
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Report $entity */
+        if (!($entity instanceof ReportEntity))
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing to index
+            return null;
+        }
         if (!$entity->Content)
         {
             return null;
         }
 
         $handler = $entity->getHandler();
-        if (!$handler)
+        if ($handler == null)
         {
             return null;
         }
@@ -129,11 +157,7 @@ class Report extends AbstractData
         ]);
     }
 
-    /**
-     * @param \XF\Entity\Report|\SV\ReportImprovements\XF\Entity\Report $entity
-     * @return array
-     */
-    protected function getMetaData(\XF\Entity\Report $entity)
+    protected function getMetaData(ReportEntity $entity): array
     {
         $metaData = [
             'report'              => $entity->report_id,
@@ -163,23 +187,16 @@ class Report extends AbstractData
         return $metaData;
     }
 
-    /**
-     * @param Entity $entity
-     * @param array  $options
-     * @return array
-     */
-    public function getTemplateData(Entity $entity, array $options = [])
+    public function getTemplateData(Entity $entity, array $options = []): array
     {
+        assert($entity instanceof ReportEntity);
         return [
             'report'  => $entity,
             'options' => $options,
         ];
     }
 
-    /**
-     * @param MetadataStructure $structure
-     */
-    public function setupMetadataStructure(MetadataStructure $structure)
+    public function setupMetadataStructure(MetadataStructure $structure): void
     {
         foreach ($this->reportRepo->getReportHandlers() as $handler)
         {
