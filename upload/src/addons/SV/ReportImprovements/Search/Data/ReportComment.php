@@ -162,7 +162,14 @@ class ReportComment extends AbstractData
 
     protected function getMessage(ReportCommentEntity $entity): string
     {
-        return $entity->message;
+        $message = $entity->message;
+
+        if ($entity->alertComment !== null)
+        {
+            $message .= "\n".$entity->alertComment;
+        }
+
+        return $message;
     }
 
     protected function getMetaData(ReportCommentEntity $entity): array
