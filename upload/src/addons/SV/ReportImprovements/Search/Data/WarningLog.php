@@ -211,7 +211,7 @@ class WarningLog extends ReportComment
         $constraints = $request->filter([
             'c.warning.user'         => 'str',
             'c.warning.points.lower' => 'uint',
-            'c.warning.points.upper' => '?uint',
+            'c.warning.points.upper' => '?uint,empty-str-to-null',
         ]);
 
         $repo = \SV\SearchImprovements\Globals::repo();

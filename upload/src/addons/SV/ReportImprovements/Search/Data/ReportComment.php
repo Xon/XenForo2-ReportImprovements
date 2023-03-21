@@ -259,7 +259,7 @@ class ReportComment extends AbstractData
             'c.participants'     => 'str',
 
             'c.replies.lower'       => 'uint',
-            'c.replies.upper'       => '?uint',
+            'c.replies.upper'       => '?uint,empty-str-to-null',
 
             'c.report.type'         => 'array-str',
             'c.report.state'        => 'array-str',
