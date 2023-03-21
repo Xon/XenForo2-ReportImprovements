@@ -41,9 +41,11 @@ class ReportComment extends AbstractData
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
     use DiscussionTrait;
 
-    const REPORT_TYPE_COMMENT = 0;
-    const REPORT_TYPE_USER_REPORT = 1;
-    const REPORT_TYPE_IS_REPORT = 2;
+    public const REPORT_TYPE_COMMENT = 0;
+    public const REPORT_TYPE_USER_REPORT = 1;
+    public const REPORT_TYPE_IS_REPORT = 2;
+    public const REPORT_TYPE_WARNING = 3;
+    public const REPORT_TYPE_REPLY_BAN = 4;
 
     /** @var ReportRepo */
     protected $reportRepo;
@@ -266,25 +268,27 @@ class ReportComment extends AbstractData
             'c.report.contents'     => 'bool',
             'c.report.comments'     => 'bool',
             'c.report.user_reports' => 'bool',
+            'c.report.warnings'     => 'bool',
+            'c.report.reply_bans'   => 'bool',
         ]);
 
         $isReport = [];
-        if ($constraints['c.report.comments'])
+        $isReportFlags = [
+            'c.report.comments' => static::REPORT_TYPE_COMMENT,
+            'c.report.user_reports' => static::REPORT_TYPE_USER_REPORT,
+            'c.report.contents' => static::REPORT_TYPE_IS_REPORT,
+            'c.report.warnings' => static::REPORT_TYPE_WARNING,
+            'c.report.reply_bans' => static::REPORT_TYPE_REPLY_BAN,
+        ];
+        foreach ($isReportFlags as $key => $value)
         {
-            $isReport[] = static::REPORT_TYPE_COMMENT;
+            if ($constraints[$key] ?? false)
+            {
+                $isReport[] = $value;
+            }
         }
 
-        if ($constraints['c.report.user_reports'])
-        {
-            $isReport[] = static::REPORT_TYPE_USER_REPORT;
-        }
-
-        if ($constraints['c.report.contents'])
-        {
-            $isReport[] = static::REPORT_TYPE_IS_REPORT;
-        }
-
-        if (count($isReport) !== 0)
+        if (count($isReport) !== 0 && count($isReport) !== count($isReportFlags))
         {
             $query->withMetadata('is_report', $isReport);
         }

@@ -129,25 +129,24 @@ class WarningLog extends ReportComment
         assert($entity instanceof ReportCommentEntity);
         $warningLog = $entity->WarningLog;
 
-        if ($warningLog->points)
+        $metaData['warned_user'] = $warningLog->user_id;
+        $metaData['expiry_date'] = $warningLog->expiry_date <= 0 ? \PHP_INT_MAX : $warningLog->expiry_date;
+
+        if ($warningLog->warning_id)
         {
+            $metaData['is_report'] = self::REPORT_TYPE_WARNING;
             $metaData['points'] = $warningLog->points;
         }
 
-        if ($warningLog->expiry_date)
-        {
-            $metaData['expiry_date'] = $warningLog->expiry_date;
-        }
-
-        $metaData['warned_user'] = $warningLog->user_id;
-
         if ($warningLog->reply_ban_thread_id)
         {
+            $metaData['is_report'] = self::REPORT_TYPE_REPLY_BAN;
             $metaData['thread_reply_ban'] = $warningLog->reply_ban_thread_id;
         }
 
         if ($warningLog->reply_ban_post_id)
         {
+            $metaData['is_report'] = self::REPORT_TYPE_REPLY_BAN;
             $metaData['post_reply_ban'] = $warningLog->reply_ban_post_id;
         }
 
