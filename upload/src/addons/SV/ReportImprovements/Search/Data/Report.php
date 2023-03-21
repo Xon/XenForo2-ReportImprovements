@@ -126,10 +126,6 @@ class Report extends AbstractData
             // This function may be invoked when the add-on is disabled, just return nothing to index
             return null;
         }
-        if (!$entity->Content)
-        {
-            return null;
-        }
 
         $handler = $entity->getHandler();
         if ($handler == null)
