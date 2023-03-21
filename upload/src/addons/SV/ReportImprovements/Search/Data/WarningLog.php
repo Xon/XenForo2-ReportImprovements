@@ -212,6 +212,8 @@ class WarningLog extends ReportComment
             'c.warning.user'         => 'str',
             'c.warning.points.lower' => 'uint',
             'c.warning.points.upper' => '?uint,empty-str-to-null',
+            'c.warning.expiry.lower' => 'datetime',
+            'c.warning.expiry.upper' => '?datetime,empty-str-to-null',
         ]);
 
         $repo = \SV\SearchImprovements\Globals::repo();
@@ -221,6 +223,10 @@ class WarningLog extends ReportComment
         );
         $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
             'c.warning.points.lower', 'c.warning.points.upper', 'points',
+            $this->getWarningLogQueryTableReference(), 'warning_log'
+        );
+        $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
+            'c.warning.expiry.lower', 'c.warning.expiry.upper', 'expiry_date',
             $this->getWarningLogQueryTableReference(), 'warning_log'
         );
     }

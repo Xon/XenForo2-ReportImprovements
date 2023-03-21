@@ -19,6 +19,8 @@ class Search extends XFCP_Search
     {
         parent::setupConstraintFields();
 
+        $this->svDateConstraint[] = 'warning_expiry_lower';
+        $this->svDateConstraint[] = 'warning_expiry_upper';
         $this->svUserConstraint[] = 'warning_user';
         $this->svUserConstraint[] = 'participants';
         $this->svIgnoreConstraint[] = 'report_state';
