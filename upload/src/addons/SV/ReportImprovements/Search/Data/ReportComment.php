@@ -6,11 +6,13 @@ use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\Search\QueryAccessor;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
+use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\AndConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\OrConstraint;
 use XF\Mvc\Entity\AbstractCollection;
+use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\Data\AbstractData;
 use XF\Search\IndexRecord;
@@ -43,7 +45,7 @@ class ReportComment extends AbstractData
     const REPORT_TYPE_USER_REPORT = 1;
     const REPORT_TYPE_IS_REPORT = 2;
 
-    /** @var \SV\ReportImprovements\XF\Repository\Report */
+    /** @var ReportRepo */
     protected $reportRepo;
 
     public function __construct($contentType, \XF\Search\Search $searcher)
@@ -53,19 +55,27 @@ class ReportComment extends AbstractData
         $this->reportRepo = \XF::repository('XF:Report');
     }
 
-    /**
-     * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     * @param null                                                  $error
-     * @return bool
-     */
-    public function canViewContent(Entity $entity, &$error = null)
+    public function canViewContent(Entity $entity, &$error = null): bool
     {
+        assert($entity instanceof ReportCommentEntity);
         $report = $entity->Report;
         return $report && $report->canView();
     }
 
+    /**
+     * @param int|int[] $id
+     * @param bool $forView
+     * @return AbstractCollection|array|Entity|null
+     */
     public function getContent($id, $forView = false)
     {
+        $reportRepo = \XF::repository('XF:Report');
+        if (!($reportRepo instanceof ReportRepo))
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing
+            return is_array($id) ? [] : null;
+        }
+
         $entities = parent::getContent($id, $forView);
 
         if ($entities instanceof AbstractCollection)
@@ -78,21 +88,29 @@ class ReportComment extends AbstractData
         return $entities;
     }
 
-    public function getContentInRange($lastId, $amount, $forView = false)
+    /**
+     * @param int $lastId
+     * @param int $amount
+     * @param bool $forView
+     * @return AbstractCollection
+     */
+    public function getContentInRange($lastId, $amount, $forView = false): AbstractCollection
     {
-        $contents = parent::getContentInRange($lastId, $amount, $forView);
-        /** @var ReportRepo $reportRepo */
         $reportRepo = \XF::repository('XF:Report');
+        if (!($reportRepo instanceof ReportRepo))
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing
+            return new ArrayCollection([]);
+        }
+
+        $contents = parent::getContentInRange($lastId, $amount, $forView);
+
         $reportRepo->svPreloadReportComments($contents);
 
         return $contents;
     }
 
-    /**
-     * @param bool $forView
-     * @return array
-     */
-    public function getEntityWith($forView = false)
+    public function getEntityWith($forView = false): array
     {
         $get = ['Report', 'User', 'WarningLog'];
 
@@ -105,25 +123,17 @@ class ReportComment extends AbstractData
         return $get;
     }
 
-    /**
-     * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     * @return mixed|null
-     */
     public function getResultDate(Entity $entity)
     {
+        assert($entity instanceof ReportCommentEntity);
         return $entity->comment_date;
     }
 
-    /**
-     * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     * @return IndexRecord|null
-     */
-    public function getIndexData(Entity $entity)
+    public function getIndexData(Entity $entity): ?IndexRecord
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        $report = $entity->Report;
-        if (!$report)
+        if (!($entity instanceof ReportCommentEntity))
         {
+            // This function may be invoked when the add-on is disabled, just return nothing to index
             return null;
         }
 
@@ -133,9 +143,16 @@ class ReportComment extends AbstractData
             return $this->searcher->handler('warning')->getIndexData($warningLog);
         }
 
+        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        $report = $entity->Report;
+        if ($report === null)
+        {
+            return null;
+        }
+
         return IndexRecord::create('report_comment', $entity->report_comment_id, [
             'title'         => $report->title_string,
-            'message'       => $entity->message,
+            'message'       => $this->getMessage($entity->message),
             'date'          => $entity->comment_date,
             'user_id'       => $entity->user_id,
             'discussion_id' => $entity->report_id,
@@ -143,11 +160,12 @@ class ReportComment extends AbstractData
         ]);
     }
 
-    /**
-     * @param \XF\Entity\ReportComment|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     * @return array
-     */
-    protected function getMetaData(\XF\Entity\ReportComment $entity)
+    protected function getMessage(ReportCommentEntity $entity): string
+    {
+        return $entity->message;
+    }
+
+    protected function getMetaData(ReportCommentEntity $entity): array
     {
         $report = $entity->Report;
         $metaData = [
@@ -180,13 +198,9 @@ class ReportComment extends AbstractData
         return $metaData;
     }
 
-    /**
-     * @param Entity|\SV\ReportImprovements\XF\Entity\ReportComment $entity
-     * @param array                                                 $options
-     * @return array
-     */
     public function getTemplateData(Entity $entity, array $options = [])
     {
+        assert($entity instanceof ReportCommentEntity);
         return [
             'report'        => $entity->Report,
             'reportComment' => $entity,
@@ -194,25 +208,16 @@ class ReportComment extends AbstractData
         ];
     }
 
-    /**
-     * @return array
-     */
-    public function getSearchableContentTypes()
+    public function getSearchableContentTypes(): array
     {
         return ['report_comment', 'warning', 'report'];
     }
 
-    /**
-     * @return string
-     */
-    public function getGroupByType()
+    public function getGroupByType(): string
     {
         return 'report';
     }
 
-    /**
-     * @param MetadataStructure $structure
-     */
     public function setupMetadataStructure(MetadataStructure $structure)
     {
         $structure->addField('report_user', MetadataStructure::INT);
@@ -236,12 +241,7 @@ class ReportComment extends AbstractData
         $this->setupDiscussionMetadataStructure($structure);
     }
 
-    /**
-     * @param Query            $query
-     * @param \XF\Http\Request $request
-     * @param array            $urlConstraints
-     */
-    public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints)
+    public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints): void
     {
         $isUsingElasticSearch = \SV\SearchImprovements\Globals::repo()->isUsingElasticSearch();
         $constraints = $request->filter([
@@ -401,7 +401,7 @@ class ReportComment extends AbstractData
      * @param bool  $isOnlyType Will be true if the search is specifically limited to this type.
      * @return MetadataConstraint[] Only an array of metadata constraints may be returned.
      */
-    public function getTypePermissionConstraints(Query $query, $isOnlyType)
+    public function getTypePermissionConstraints(Query $query, $isOnlyType): array
     {
         if (!Globals::$reportInAccountPostings)
         {
@@ -453,7 +453,7 @@ class ReportComment extends AbstractData
     /**
      * @return TableReference[]
      */
-    protected function getWarningLogQueryTableReference()
+    protected function getWarningLogQueryTableReference(): array
     {
         return [
             new TableReference(
@@ -471,10 +471,14 @@ class ReportComment extends AbstractData
 
     public function getSearchFormTab(): ?array
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
+        if (!($visitor instanceof \SV\ReportImprovements\XF\Entity\User))
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing to show
+            return null;
+        }
 
-        if (!\is_callable([$visitor, 'canReportSearch']) || !$visitor->canReportSearch())
+        if (!$visitor->canReportSearch())
         {
             return null;
         }

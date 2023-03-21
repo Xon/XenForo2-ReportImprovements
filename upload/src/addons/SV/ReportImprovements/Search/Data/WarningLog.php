@@ -5,6 +5,7 @@ namespace SV\ReportImprovements\Search\Data;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
+use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\IndexRecord;
 use XF\Search\MetadataStructure;
@@ -30,11 +31,9 @@ class WarningLog extends ReportComment
             return null;
         }
 
-        $message = $this->getWarningLogToMessage($warningLog);
-
         return IndexRecord::create('warning', $entity->report_comment_id, [
             'title'         => $warningLog->title,
-            'message'       => $message,
+            'message'       => $this->getMessage($entity),
             'date'          => $entity->comment_date,
             'user_id'       => $entity->user_id,
             'discussion_id' => $entity->report_id,
@@ -48,8 +47,15 @@ class WarningLog extends ReportComment
      * @param bool $forView
      * @return \XF\Mvc\Entity\AbstractCollection
      */
-    public function getContentInRange($lastId, $amount, $forView = false)
+    public function getContentInRange($lastId, $amount, $forView = false): \XF\Mvc\Entity\AbstractCollection
     {
+        $reportRepo = \XF::repository('XF:Report');
+        if (!($reportRepo instanceof ReportRepo))
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing
+            return new ArrayCollection([]);
+        }
+
         $entityId = \XF::app()->getContentTypeFieldValue($this->contentType, 'entity');
         if (!$entityId)
         {
@@ -82,6 +88,15 @@ class WarningLog extends ReportComment
         return $contents;
     }
 
+    protected function getMessage(ReportCommentEntity $entity): string
+    {
+        $message = parent::getMessage($entity);
+
+        $message .= $this->getWarningLogToMessage($entity->WarningLog);
+
+        return $message;
+    }
+
     protected function getWarningLogToMessage(WarningLogEntity $warningLog): string
     {
         $message = '';
@@ -108,7 +123,7 @@ class WarningLog extends ReportComment
         return $message;
     }
 
-    protected function getMetaData(\XF\Entity\ReportComment $entity)
+    protected function getMetaData(ReportCommentEntity $entity): array
     {
         $metaData = parent::getMetaData($entity);
         assert($entity instanceof ReportCommentEntity);
@@ -164,24 +179,23 @@ class WarningLog extends ReportComment
         return ['warning'];
     }
 
-    public function getGroupByType(): string
-    {
-        return 'report';
-    }
-
     public function getSearchFormTab(): ?array
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
+        if (!($visitor instanceof \SV\ReportImprovements\XF\Entity\User))
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing to show
+            return null;
+        }
 
-        if (!\is_callable([$visitor, 'canReportSearch']) || !$visitor->canReportSearch())
+        if (!$visitor->canReportSearch())
         {
             return null;
         }
 
         return [
             'title' => \XF::phrase('svReportImprov_search.warnings'),
-            'order' => 260,
+            'order' => 255,
         ];
     }
 
@@ -190,7 +204,7 @@ class WarningLog extends ReportComment
      * @param \XF\Http\Request $request
      * @param array            $urlConstraints
      */
-    public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints)
+    public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints): void
     {
         parent::applyTypeConstraintsFromInput($query, $request, $urlConstraints);
 
