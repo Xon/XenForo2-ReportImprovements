@@ -5,6 +5,7 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use XF\Entity\LinkableInterface;
 use function assert;
@@ -23,10 +24,7 @@ class Search extends XFCP_Search
         $this->svDateConstraint[] = 'warning_expiry_upper';
         $this->svUserConstraint[] = 'warning_user';
         $this->svUserConstraint[] = 'participants';
-        $this->svIgnoreConstraint[] = 'report_state';
-        $this->svIgnoreConstraint[] = 'report_type';
         $this->svIgnoreConstraint[] = 'child_categories';
-        $this->svIgnoreConstraint[] = 'categories';
     }
 
     protected function expandStructuredSearchConstraint(array &$query, string $key, $value): bool
@@ -37,10 +35,10 @@ class Search extends XFCP_Search
             assert($reportRepo instanceof ReportRepo);
             $states = $reportRepo->getReportStatePairs();
 
-            foreach ($value as $id)
+            foreach ($value as $subKey => $id)
             {
                 $id = (string)$id;
-                $query[$key . '_' . $id] = \XF::phrase('svSearchConstraint.report_state', [
+                $query[$key . '_' . $subKey] = \XF::phrase('svSearchConstraint.report_state', [
                     'value' => $states[$id] ?? $id,
                 ]);
             }
@@ -53,11 +51,25 @@ class Search extends XFCP_Search
             assert($reportRepo instanceof ReportRepo);
             $states = $reportRepo->getReportTypes();
 
-            foreach ($value as $id)
+            foreach ($value as $subKey => $id)
             {
                 $id = (string)$id;
-                $query[$key . '_' . $id] = \XF::phrase('svSearchConstraint.report_type', [
+                $query[$key . '_' . $subKey] = \XF::phrase('svSearchConstraint.report_type', [
                     'value' => $states[$id]['phrases'] ?? $id,
+                ]);
+            }
+
+            return true;
+        }
+        else if ($key === 'warning_type' && is_array($value))
+        {
+            $states = WarningLogEntity::getWarningTypesPairs();
+
+            foreach ($value as $subKey => $id)
+            {
+                $id = (string)$id;
+                $query[$key . '_' . $subKey] = \XF::phrase('svSearchConstraint.warning_type', [
+                    'type' => $states[$id] ?? $id,
                 ]);
             }
 
@@ -67,7 +79,7 @@ class Search extends XFCP_Search
         {
             // This can be a ticket category or XFRM/etc :(
             // for now assume tickets
-            foreach ($value as $id)
+            foreach ($value as $subKey => $id)
             {
                 $id = (int)$id;
                 if ($id === 0)
@@ -83,7 +95,7 @@ class Search extends XFCP_Search
                 $category = $categories[$id] ?? null;
                 if ($category instanceof LinkableInterface)
                 {
-                    $query[$key . '_' . $id] = \XF::phrase('svSearchConstraint.nodes', [
+                    $query[$key . '_' . $subKey] = \XF::phrase('svSearchConstraint.nodes', [
                         'url' => $category->getContentUrl(),
                         'node' => $category->getContentTitle(),
                     ]);

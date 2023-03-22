@@ -12,6 +12,7 @@ use XF\Search\MetadataStructure;
 use XF\Search\Query\Query;
 use function assert;
 use function count;
+use function in_array;
 use function is_array;
 use function reset;
 
@@ -129,6 +130,7 @@ class WarningLog extends ReportComment
         assert($entity instanceof ReportCommentEntity);
         $warningLog = $entity->WarningLog;
 
+        $metaData['warning_type'] = $warningLog->operation_type;
         $metaData['warned_user'] = $warningLog->user_id;
         $metaData['expiry_date'] = $warningLog->expiry_date <= 0 ? \PHP_INT_MAX : $warningLog->expiry_date;
 
@@ -157,6 +159,7 @@ class WarningLog extends ReportComment
     {
         parent::setupMetadataStructure($structure);
         // warning bits
+        $structure->addField('warning_type', MetadataStructure::KEYWORD);
         $structure->addField('points', MetadataStructure::INT);
         $structure->addField('expiry_date', MetadataStructure::INT);
         $structure->addField('warned_user', MetadataStructure::INT);
@@ -198,6 +201,15 @@ class WarningLog extends ReportComment
         ];
     }
 
+    public function getSearchFormData(): array
+    {
+        $form = parent::getSearchFormData();
+
+        $form['warningTypes'] = WarningLogEntity::getWarningTypesPairs();
+
+        return $form;
+    }
+
     /**
      * @param Query            $query
      * @param \XF\Http\Request $request
@@ -208,6 +220,7 @@ class WarningLog extends ReportComment
         parent::applyTypeConstraintsFromInput($query, $request, $urlConstraints);
 
         $constraints = $request->filter([
+            'c.warning.type'         => 'str',
             'c.warning.user'         => 'str',
             'c.warning.points.lower' => 'uint',
             'c.warning.points.upper' => '?uint,empty-str-to-null',
@@ -216,6 +229,12 @@ class WarningLog extends ReportComment
         ]);
 
         $repo = \SV\SearchImprovements\Globals::repo();
+
+        $warningType = $constraints['c.warning.type'];
+        if (in_array($warningType, WarningLogEntity::getWarningTypes(), true))
+        {
+            $query->withMetadata('warning_type', $warningType);
+        }
 
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
             'c.warning.user', 'warned_user'

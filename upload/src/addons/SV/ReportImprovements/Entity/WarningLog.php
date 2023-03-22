@@ -10,6 +10,8 @@ use XF\Entity\User;
 use XF\Entity\Warning;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
+use function assert;
+use function count;
 
 /**
  * COLUMNS
@@ -47,27 +49,52 @@ use XF\Mvc\Entity\Structure;
  */
 class WarningLog extends Entity
 {
-    public function getOperationTypePhrase(): \XF\Phrase
+    public static function getWarningTypes(): array
+    {
+        $structure = \XF::em()->getEntityStructure('SV\ReportImprovements:WarningLog');
+        $types = $structure->columns['operation_type']['allowedValues'] ?? null;
+        assert(is_array($types) && count($types) !== 0);
+
+        return $types;
+    }
+
+    /**
+     * @return array<string,\XF\Phrase>
+     */
+    public static function getWarningTypesPairs(): array
+    {
+        $pairs = [];
+
+        foreach (static::getWarningTypes() as $type)
+        {
+            $pairs[$type] = \XF::phrase('svReportImprov_warning_type.' . $type);
+        }
+
+        return $pairs;
+    }
+
+    protected function getContentTypeForOperationType(): ?\XF\Phrase
     {
         if ($this->warning_id)
         {
-            $contentType = \XF::phrase('svReportImprov_operation_type_action.warning');
+            return \XF::phrase('svReportImprov_operation_type_action.warning');
         }
         else if ($this->reply_ban_post_id)
         {
-            $contentType = \XF::phrase('svReportImprov_operation_type_action.reply_ban_from_post');
+            return \XF::phrase('svReportImprov_operation_type_action.reply_ban_from_post');
         }
         else if ($this->reply_ban_thread_id)
         {
-            $contentType = \XF::phrase('svReportImprov_operation_type_action.reply_ban');
-        }
-        else
-        {
-            $contentType = '';
+            return \XF::phrase('svReportImprov_operation_type_action.reply_ban');
         }
 
+        return null;
+    }
+
+    public function getOperationTypePhrase(): \XF\Phrase
+    {
         return \XF::phrase('svReportImprov_operation_type.' . $this->operation_type, [
-            'contentType' => $contentType,
+            'contentType' => $this->getContentTypeForOperationType() ?? '',
         ]);
     }
 
@@ -145,7 +172,7 @@ class WarningLog extends Entity
         $structure->columns = [
             'warning_log_id'        => ['type' => self::UINT, 'autoIncrement' => true, 'nullable' => true],
             'warning_edit_date'     => ['type' => self::UINT, 'required' => true, 'default' => \XF::$time],
-            'operation_type'        => ['type' => self::STR, 'allowedValues' => ['new', 'edit', 'expire', 'delete', 'acknowledge'], 'required' => true],
+            'operation_type'        => ['type' => self::STR, 'allowedValues' => ['new', 'edit', 'expire', 'delete'], 'required' => true],
             'warning_id'            => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'content_type'          => ['type' => self::BINARY, 'maxLength' => 25, 'required' => true],
             'content_id'            => ['type' => self::UINT, 'required' => true],
@@ -167,6 +194,10 @@ class WarningLog extends Entity
             'reply_ban_thread_id'   => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'reply_ban_post_id'     => ['type' => self::UINT, 'default' => null, 'nullable' => true],
         ];
+        if (\XF::isAddOnActive('SV/WarningAcknowledgement'))
+        {
+            $structure->columns['operation_type'][] = 'acknowledge';
+        }
         $structure->relations = [
             'ReportComment' => [
                 'entity'     => 'XF:ReportComment',

@@ -1,0 +1,63 @@
+<xf:macro template="search_form_macros" name="keywords" arg-input="{$input}" arg-canTitleLimit="{{ false }}" />
+<xf:macro template="search_form_macros" name="user" arg-input="{$input}" />
+<xf:macro name="search_form_report_comment::user_field" arg-name="warning.user" arg-label="{{ phrase('svReportImprov_warned_user') }}" />
+<xf:macro template="search_form_macros" name="date" arg-input="{$input}" />
+
+<xf:if is="$input.c.thread">
+	<xf:checkboxrow>
+		<xf:option name="c[thread]" value="{$input.c.thread}" selected="true">{{ phrase('restrict_search_to_specified_thread') }}</xf:option>
+	</xf:checkboxrow>
+</xf:if>
+
+<xf:macro name="warn_type"
+		  arg-label="{{ phrase('svReportImprove_warning_type') }}" />
+
+<xf:macro name="search_form_report_comment::report_type"
+		  arg-label="{{ phrase('svReportImprove_warned_content_in') }}" />
+
+<xf:macro template="svSearchImprov_macros" name="range" 
+		  arg-label="{{ phrase('warning_points') }}"
+		  arg-fieldPrefix="c[warning][points]"
+		  arg-lowerBoundValue="{$input.c.warning.points.lower}"
+		  arg-upperBoundValue="{$input.c.warning.points.upper}"
+		  />
+
+<xf:macro template="svSearchImprov_macros" name="date_range" 
+		  arg-label="{{ phrase('points_expiry') }}"
+		  arg-fieldPrefix="c[warning][expiry]"
+		  arg-lowerBoundValue="{$input.c.warning.expiry.lower}"
+		  arg-upperBoundValue="{$input.c.warning.expiry.upper}"
+		  />
+
+<xf:macro template="search_form_macros"
+		  name="order"
+		  arg-isRelevanceSupported="{$isRelevanceSupported}"
+		  arg-options="{{ {
+					   } }}"
+		  arg-input="{$input}" />
+
+<xf:macro name="warn_type" global="1" arg-label="!">
+	<xf:set var="$input.c.warning.type" value="{$input.c.warning.type|default(['new'])}" />
+	
+	<xf:if is="$__globals.isUsingElasticSearch">
+		<xf:checkboxrow name="c[warning][type]"
+						label="{$label}">
+			<xf:foreach loop="$warningTypes" key="$key" value="$phrase">
+				<xf:option value="{$key}" label="{$phrase}" checked="{{ in_array($key, $input.c.warning.type) }}" data-hide="true">
+					<xf:dependent>
+					</xf:dependent>
+				</xf:option>
+			</xf:foreach>
+		</xf:checkboxrow>
+	<xf:else />
+		<xf:radiorow name="c[warning][type][]"
+					 label="{$label}">
+			<xf:foreach loop="$warningTypes" key="$key" value="$phrase">
+				<xf:option value="{$key}" label="{$phrase}" checked="{{ in_array($key, $input.c.warning.type) }}" data-hide="true">
+					<xf:dependent>
+					</xf:dependent>
+				</xf:option>
+			</xf:foreach>
+		</xf:radiorow>
+	</xf:if>
+</xf:macro>
