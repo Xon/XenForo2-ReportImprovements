@@ -403,39 +403,15 @@ class ReportComment extends AbstractData
     }
 
     /**
-     * This allows you to specify constraints to avoid including search results that will ultimately be filtered
-     * out due to permissions.In most cases, the query should not generally be modified. It is passed in to allow inspection.
-     * Note that your returned constraints may not be applied only to results of the relevant types. If possible, you
-     * should only return "none" constraints using metadata keys that are unique to the involved content types.
-     * $isOnlyType will be true when the search is specific to this type. This allows different constraints to be applied
-     * when searching within the type. For example, this could implicitly disable searching of a content type unless targeted.
-     *
-     * @param Query $query      $query
-     * @param bool  $isOnlyType Will be true if the search is specifically limited to this type.
-     * @return MetadataConstraint[] Only an array of metadata constraints may be returned.
+
+     * @param Query $query
+     * @param bool  $isOnlyType
+     * @return MetadataConstraint[]
      */
     public function getTypePermissionConstraints(Query $query, $isOnlyType): array
     {
         if (!Globals::$reportInAccountPostings)
         {
-//            $bypass = new BypassAccessStatus();
-//            $getter = $bypass->getPrivate($query, 'search');
-//            /** @var \XF\Search\Search $search */
-//            $search = $getter();
-//            $getter = $bypass->getPrivate($search, 'source');
-//            /** @var \XF\Search\Source\AbstractSource $source */
-//            $source = $getter();
-//            if ($source instanceof \XFES\Search\Source\Elasticsearch)
-//            {
-//                $getter = $bypass->getPrivate($source, 'es');
-//                /** @var \XFES\Elasticsearch\Api $es */
-//                $es = $getter();
-//                if ($es->isSingleTypeIndex())
-//                {
-//
-//                }
-//            }
-            // todo verify this works with ES5 or older
             return [
                 new MetadataConstraint('type', 'report', 'none'),
             ];
