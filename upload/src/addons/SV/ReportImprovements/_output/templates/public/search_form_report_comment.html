@@ -50,7 +50,6 @@
 		  arg-input="{$input}" />
 
 <xf:macro name="report_type" global="1" arg-label="!">
-	<xf:comment>Note; pre-render code pushes globals into this macro's local variables for getSearchFormTemplate</xf:comment>
 	<xf:if is="$__globals.isUsingElasticSearch">
 		<xf:checkboxrow name="c[report][type]"
 						label="{$label}">
