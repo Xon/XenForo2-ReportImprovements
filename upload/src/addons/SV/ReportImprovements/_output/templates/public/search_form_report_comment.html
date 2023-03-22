@@ -16,7 +16,10 @@
 		  arg-label="{{ phrase('svReportImprove_reported_content_in') }}"
 		  arg-reportTypes="{$reportTypes}"/>
 
-<xf:macro template="svSearchImprov_macros" name="replies" arg-input="{$input}" />
+<xf:macro template="svSearchImprov_macros"
+		  name="replies"
+		  arg-label="{{ phrase('svReportImpov_comment_count') }}" 
+		  arg-input="{$input}" />
 
 <xf:checkboxrow>
 	<xf:option name="c[report][contents]"
@@ -44,9 +47,7 @@
 <xf:macro template="search_form_macros"
 		  name="order"
 		  arg-isRelevanceSupported="{$isRelevanceSupported}"
-		  arg-options="{{ {
-					   'replies': phrase('most_replies')
-					   } }}"
+		  arg-options="{$sortOrders}"
 		  arg-input="{$input}" />
 
 <xf:macro name="report_type" global="1" arg-label="!">

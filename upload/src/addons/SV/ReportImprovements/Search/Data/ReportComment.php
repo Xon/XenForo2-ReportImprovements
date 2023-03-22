@@ -8,6 +8,7 @@ use SV\ReportImprovements\Search\QueryAccessor;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
+use SV\SearchImprovements\Search\Features\SearchOrder;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\AndConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\OrConstraint;
@@ -29,6 +30,7 @@ use function assert;
 use function count;
 use function in_array;
 use function is_array;
+use function is_string;
 use function reset;
 
 /**
@@ -49,6 +51,8 @@ class ReportComment extends AbstractData
 
     /** @var ReportRepo */
     protected $reportRepo;
+    /** @var bool */
+    protected $isUsingElasticSearch;
 
     /**
      * @param string            $contentType
@@ -59,6 +63,7 @@ class ReportComment extends AbstractData
         parent::__construct($contentType, $searcher);
 
         $this->reportRepo = \XF::repository('XF:Report');
+        $this->isUsingElasticSearch = \SV\SearchImprovements\Globals::repo()->isUsingElasticSearch();
     }
 
     public function canViewContent(Entity $entity, &$error = null): bool
@@ -254,7 +259,6 @@ class ReportComment extends AbstractData
 
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints): void
     {
-        $isUsingElasticSearch = \SV\SearchImprovements\Globals::repo()->isUsingElasticSearch();
         $constraints = $request->filter([
             'c.assigned'         => 'str',
             'c.assigner'         => 'str',
@@ -323,7 +327,7 @@ class ReportComment extends AbstractData
         if (count($reportTypes) !== 0)
         {
             // MySQL backend doesn't support composing multiple queries atm
-            if (!$isUsingElasticSearch && count($reportTypes) > 1)
+            if (!$this->isUsingElasticSearch && count($reportTypes) > 1)
             {
                 $query->error('c.report.type', \XF::phrase('svReportImprov_only_single_report_type_permitted'));
                 $reportTypes = [];
@@ -478,6 +482,33 @@ class ReportComment extends AbstractData
         ];
     }
 
+    /**
+     * @param string $order
+     * @return string|SearchOrder|\XF\Search\Query\SqlOrder|null
+     */
+    public function getTypeOrder($order)
+    {
+        assert(is_string($order));
+        if (array_key_exists($order, $this->getSortOrders()))
+        {
+            return new SearchOrder([$order, 'date']);
+        }
+
+        return parent::getTypeOrder($order);
+    }
+
+    protected function getSortOrders(): array
+    {
+        if (!$this->isUsingElasticSearch)
+        {
+            return [];
+        }
+
+        return [
+            'replies' =>  \XF::phrase('svReportImpov_sort_order.comment_count'),
+        ];
+    }
+
     public function getSearchFormData(): array
     {
         $form = parent::getSearchFormData();
@@ -485,6 +516,7 @@ class ReportComment extends AbstractData
         $reportRepo = \XF::repository('XF:Report');
         assert($reportRepo instanceof ReportRepo);
 
+        $form['sortOrders'] = $this->getSortOrders();
         $form['reportStates'] = $reportRepo->getReportStatePairs();
         $form['reportTypes'] = $reportRepo->getReportTypes();
         foreach ($form['reportTypes'] as $rec)

@@ -5,15 +5,18 @@ namespace SV\ReportImprovements\Search\Data;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
+use SV\SearchImprovements\Search\Features\SearchOrder;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\IndexRecord;
 use XF\Search\MetadataStructure;
 use XF\Search\Query\Query;
+use function array_key_exists;
 use function assert;
 use function count;
 use function in_array;
 use function is_array;
+use function is_string;
 use function reset;
 
 /**
@@ -198,6 +201,34 @@ class WarningLog extends ReportComment
         return [
             'title' => \XF::phrase('svReportImprov_search.warnings'),
             'order' => 255,
+        ];
+    }
+
+    /**
+     * @param string $order
+     * @return string|SearchOrder|\XF\Search\Query\SqlOrder|null
+     */
+    public function getTypeOrder($order)
+    {
+        assert(is_string($order));
+        if (array_key_exists($order, $this->getSortOrders()))
+        {
+            return new SearchOrder([$order, 'date']);
+        }
+
+        return parent::getTypeOrder($order);
+    }
+
+    protected function getSortOrders(): array
+    {
+        if (!$this->isUsingElasticSearch)
+        {
+            return [];
+        }
+
+        return [
+            'expiry_date' => \XF::phrase('svReportImpov_sort_order.expiry_date'),
+            'points' =>  \XF::phrase('svReportImpov_sort_order.points'),
         ];
     }
 
