@@ -10,6 +10,7 @@ use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use XF\Entity\LinkableInterface;
 use function assert;
+use function in_array;
 use function is_array;
 
 /**
@@ -120,5 +121,23 @@ class Search extends XFCP_Search
         }
 
         return parent::expandStructuredSearchConstraint($query, $key, $value);
+    }
+
+    protected function getSpecializedSearchConstraintPhrase(string $key, $value): ?\XF\Phrase
+    {
+        if ($key === 'warning_expired')
+        {
+            switch ($value)
+            {
+                case 'expired':
+                    return \XF::phrase('svSearchConstraint.warning_expired');
+                case 'active':
+                    return \XF::phrase('svSearchConstraint.warning_active');
+                case 'date':
+                    return null;
+            }
+        }
+
+        return parent::getSpecializedSearchConstraintPhrase($key, $value);
     }
 }

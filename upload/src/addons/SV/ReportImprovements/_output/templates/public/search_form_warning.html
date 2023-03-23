@@ -3,6 +3,7 @@
 <xf:macro name="search_form_report_comment::user_field" arg-name="warning.user" arg-label="{{ phrase('svReportImprov_warned_user') }}" />
 <xf:macro template="search_form_macros" name="date" arg-input="{$input}" />
 
+<xf:comment>
 <xf:if is="$input.c.thread">
 	<xf:checkboxrow>
 		<xf:option name="c[thread]" value="{$input.c.thread}" selected="true">{{ phrase('restrict_search_to_specified_thread') }}</xf:option>
@@ -21,13 +22,25 @@
 		  arg-lowerBoundValue="{$input.c.warning.points.lower}"
 		  arg-upperBoundValue="{$input.c.warning.points.upper}"
 		  />
+</xf:comment>
+<xf:radiorow name="c[warning][expired]"
+			 value="{$input.c.warning.expired|default('')}"
+			 label="{{ phrase('svReportImprove_expiry_date') }}">
+	<xf:option value="" label="{{ phrase('any') }}" />
+	<xf:option value="active" label="{{ phrase('svReportImprove_active') }}" />	
+	<xf:option value="expired" label="{{ phrase('svReportImprove_expired') }}" />
+	<xf:option value="date" label="{{ phrase('date_range') }}" data-hide="true" >
+		<xf:dependent>
+			<xf:macro template="svSearchImprov_macros" name="date_range" 
+					  arg-label="" arg-rowtype="fullWidth noLabel"
+					  arg-fieldPrefix="c[warning][expiry]"
+					  arg-lowerBoundValue="{$input.c.warning.expiry.lower}"
+					  arg-upperBoundValue="{$input.c.warning.expiry.upper}"
+					  />
+		</xf:dependent>
+	</xf:option>
+</xf:radiorow>
 
-<xf:macro template="svSearchImprov_macros" name="date_range" 
-		  arg-label="{{ phrase('points_expiry') }}"
-		  arg-fieldPrefix="c[warning][expiry]"
-		  arg-lowerBoundValue="{$input.c.warning.expiry.lower}"
-		  arg-upperBoundValue="{$input.c.warning.expiry.upper}"
-		  />
 
 <xf:macro template="search_form_macros"
 		  name="order"

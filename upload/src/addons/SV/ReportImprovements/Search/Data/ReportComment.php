@@ -293,6 +293,10 @@ class ReportComment extends AbstractData
                 Arr::unsetUrlConstraint($urlConstraints, 'c.report.type');
             }
         }
+        else
+        {
+            Arr::unsetUrlConstraint($urlConstraints, 'c.report.type');
+        }
 
         $reportStates = $constraints['c.report.state'];
         assert(is_array($reportStates));

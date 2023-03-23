@@ -9,6 +9,7 @@ use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Search\Features\SearchOrder;
 use SV\SearchImprovements\Util\Arr;
+use SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\IndexRecord;
@@ -255,6 +256,7 @@ class WarningLog extends ReportComment
             'c.warning.user'         => 'str',
             'c.warning.points.lower' => 'uint',
             'c.warning.points.upper' => '?uint,empty-str-to-null',
+            'c.warning.expired'      => 'str',
             'c.warning.expiry.lower' => 'datetime',
             'c.warning.expiry.upper' => '?datetime,empty-str-to-null',
         ]);
@@ -284,6 +286,10 @@ class WarningLog extends ReportComment
                 Arr::unsetUrlConstraint($urlConstraints, 'c.warning.type');
             }
         }
+        else
+        {
+            Arr::unsetUrlConstraint($urlConstraints, 'c.warning.type');
+        }
 
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
             'c.warning.user', 'warned_user'
@@ -292,6 +298,27 @@ class WarningLog extends ReportComment
             'c.warning.points.lower', 'c.warning.points.upper', 'points',
             $this->getWarningLogQueryTableReference(), 'warning_log'
         );
+
+        $expired = $constraints['c.warning.expired'];
+        assert(is_string($expired));
+        switch ($expired)
+        {
+            case 'active':
+                $constraints['c.warning.expiry.lower'] = \XF::$time;
+                $constraints['c.warning.expiry.upper'] = null;
+                break;
+            case 'expired':
+                $constraints['c.warning.expiry.lower'] = 0;
+                $constraints['c.warning.expiry.upper'] = \XF::$time;
+                break;
+            case 'date':
+                break;
+            case '':
+            default:
+                $constraints['c.warning.expiry.lower'] = 0;
+                $constraints['c.warning.expiry.upper'] = 0;
+                Arr::unsetUrlConstraint($urlConstraints, 'c.warning.expired');
+        }
         $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
             'c.warning.expiry.lower', 'c.warning.expiry.upper', 'expiry_date',
             $this->getWarningLogQueryTableReference(), 'warning_log'
