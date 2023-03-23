@@ -20,7 +20,7 @@ class WarningType
         return [self::New, self::Edit, self::Expire, self::Delete, self::Acknowledge];
     }
 
-    public static function getWarningTypes(): array
+    public static function get(): array
     {
         $types = [self::New, self::Edit, self::Expire, self::Delete];
         if (\XF::isAddOnActive('SV/WarningAcknowledgement'))
@@ -34,11 +34,11 @@ class WarningType
     /**
      * @return array<string,\XF\Phrase>
      */
-    public static function getWarningTypesPairs(): array
+    public static function getPairs(): array
     {
         $pairs = [];
 
-        foreach (static::getWarningTypes() as $type)
+        foreach (static::get() as $type)
         {
             $pairs[$type] = \XF::phrase('svReportImprov_warning_type.' . $type);
         }

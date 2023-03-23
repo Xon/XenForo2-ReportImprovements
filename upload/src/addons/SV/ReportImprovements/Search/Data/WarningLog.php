@@ -2,11 +2,13 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Search\Features\SearchOrder;
+use SV\SearchImprovements\Util\Arr;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\IndexRecord;
@@ -234,7 +236,7 @@ class WarningLog extends ReportComment
     {
         $form = parent::getSearchFormData();
 
-        $form['warningTypes'] = WarningType::getWarningTypesPairs();
+        $form['warningTypes'] = WarningType::getPairs();
 
         return $form;
     }
@@ -249,7 +251,7 @@ class WarningLog extends ReportComment
         parent::applyTypeConstraintsFromInput($query, $request, $urlConstraints);
 
         $constraints = $request->filter([
-            'c.warning.type'         => 'str',
+            'c.warning.type'         => 'array-str',
             'c.warning.user'         => 'str',
             'c.warning.points.lower' => 'uint',
             'c.warning.points.upper' => '?uint,empty-str-to-null',
@@ -259,10 +261,28 @@ class WarningLog extends ReportComment
 
         $repo = \SV\SearchImprovements\Globals::repo();
 
-        $warningType = $constraints['c.warning.type'];
-        if (in_array($warningType, WarningType::getWarningTypes(), true))
+        $rawWarningTypes = $constraints['c.warning.type'];
+        assert(is_array($rawWarningTypes));
+        if (count($rawWarningTypes) !== 0)
         {
-            $query->withMetadata('warning_type', $warningType);
+            $warningTypes = [];
+            $types = WarningType::get();
+            foreach ($rawWarningTypes as $value)
+            {
+                if (in_array($value, $types, true))
+                {
+                    $warningTypes[] = $value;
+                }
+            }
+            if (count($warningTypes) !== 0  && count($warningTypes) < count($types))
+            {
+                $query->withMetadata('warning_type', $warningTypes);
+                Arr::setUrlConstraint($urlConstraints, 'c.warning.type', $warningTypes);
+            }
+            else
+            {
+                Arr::unsetUrlConstraint($urlConstraints, 'c.warning.type');
+            }
         }
 
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,

@@ -147,7 +147,7 @@ class WarningLog extends Entity
         $structure->columns = [
             'warning_log_id'        => ['type' => self::UINT, 'autoIncrement' => true, 'nullable' => true],
             'warning_edit_date'     => ['type' => self::UINT, 'required' => true, 'default' => \XF::$time],
-            'operation_type'        => ['type' => self::STR, 'allowedValues' => WarningType::getWarningTypes(), 'required' => true],
+            'operation_type'        => ['type' => self::STR, 'allowedValues' => WarningType::get(), 'required' => true],
             'warning_id'            => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'content_type'          => ['type' => self::BINARY, 'maxLength' => 25, 'required' => true],
             'content_id'            => ['type' => self::UINT, 'required' => true],

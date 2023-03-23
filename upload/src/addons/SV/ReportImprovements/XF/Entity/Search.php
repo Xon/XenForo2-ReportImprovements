@@ -79,7 +79,7 @@ class Search extends XFCP_Search
         }
         else if ($key === 'warning_type' && is_array($value))
         {
-            $states = WarningType::getWarningTypesPairs();
+            $states = WarningType::getPairs();
 
             foreach ($value as $subKey => $id)
             {
