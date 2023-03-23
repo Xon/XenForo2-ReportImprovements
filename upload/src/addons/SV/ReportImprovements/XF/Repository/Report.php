@@ -611,7 +611,7 @@ class Report extends XFCP_Report
     /**
      * @return array<string,array{handler: AbstractHandler, phrase: \XF\Phrase}>
      */
-    public function getReportTypes(): array
+    public function getReportContentTypes(): array
     {
         $contentTypes = [];
         $app = $this->app();

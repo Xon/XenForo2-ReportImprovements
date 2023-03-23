@@ -5,7 +5,8 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
-use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
+use SV\ReportImprovements\Enums\ReportType;
+use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use XF\Entity\LinkableInterface;
 use function assert;
@@ -29,6 +30,7 @@ class Search extends XFCP_Search
 
     protected function expandStructuredSearchConstraint(array &$query, string $key, $value): bool
     {
+        // todo simplify this
         if ($key === 'report_state' && is_array($value))
         {
             $reportRepo = \XF::repository('XF:Report');
@@ -47,14 +49,28 @@ class Search extends XFCP_Search
         }
         else if ($key === 'report_type' && is_array($value))
         {
-            $reportRepo = \XF::repository('XF:Report');
-            assert($reportRepo instanceof ReportRepo);
-            $states = $reportRepo->getReportTypes();
+            $states = ReportType::getPairs();
 
             foreach ($value as $subKey => $id)
             {
                 $id = (string)$id;
                 $query[$key . '_' . $subKey] = \XF::phrase('svSearchConstraint.report_type', [
+                    'value' => $states[$id] ?? $id,
+                ]);
+            }
+
+            return true;
+        }
+        else if ($key === 'report_content' && is_array($value))
+        {
+            $reportRepo = \XF::repository('XF:Report');
+            assert($reportRepo instanceof ReportRepo);
+            $states = $reportRepo->getReportContentTypes();
+
+            foreach ($value as $subKey => $id)
+            {
+                $id = (string)$id;
+                $query[$key . '_' . $subKey] = \XF::phrase('svSearchConstraint.report_content_type', [
                     'value' => $states[$id]['phrases'] ?? $id,
                 ]);
             }
@@ -63,7 +79,7 @@ class Search extends XFCP_Search
         }
         else if ($key === 'warning_type' && is_array($value))
         {
-            $states = WarningLogEntity::getWarningTypesPairs();
+            $states = WarningType::getWarningTypesPairs();
 
             foreach ($value as $subKey => $id)
             {
@@ -77,6 +93,10 @@ class Search extends XFCP_Search
         }
         else if ($key === 'categories' && is_array($value))
         {
+            /** @var \NF\Tickets\Repository\Category $categoryRepo */
+            $categoryRepo = \XF::repository('NF\Tickets:Category');
+            $categories = $categoryRepo->getViewableCategories();
+
             // This can be a ticket category or XFRM/etc :(
             // for now assume tickets
             foreach ($value as $subKey => $id)
@@ -86,10 +106,6 @@ class Search extends XFCP_Search
                 {
                     continue;
                 }
-
-                /** @var \NF\Tickets\Repository\Category $categoryRepo */
-                $categoryRepo = \XF::repository('NF\Tickets:Category');
-                $categories = $categoryRepo->getViewableCategories();
 
                 /** @var \NF\Tickets\Entity\Category|null $category */
                 $category = $categories[$id] ?? null;

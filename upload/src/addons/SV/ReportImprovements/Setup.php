@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements;
 
+use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Job\Upgrades\EnrichReportPostInstall;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090100Step1;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090200Step1;
@@ -715,7 +716,7 @@ class Setup extends AbstractSetup
             /** @var Create|Alter $table */
             $this->addOrChangeColumn($table, 'warning_log_id', 'int')->autoIncrement();
             $this->addOrChangeColumn($table, 'warning_edit_date', 'int');
-            $this->addOrChangeColumn($table, 'operation_type', 'enum')->values(['new', 'edit', 'expire', 'delete', 'acknowledge']);
+            $this->addOrChangeColumn($table, 'operation_type', 'enum')->values(WarningType::getAll());
             $this->addOrChangeColumn($table, 'warning_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'content_type', 'varbinary', 25);
             $this->addOrChangeColumn($table, 'content_id', 'int');

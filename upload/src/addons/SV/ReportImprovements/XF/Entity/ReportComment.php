@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Entity\WarningLog;
+use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\Attachment;
@@ -242,6 +243,25 @@ class ReportComment extends XFCP_ReportComment
         $userRepo = $this->repository('XF:User');
 
         return $userRepo->getGuestUser($this->ViewableUsername);
+    }
+
+    public function getReportType(): string
+    {
+        if ($this->warning_log_id)
+        {
+            if ($this->WarningLog !== null && $this->WarningLog->reply_ban_thread_id)
+            {
+                return ReportType::Reply_ban;
+            }
+
+            return ReportType::Warning;
+        }
+        else if ($this->is_report)
+        {
+            return ReportType::User_report;
+        }
+
+        return ReportType::Comment;
     }
 
     /**

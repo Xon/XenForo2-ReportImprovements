@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\Service\WarningLog;
 
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\WarningLog;
+use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Globals;
 use XF\Entity\ThreadReplyBan;
 use XF\Entity\Warning;
@@ -160,7 +161,7 @@ class Creator extends AbstractService
         $this->warningLog = $this->em()->create('SV\ReportImprovements:WarningLog');
         $warningLog = $this->warningLog;
         $warningLog->operation_type = $this->operationType;
-        $warningLog->warning_edit_date = $this->operationType === 'new' ? 0 : \XF::$time;
+        $warningLog->warning_edit_date = $this->operationType === WarningType::New ? 0 : \XF::$time;
 
         $report = null;
         $oldValue = Globals::$suppressReportStateChange;
@@ -480,7 +481,7 @@ class Creator extends AbstractService
         }
 
         // don't re-open the report when a warning expires naturally.
-        if ($this->operationType === 'expire' || $this->operationType === 'acknowledge')
+        if ($this->operationType === WarningType::Expire || $this->operationType === WarningType::Acknowledge)
         {
             $newReportState = '';
         }

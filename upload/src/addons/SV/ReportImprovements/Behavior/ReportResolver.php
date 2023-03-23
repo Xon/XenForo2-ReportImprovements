@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Behavior;
 
 use SV\ReportImprovements\Entity\IReportResolver;
+use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Globals;
 use XF\Mvc\Entity\Behavior;
 use XF\Mvc\Entity\Entity;
@@ -114,7 +115,7 @@ class ReportResolver extends Behavior
             return (string)$this->entity->getSvLogOperationTypeForReportResolve();
         }
 
-        return $this->getLogOperationType();
+        return $this->getLogOperationType() ?? '';
     }
 
     protected function entityHasChangesToLog(): bool
@@ -124,32 +125,32 @@ class ReportResolver extends Behavior
         return $entity->hasChanges() || $entity->getOption('svPublicBanner') !== null;
     }
 
-    public function getLogOperationType(): string
+    public function getLogOperationType(): ?string
     {
         $entity = $this->entity;
 
         $type = '';
         if ($entity->isInsert())
         {
-            $type = 'new';
+            $type = WarningType::New;
         }
         // it is deliberate that isExpiry check occurs before delete/edit
         else if ($this->isJustExpired())
         {
-            $type = 'expire';
+            $type = WarningType::Expire;
 
             if (Globals::$expiringFromCron && empty(\XF::options()->svReportImpro_logNaturalWarningExpiry))
             {
-                $type = '';
+                $type = null;
             }
         }
         else if ($entity->isUpdate() && $this->entityHasChangesToLog())
         {
-            $type = 'edit';
+            $type = WarningType::Edit;
         }
         else if ($entity->isDeleted())
         {
-            $type = 'delete';
+            $type = WarningType::Delete;
         }
 
         return $type;

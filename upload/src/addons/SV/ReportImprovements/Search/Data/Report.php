@@ -2,9 +2,10 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
-use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
+use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -159,7 +160,7 @@ class Report extends AbstractData
             'report'              => $entity->report_id,
             'report_state'        => $entity->report_state,
             'report_content_type' => $entity->content_type,
-            'is_report'           => ReportComment::REPORT_TYPE_IS_REPORT,
+            'report_type'         => ReportType::Reported_content,
         ];
 
         if ($entity->assigner_user_id)
@@ -201,13 +202,12 @@ class Report extends AbstractData
                 $handler->setupMetadataStructure($structure);
             }
         }
+        $structure->addField('report_type', MetadataStructure::KEYWORD);
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('report_state', MetadataStructure::KEYWORD);
         $structure->addField('report_content_type', MetadataStructure::KEYWORD);
         $structure->addField('assigned_user', MetadataStructure::INT);
         $structure->addField('assigner_user', MetadataStructure::INT);
-        // must be an int, as ElasticSearch single index has this all mapped to the same type
-        $structure->addField('is_report', MetadataStructure::INT);
 
         $this->setupDiscussionMetadataStructure($structure);
     }

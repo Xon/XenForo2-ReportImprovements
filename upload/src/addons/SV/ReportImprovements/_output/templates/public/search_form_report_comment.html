@@ -12,28 +12,18 @@
 	</xf:checkboxrow>
 </xf:if>
 
-<xf:macro name="search_form_report_comment::report_type"
+<xf:macro name="report_content_type"
 		  arg-label="{{ phrase('svReportImprove_reported_content_in') }}"
+		  arg-reportTypes="{$reportTypes}"/>
+
+<xf:macro name="report_type"
+		  arg-label="{{ phrase('svReportImprove_include_report_type') }}"
 		  arg-reportTypes="{$reportTypes}"/>
 
 <xf:macro template="svSearchImprov_macros"
 		  name="replies"
 		  arg-label="{{ phrase('svReportImpov_comment_count') }}" 
 		  arg-input="{$input}" />
-
-<xf:checkboxrow>
-	<xf:option name="c[report][contents]"
-			   label="{{ phrase('svReportImprov_include_reported_content') }}"
-			   value="{$input.c.report.contents}" />
-	
-	<xf:option name="c[report][comments]"
-			   label="{{ phrase('svReportImprov_include_report_comments') }}"
-			   value="{$input.c.report.comments}"/>
-
-	<xf:option name="c[report][user_reports]"
-			   label="{{ phrase('svReportImprov_include_user_reports') }}"
-			   value="{$input.c.report.user_reports}"/>
-</xf:checkboxrow>
 
 <xf:if is="$reportStates is not empty">
 	<xf:selectrow name="c[report][state][]" size="{{ 1+count($reportStates) }}" multiple="true" value="{$input.c.report.state|default(['0'])}"
@@ -44,17 +34,21 @@
 	</xf:selectrow>
 </xf:if>
 
-<xf:macro template="search_form_macros"
-		  name="order"
-		  arg-isRelevanceSupported="{$isRelevanceSupported}"
-		  arg-options="{$sortOrders}"
-		  arg-input="{$input}" />
-
 <xf:macro name="report_type" global="1" arg-label="!">
+	<xf:set var="$input.c.report.type" value="{$input.c.report.type|default(['user_report','comment'])}" />
+	<xf:checkboxrow name="c[report][type]"
+					label="{$label}">
+		<xf:foreach loop="$reportTypes" key="$key" value="$phrase">
+			<xf:option value="{$key}" label="{$phrase}" checked="{{ in_array($key, $input.c.report.type) }}" />
+		</xf:foreach>
+	</xf:checkboxrow>
+</xf:macro>
+
+<xf:macro name="report_content_type" global="1" arg-label="!">
 	<xf:if is="$__globals.isUsingElasticSearch">
-		<xf:checkboxrow name="c[report][type]"
+		<xf:checkboxrow name="c[report][content]"
 						label="{$label}">
-			<xf:foreach loop="$reportTypes" key="$key" value="$rec">
+			<xf:foreach loop="$reportContentTypes" key="$key" value="$rec">
 				<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report.type) }}" data-hide="true">
 					<xf:dependent>
 						<xf:if is="callable($rec.handler, 'getSearchFormTemplate')">
@@ -65,9 +59,9 @@
 			</xf:foreach>
 		</xf:checkboxrow>
 	<xf:else />
-		<xf:radiorow name="c[report][type][]"
+		<xf:radiorow name="c[report][content][]"
 					 label="{$label}">
-			<xf:foreach loop="$reportTypes" key="$key" value="$rec">
+			<xf:foreach loop="$reportContentTypes" key="$key" value="$rec">
 				<xf:option value="{$key}" label="{$rec.phrase}" checked="{{ in_array($key, $input.c.report.type) }}" data-hide="true">
 					<xf:dependent>
 						<xf:if is="callable($rec.handler, 'getSearchFormTemplate')">

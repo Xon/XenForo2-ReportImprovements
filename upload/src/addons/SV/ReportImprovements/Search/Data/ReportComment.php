@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\Search\QueryAccessor;
@@ -42,12 +43,6 @@ class ReportComment extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
     use DiscussionTrait;
-
-    public const REPORT_TYPE_COMMENT = 0;
-    public const REPORT_TYPE_USER_REPORT = 1;
-    public const REPORT_TYPE_IS_REPORT = 2;
-    public const REPORT_TYPE_WARNING = 3;
-    public const REPORT_TYPE_REPLY_BAN = 4;
 
     /** @var ReportRepo */
     protected $reportRepo;
@@ -189,7 +184,7 @@ class ReportComment extends AbstractData
             'report_state'        => $report->report_state,
             'report_content_type' => $report->content_type,
             'state_change'        => $entity->state_change ?: '',
-            'is_report'           => $entity->is_report ? static::REPORT_TYPE_USER_REPORT : static::REPORT_TYPE_COMMENT, // must be an int
+            'report_type'         => $entity->getReportType(),
             'report_user'         => $report->content_user_id,
         ];
 
@@ -226,7 +221,7 @@ class ReportComment extends AbstractData
 
     public function getSearchableContentTypes(): array
     {
-        return ['report_comment', 'warning', 'report'];
+        return ['report_comment', 'report'];
     }
 
     public function getGroupByType(): string
@@ -245,14 +240,13 @@ class ReportComment extends AbstractData
                 $handler->setupMetadataStructure($structure);
             }
         }
+        $structure->addField('report_type', MetadataStructure::KEYWORD);
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('state_change', MetadataStructure::KEYWORD);
         $structure->addField('report_state', MetadataStructure::KEYWORD);
         $structure->addField('report_content_type', MetadataStructure::KEYWORD);
         $structure->addField('assigned_user', MetadataStructure::INT);
         $structure->addField('assigner_user', MetadataStructure::INT);
-        // must be an int, as ElasticSearch single index has this all mapped to the same type
-        $structure->addField('is_report', MetadataStructure::INT);
 
         $this->setupDiscussionMetadataStructure($structure);
     }
@@ -260,41 +254,44 @@ class ReportComment extends AbstractData
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints): void
     {
         $constraints = $request->filter([
-            'c.assigned'         => 'str',
-            'c.assigner'         => 'str',
-            'c.participants'     => 'str',
+            'c.assigned'     => 'str',
+            'c.assigner'     => 'str',
+            'c.participants' => 'str',
 
-            'c.replies.lower'       => 'uint',
-            'c.replies.upper'       => '?uint,empty-str-to-null',
+            'c.replies.lower' => 'uint',
+            'c.replies.upper' => '?uint,empty-str-to-null',
 
-            'c.report.type'         => 'array-str',
-            'c.report.state'        => 'array-str',
-            'c.report.contents'     => 'bool',
-            'c.report.comments'     => 'bool',
-            'c.report.user_reports' => 'bool',
-            'c.report.warnings'     => 'bool',
-            'c.report.reply_bans'   => 'bool',
+            'c.report.type'    => 'array-str',
+            'c.report.content' => 'array-str',
+            'c.report.state'   => 'array-str',
         ]);
 
-        $isReport = [];
-        $isReportFlags = [
-            'c.report.comments' => static::REPORT_TYPE_COMMENT,
-            'c.report.user_reports' => static::REPORT_TYPE_USER_REPORT,
-            'c.report.contents' => static::REPORT_TYPE_IS_REPORT,
-            'c.report.warnings' => static::REPORT_TYPE_WARNING,
-            'c.report.reply_bans' => static::REPORT_TYPE_REPLY_BAN,
-        ];
-        foreach ($isReportFlags as $key => $value)
+        $rawReportTypes = $constraints['c.report.type'];
+        assert(is_array($rawReportTypes));
+        if (count($rawReportTypes) !== 0)
         {
-            if ($constraints[$key] ?? false)
+            $reportTypes = [];
+            $types = ReportType::get();
+            foreach ($rawReportTypes as $value)
             {
-                $isReport[] = $value;
+                if (in_array($value, $types, true))
+                {
+                    $reportTypes[] = $value;
+                }
             }
-        }
-
-        if (count($isReport) !== 0 && count($isReport) !== count($isReportFlags))
-        {
-            $query->withMetadata('is_report', $isReport);
+            if (count($reportTypes) !== 0  && count($reportTypes) < count($types))
+            {
+                if (in_array(ReportType::Reply_ban, $reportTypes, true) || in_array(ReportType::Warning, $reportTypes, true))
+                {
+                    $query->inTypes($query->getTypes() + ['warning']);
+                }
+                $query->withMetadata('report_type', $reportTypes);
+                Arr::setUrlConstraint($urlConstraints, 'c.report.type', $reportTypes);
+            }
+            else
+            {
+                Arr::unsetUrlConstraint($urlConstraints, 'c.report.type');
+            }
         }
 
         $reportStates = $constraints['c.report.state'];
@@ -322,14 +319,14 @@ class ReportComment extends AbstractData
             Arr::unsetUrlConstraint($urlConstraints, 'c.report.state');
         }
 
-        $reportTypes = $constraints['c.report.type'];
+        $reportTypes = $constraints['c.report.content'];
         assert(is_array($reportTypes));
         if (count($reportTypes) !== 0)
         {
             // MySQL backend doesn't support composing multiple queries atm
             if (!$this->isUsingElasticSearch && count($reportTypes) > 1)
             {
-                $query->error('c.report.type', \XF::phrase('svReportImprov_only_single_report_type_permitted'));
+                $query->error('c.report.content', \XF::phrase('svReportImprov_only_single_report_type_permitted'));
                 $reportTypes = [];
             }
 
@@ -378,11 +375,11 @@ class ReportComment extends AbstractData
                     }
                 }
 
-                Arr::setUrlConstraint($urlConstraints, 'c.report.type', array_keys($types));
+                Arr::setUrlConstraint($urlConstraints, 'c.report.content', array_keys($types));
             }
             else
             {
-                Arr::unsetUrlConstraint($urlConstraints, 'c.report.type');
+                Arr::unsetUrlConstraint($urlConstraints, 'c.report.content');
             }
         }
 
@@ -427,7 +424,7 @@ class ReportComment extends AbstractData
         if (!$visitor->canViewReporter())
         {
             return [
-                new MetadataConstraint('is_report', [static::REPORT_TYPE_USER_REPORT], 'none'),
+                new MetadataConstraint('report_type', [ReportType::User_report], 'none'),
             ];
         }
 
@@ -518,8 +515,9 @@ class ReportComment extends AbstractData
 
         $form['sortOrders'] = $this->getSortOrders();
         $form['reportStates'] = $reportRepo->getReportStatePairs();
-        $form['reportTypes'] = $reportRepo->getReportTypes();
-        foreach ($form['reportTypes'] as $rec)
+        $form['reportContentTypes'] = $reportRepo->getReportContentTypes();
+        $form['reportTypes'] = ReportType::getPairs();
+        foreach ($form['reportContentTypes'] as $rec)
         {
             $handler = $rec['handler'];
             if ($handler instanceof ReportSearchFormInterface)

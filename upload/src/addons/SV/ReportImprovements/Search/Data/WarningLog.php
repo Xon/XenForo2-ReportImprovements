@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
@@ -139,19 +140,16 @@ class WarningLog extends ReportComment
 
         if ($warningLog->warning_id)
         {
-            $metaData['is_report'] = self::REPORT_TYPE_WARNING;
             $metaData['points'] = $warningLog->points;
         }
 
         if ($warningLog->reply_ban_thread_id)
         {
-            $metaData['is_report'] = self::REPORT_TYPE_REPLY_BAN;
             $metaData['thread_reply_ban'] = $warningLog->reply_ban_thread_id;
         }
 
         if ($warningLog->reply_ban_post_id)
         {
-            $metaData['is_report'] = self::REPORT_TYPE_REPLY_BAN;
             $metaData['post_reply_ban'] = $warningLog->reply_ban_post_id;
         }
 
@@ -236,7 +234,7 @@ class WarningLog extends ReportComment
     {
         $form = parent::getSearchFormData();
 
-        $form['warningTypes'] = WarningLogEntity::getWarningTypesPairs();
+        $form['warningTypes'] = WarningType::getWarningTypesPairs();
 
         return $form;
     }
@@ -262,7 +260,7 @@ class WarningLog extends ReportComment
         $repo = \SV\SearchImprovements\Globals::repo();
 
         $warningType = $constraints['c.warning.type'];
-        if (in_array($warningType, WarningLogEntity::getWarningTypes(), true))
+        if (in_array($warningType, WarningType::getWarningTypes(), true))
         {
             $query->withMetadata('warning_type', $warningType);
         }

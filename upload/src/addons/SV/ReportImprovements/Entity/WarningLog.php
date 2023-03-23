@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Entity;
 
+use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use XF\Entity\Post;
 use XF\Entity\Thread;
@@ -10,8 +11,6 @@ use XF\Entity\User;
 use XF\Entity\Warning;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
-use function assert;
-use function count;
 
 /**
  * COLUMNS
@@ -49,30 +48,6 @@ use function count;
  */
 class WarningLog extends Entity
 {
-    public static function getWarningTypes(): array
-    {
-        $structure = \XF::em()->getEntityStructure('SV\ReportImprovements:WarningLog');
-        $types = $structure->columns['operation_type']['allowedValues'] ?? null;
-        assert(is_array($types) && count($types) !== 0);
-
-        return $types;
-    }
-
-    /**
-     * @return array<string,\XF\Phrase>
-     */
-    public static function getWarningTypesPairs(): array
-    {
-        $pairs = [];
-
-        foreach (static::getWarningTypes() as $type)
-        {
-            $pairs[$type] = \XF::phrase('svReportImprov_warning_type.' . $type);
-        }
-
-        return $pairs;
-    }
-
     protected function getContentTypeForOperationType(): ?\XF\Phrase
     {
         if ($this->warning_id)
@@ -172,7 +147,7 @@ class WarningLog extends Entity
         $structure->columns = [
             'warning_log_id'        => ['type' => self::UINT, 'autoIncrement' => true, 'nullable' => true],
             'warning_edit_date'     => ['type' => self::UINT, 'required' => true, 'default' => \XF::$time],
-            'operation_type'        => ['type' => self::STR, 'allowedValues' => ['new', 'edit', 'expire', 'delete'], 'required' => true],
+            'operation_type'        => ['type' => self::STR, 'allowedValues' => WarningType::getWarningTypes(), 'required' => true],
             'warning_id'            => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'content_type'          => ['type' => self::BINARY, 'maxLength' => 25, 'required' => true],
             'content_id'            => ['type' => self::UINT, 'required' => true],
@@ -194,10 +169,6 @@ class WarningLog extends Entity
             'reply_ban_thread_id'   => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'reply_ban_post_id'     => ['type' => self::UINT, 'default' => null, 'nullable' => true],
         ];
-        if (\XF::isAddOnActive('SV/WarningAcknowledgement'))
-        {
-            $structure->columns['operation_type'][] = 'acknowledge';
-        }
         $structure->relations = [
             'ReportComment' => [
                 'entity'     => 'XF:ReportComment',
