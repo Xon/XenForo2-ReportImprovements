@@ -156,7 +156,7 @@ class ReportComment extends AbstractData
 
         return IndexRecord::create('report_comment', $entity->report_comment_id, [
             'title'         => $report->title_string,
-            'message'       => $this->getMessage($entity->message),
+            'message'       => $this->getMessage($entity),
             'date'          => $entity->comment_date,
             'user_id'       => $entity->user_id,
             'discussion_id' => $entity->report_id,
