@@ -2,14 +2,12 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
-use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Search\Features\SearchOrder;
 use SV\SearchImprovements\Util\Arr;
-use SV\SearchImprovements\XF\Search\Query\Constraints\RangeConstraint;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\IndexRecord;

@@ -10,7 +10,6 @@ use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use XF\Entity\LinkableInterface;
 use function assert;
-use function in_array;
 use function is_array;
 
 /**
