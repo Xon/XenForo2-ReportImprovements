@@ -144,7 +144,7 @@ class ReportComment extends AbstractData
         $warningLog = $entity->WarningLog;
         if ($warningLog !== null)
         {
-            return $this->searcher->handler('warning')->getIndexData($warningLog);
+            return $this->searcher->handler('warning')->getIndexData($entity);
         }
 
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
