@@ -136,7 +136,7 @@ class WarningLog extends ReportComment
         $warningLog = $entity->WarningLog;
 
         $metaData['warning_type'] = $warningLog->operation_type;
-        $metaData['warned_user'] = $warningLog->user_id;
+        $metaData['issuer_user'] = $warningLog->warning_user_id;
         $metaData['expiry_date'] = $warningLog->expiry_date <= 0 ? \PHP_INT_MAX : $warningLog->expiry_date;
 
         if ($warningLog->warning_id)
@@ -164,7 +164,7 @@ class WarningLog extends ReportComment
         $structure->addField('warning_type', MetadataStructure::KEYWORD);
         $structure->addField('points', MetadataStructure::INT);
         $structure->addField('expiry_date', MetadataStructure::INT);
-        $structure->addField('warned_user', MetadataStructure::INT);
+        $structure->addField('issuer_user', MetadataStructure::INT);
         $structure->addField('thread_reply_ban', MetadataStructure::INT);
         $structure->addField('post_reply_ban', MetadataStructure::INT);
     }
@@ -203,21 +203,6 @@ class WarningLog extends ReportComment
         ];
     }
 
-    /**
-     * @param string $order
-     * @return string|SearchOrder|\XF\Search\Query\SqlOrder|null
-     */
-    public function getTypeOrder($order)
-    {
-        assert(is_string($order));
-        if (array_key_exists($order, $this->getSortOrders()))
-        {
-            return new SearchOrder([$order, 'date']);
-        }
-
-        return parent::getTypeOrder($order);
-    }
-
     protected function getSortOrders(): array
     {
         if (!$this->isUsingElasticSearch)
@@ -251,7 +236,7 @@ class WarningLog extends ReportComment
 
         $constraints = $request->filter([
             'c.warning.type'         => 'array-str',
-            'c.warning.user'         => 'str',
+            'c.warning.mod'          => 'str',
             'c.warning.points.lower' => 'uint',
             'c.warning.points.upper' => '?uint,empty-str-to-null',
             'c.warning.expired'      => 'str',
@@ -290,7 +275,7 @@ class WarningLog extends ReportComment
         }
 
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
-            'c.warning.user', 'warned_user'
+            'c.warning.mod', 'issuer_user'
         );
         $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
             'c.warning.points.lower', 'c.warning.points.upper', 'points',

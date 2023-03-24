@@ -1,6 +1,8 @@
-<xf:macro template="search_form_macros" name="keywords" arg-input="{$input}" arg-canTitleLimit="{{ false }}" />
-<xf:macro template="search_form_macros" name="user" arg-input="{$input}" />
-<xf:macro name="search_form_report_comment::user_field" arg-name="warning.user" arg-label="{{ phrase('svReportImprov_warned_user') }}" />
+<xf:set var="$containerType" value="" />
+<xf:macro template="search_form_macros" name="keywords" arg-input="{$input}" arg-canTitleLimit="{{ true }}" />
+<xf:macro name="svSearchImprov_macros::user_field_multi" arg-name="user" arg-label="{{ phrase('posted_by') }}" arg-explain="{{ phrase('svReportImprove_warning_action_by_other_user') }}" />
+<xf:macro name="svSearchImprov_macros::user_field_single" arg-name="content.user" arg-label="{{ phrase('svReportImprov_warned_user') }}" />
+<xf:macro name="svSearchImprov_macros::user_field_single" arg-name="warning.mod" arg-label="{{ phrase('svReportImprov_issuing_user') }}" />
 <xf:macro template="search_form_macros" name="date" arg-input="{$input}" />
 
 <xf:if is="$input.c.thread">
@@ -9,18 +11,17 @@
 	</xf:checkboxrow>
 </xf:if>
 
-<xf:macro name="warn_type"
-		  arg-label="{{ phrase('svReportImprove_warning_type') }}" />
+<xf:macro name="svSearchImprov_macros::multi_select_list"
+		  arg-name="warning.type"
+		  arg-label="{{ phrase('svReportImprove_warning_type') }}"
+		  arg-default="{{ ['new'] }}"		  
+		  arg-keyValues="{$warningTypes}"
+		  />
 
 <xf:macro name="search_form_report_comment::report_content_type"
 		  arg-label="{{ phrase('svReportImprove_warned_content_in') }}" />
 
-<xf:macro template="svSearchImprov_macros" name="range" 
-		  arg-label="{{ phrase('warning_points') }}"
-		  arg-fieldPrefix="c[warning][points]"
-		  arg-lowerBoundValue="{$input.c.warning.points.lower}"
-		  arg-upperBoundValue="{$input.c.warning.points.upper}"
-		  />
+<xf:macro name="svSearchImprov_macros::range" arg-name="warning.points" arg-label="{{ phrase('warning_points') }}" />
 
 <xf:radiorow name="c[warning][expired]"
 			 value="{$input.c.warning.expired|default('')}"
@@ -30,12 +31,7 @@
 	<xf:option value="expired" label="{{ phrase('svReportImprove_expired') }}" />
 	<xf:option value="date" label="{{ phrase('date_range') }}" data-hide="true" >
 		<xf:dependent>
-			<xf:macro template="svSearchImprov_macros" name="date_range" 
-					  arg-label="" arg-rowtype="fullWidth noLabel"
-					  arg-fieldPrefix="c[warning][expiry]"
-					  arg-lowerBoundValue="{$input.c.warning.expiry.lower}"
-					  arg-upperBoundValue="{$input.c.warning.expiry.upper}"
-					  />
+			<xf:macro name="svSearchImprov_macros::date_range" arg-name="warning.expiry" arg-rowtype="fullWidth noLabel" arg-label="" />
 		</xf:dependent>
 	</xf:option>
 </xf:radiorow>
@@ -46,13 +42,3 @@
 		  arg-isRelevanceSupported="{$isRelevanceSupported}"
 		  arg-options="{$sortOrders}"
 		  arg-input="{$input}" />
-
-<xf:macro name="warn_type" global="1" arg-label="!">
-	<xf:set var="$input.c.warning.type" value="{$input.c.warning.type|default(['new'])}" />
-	<xf:radiorow name="c[warning][type][]"
-				 label="{$label}">
-		<xf:foreach loop="$warningTypes" key="$key" value="$phrase">
-			<xf:option value="{$key}" label="{$phrase}" checked="{{ in_array($key, $input.c.warning.type) }}" />
-		</xf:foreach>
-	</xf:radiorow>
-</xf:macro>

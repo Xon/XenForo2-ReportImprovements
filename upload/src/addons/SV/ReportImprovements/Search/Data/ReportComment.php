@@ -185,7 +185,7 @@ class ReportComment extends AbstractData
             'report_content_type' => $report->content_type,
             'state_change'        => $entity->state_change ?: '',
             'report_type'         => $entity->getReportType(),
-            'report_user'         => $report->content_user_id,
+            'content_user'        => $report->content_user_id, // duplicate of report.user_id
         ];
 
         if ($report->assigner_user_id)
@@ -231,7 +231,6 @@ class ReportComment extends AbstractData
 
     public function setupMetadataStructure(MetadataStructure $structure)
     {
-        $structure->addField('report_user', MetadataStructure::INT);
         // shared with Report
         foreach ($this->reportRepo->getReportHandlers() as $handler)
         {
@@ -245,6 +244,7 @@ class ReportComment extends AbstractData
         $structure->addField('state_change', MetadataStructure::KEYWORD);
         $structure->addField('report_state', MetadataStructure::KEYWORD);
         $structure->addField('report_content_type', MetadataStructure::KEYWORD);
+        $structure->addField('content_user', MetadataStructure::INT);
         $structure->addField('assigned_user', MetadataStructure::INT);
         $structure->addField('assigner_user', MetadataStructure::INT);
 
@@ -254,6 +254,7 @@ class ReportComment extends AbstractData
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints): void
     {
         $constraints = $request->filter([
+            'c.content.user' => 'str',
             'c.assigned'     => 'str',
             'c.assigner'     => 'str',
             'c.participants' => 'str',
@@ -390,7 +391,7 @@ class ReportComment extends AbstractData
         $repo = \SV\SearchImprovements\Globals::repo();
 
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
-            'c.report_user', 'report_user'
+            'c.content.user', 'content_user'
         );
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
             'c.assigned', 'assigned_user'

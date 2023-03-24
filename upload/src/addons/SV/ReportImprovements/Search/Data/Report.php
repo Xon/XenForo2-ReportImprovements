@@ -161,6 +161,7 @@ class Report extends AbstractData
             'report_state'        => $entity->report_state,
             'report_content_type' => $entity->content_type,
             'report_type'         => ReportType::Reported_content,
+            'content_user'        => $entity->content_user_id, // duplicate of report.user_id
         ];
 
         if ($entity->assigner_user_id)
@@ -206,6 +207,7 @@ class Report extends AbstractData
         $structure->addField('report', MetadataStructure::INT);
         $structure->addField('report_state', MetadataStructure::KEYWORD);
         $structure->addField('report_content_type', MetadataStructure::KEYWORD);
+        $structure->addField('content_user', MetadataStructure::INT);
         $structure->addField('assigned_user', MetadataStructure::INT);
         $structure->addField('assigner_user', MetadataStructure::INT);
 
