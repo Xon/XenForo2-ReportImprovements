@@ -166,11 +166,36 @@ class ReportComment extends AbstractData
 
     protected function getMessage(ReportCommentEntity $entity): string
     {
+        /** @noinspection PhpUnnecessaryLocalVariableInspection */
         $message = $entity->message;
 
-        if ($entity->alertComment !== null)
+        // currently not required:
+        //$message .= $this->getEntityToMessage($entity);
+
+        return $message;
+    }
+
+    protected function getEntityToMessage(Entity $entity): string
+    {
+        $message = '';
+        foreach ($entity->structure()->columns as $column => $schema)
         {
-            $message .= "\n".$entity->alertComment;
+            if (
+                ($schema['type'] ?? '') !== Entity::STR ||
+                empty($schema['allowedValues']) || // aka enums
+                ($schema['noIndex'] ?? false)
+            )
+            {
+                continue;
+            }
+
+            $value = $entity->get($column);
+            if ($value === null || $value === '')
+            {
+                continue;
+            }
+
+            $message .= "\n" . $value;
         }
 
         return $message;

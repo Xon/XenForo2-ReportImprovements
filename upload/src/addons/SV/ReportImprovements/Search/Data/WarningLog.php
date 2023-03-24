@@ -98,33 +98,7 @@ class WarningLog extends ReportComment
     {
         $message = parent::getMessage($entity);
 
-        $message .= $this->getWarningLogToMessage($entity->WarningLog);
-
-        return $message;
-    }
-
-    protected function getWarningLogToMessage(WarningLogEntity $warningLog): string
-    {
-        $message = '';
-        foreach ($warningLog->structure()->columns as $column => $schema)
-        {
-            if (
-                ($schema['type'] ?? '') !== Entity::STR ||
-                empty($schema['allowedValues']) || // aka enums
-                ($schema['noIndex'] ?? false)
-            )
-            {
-                continue;
-            }
-
-            $value = $warningLog->get($column);
-            if ($value === null || $value === '')
-            {
-                continue;
-            }
-
-            $message .= "\n" . $value;
-        }
+        $message .= $this->getEntityToMessage($entity->WarningLog);
 
         return $message;
     }

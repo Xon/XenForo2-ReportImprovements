@@ -151,13 +151,13 @@ class WarningLog extends Entity
             'warning_id'            => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'content_type'          => ['type' => self::BINARY, 'maxLength' => 25, 'required' => true],
             'content_id'            => ['type' => self::UINT, 'required' => true],
-            'content_title'         => ['type' => self::STR, 'maxLength' => 255, 'default' => '', 'noIndex' => true],
+            'content_title'         => ['type' => self::STR, 'maxLength' => 255, 'default' => ''],
             'public_banner'         => ['type' => self::STR, 'maxLength' => 255, 'nullable' => true, 'default' => null],
             'user_id'               => ['type' => self::UINT, 'required' => true],
             'warning_date'          => ['type' => self::UINT, 'required' => true],
             'warning_user_id'       => ['type' => self::UINT, 'required' => true],
             'warning_definition_id' => ['type' => self::UINT, 'default' => null, 'nullable' => true],
-            'title'                 => ['type' => self::STR, 'maxLength' => 255, 'default' => ''], // should be required but...
+            'title'                 => ['type' => self::STR, 'maxLength' => 255, 'default' => '', 'noIndex' => true], // should be required but...
             'notes'                 => ['type' => self::STR, 'default' => ''],
             'points'                => ['type' => self::UINT, 'max' => 65535, 'nullable' => true, 'default' => null],
             'expiry_date'           => ['type' => self::UINT, 'default' => 0],

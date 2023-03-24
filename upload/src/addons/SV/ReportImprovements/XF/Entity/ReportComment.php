@@ -10,6 +10,7 @@ use XF\Entity\Attachment;
 use XF\Entity\ReactionTrait;
 use XF\Mvc\Entity\AbstractCollection as AbstractCollection;
 use XF\Mvc\Entity\Structure;
+use function preg_match;
 
 /**
  * Class ReportComment
@@ -347,11 +348,12 @@ class ReportComment extends XFCP_ReportComment
             $structure->contentType = 'report_comment';
         }
 
+        $structure->columns['username']['noIndex'] = true;
         $structure->columns['warning_log_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
         $structure->columns['alertSent'] = ['type' => self::BOOL, 'default' => false];
         $structure->columns['alertComment'] = ['type' => self::STR, 'default' => null, 'nullable' => true];
         $structure->columns['assigned_user_id'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
-        $structure->columns['assigned_username'] = ['type' => self::STR, 'maxLength' => 50, 'default' => ''];
+        $structure->columns['assigned_username'] = ['type' => self::STR, 'maxLength' => 50, 'default' => '', 'noIndex' => true];
         // edit support
         // Pre-XF2.2.9 bug, where UINT assumes 32bit value, so explicitly set 'max'
         $structure->columns['ip_id'] = ['type' => self::UINT, 'max' => \PHP_INT_MAX, 'nullable' => true, 'default' => null];
@@ -360,7 +362,6 @@ class ReportComment extends XFCP_ReportComment
         $structure->columns['last_edit_date'] = ['type' => self::UINT, 'default' => 0];
         $structure->columns['last_edit_user_id'] = ['type' => self::UINT, 'default' => 0];
         $structure->columns['edit_count'] = ['type' => self::UINT, 'forced' => true, 'default' => 0];
-
 
         $structure->behaviors['XF:Reactable'] = ['stateField' => ''];
         $structure->behaviors['XF:Indexable'] = [
