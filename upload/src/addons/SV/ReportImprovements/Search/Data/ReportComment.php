@@ -254,7 +254,7 @@ class ReportComment extends AbstractData
         return 'report';
     }
 
-    public function setupMetadataStructure(MetadataStructure $structure)
+    public function setupMetadataStructure(MetadataStructure $structure): void
     {
         // shared with Report
         foreach ($this->reportRepo->getReportHandlers() as $handler)
