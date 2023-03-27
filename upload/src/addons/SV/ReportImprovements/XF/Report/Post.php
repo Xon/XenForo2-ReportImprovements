@@ -7,6 +7,7 @@ use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\Thread;
 use XF\Entity\Report;
 use XF\Mvc\Entity\Entity;
+use XF\Search\Data\Post as PostSearch;
 use XF\Search\MetadataStructure;
 use function assert;
 
@@ -18,6 +19,23 @@ use function assert;
  */
 class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterface
 {
+    /**
+     * @var PostSearch|null
+     */
+    protected $searchHandler = null;
+
+    protected function getSearchHandler(): PostSearch
+    {
+        if ($this->searchHandler === null)
+        {
+            $handler = \XF::app()->search()->handler($this->contentType);
+            assert($handler instanceof PostSearch);
+            $this->searchHandler = $handler;
+        }
+
+        return $this->searchHandler;
+    }
+
     /**
      * @param Report $report
      * @return bool
@@ -86,23 +104,17 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
 
     public function getSearchFormData(): array
     {
-        $handler = \XF::app()->search()->handler($this->contentType);
-        assert($handler instanceof \XF\Search\Data\Post);
-        return $handler->getSearchFormData();
+        return $this->getSearchHandler()->getSearchFormData();
     }
 
     public function applySearchTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array $urlConstraints): void
     {
-        $handler = \XF::app()->search()->handler($this->contentType);
-        assert($handler instanceof \XF\Search\Data\Post);
-        $handler->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
+        $this->getSearchHandler()->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
     }
 
     public function setupMetadataStructure(MetadataStructure $structure): void
     {
-        $handler = \XF::app()->search()->handler($this->contentType);
-        assert($handler instanceof \XF\Search\Data\Post);
-        $handler->setupMetadataStructure($structure);
+        $this->getSearchHandler()->setupMetadataStructure($structure);
     }
 
     public function populateMetaData(\XF\Entity\Report $entity, array &$metaData): void

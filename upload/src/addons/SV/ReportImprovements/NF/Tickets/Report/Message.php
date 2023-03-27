@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\NF\Tickets\Report;
 
+use NF\Tickets\Search\Data\Message as MessageSearch;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use XF\Entity\Report;
@@ -14,6 +15,23 @@ use function assert;
  */
 class Message extends XFCP_Message implements ContentInterface, ReportSearchFormInterface
 {
+    /**
+     * @var MessageSearch|null
+     */
+    protected $searchHandler = null;
+
+    protected function getSearchHandler(): MessageSearch
+    {
+        if ($this->searchHandler === null)
+        {
+            $handler = \XF::app()->search()->handler($this->contentType);
+            assert($handler instanceof MessageSearch);
+            $this->searchHandler = $handler;
+        }
+
+        return $this->searchHandler;
+    }
+
     /**
      * @param Report $report
      * @param Entity $content
@@ -57,16 +75,12 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
 
     public function getSearchFormData(): array
     {
-        $handler = \XF::app()->search()->handler($this->contentType);
-        assert($handler instanceof \NF\Tickets\Search\Data\Message);
-        return $handler->getSearchFormData();
+        return $this->getSearchHandler()->getSearchFormData();
     }
 
     public function applySearchTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array $urlConstraints): void
     {
-        $handler = \XF::app()->search()->handler($this->contentType);
-        assert($handler instanceof \NF\Tickets\Search\Data\Message);
-        $handler->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
+        $this->getSearchHandler()->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
     }
 
     public function populateMetaData(\XF\Entity\Report $entity, array &$metaData): void
@@ -93,8 +107,6 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
 
     public function setupMetadataStructure(MetadataStructure $structure): void
     {
-        $handler = \XF::app()->search()->handler($this->contentType);
-        assert($handler instanceof \NF\Tickets\Search\Data\Message);
-        $handler->setupMetadataStructure($structure);
+        $this->getSearchHandler()->setupMetadataStructure($structure);
     }
 }
