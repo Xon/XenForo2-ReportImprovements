@@ -486,6 +486,10 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     public function svDisableIndexing(): void
     {
         $this->getBehaviors();
+        if (array_key_exists('XF:IndexableContainer', $this->_behaviors))
+        {
+           unset($this->_behaviors['XF:IndexableContainer']);
+        }
     }
 
     public function svEnableIndexing(): void
