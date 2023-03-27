@@ -27,8 +27,10 @@ class Report extends AbstractData
 
     use DiscussionTrait;
 
-    /** @var ReportRepo */
+    /** @var ReportRepo|\XF\Repository\Report */
     protected $reportRepo;
+    /** @var bool */
+    protected $isAddonFullyActive;
 
     /**
      * @param string            $contentType
@@ -39,6 +41,7 @@ class Report extends AbstractData
         parent::__construct($contentType, $searcher);
 
         $this->reportRepo = \XF::repository('XF:Report');
+        $this->isAddonFullyActive = $this->reportRepo instanceof ReportRepo;
     }
 
     public function canViewContent(Entity $entity, &$error = null): bool
@@ -54,8 +57,7 @@ class Report extends AbstractData
      */
     public function getContent($id, $forView = false)
     {
-        $reportRepo = \XF::repository('XF:Report');
-        if (!($reportRepo instanceof ReportRepo))
+        if (!$this->isAddonFullyActive)
         {
             // This function may be invoked when the add-on is disabled, just return nothing
             return is_array($id) ? [] : null;
@@ -65,7 +67,7 @@ class Report extends AbstractData
 
         if ($entities instanceof AbstractCollection)
         {
-            $reportRepo->svPreloadReports($entities);
+            $this->reportRepo->svPreloadReports($entities);
         }
 
         return $entities;
@@ -79,8 +81,7 @@ class Report extends AbstractData
      */
     public function getContentInRange($lastId, $amount, $forView = false)
     {
-        $reportRepo = \XF::repository('XF:Report');
-        if (!($reportRepo instanceof ReportRepo))
+        if (!$this->isAddonFullyActive)
         {
             // This function may be invoked when the add-on is disabled, just return nothing
             return new ArrayCollection([]);
@@ -88,7 +89,7 @@ class Report extends AbstractData
 
         $contents = parent::getContentInRange($lastId, $amount, $forView);
 
-        $reportRepo->svPreloadReports($contents);
+        $this->reportRepo->svPreloadReports($contents);
 
         return $contents;
     }

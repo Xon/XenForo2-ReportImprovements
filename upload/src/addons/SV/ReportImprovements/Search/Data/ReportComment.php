@@ -44,8 +44,10 @@ class ReportComment extends AbstractData
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
     use DiscussionTrait;
 
-    /** @var ReportRepo */
+    /** @var ReportRepo|\XF\Repository\Report */
     protected $reportRepo;
+    /** @var bool */
+    protected $isAddonFullyActive;
     /** @var bool */
     protected $isUsingElasticSearch;
 
@@ -58,6 +60,7 @@ class ReportComment extends AbstractData
         parent::__construct($contentType, $searcher);
 
         $this->reportRepo = \XF::repository('XF:Report');
+        $this->isAddonFullyActive = $this->reportRepo instanceof ReportRepo;
         $this->isUsingElasticSearch = \SV\SearchImprovements\Globals::repo()->isUsingElasticSearch();
     }
 
@@ -75,8 +78,7 @@ class ReportComment extends AbstractData
      */
     public function getContent($id, $forView = false)
     {
-        $reportRepo = \XF::repository('XF:Report');
-        if (!($reportRepo instanceof ReportRepo))
+        if (!$this->isAddonFullyActive)
         {
             // This function may be invoked when the add-on is disabled, just return nothing
             return is_array($id) ? [] : null;
@@ -86,7 +88,7 @@ class ReportComment extends AbstractData
 
         if ($entities instanceof AbstractCollection)
         {
-            $reportRepo->svPreloadReportComments($entities);
+            $this->reportRepo->svPreloadReportComments($entities);
         }
 
         return $entities;
@@ -100,8 +102,7 @@ class ReportComment extends AbstractData
      */
     public function getContentInRange($lastId, $amount, $forView = false): AbstractCollection
     {
-        $reportRepo = \XF::repository('XF:Report');
-        if (!($reportRepo instanceof ReportRepo))
+        if (!$this->isAddonFullyActive)
         {
             // This function may be invoked when the add-on is disabled, just return nothing
             return new ArrayCollection([]);
@@ -109,7 +110,7 @@ class ReportComment extends AbstractData
 
         $contents = parent::getContentInRange($lastId, $amount, $forView);
 
-        $reportRepo->svPreloadReportComments($contents);
+        $this->reportRepo->svPreloadReportComments($contents);
 
         return $contents;
     }
@@ -538,14 +539,12 @@ class ReportComment extends AbstractData
 
     public function getSearchFormData(): array
     {
+        assert($this->isAddonFullyActive);
         $form = parent::getSearchFormData();
 
-        $reportRepo = \XF::repository('XF:Report');
-        assert($reportRepo instanceof ReportRepo);
-
         $form['sortOrders'] = $this->getSortOrders();
-        $form['reportStates'] = $reportRepo->getReportStatePairs();
-        $form['reportContentTypes'] = $reportRepo->getReportContentTypes();
+        $form['reportStates'] = $this->reportRepo->getReportStatePairs();
+        $form['reportContentTypes'] = $this->reportRepo->getReportContentTypes();
         $form['reportTypes'] = ReportType::getPairs();
         foreach ($form['reportContentTypes'] as $rec)
         {

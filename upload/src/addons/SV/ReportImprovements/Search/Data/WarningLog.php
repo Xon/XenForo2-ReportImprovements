@@ -4,16 +4,13 @@ namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
-use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
-use SV\SearchImprovements\Search\Features\SearchOrder;
 use SV\SearchImprovements\Util\Arr;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\IndexRecord;
 use XF\Search\MetadataStructure;
 use XF\Search\Query\Query;
-use function array_key_exists;
 use function assert;
 use function count;
 use function in_array;
@@ -55,8 +52,7 @@ class WarningLog extends ReportComment
      */
     public function getContentInRange($lastId, $amount, $forView = false): \XF\Mvc\Entity\AbstractCollection
     {
-        $reportRepo = \XF::repository('XF:Report');
-        if (!($reportRepo instanceof ReportRepo))
+        if (!$this->isAddonFullyActive)
         {
             // This function may be invoked when the add-on is disabled, just return nothing
             return new ArrayCollection([]);
@@ -87,9 +83,7 @@ class WarningLog extends ReportComment
 
         $contents = $finder->fetch($amount);
 
-        /** @var ReportRepo $reportRepo */
-        $reportRepo = \XF::repository('XF:Report');
-        $reportRepo->svPreloadReportComments($contents);
+        $this->reportRepo->svPreloadReportComments($contents);
 
         return $contents;
     }
@@ -192,6 +186,7 @@ class WarningLog extends ReportComment
 
     public function getSearchFormData(): array
     {
+        assert($this->isAddonFullyActive);
         $form = parent::getSearchFormData();
 
         $form['warningTypes'] = WarningType::getPairs();
