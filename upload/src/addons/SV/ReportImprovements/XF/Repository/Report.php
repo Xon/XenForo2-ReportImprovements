@@ -588,6 +588,7 @@ class Report extends XFCP_Report
     public function getReportStates(): array
     {
         $structure = \XF::app()->em()->getEntityStructure('XF:Report');
+        // This list is extended by other add-ons
         $states = $structure->columns['report_state']['allowedValues'] ?? [];
         assert(is_array($states) && count($states) > 0);
 
@@ -609,25 +610,17 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @return array<string,array{handler: AbstractHandler, phrase: \XF\Phrase}>
+     * @param bool $plural
+     * @return array<string,\XF\Phrase>
      */
-    public function getReportContentTypes(): array
+    public function getReportContentTypePhrasePairs(bool $plural): array
     {
         $contentTypes = [];
         $app = $this->app();
 
-        foreach ($app->getContentTypeField('report_handler_class') as $contentType => $className)
+        foreach ($this->getReportHandlers() as $contentType => $handler)
         {
-            $handler = $this->getReportHandler($contentType, false);
-            if ($handler === null)
-            {
-                continue;
-            }
-            $contentTypes[$contentType] = [
-                'handler' => $handler,
-                'phrase'  => $app->getContentTypePhrase($contentType),
-                'phrases'  => $app->getContentTypePhrase($contentType, true),
-            ];
+            $contentTypes[$contentType] = $app->getContentTypePhrase($contentType, $plural);
         }
 
         return $contentTypes;

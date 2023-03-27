@@ -544,11 +544,10 @@ class ReportComment extends AbstractData
 
         $form['sortOrders'] = $this->getSortOrders();
         $form['reportStates'] = $this->reportRepo->getReportStatePairs();
-        $form['reportContentTypes'] = $this->reportRepo->getReportContentTypes();
+        $form['reportHandlers'] = $this->reportRepo->getReportHandlers();
         $form['reportTypes'] = ReportType::getPairs();
-        foreach ($form['reportContentTypes'] as $rec)
+        foreach ($form['reportHandlers'] as $handler)
         {
-            $handler = $rec['handler'];
             if ($handler instanceof ReportSearchFormInterface)
             {
                 $form = array_merge($form, $handler->getSearchFormData());

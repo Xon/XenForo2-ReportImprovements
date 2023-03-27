@@ -65,13 +65,13 @@ class Search extends XFCP_Search
         {
             $reportRepo = \XF::repository('XF:Report');
             assert($reportRepo instanceof ReportRepo);
-            $states = $reportRepo->getReportContentTypes();
+            $states = $reportRepo->getReportContentTypePhrasePairs(true);
 
             foreach ($value as $subKey => $id)
             {
                 $id = (string)$id;
                 $query[$key . '_' . $subKey] = \XF::phrase('svSearchConstraint.report_content_type', [
-                    'value' => $states[$id]['phrases'] ?? $id,
+                    'value' => $states[$id] ?? $id,
                 ]);
             }
 
