@@ -135,6 +135,11 @@ class WarningLog extends Entity
         }
     }
 
+    public function isUserOperation(): bool
+    {
+        return $this->operation_type == WarningType::Acknowledge;
+    }
+
     /**
      * @param Structure $structure
      * @return Structure
@@ -187,6 +192,18 @@ class WarningLog extends Entity
                 'type'       => self::TO_ONE,
                 'conditions' => 'user_id',
                 'primary'    => true,
+            ],
+            'WarnedBy' => [
+                'entity' => 'XF:User',
+                'type' => self::TO_ONE,
+                'conditions' => [['user_id', '=', '$warning_user_id']],
+                'primary' => true
+            ],
+            'Definition' => [
+                'entity' => 'XF:WarningDefinition',
+                'type' => self::TO_ONE,
+                'conditions' => 'warning_definition_id',
+                'primary' => true
             ],
             'ReplyBan'       => [
                 'entity'     => 'XF:ThreadReplyBan',

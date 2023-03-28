@@ -36,6 +36,9 @@
 						<xf:if is="$reportComment.WarningLog.title">
 							<li>{{ phrase('warning:') }} {$reportComment.WarningLog.title}</li>
 						</xf:if>
+						<xf:if is="$reportComment.WarningLog.expiry_date">
+							<li>{{ phrase('svReportImprove_expiry_date:') }} {{ date($warningLog.expiry_date) }}</li>
+						</xf:if>
 						<xf:if is="$reportComment.WarningLog.points">
 							<li>{{ phrase('points:') }} {$reportComment.WarningLog.points|number}</li>
 						</xf:if>

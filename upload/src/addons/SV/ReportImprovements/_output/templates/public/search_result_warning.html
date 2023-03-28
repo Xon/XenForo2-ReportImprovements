@@ -1,7 +1,8 @@
-<li class="block-row block-row--separated" data-author="{{ $reportComment.ViewableUsername }}">
+<xf:set var="$actionUser" value="{{ $warningLog.isUserOperation() ? $warningLog.User  : $warningLog.WarnedBy }}"/>
+<li class="block-row block-row--separated" data-author="{{ $actionUser.username }}">
 	<div class="contentRow">
 		<span class="contentRow-figure">
-			<xf:avatar user="{$reportComment.ViewableUser}" size="s" defaultname="{$reportComment.ViewableUsername}" />
+			<xf:avatar user="{$actionUser}" size="s" defaultname="{$reportComment.username}" />
 		</span>
 		<div class="contentRow-main">
 			<div class="contentRow-extra contentRow-extra--small">
@@ -15,14 +16,14 @@
 				</ul>
 			</div>
 			<h3 class="contentRow-title">
-				<a href="{{ link('reports/comment', $reportComment) }}">{{ snippet($report.title_string, 100, {'term': $options.term, 'fromStart': true, 'stripPlainTag': true}) }}</a>
+				<a href="{{ link('reports/comment', $reportComment) }}">{{ snippet($warningLog.title, 100, {'term': $options.term, 'fromStart': true, 'stripPlainTag': true}) }}</a>
 			</h3>
 			
-			<div class="contentRow-snippet">{{ snippet($reportComment.message, 300, {'term': $options.term, 'stripQuote': true}) }}</div>
+			<div class="contentRow-snippet">{{ snippet(trim($warningLog.notes), 300, {'term': $options.term, 'stripQuote': true}) }}</div>
 
 			<div class="contentRow-minor contentRow-minor--hideLinks">
 				<ul class="listInline listInline--bullet">
-					<li><xf:username user="{$reportComment.ViewableUser}" defaultname="{$reportComment.ViewableUsername}" /></li>
+					<li><xf:username user="{$actionUser}" defaultname="{$reportComment.username}" /></li>
 					<li><xf:trim>
 						<xf:if is="$reportComment.WarningLog">
 							{{ phrase('warning') }}
@@ -32,13 +33,11 @@
 							{{ phrase('svReportImprov_report_comment') }}
 						</xf:if>
 					</xf:trim></li>
-					<xf:if is="$reportComment.WarningLog">
-						<xf:if is="$reportComment.WarningLog.title">
-							<li>{{ phrase('warning:') }} {$reportComment.WarningLog.title}</li>
-						</xf:if>
-						<xf:if is="$reportComment.WarningLog.points">
-							<li>{{ phrase('points:') }} {$reportComment.WarningLog.points|number}</li>
-						</xf:if>
+					<xf:if is="$warningLog.expiry_date">
+						<li>{{ phrase('svReportImprove_expiry_date:') }} {{ date($warningLog.expiry_date) }}</li>
+					</xf:if>
+					<xf:if is="$warningLog.points">
+						<li>{{ phrase('points:') }} {$warningLog.points|number}</li>
 					</xf:if>
 					<li><xf:date time="{$reportComment.comment_date}" /></li>
 					<xf:if is="$report.assigned_user_id && $report.AssignedUser">
