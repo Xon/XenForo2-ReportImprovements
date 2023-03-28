@@ -50,7 +50,7 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
 
     public function getContentDate(Report $report): ?int
     {
-        $contentDate = $contentInfo['message_date'] ?? null;
+        $contentDate = $report->content_info['message_date'] ?? null;
         if ($contentDate === null)
         {
             /** @var \NF\Tickets\Entity\Message $content */
