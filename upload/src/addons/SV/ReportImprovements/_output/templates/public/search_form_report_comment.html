@@ -43,8 +43,8 @@
 						   checked="{{ in_array($contentType, $input.c.report.type) }}"
 						   data-hide="true">
 					<xf:dependent>
-						<xf:if is="callable($handler, 'getSearchFormTemplate')">
-							<xf:include template="{$handler.getSearchFormTemplate()}" />
+						<xf:if is="callable($hanlder, 'getSearchFormTemplate')">
+							<xf:include template="{$hanlder.getSearchFormTemplate()}" />
 						</xf:if>
 					</xf:dependent>
 				</xf:option>
@@ -59,8 +59,8 @@
 						   checked="{{ in_array($contentType, $input.c.report.type) }}"
 						   data-hide="true">
 					<xf:dependent>
-						<xf:if is="callable($handler, 'getSearchFormTemplate')">
-							<xf:include template="{$handler.getSearchFormTemplate()}" />
+						<xf:if is="callable($hanlder, 'getSearchFormTemplate')">
+							<xf:include template="{$hanlder.getSearchFormTemplate()}" />
 						</xf:if>
 					</xf:dependent>
 				</xf:option>
