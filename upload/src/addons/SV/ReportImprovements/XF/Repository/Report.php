@@ -2,11 +2,13 @@
 
 namespace SV\ReportImprovements\XF\Repository;
 
+use SV\ReportImprovements\XF\Entity\ReportComment;
 use XF\Db\Exception;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Report\AbstractHandler;
+use function get_class;
 use function sort;
 
 /**
@@ -437,11 +439,11 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param Entity|\XF\Entity\Report|\XF\Entity\ReportComment $entity
+     * @param Report|ReportComment $entity
      * @return int[]
      * @noinspection PhpDocMissingThrowsInspection
      */
-    public function findUserIdsToAlertForSvReportImprov(Entity $entity)
+    public function findUserIdsToAlertForSvReportImprov(Entity $entity): array
     {
         $userIds = [];
         $alertMode = $this->options()->sv_report_alert_mode ?? 'none';
@@ -486,6 +488,10 @@ class Report extends XFCP_Report
                 $userIds[] = $report->assigned_user_id;
                 $userIds = \array_unique($userIds);
             }
+        }
+        else
+        {
+            throw new \InvalidArgumentException(__METHOD__.'($entity) is not a report or report comment, and is intead type:' . get_class($entity));
         }
 
         return $userIds ?: [];
