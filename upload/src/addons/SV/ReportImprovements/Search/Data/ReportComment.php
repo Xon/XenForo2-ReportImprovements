@@ -310,7 +310,11 @@ class ReportComment extends AbstractData
             {
                 if (in_array(ReportType::Reply_ban, $reportTypes, true) || in_array(ReportType::Warning, $reportTypes, true))
                 {
-                    $query->inTypes($query->getTypes() + ['warning']);
+                    $types = $query->getTypes() ?? [];
+                    if (count($types) !== 0 && in_array('warning', $types, true))
+                    {
+                        $query->inTypes($types + ['warning']);
+                    }
                 }
                 $query->withMetadata('report_type', $reportTypes);
                 Arr::setUrlConstraint($urlConstraints, 'c.report.type', $reportTypes);
