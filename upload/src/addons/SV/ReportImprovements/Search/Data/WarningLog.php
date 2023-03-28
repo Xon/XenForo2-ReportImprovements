@@ -268,7 +268,7 @@ class WarningLog extends ReportComment
             case '':
             default:
                 $constraints['c.warning.expiry.lower'] = 0;
-                $constraints['c.warning.expiry.upper'] = 0;
+                $constraints['c.warning.expiry.upper'] = null;
                 Arr::unsetUrlConstraint($urlConstraints, 'c.warning.expired');
         }
         $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
