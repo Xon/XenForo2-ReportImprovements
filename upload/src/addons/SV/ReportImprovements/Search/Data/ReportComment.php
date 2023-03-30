@@ -230,7 +230,7 @@ class ReportComment extends AbstractData
             $reportHandler->populateMetaData($report, $metaData);
         }
 
-        $this->populateDiscussionMetaData($entity, $metaData);
+        $this->populateDiscussionMetaData($report, $metaData);
 
         return $metaData;
     }
