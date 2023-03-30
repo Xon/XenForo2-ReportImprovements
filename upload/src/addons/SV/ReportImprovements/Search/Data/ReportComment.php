@@ -398,9 +398,9 @@ class ReportComment extends AbstractData
                 }
                 else
                 {
-                    $constraint = reset($types);
+                    $constraints = reset($types);
                     $query->withMetadata('report_content_type', array_keys($types));
-                    if (count($constraint) !== 0)
+                    foreach ($constraints as $constraint)
                     {
                         $query->withMetadata($constraint);
                     }
