@@ -372,13 +372,9 @@ class ReportComment extends AbstractData
                 $handler = $handlers[$reportType] ?? null;
                 if ($handler instanceof ReportSearchFormInterface)
                 {
-                    $oldConstraints = $query->getMetadataConstraints();
-                    QueryAccessor::setMetadataConstraints($query, []);
-
-                    $handler->applySearchTypeConstraintsFromInput($query, $request, $urlConstraints);
-                    $types[$reportType] = $query->getMetadataConstraints();
-
-                    QueryAccessor::setMetadataConstraints($query, $oldConstraints);
+                    $tmpQuery = clone $query;
+                    $handler->applySearchTypeConstraintsFromInput($tmpQuery, $request, $urlConstraints);
+                    $types[$reportType] = $tmpQuery->getMetadataConstraints();
                 }
                 else
                 {
