@@ -37,14 +37,14 @@
 	<xf:if is="$isUsingElasticSearch">
 		<xf:checkboxrow name="c[report][content]"
 						label="{$label}">
-			<xf:foreach loop="$reportHandlers" key="$contentType" value="$hanlder">
+			<xf:foreach loop="$reportHandlers" key="$contentType" value="$handler">
 				<xf:option value="{$contentType}"
 						   label="{{ $xf.app.getContentTypePhrase($contentType) }}" 
 						   checked="{{ in_array($contentType, $input.c.report.type) }}"
 						   data-hide="true">
 					<xf:dependent>
-						<xf:if is="callable($hanlder, 'getSearchFormTemplate')">
-							<xf:include template="{$hanlder.getSearchFormTemplate()}" />
+						<xf:if is="callable($handler, 'getSearchFormTemplate')">
+							<xf:include template="{$handler.getSearchFormTemplate()}" />
 						</xf:if>
 					</xf:dependent>
 				</xf:option>
@@ -53,14 +53,14 @@
 	<xf:else />
 		<xf:radiorow name="c[report][content][]"
 					 label="{$label}">
-			<xf:foreach loop="$reportHandlers" key="$contentType" value="$hanlder">
+			<xf:foreach loop="$reportHandlers" key="$contentType" value="$handler">
 				<xf:option value="{$contentType}" 
 						   label="{{ $xf.app.getContentTypePhrase($contentType) }}" 
 						   checked="{{ in_array($contentType, $input.c.report.type) }}"
 						   data-hide="true">
 					<xf:dependent>
-						<xf:if is="callable($hanlder, 'getSearchFormTemplate')">
-							<xf:include template="{$hanlder.getSearchFormTemplate()}" />
+						<xf:if is="callable($handler, 'getSearchFormTemplate')">
+							<xf:include template="{$handler.getSearchFormTemplate()}" />
 						</xf:if>
 					</xf:dependent>
 				</xf:option>
