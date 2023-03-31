@@ -411,7 +411,14 @@ class ReportComment extends AbstractData
                     }
                 }
 
-                Arr::setUrlConstraint($urlConstraints, 'c.report.content', array_keys($types));
+                if (count($types) !== count($handlers))
+                {
+                    Arr::setUrlConstraint($urlConstraints, 'c.report.content', array_keys($types));
+                }
+                else
+                {
+                    Arr::unsetUrlConstraint($urlConstraints, 'c.report.content');
+                }
             }
             else
             {
