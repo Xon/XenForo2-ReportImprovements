@@ -386,23 +386,23 @@ class ReportComment extends AbstractData
             {
                 if (count($types) > 1)
                 {
-                    $constraints = [];
+                    $queryConstraints = [];
                     foreach ($types as $contentType => $nestedConstraints)
                     {
-                        $constraints[] = new AndConstraint(
+                        $queryConstraints[] = new AndConstraint(
                             new MetadataConstraint('report_content_type', $contentType),
                             ...$nestedConstraints
                         );
                     }
-                    $query->withMetadata(new OrConstraint(...$constraints));
+                    $query->withMetadata(new OrConstraint(...$queryConstraints));
                 }
                 else
                 {
-                    $constraints = reset($types);
+                    $queryConstraints = reset($types);
                     $query->withMetadata('report_content_type', array_keys($types));
-                    foreach ($constraints as $constraint)
+                    foreach ($queryConstraints as $queryConstraint)
                     {
-                        $query->withMetadata($constraint);
+                        $query->withMetadata($queryConstraint);
                     }
                 }
 
