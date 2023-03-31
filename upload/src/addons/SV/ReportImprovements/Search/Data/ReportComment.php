@@ -344,10 +344,14 @@ class ReportComment extends AbstractData
             {
                 $query->error('report.state', \XF::phrase('svReportImprov_unknown_report_states', ['values' => implode(', ', $badReportStates)]));
             }
-            else
+            else if (count($reportStates) !== count($states))
             {
                 $query->withMetadata('report_state', $reportStates);
                 Arr::setUrlConstraint($urlConstraints, 'c.report.state', $reportStates);
+            }
+            else
+            {
+                Arr::unsetUrlConstraint($urlConstraints, 'c.report.state');
             }
         }
         else
