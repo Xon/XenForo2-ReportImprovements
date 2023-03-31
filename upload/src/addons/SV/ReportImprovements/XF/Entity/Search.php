@@ -23,7 +23,7 @@ class Search extends XFCP_Search
 
         $this->svDateConstraint[] = 'warning_expiry_lower';
         $this->svDateConstraint[] = 'warning_expiry_upper';
-        $this->svUserConstraint[] = 'content_user';
+        $this->svUserConstraint[] = 'report_user';
         $this->svUserConstraint[] = 'warning_mod';
         $this->svIgnoreConstraint[] = 'child_categories';
     }

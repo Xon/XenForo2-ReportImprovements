@@ -280,7 +280,6 @@ class ReportComment extends AbstractData
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints): void
     {
         $constraints = $request->filter([
-            'c.content.user' => 'str',
             'c.assigned'     => 'str',
             'c.assigner'     => 'str',
             'c.participants' => 'str',
@@ -288,6 +287,7 @@ class ReportComment extends AbstractData
             'c.replies.lower' => 'uint',
             'c.replies.upper' => '?uint,empty-str-to-null',
 
+            'c.report.user' => 'str',
             'c.report.type'    => 'array-str',
             'c.report.content' => 'array-str',
             'c.report.state'   => 'array-str',
@@ -418,7 +418,7 @@ class ReportComment extends AbstractData
         $repo = \SV\SearchImprovements\Globals::repo();
 
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
-            'c.content.user', 'content_user'
+            'c.report.user', 'content_user'
         );
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
             'c.assigned', 'assigned_user'
