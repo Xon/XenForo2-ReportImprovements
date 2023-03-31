@@ -1,7 +1,7 @@
 <xf:set var="$containerType" value="" />
 <xf:macro template="search_form_macros" name="keywords" arg-input="{$input}" arg-canTitleLimit="{{ true }}" />
 <xf:macro name="svSearchImprov_macros::user_field_multi" arg-name="user" arg-label="{{ phrase('posted_by') }}" arg-explain="{{ phrase('svReportImprove_warning_action_by_other_user') }}" />
-<xf:macro name="svSearchImprov_macros::user_field_single" arg-name="content.user" arg-label="{{ phrase('svReportImprov_warned_user') }}" />
+<xf:macro name="svSearchImprov_macros::user_field_single" arg-name="report.user" arg-label="{{ phrase('svReportImprov_warned_user') }}" />
 <xf:macro name="svSearchImprov_macros::user_field_single" arg-name="warning.mod" arg-label="{{ phrase('svReportImprov_issuing_user') }}" />
 <xf:macro template="search_form_macros" name="date" arg-input="{$input}" />
 
