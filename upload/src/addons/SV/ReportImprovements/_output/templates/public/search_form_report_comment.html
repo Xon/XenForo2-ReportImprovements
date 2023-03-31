@@ -40,7 +40,7 @@
 			<xf:foreach loop="$reportHandlers" key="$contentType" value="$handler">
 				<xf:option value="{$contentType}"
 						   label="{{ $xf.app.getContentTypePhrase($contentType) }}" 
-						   checked="{{ in_array($contentType, $input.c.report.type) }}"
+						   checked="{{ in_array($contentType, $input.c.report.content) }}"
 						   data-hide="true">
 					<xf:dependent>
 						<xf:if is="callable($handler, 'getSearchFormTemplate')">
@@ -56,7 +56,7 @@
 			<xf:foreach loop="$reportHandlers" key="$contentType" value="$handler">
 				<xf:option value="{$contentType}" 
 						   label="{{ $xf.app.getContentTypePhrase($contentType) }}" 
-						   checked="{{ in_array($contentType, $input.c.report.type) }}"
+						   checked="{{ in_array($contentType, $input.c.report.content) }}"
 						   data-hide="true">
 					<xf:dependent>
 						<xf:if is="callable($handler, 'getSearchFormTemplate')">
