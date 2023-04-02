@@ -358,31 +358,31 @@ class ReportComment extends AbstractData
             Arr::unsetUrlConstraint($urlConstraints, 'c.report.state');
         }
 
-        $reportTypes = $constraints['c.report.content'];
-        assert(is_array($reportTypes));
-        if (count($reportTypes) !== 0)
+        $reportContentTypes = $constraints['c.report.content'];
+        assert(is_array($reportContentTypes));
+        if (count($reportContentTypes) !== 0)
         {
             // MySQL backend doesn't support composing multiple queries atm
-            if (!$this->isUsingElasticSearch && count($reportTypes) > 1)
+            if (!$this->isUsingElasticSearch && count($reportContentTypes) > 1)
             {
                 $query->error('c.report.content', \XF::phrase('svReportImprov_only_single_report_type_permitted'));
-                $reportTypes = [];
+                $reportContentTypes = [];
             }
 
             $types = [];
             $handlers = $this->reportRepo->getReportHandlers();
-            foreach ($reportTypes as $reportType)
+            foreach ($reportContentTypes as $reportContentType)
             {
-                $handler = $handlers[$reportType] ?? null;
+                $handler = $handlers[$reportContentType] ?? null;
                 if ($handler instanceof ReportSearchFormInterface)
                 {
                     $tmpQuery = clone $query;
                     $handler->applySearchTypeConstraintsFromInput($tmpQuery, $request, $urlConstraints);
-                    $types[$reportType] = $tmpQuery->getMetadataConstraints();
+                    $types[$reportContentType] = $tmpQuery->getMetadataConstraints();
                 }
                 else
                 {
-                    $types[$reportType] = [];
+                    $types[$reportContentType] = [];
                 }
             }
 
