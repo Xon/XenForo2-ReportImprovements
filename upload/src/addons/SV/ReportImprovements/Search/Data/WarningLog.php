@@ -105,7 +105,10 @@ class WarningLog extends ReportComment
 
         $metaData['warning_type'] = $warningLog->operation_type;
         $metaData['issuer_user'] = $warningLog->warning_user_id;
-        $metaData['expiry_date'] = $warningLog->expiry_date <= 0 ? \PHP_INT_MAX : $warningLog->expiry_date;
+        if ($warningLog->expiry_date)
+        {
+            $metaData['expiry_date'] = $warningLog->expiry_date;
+        }
 
         if ($warningLog->warning_id)
         {
@@ -271,7 +274,7 @@ class WarningLog extends ReportComment
                 $constraints['c.warning.expiry.upper'] = null;
                 Arr::unsetUrlConstraint($urlConstraints, 'c.warning.expired');
         }
-        $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
+        $repo->applyDateRangeConstraint($query, $constraints, $urlConstraints,
             'c.warning.expiry.lower', 'c.warning.expiry.upper', 'expiry_date',
             $this->getWarningLogQueryTableReference(), 'warning_log'
         );
