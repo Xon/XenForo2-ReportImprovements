@@ -5,7 +5,6 @@ namespace SV\ReportImprovements\Search\Data;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
-use SV\ReportImprovements\Search\QueryAccessor;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
