@@ -6,6 +6,8 @@ use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Util\Arr;
+use SV\SearchImprovements\XF\Search\Query\Constraints\ExistsConstraint;
+use SV\SearchImprovements\XF\Search\Query\Constraints\NotConstraint;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Search\IndexRecord;
@@ -260,6 +262,12 @@ class WarningLog extends ReportComment
         {
             case 'active':
                 $constraints['c.warning.expiry.lower'] = \XF::$time;
+                $constraints['c.warning.expiry.upper'] = null;
+                break;
+            case 'active_never_expires':
+                $query->withMetadata(new NotConstraint(new ExistsConstraint('expiry_date')));
+                // disable these options
+                $constraints['c.warning.expiry.lower'] = 0;
                 $constraints['c.warning.expiry.upper'] = null;
                 break;
             case 'expired':

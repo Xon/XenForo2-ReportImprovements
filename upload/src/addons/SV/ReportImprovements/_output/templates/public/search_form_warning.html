@@ -28,7 +28,8 @@
 			 label="{{ phrase('svReportImprove_expiry_date') }}">
 	<xf:option value="" label="{{ phrase('any') }}" />
 	<xf:option value="active" label="{{ phrase('svReportImprove_active') }}" />	
-	<xf:option value="expired" label="{{ phrase('svReportImprove_expired') }}" />
+	<xf:option value="active_never_expires" label="{{ phrase('svReportImprove_never_expire') }}" />
+	<xf:option value="expired" label="{{ phrase('svReportImprove_expired') }}" />	
 	<xf:option value="date" label="{{ phrase('date_range') }}" data-hide="true" >
 		<xf:dependent>
 			<xf:macro name="svSearchImprov_macros::date_range" arg-name="warning.expiry" arg-rowtype="fullWidth noLabel" arg-label="" />
