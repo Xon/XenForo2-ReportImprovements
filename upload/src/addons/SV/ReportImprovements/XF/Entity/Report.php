@@ -521,12 +521,12 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         }
 
         $structure->behaviors['XF:Indexable'] = [
-            'checkForUpdates' => ['content_user_id', 'content_info', 'first_report_date', 'report_state'],
+            'checkForUpdates' => ['content_user_id', 'content_info', 'first_report_date', 'report_state', 'assigned_user_id', 'assigned_date', 'assigner_user_id', 'comment_count'],
         ];
         $structure->behaviors['XF:IndexableContainer'] = [
             'childContentType' => 'report_comment',
             'childIds'         => function ($report) { return $report->comment_ids; },
-            'checkForUpdates'  => ['report_id', 'is_report', 'report_state', 'assigned_user_id', 'assigned_date', 'assigner_user_id'],
+            'checkForUpdates'  => ['report_state', 'assigned_user_id', 'assigned_date', 'assigner_user_id', 'comment_count'],
         ];
 
         $structure->columns['assigned_date'] = ['type' => self::UINT, 'default' => null, 'nullable' => true];
