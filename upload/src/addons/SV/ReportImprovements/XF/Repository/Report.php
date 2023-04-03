@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Repository;
 
+use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use XF\Db\Exception;
 use XF\Mvc\Entity\AbstractCollection;
@@ -613,6 +614,16 @@ class Report extends XFCP_Report
         }
 
         return $states;
+    }
+
+    /**
+     * This function exists to allow templates to access it via $xf.app.em.getRepository('XF:Report').getReportTypePairs()
+     *
+     * @return array<string,\XF\Phrase>
+     */
+    public function getReportTypePairs(): array
+    {
+        return ReportType::getPairs();
     }
 
     /**
