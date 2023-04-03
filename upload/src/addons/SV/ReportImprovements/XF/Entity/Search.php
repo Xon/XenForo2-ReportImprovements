@@ -126,15 +126,12 @@ class Search extends XFCP_Search
     {
         if ($key === 'warning_expired')
         {
-            switch ($value)
+            if ($value === 'date')
             {
-                case 'expired':
-                    return \XF::phrase('svSearchConstraint.warning_expired');
-                case 'active':
-                    return \XF::phrase('svSearchConstraint.warning_active');
-                case 'date':
-                    return null;
+                return null;
             }
+
+            return \XF::phrase('svSearchConstraint.'.$value);
         }
 
         return parent::getSpecializedSearchConstraintPhrase($key, $value);
