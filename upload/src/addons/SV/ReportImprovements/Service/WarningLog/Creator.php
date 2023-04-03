@@ -310,9 +310,7 @@ class Creator extends AbstractService
 
             $report = $post->Report;
             $content = $post;
-            $contentTitle = \XF::phrase('post_in_thread_x', [
-                'title' => $post->Thread->title,
-            ])->render('raw');
+            $contentTitle = $post->Thread->title;
         }
 
         $warningLog->content_type = $content->getEntityContentType();
