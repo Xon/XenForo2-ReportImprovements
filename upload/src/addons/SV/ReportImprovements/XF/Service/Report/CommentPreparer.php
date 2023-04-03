@@ -4,8 +4,14 @@ namespace SV\ReportImprovements\XF\Service\Report;
 
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use XF\Behavior\Indexable;
+use XF\Behavior\IndexableContainer;
+use XF\Mvc\Entity\Entity;
 use XF\Service\AbstractService;
 use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
+use function assert;
+use function in_array;
+use function strlen;
 
 /**
  * Extends \XF\Service\Report\CommentPreparer
@@ -66,7 +72,11 @@ class CommentPreparer extends XFCP_CommentPreparer
         return $this->preparer;
     }
 
-    protected function afterInsert(): void
+    /**
+     * Note; extended by other add-ons (SV/UserEssentials), do not change signature yet.
+     * @return void
+     */
+    public function afterInsert()
     {
         if ($this->attachmentHash)
         {
@@ -80,14 +90,55 @@ class CommentPreparer extends XFCP_CommentPreparer
         }
     }
 
+    protected function triggerReindex(Entity $entity, string $field): void
+    {
+        $behavior = $entity->getBehavior('XF:Indexable');
+        if ($behavior !== null)
+        {
+            assert($behavior instanceof Indexable);
+            $checkForUpdates = $behavior->getConfig('checkForUpdates') ?? [];
+            if (in_array($field, $checkForUpdates, true))
+            {
+                $behavior->triggerReindex();
+            }
+        }
+        $behavior = $entity->getBehavior('XF:IndexableContainer');
+        if ($behavior !== null)
+        {
+            assert($behavior instanceof IndexableContainer);
+            $checkForUpdates = $behavior->getConfig('checkForUpdates') ?? [];
+            if (in_array($field, $checkForUpdates, true))
+            {
+                $behavior->triggerReindex();
+            }
+        }
+    }
+
     public function afterCommentInsert(): void
     {
         $this->afterInsert();
+
+        $countsAsComment = strlen($this->comment->message) !== 0 || $this->comment->WarningLog !== null;
+        if ($countsAsComment)
+        {
+            $report = $this->comment->Report;
+            // Adding a WarningLog entry is considered a comment, but in XF it isn't
+            if ($this->comment->WarningLog !== null)
+            {
+                $report->fastUpdate('comment_count', $report->comment_count + 1);
+            }
+
+            // the comment_count is updated in Commenter::_save() via fast_update
+            // This is required for 'new report' search links, as otherwise the replies value isn't updated
+            $this->triggerReindex($report, 'comment_count');
+        }
     }
 
     public function afterReportInsert(): void
     {
         $this->afterInsert();
+        // the report_count is updated via fast_update in Commenter::_save()
+        $this->triggerReindex($this->comment->Report, 'report_count');
     }
 
     public function afterUpdate()
@@ -111,6 +162,7 @@ class CommentPreparer extends XFCP_CommentPreparer
         if ($associated)
         {
             $reportComment->fastUpdate('attach_count', $reportComment->attach_count + $associated);
+            $this->triggerReindex($this->comment, 'attach_count');
         }
     }
 

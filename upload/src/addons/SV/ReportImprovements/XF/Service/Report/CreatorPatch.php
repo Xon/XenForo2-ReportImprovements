@@ -69,6 +69,8 @@ class CreatorPatch extends XFCP_CreatorPatch
 
     protected function postSaveReport()
     {
+        // the report_count is updated via fast_update
+
         $this->commentPreparer->afterReportInsert();
     }
 }

@@ -520,6 +520,8 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
             $structure->contentType = 'report';
         }
 
+        // comment_count/report_count are updated after *after* the Report::_postSave just to be confusing
+        // The fields are kept here as CommentPreparer::triggerReindex works around this behaviour
         $structure->behaviors['XF:Indexable'] = [
             'checkForUpdates' => ['content_user_id', 'content_info', 'first_report_date', 'report_state', 'assigned_user_id', 'assigned_date', 'assigner_user_id', 'comment_count'],
         ];
