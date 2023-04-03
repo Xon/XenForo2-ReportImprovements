@@ -69,6 +69,6 @@ class CreatorPatch extends XFCP_CreatorPatch
 
     protected function postSaveReport()
     {
-        $this->commentPreparer->afterInsert();
+        $this->commentPreparer->afterReportInsert();
     }
 }

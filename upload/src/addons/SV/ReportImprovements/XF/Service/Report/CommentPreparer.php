@@ -66,7 +66,7 @@ class CommentPreparer extends XFCP_CommentPreparer
         return $this->preparer;
     }
 
-    public function afterInsert()
+    protected function afterInsert(): void
     {
         if ($this->attachmentHash)
         {
@@ -78,6 +78,16 @@ class CommentPreparer extends XFCP_CommentPreparer
             $ip = ($this->logIp === true ? $this->app->request()->getIp() : $this->logIp);
             $this->writeIpLog($ip);
         }
+    }
+
+    public function afterCommentInsert(): void
+    {
+        $this->afterInsert();
+    }
+
+    public function afterReportInsert(): void
+    {
+        $this->afterInsert();
     }
 
     public function afterUpdate()

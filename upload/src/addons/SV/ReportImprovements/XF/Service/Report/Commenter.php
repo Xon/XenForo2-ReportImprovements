@@ -136,7 +136,7 @@ class Commenter extends XFCP_Commenter
 
         $content = parent::_save();
 
-        $this->commentPreparer->afterInsert();
+        $this->commentPreparer->afterCommentInsert();
 
         $db->commit();
 
