@@ -182,7 +182,7 @@ class ReportComment extends AbstractData
         {
             if (
                 ($schema['type'] ?? '') !== Entity::STR ||
-                empty($schema['allowedValues']) || // aka enums
+                !empty($schema['allowedValues']) || // aka enums
                 ($schema['noIndex'] ?? false)
             )
             {
