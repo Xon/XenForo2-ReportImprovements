@@ -131,7 +131,7 @@ class Search extends XFCP_Search
                 return null;
             }
 
-            return \XF::phrase('svSearchConstraint.'.$value);
+            return \XF::phrase('svSearchConstraint.warning_'.$value);
         }
 
         return parent::getSpecializedSearchConstraintPhrase($key, $value);
