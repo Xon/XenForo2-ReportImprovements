@@ -124,7 +124,7 @@ class Search extends XFCP_Search
 
     protected function getSpecializedSearchConstraintPhrase(string $key, $value): ?\XF\Phrase
     {
-        if ($key === 'warning_expired')
+        if ($key === 'warning_expiry_type')
         {
             if ($value === 'date')
             {

@@ -213,7 +213,7 @@ class WarningLog extends ReportComment
             'c.warning.mod'          => 'str',
             'c.warning.points.lower' => 'uint',
             'c.warning.points.upper' => '?uint,empty-str-to-null',
-            'c.warning.expired'      => 'str',
+            'c.warning.expiry_type'  => 'str',
             'c.warning.expiry.lower' => 'datetime',
             'c.warning.expiry.upper' => '?datetime,empty-str-to-null',
         ]);
@@ -256,7 +256,7 @@ class WarningLog extends ReportComment
             $this->getWarningLogQueryTableReference(), 'warning_log'
         );
 
-        $expired = $constraints['c.warning.expired'];
+        $expired = $constraints['c.warning.expiry_type'];
         assert(is_string($expired));
         switch ($expired)
         {
@@ -280,7 +280,7 @@ class WarningLog extends ReportComment
             default:
                 $constraints['c.warning.expiry.lower'] = 0;
                 $constraints['c.warning.expiry.upper'] = null;
-                Arr::unsetUrlConstraint($urlConstraints, 'c.warning.expired');
+                Arr::unsetUrlConstraint($urlConstraints, 'c.warning.expiry_type');
         }
         $repo->applyDateRangeConstraint($query, $constraints, $urlConstraints,
             'c.warning.expiry.lower', 'c.warning.expiry.upper', 'expiry_date',

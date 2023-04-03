@@ -23,7 +23,7 @@
 
 <xf:macro name="svSearchImprov_macros::range" arg-name="warning.points" arg-label="{{ phrase('warning_points') }}" />
 
-<xf:radiorow name="c[warning][expired]"
+<xf:radiorow name="c[warning][expiry_type]"
 			 value="{$input.c.warning.expired|default('')}"
 			 label="{{ phrase('svReportImprove_expiry_date') }}">
 	<xf:option value="" label="{{ phrase('any') }}" />
