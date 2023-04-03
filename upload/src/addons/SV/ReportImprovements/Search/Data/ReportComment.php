@@ -166,13 +166,7 @@ class ReportComment extends AbstractData
 
     protected function getMessage(ReportCommentEntity $entity): string
     {
-        /** @noinspection PhpUnnecessaryLocalVariableInspection */
-        $message = $entity->message;
-
-        // currently not required:
-        //$message .= $this->getEntityToMessage($entity);
-
-        return $message;
+        return $this->getEntityToMessage($entity);
     }
 
     protected function getEntityToMessage(Entity $entity): string
