@@ -86,6 +86,11 @@ class Warn extends XFCP_Warn
      */
     protected function _save()
     {
+        if ($this->contentAction === 'public')
+        {
+            $this->warning->setOption('svPublicBanner', $this->contentActionOptions['message'] ?? '');
+        }
+
         if ($this->replyBanSvc)
         {
             /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
