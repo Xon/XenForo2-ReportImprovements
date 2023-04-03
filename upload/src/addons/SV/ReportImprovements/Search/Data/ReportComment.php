@@ -538,7 +538,7 @@ class ReportComment extends AbstractData
         }
 
         return [
-            'replies' =>  \XF::phrase('svReportImpov_sort_order.comment_count'),
+            'replies' =>  \XF::phrase('svSearchOrder.comment_count'),
         ];
     }
 

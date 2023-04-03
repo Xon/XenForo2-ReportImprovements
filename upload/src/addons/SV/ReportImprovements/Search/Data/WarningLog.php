@@ -184,8 +184,8 @@ class WarningLog extends ReportComment
         }
 
         return [
-            'expiry_date' => \XF::phrase('svReportImpov_sort_order.expiry_date'),
-            'points' =>  \XF::phrase('svReportImpov_sort_order.points'),
+            'expiry_date' => \XF::phrase('svSearchOrder.expiry_date'),
+            'points' =>  \XF::phrase('svSearchOrder.points'),
         ];
     }
 
