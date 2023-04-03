@@ -121,6 +121,6 @@ class EnrichReportPostInstall extends AbstractRebuildJob
 
     protected function getStatusType()
     {
-        return \XF::phrase('report_comment');
+        return \XF::phrase('report');
     }
 }

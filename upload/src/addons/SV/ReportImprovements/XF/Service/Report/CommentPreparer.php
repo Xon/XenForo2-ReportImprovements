@@ -123,7 +123,7 @@ class CommentPreparer extends XFCP_CommentPreparer
         {
             $report = $this->comment->Report;
             // Adding a WarningLog entry is considered a comment, but in XF it isn't
-            if ($this->comment->WarningLog !== null)
+            if (!$this->comment->is_report && $this->comment->WarningLog !== null)
             {
                 $report->fastUpdate('comment_count', $report->comment_count + 1);
             }

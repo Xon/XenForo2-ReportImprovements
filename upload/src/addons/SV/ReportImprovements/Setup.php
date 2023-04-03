@@ -6,6 +6,7 @@ use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Job\Upgrades\EnrichReportPostInstall;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090100Step1;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090200Step1;
+use SV\ReportImprovements\Job\Upgrades\Upgrade1680521965Step1;
 use SV\ReportImprovements\Job\WarningLogMigration;
 use SV\StandardLib\InstallerHelper;
 use XF\AddOn\AbstractSetup;
@@ -80,7 +81,7 @@ class Setup extends AbstractSetup
     {
         $this->app->jobManager()->enqueueUnique(
             'svRIUpgrade1090100Step1',
-            'SV\ReportImprovements:Upgrades\Upgrade1090100Step1'
+            Upgrade1090100Step1::class
         );
     }
 
@@ -88,7 +89,7 @@ class Setup extends AbstractSetup
     {
         $this->app->jobManager()->enqueueUnique(
             'svRIUpgrade1090200Step1',
-            'SV\ReportImprovements:Upgrades\Upgrade1090200Step1'
+            Upgrade1090200Step1::class
         );
     }
 
@@ -349,6 +350,14 @@ class Setup extends AbstractSetup
             'svReportImprov_search_reports' => 'svReportImprov_search.reports',
             'svReportImprove_content_in' => 'svReportImprove_reported_content_in',
         ]);
+    }
+
+    public function upgrade1680521965Step1(): void
+    {
+        $this->app->jobManager()->enqueueUnique(
+            'svRIUpgrade1680521965Step1',
+            Upgrade1680521965Step1::class
+        );
     }
 
     /**
