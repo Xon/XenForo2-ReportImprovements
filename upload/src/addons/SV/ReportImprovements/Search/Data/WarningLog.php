@@ -149,11 +149,11 @@ class WarningLog extends AbstractData
 
         return IndexRecord::create('warning_log', $entity->warning_log_id, [
             'title'         => $entity->title,
-            'message'       => $this->getMessage($reportComment),
+            'message'       => $this->getMessage($entity),
             'date'          => $reportComment->comment_date,
             'user_id'       => $reportComment->user_id,
             'discussion_id' => $reportComment->report_id,
-            'metadata'      => $this->getMetaData($reportComment),
+            'metadata'      => $this->getMetaData($entity),
         ]);
     }
 

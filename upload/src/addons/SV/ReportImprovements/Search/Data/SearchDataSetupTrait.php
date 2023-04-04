@@ -25,6 +25,7 @@ trait SearchDataSetupTrait
         parent::__construct($contentType, $searcher);
 
         $this->reportRepo = \XF::repository('XF:Report');
+        $this->searchRepo = \XF::repository('SV\SearchImprovements:Search');
         $this->isAddonFullyActive = $this->reportRepo instanceof ReportRepo;
         $this->isUsingElasticSearch = \SV\SearchImprovements\Globals::repo()->isUsingElasticSearch();
     }
