@@ -285,6 +285,12 @@ class Creator extends AbstractService
         return $report;
     }
 
+
+    protected function isLoggingReplyBanLinkToReportComment(): bool
+    {
+        return \XF::config('svIsLoggingReplyBanLinkToReportComment') ?? true;
+    }
+
     /**
      * @return \SV\ReportImprovements\XF\Entity\Report|null
      */
@@ -325,7 +331,14 @@ class Creator extends AbstractService
         $warningLog->warning_user_id = \XF::visitor()->user_id;
         $warningLog->warning_definition_id = null;
         $warningLog->title = \XF::phrase('svReportImprov_reply_banned')->render('raw');
-        $warningLog->notes = $warningLog->getReplyBanLink() . "\n" . $threadReplyBan->reason;
+
+        $notes = '';
+        if ($this->isLoggingReplyBanLinkToReportComment())
+        {
+            $notes .= $warningLog->getReplyBanLink() . "\n";
+        }
+        $notes .= $threadReplyBan->reason;
+        $warningLog->notes = $notes;
 
         if ($report)
         {
