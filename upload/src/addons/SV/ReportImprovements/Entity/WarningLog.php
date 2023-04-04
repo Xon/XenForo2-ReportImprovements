@@ -48,6 +48,16 @@ use XF\Mvc\Entity\Structure;
  */
 class WarningLog extends Entity
 {
+    public function canView(): bool
+    {
+        if ($this->ReportComment === null)
+        {
+            return false;
+        }
+
+        return $this->ReportComment->canView();
+    }
+
     protected function getContentTypeForOperationType(): ?\XF\Phrase
     {
         if ($this->warning_id)

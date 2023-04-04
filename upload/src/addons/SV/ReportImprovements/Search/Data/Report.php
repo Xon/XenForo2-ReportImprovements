@@ -5,7 +5,6 @@ namespace SV\ReportImprovements\Search\Data;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
-use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -24,25 +23,8 @@ use function is_array;
 class Report extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
-
     use DiscussionTrait;
-
-    /** @var ReportRepo|\XF\Repository\Report */
-    protected $reportRepo;
-    /** @var bool */
-    protected $isAddonFullyActive;
-
-    /**
-     * @param string            $contentType
-     * @param \XF\Search\Search $searcher
-     */
-    public function __construct($contentType, \XF\Search\Search $searcher)
-    {
-        parent::__construct($contentType, $searcher);
-
-        $this->reportRepo = \XF::repository('XF:Report');
-        $this->isAddonFullyActive = $this->reportRepo instanceof ReportRepo;
-    }
+    use SearchDataSetupTrait;
 
     public function canViewContent(Entity $entity, &$error = null): bool
     {
@@ -130,24 +112,14 @@ class Report extends AbstractData
         }
 
         $handler = $entity->getHandler();
-        if ($handler == null)
+        if ($handler === null)
         {
             return null;
         }
 
-        try
-        {
-            $message = $handler->getContentMessage($entity);
-        }
-        catch (\Exception $e)
-        {
-            \XF::logException($e, false, 'Error accessing reported content for report ('.$entity->report_id.')');
-            $message = '';
-        }
-
         return IndexRecord::create('report', $entity->report_id, [
             'title'         => $entity->title_string,
-            'message'       => $message,
+            'message'       => $this->getMessage($entity),
             'date'          => $entity->first_report_date,
             'user_id'       => $entity->content_user_id,
             'discussion_id' => $entity->report_id,
@@ -155,33 +127,25 @@ class Report extends AbstractData
         ]);
     }
 
-    protected function getMetaData(ReportEntity $entity): array
+    protected function getMessage(ReportEntity $entity): string
     {
-        $metaData = [
-            'report'              => $entity->report_id,
-            'report_state'        => $entity->report_state,
-            'report_content_type' => $entity->content_type,
-            'report_type'         => ReportType::Reported_content,
-            'content_user'        => $entity->content_user_id, // duplicate of report.user_id
-        ];
-
-        if ($entity->assigner_user_id)
+        try
         {
-            $metaData['assigner_user'] = $entity->assigner_user_id;
+            $message = $entity->getHandler()->getContentMessage($entity);
+        }
+        catch (\Exception $e)
+        {
+            \XF::logException($e, false, 'Error accessing reported content for report ('.$entity->report_id.')');
+            $message = '';
         }
 
-        if ($entity->assigned_user_id)
-        {
-            $metaData['assigned_user'] = $entity->assigned_user_id;
-        }
+        return $message;
+    }
 
-        $reportHandler = $this->reportRepo->getReportHandler($entity->content_type, null);
-        if ($reportHandler instanceof ReportSearchFormInterface)
-        {
-            $reportHandler->populateMetaData($entity, $metaData);
-        }
-
-        $this->populateDiscussionMetaData($entity, $metaData);
+    protected function getMetaData(ReportEntity $report): array
+    {
+        $metaData = $this->reportRepo->getReportSearchMetaData($report);
+        $this->populateDiscussionMetaData($report, $metaData);
 
         return $metaData;
     }
@@ -197,21 +161,7 @@ class Report extends AbstractData
 
     public function setupMetadataStructure(MetadataStructure $structure): void
     {
-        foreach ($this->reportRepo->getReportHandlers() as $handler)
-        {
-            if ($handler instanceof ReportSearchFormInterface)
-            {
-                $handler->setupMetadataStructure($structure);
-            }
-        }
-        $structure->addField('report_type', MetadataStructure::KEYWORD);
-        $structure->addField('report', MetadataStructure::INT);
-        $structure->addField('report_state', MetadataStructure::KEYWORD);
-        $structure->addField('report_content_type', MetadataStructure::KEYWORD);
-        $structure->addField('content_user', MetadataStructure::INT);
-        $structure->addField('assigned_user', MetadataStructure::INT);
-        $structure->addField('assigner_user', MetadataStructure::INT);
-
+        $this->reportRepo->setupMetadataStructureForReport($structure);
         $this->setupDiscussionMetadataStructure($structure);
     }
 }

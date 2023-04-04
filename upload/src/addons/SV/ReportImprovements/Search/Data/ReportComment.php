@@ -5,10 +5,8 @@ namespace SV\ReportImprovements\Search\Data;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
-use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
-use SV\SearchImprovements\Search\Features\SearchOrder;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\AndConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\OrConstraint;
@@ -24,13 +22,12 @@ use XF\Search\Query\TableReference;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
-use function array_merge;
+use function array_merge_recursive;
 use function array_unique;
 use function assert;
 use function count;
 use function in_array;
 use function is_array;
-use function is_string;
 use function reset;
 
 /**
@@ -42,32 +39,13 @@ class ReportComment extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
     use DiscussionTrait;
-
-    /** @var ReportRepo|\XF\Repository\Report */
-    protected $reportRepo;
-    /** @var bool */
-    protected $isAddonFullyActive;
-    /** @var bool */
-    protected $isUsingElasticSearch;
-
-    /**
-     * @param string            $contentType
-     * @param \XF\Search\Search $searcher
-     */
-    public function __construct($contentType, \XF\Search\Search $searcher)
-    {
-        parent::__construct($contentType, $searcher);
-
-        $this->reportRepo = \XF::repository('XF:Report');
-        $this->isAddonFullyActive = $this->reportRepo instanceof ReportRepo;
-        $this->isUsingElasticSearch = \SV\SearchImprovements\Globals::repo()->isUsingElasticSearch();
-    }
+    use SearchDataSetupTrait;
 
     public function canViewContent(Entity $entity, &$error = null): bool
     {
         assert($entity instanceof ReportCommentEntity);
-        $report = $entity->Report;
-        return $report && $report->canView();
+
+        return $entity->canView();
     }
 
     /**
@@ -135,22 +113,23 @@ class ReportComment extends AbstractData
 
     public function getIndexData(Entity $entity): ?IndexRecord
     {
-        if (!($entity instanceof ReportCommentEntity))
+        if (!$this->isAddonFullyActive)
         {
             // This function may be invoked when the add-on is disabled, just return nothing to index
             return null;
         }
-
-        if ($entity->warning_log_id !== null)
-        {
-            return $this->searcher->handler('warning_log')->getIndexData($entity->WarningLog);
-        }
+        assert($entity instanceof ReportCommentEntity);
 
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         $report = $entity->Report;
         if ($report === null)
         {
             return null;
+        }
+
+        if ($entity->warning_log_id !== null)
+        {
+            return $this->searcher->handler('warning_log')->getIndexData($entity->WarningLog);
         }
 
         return IndexRecord::create('report_comment', $entity->report_comment_id, [
@@ -165,64 +144,18 @@ class ReportComment extends AbstractData
 
     protected function getMessage(ReportCommentEntity $entity): string
     {
-        return $this->getEntityToMessage($entity);
+        return $this->searchRepo->getEntityToMessage($entity);
     }
 
-    protected function getEntityToMessage(Entity $entity): string
+    protected function getMetaData(ReportCommentEntity $reportComment): array
     {
-        $message = '';
-        foreach ($entity->structure()->columns as $column => $schema)
-        {
-            if (
-                ($schema['type'] ?? '') !== Entity::STR ||
-                !empty($schema['allowedValues']) || // aka enums
-                ($schema['noIndex'] ?? false)
-            )
-            {
-                continue;
-            }
-
-            $value = $entity->get($column);
-            if ($value === null || $value === '')
-            {
-                continue;
-            }
-
-            $message .= "\n" . $value;
-        }
-
-        return $message;
-    }
-
-    protected function getMetaData(ReportCommentEntity $entity): array
-    {
-        $report = $entity->Report;
-        $metaData = [
-            'report'              => $entity->report_id,
-            'report_state'        => $report->report_state,
-            'report_content_type' => $report->content_type,
-            'state_change'        => $entity->state_change ?: '',
-            'report_type'         => $entity->getReportType(),
-            'content_user'        => $report->content_user_id, // duplicate of report.user_id
-        ];
-
-        if ($report->assigner_user_id)
-        {
-            $metaData['assigner_user'] = $report->assigner_user_id;
-        }
-
-        if ($report->assigned_user_id)
-        {
-            $metaData['assigned_user'] = $report->assigned_user_id;
-        }
-
-        $reportHandler = $this->reportRepo->getReportHandler($report->content_type, null);
-        if ($reportHandler instanceof ReportSearchFormInterface)
-        {
-            $reportHandler->populateMetaData($report, $metaData);
-        }
-
+        $report = $reportComment->Report;
+        $metaData = $this->reportRepo->getReportSearchMetaData($report);
         $this->populateDiscussionMetaData($report, $metaData);
+        $metaData += [
+            'state_change' => $reportComment->state_change ?: '',
+            'report_type'  => $reportComment->getReportType(),
+        ];
 
         return $metaData;
     }
@@ -249,24 +182,62 @@ class ReportComment extends AbstractData
 
     public function setupMetadataStructure(MetadataStructure $structure): void
     {
-        // shared with Report
-        foreach ($this->reportRepo->getReportHandlers() as $handler)
+        $this->reportRepo->setupMetadataStructureForReport($structure);
+        $this->setupDiscussionMetadataStructure($structure);
+    }
+
+
+    public function getSearchFormTab(): ?array
+    {
+        $visitor = \XF::visitor();
+        if (!($visitor instanceof \SV\ReportImprovements\XF\Entity\User))
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing to show
+            return null;
+        }
+
+        if (!$visitor->canReportSearch())
+        {
+            return null;
+        }
+
+        return [
+            'title' => \XF::phrase('svReportImprov_search.reports'),
+            'order' => 250,
+        ];
+    }
+
+    protected function getSvSortOrders(): array
+    {
+        if (!$this->isUsingElasticSearch)
+        {
+            return [];
+        }
+
+        return [
+            'replies' =>  \XF::phrase('svSearchOrder.comment_count'),
+        ];
+    }
+
+    public function getSearchFormData(): array
+    {
+        assert($this->isAddonFullyActive);
+        $form = parent::getSearchFormData();
+
+        $handlers = $this->reportRepo->getReportHandlers();
+        foreach ($handlers as $handler)
         {
             if ($handler instanceof ReportSearchFormInterface)
             {
-                $handler->setupMetadataStructure($structure);
+                $form = array_merge_recursive($form, $handler->getSearchFormData());
             }
         }
-        $structure->addField('report_type', MetadataStructure::KEYWORD);
-        $structure->addField('report', MetadataStructure::INT);
-        $structure->addField('state_change', MetadataStructure::KEYWORD);
-        $structure->addField('report_state', MetadataStructure::KEYWORD);
-        $structure->addField('report_content_type', MetadataStructure::KEYWORD);
-        $structure->addField('content_user', MetadataStructure::INT);
-        $structure->addField('assigned_user', MetadataStructure::INT);
-        $structure->addField('assigner_user', MetadataStructure::INT);
+        $form['sortOrders'] = $this->getSvSortOrders();
+        $form['reportStates'] = $this->reportRepo->getReportStatePairs();
+        $form['reportHandlers'] = $handlers;
+        $form['reportTypes'] = ReportType::getPairs();
 
-        $this->setupDiscussionMetadataStructure($structure);
+        return $form;
     }
 
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints): void
@@ -439,7 +410,6 @@ class ReportComment extends AbstractData
     }
 
     /**
-
      * @param Query $query
      * @param bool  $isOnlyType
      * @return MetadataConstraint[]
@@ -473,91 +443,5 @@ class ReportComment extends AbstractData
             'xf_report',
             'report.report_id = search_index.discussion_id'
         );
-    }
-
-    /**
-     * @return TableReference[]
-     */
-    protected function getWarningLogQueryTableReference(): array
-    {
-        return [
-            new TableReference(
-                'report_comment',
-                'xf_report_comment',
-                'report_comment.report_comment_id = search_index.content_id'
-            ),
-            new TableReference(
-                'warning_log',
-                'xf_sv_warning_log',
-                'warning_log.warning_log_id = report_comment.warning_log_id'
-            ),
-        ];
-    }
-
-    public function getSearchFormTab(): ?array
-    {
-        $visitor = \XF::visitor();
-        if (!($visitor instanceof \SV\ReportImprovements\XF\Entity\User))
-        {
-            // This function may be invoked when the add-on is disabled, just return nothing to show
-            return null;
-        }
-
-        if (!$visitor->canReportSearch())
-        {
-            return null;
-        }
-
-        return [
-            'title' => \XF::phrase('svReportImprov_search.reports'),
-            'order' => 250,
-        ];
-    }
-
-    /**
-     * @param string $order
-     * @return string|SearchOrder|\XF\Search\Query\SqlOrder|null
-     */
-    public function getTypeOrder($order)
-    {
-        assert(is_string($order));
-        if (array_key_exists($order, $this->getSortOrders()))
-        {
-            return new SearchOrder([$order, 'date']);
-        }
-
-        return parent::getTypeOrder($order);
-    }
-
-    protected function getSortOrders(): array
-    {
-        if (!$this->isUsingElasticSearch)
-        {
-            return [];
-        }
-
-        return [
-            'replies' =>  \XF::phrase('svSearchOrder.comment_count'),
-        ];
-    }
-
-    public function getSearchFormData(): array
-    {
-        assert($this->isAddonFullyActive);
-        $form = parent::getSearchFormData();
-
-        $form['sortOrders'] = $this->getSortOrders();
-        $form['reportStates'] = $this->reportRepo->getReportStatePairs();
-        $form['reportHandlers'] = $this->reportRepo->getReportHandlers();
-        $form['reportTypes'] = ReportType::getPairs();
-        foreach ($form['reportHandlers'] as $handler)
-        {
-            if ($handler instanceof ReportSearchFormInterface)
-            {
-                $form = array_merge($form, $handler->getSearchFormData());
-            }
-        }
-
-        return $form;
     }
 }

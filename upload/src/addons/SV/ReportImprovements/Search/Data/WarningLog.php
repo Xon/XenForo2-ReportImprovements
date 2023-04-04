@@ -3,16 +3,23 @@
 namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
+use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Enums\WarningType;
-use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\ReportImprovements\Report\ReportSearchFormInterface;
+use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\ExistsConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\NotConstraint;
+use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
+use XF\Search\Data\AbstractData;
 use XF\Search\IndexRecord;
 use XF\Search\MetadataStructure;
+use XF\Search\Query\MetadataConstraint;
 use XF\Search\Query\Query;
+use XF\Search\Query\TableReference;
+use function array_merge_recursive;
 use function assert;
 use function count;
 use function in_array;
@@ -25,37 +32,40 @@ use function reset;
  *
  * @package SV\ReportImprovements\Search\Data
  */
-class WarningLog extends ReportComment
+class WarningLog extends AbstractData
 {
-    public function getIndexData(Entity $entity): ?IndexRecord
+    protected static $svDiscussionEntity = \XF\Entity\Report::class;
+    use DiscussionTrait;
+    use SearchDataSetupTrait;
+
+    public function canViewContent(Entity $entity, &$error = null): bool
     {
         assert($entity instanceof WarningLogEntity);
-        $reportComment = $entity->ReportComment;
-        if ($reportComment === null)
-        {
-            return null;
-        }
 
-        return IndexRecord::create('warning_log', $entity->warning_log_id, [
-            'title'         => $entity->title,
-            'message'       => $this->getMessage($reportComment),
-            'date'          => $reportComment->comment_date,
-            'user_id'       => $reportComment->user_id,
-            'discussion_id' => $reportComment->report_id,
-            'metadata'      => $this->getMetaData($reportComment),
-        ]);
+        return $entity->canView();
     }
 
-    public function getEntityWith($forView = false): array
+    /**
+     * @param int|int[] $id
+     * @param bool $forView
+     * @return AbstractCollection|array|Entity|null
+     */
+    public function getContent($id, $forView = false)
     {
-        $get = parent::getEntityWith($forView);
-
-        foreach ($get as &$with)
+        if (!$this->isAddonFullyActive)
         {
-            $with = 'ReportComment.' . $with;
+            // This function may be invoked when the add-on is disabled, just return nothing
+            return is_array($id) ? [] : null;
         }
 
-        return $get;
+        $entities = parent::getContent($id, $forView);
+
+        if ($entities instanceof AbstractCollection)
+        {
+            $this->reportRepo->svPreloadReportComments($entities);
+        }
+
+        return $entities;
     }
 
     /**
@@ -92,7 +102,7 @@ class WarningLog extends ReportComment
         $finder = $em->getFinder($entityId)
                      ->where($key, '>', $lastId)
                      ->with('ReportComment', true)
-                     //->where('ReportComment.warning_log_id', '<>', null)
+            //->where('ReportComment.warning_log_id', '<>', null)
                      ->order($key)
                      ->with($this->getEntityWith($forView));
 
@@ -103,22 +113,73 @@ class WarningLog extends ReportComment
         return $contents;
     }
 
-    protected function getMessage(ReportCommentEntity $entity): string
+    public function getEntityWith($forView = false): array
     {
-        $message = parent::getMessage($entity);
+        $get = ['ReportComment.Report', 'ReportComment.User'];
 
-        $message .= $this->getEntityToMessage($entity->WarningLog);
+        if ($forView)
+        {
+            $visitor = \XF::visitor();
+            $get[] = 'ReportComment.Report.Permissions|' . $visitor->permission_combination_id;
+        }
+
+        return $get;
+    }
+
+    public function getResultDate(Entity $entity): int
+    {
+        assert($entity instanceof WarningLogEntity);
+        return $entity->ReportComment->comment_date;
+    }
+
+    public function getIndexData(Entity $entity): ?IndexRecord
+    {
+        if (!$this->isAddonFullyActive)
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing to index
+            return null;
+        }
+
+        assert($entity instanceof WarningLogEntity);
+        $reportComment = $entity->ReportComment;
+        if ($reportComment === null || $reportComment->Report === null)
+        {
+            return null;
+        }
+
+        return IndexRecord::create('warning_log', $entity->warning_log_id, [
+            'title'         => $entity->title,
+            'message'       => $this->getMessage($reportComment),
+            'date'          => $reportComment->comment_date,
+            'user_id'       => $reportComment->user_id,
+            'discussion_id' => $reportComment->report_id,
+            'metadata'      => $this->getMetaData($reportComment),
+        ]);
+    }
+
+    protected function getMessage(WarningLogEntity $entity): string
+    {
+        $message = $this->searchRepo->getEntityToMessage($entity);
+        $message .= $this->searchRepo->getEntityToMessage($entity->ReportComment);
 
         return $message;
     }
 
-    protected function getMetaData(ReportCommentEntity $entity): array
+    protected function getMetaData(WarningLogEntity $warningLog): array
     {
-        $metaData = parent::getMetaData($entity);
-        $warningLog = $entity->WarningLog;
+        $reportComment = $warningLog->ReportComment;
+        $report = $reportComment->Report;
+        $metaData = $this->reportRepo->getReportSearchMetaData($report);
+        $this->populateDiscussionMetaData($report, $metaData);
+        $metaData += [
+            // shared with ReportComment::getMetaData
+            'state_change' => $reportComment->state_change ?: '',
+            'report_type'  => $reportComment->getReportType(),
+            // distinct for WarningLog
+            'warning_type' => $warningLog->operation_type,
+            'issuer_user'  => $warningLog->warning_user_id,
+        ];
 
-        $metaData['warning_type'] = $warningLog->operation_type;
-        $metaData['issuer_user'] = $warningLog->warning_user_id;
         if ($warningLog->expiry_date)
         {
             $metaData['expiry_date'] = $warningLog->expiry_date;
@@ -142,9 +203,32 @@ class WarningLog extends ReportComment
         return $metaData;
     }
 
+    public function getTemplateData(Entity $entity, array $options = []): array
+    {
+        assert($entity instanceof WarningLogEntity);
+        return [
+            'warningLog'    => $entity,
+            'reportComment' => $entity->ReportComment,
+            'report'        => $entity->ReportComment->Report,
+            'options'       => $options,
+        ];
+    }
+
+    public function getSearchableContentTypes(): array
+    {
+        return ['warning_log'];
+    }
+
+    public function getGroupByType(): string
+    {
+        return 'report';
+    }
+
     public function setupMetadataStructure(MetadataStructure $structure): void
     {
-        parent::setupMetadataStructure($structure);
+        $this->reportRepo->setupMetadataStructureForReport($structure);
+        $this->setupDiscussionMetadataStructure($structure);
+
         // warning bits
         $structure->addField('warning_type', MetadataStructure::KEYWORD);
         $structure->addField('points', MetadataStructure::INT);
@@ -152,32 +236,6 @@ class WarningLog extends ReportComment
         $structure->addField('issuer_user', MetadataStructure::INT);
         $structure->addField('thread_reply_ban', MetadataStructure::INT);
         $structure->addField('post_reply_ban', MetadataStructure::INT);
-    }
-
-    public function canViewContent(Entity $entity, &$error = null): bool
-    {
-        assert($entity instanceof WarningLogEntity);
-        return parent::canViewContent($entity->ReportComment, $error);
-    }
-
-    public function getResultDate(Entity $entity): int
-    {
-        assert($entity instanceof WarningLogEntity);
-        return parent::getResultDate($entity->ReportComment);
-    }
-
-    public function getTemplateData(Entity $entity, array $options = []): array
-    {
-        assert($entity instanceof WarningLogEntity);
-        $data = parent::getTemplateData($entity->ReportComment);
-        $data['warningLog'] = $entity;
-
-        return $data;
-    }
-
-    public function getSearchableContentTypes(): array
-    {
-        return ['warning_log'];
     }
 
     public function getSearchFormTab(): ?array
@@ -200,7 +258,7 @@ class WarningLog extends ReportComment
         ];
     }
 
-    protected function getSortOrders(): array
+    protected function getSvSortOrders(): array
     {
         if (!$this->isUsingElasticSearch)
         {
@@ -218,6 +276,18 @@ class WarningLog extends ReportComment
         assert($this->isAddonFullyActive);
         $form = parent::getSearchFormData();
 
+        $handlers = $this->reportRepo->getReportHandlers();
+        foreach ($handlers as $handler)
+        {
+            if ($handler instanceof ReportSearchFormInterface)
+            {
+                $form = array_merge_recursive($form, $handler->getSearchFormData());
+            }
+        }
+        $form['sortOrders'] = $this->getSvSortOrders();
+        $form['reportStates'] = $this->reportRepo->getReportStatePairs();
+        $form['reportHandlers'] = $handlers;
+        $form['reportTypes'] = ReportType::getPairs();
         $form['warningTypes'] = WarningType::getPairs();
 
         return $form;
@@ -230,7 +300,7 @@ class WarningLog extends ReportComment
      */
     public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints): void
     {
-        parent::applyTypeConstraintsFromInput($query, $request, $urlConstraints);
+        $this->searcher->handler('report_comment')->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
 
         $constraints = $request->filter([
             'c.warning.type'         => 'array-str',
@@ -310,5 +380,34 @@ class WarningLog extends ReportComment
             'c.warning.expiry.lower', 'c.warning.expiry.upper', 'expiry_date',
             $this->getWarningLogQueryTableReference(), 'warning_log'
         );
+    }
+
+    /**
+     * @param Query $query
+     * @param bool  $isOnlyType
+     * @return MetadataConstraint[]
+     */
+    public function getTypePermissionConstraints(Query $query, $isOnlyType): array
+    {
+        return $this->searcher->handler('report_comment')->getTypePermissionConstraints($query, $isOnlyType);
+    }
+
+    /**
+     * @return TableReference[]
+     */
+    protected function getWarningLogQueryTableReference(): array
+    {
+        return [
+            new TableReference(
+                'report_comment',
+                'xf_report_comment',
+                'report_comment.report_comment_id = search_index.content_id'
+            ),
+            new TableReference(
+                'warning_log',
+                'xf_sv_warning_log',
+                'warning_log.warning_log_id = report_comment.warning_log_id'
+            ),
+        ];
     }
 }

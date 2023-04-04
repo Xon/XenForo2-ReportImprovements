@@ -50,7 +50,7 @@ class ReportComment extends XFCP_ReportComment
 
     public function canView()
     {
-        if (!$this->Report)
+        if ($this->Report === null)
         {
             return false;
         }

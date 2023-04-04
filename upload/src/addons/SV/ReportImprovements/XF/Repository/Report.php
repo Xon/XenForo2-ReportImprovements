@@ -3,13 +3,16 @@
 namespace SV\ReportImprovements\XF\Repository;
 
 use SV\ReportImprovements\Enums\ReportType;
+use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Entity\WarningLog;
 use XF\Db\Exception;
+use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Report\AbstractHandler;
+use XF\Search\MetadataStructure;
 use function get_class;
 use function sort;
 
@@ -21,6 +24,53 @@ use function sort;
  */
 class Report extends XFCP_Report
 {
+    public function getReportSearchMetaData(ReportEntity $report): array
+    {
+        $metaData = [
+            'report'              => $report->report_id,
+            'report_state'        => $report->report_state,
+            'report_content_type' => $report->content_type,
+            'report_type'         => ReportType::Reported_content,
+            'content_user'        => $report->content_user_id, // duplicate of report.user_id
+        ];
+
+        if ($report->assigner_user_id)
+        {
+            $metaData['assigner_user'] = $report->assigner_user_id;
+        }
+
+        if ($report->assigned_user_id)
+        {
+            $metaData['assigned_user'] = $report->assigned_user_id;
+        }
+
+        $reportHandler = $this->getReportHandler($report->content_type, null);
+        if ($reportHandler instanceof ReportSearchFormInterface)
+        {
+            $reportHandler->populateMetaData($report, $metaData);
+        }
+
+        return $metaData;
+    }
+
+    public function setupMetadataStructureForReport(MetadataStructure $structure): void
+    {
+        foreach ($this->getReportHandlers() as $handler)
+        {
+            if ($handler instanceof ReportSearchFormInterface)
+            {
+                $handler->setupMetadataStructure($structure);
+            }
+        }
+        $structure->addField('report_type', MetadataStructure::KEYWORD);
+        $structure->addField('report', MetadataStructure::INT);
+        $structure->addField('report_state', MetadataStructure::KEYWORD);
+        $structure->addField('report_content_type', MetadataStructure::KEYWORD);
+        $structure->addField('content_user', MetadataStructure::INT);
+        $structure->addField('assigned_user', MetadataStructure::INT);
+        $structure->addField('assigner_user', MetadataStructure::INT);
+    }
+
     public function svPreloadReportComments(AbstractCollection $entities)
     {
         $reports = [];
@@ -149,7 +199,7 @@ class Report extends XFCP_Report
 
     /**
      * @param \XF\Entity\Report $report
-     * @param bool              $doCache
+     * @param bool         $doCache
      * @return int[]
      * @throws Exception
      * @noinspection PhpDocMissingThrowsInspection
@@ -330,7 +380,7 @@ class Report extends XFCP_Report
      */
     public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @var ReportEntity $report */
         $nodeId = (int)($report->content_info['node_id'] ?? 0);
         if ($nodeId !== 0)
         {
@@ -421,7 +471,7 @@ class Report extends XFCP_Report
         $reports = $reports->filterViewable();
 
         $userIds = [];
-        /** @var \XF\Entity\Report $report */
+        /** @var ReportEntity $report */
         foreach ($reports as $report)
         {
             $report->title;
@@ -577,8 +627,8 @@ class Report extends XFCP_Report
         $userId = \XF::visitor()->user_id;
 
         /**
-         * @var int               $reportId
-         * @var \XF\Entity\Report $report
+         * @var int          $reportId
+         * @var ReportEntity $report
          */
         foreach ($reports AS $report)
         {
