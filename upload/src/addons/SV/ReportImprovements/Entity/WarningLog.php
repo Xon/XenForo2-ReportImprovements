@@ -165,7 +165,7 @@ class WarningLog extends Entity
             $latestWarningLogId = (int)$db->fetchOne('
                 SELECT warning_log_id
                 FROM xf_sv_warning_log
-                WHERE content_type = ? AND content_id = ?
+                WHERE content_type = ? AND content_id = ? and warning_id is not null
                 ORDER BY warning_edit_date DESC, warning_log_id DESC 
                 LIMIT 1
             ', [$this->content_type, $this->content_id]);
