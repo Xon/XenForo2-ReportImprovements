@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\Entity;
 
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment;
+use SV\ReportImprovements\Finder\WarningLog as WarningLogFinder;
 use XF\Entity\Post;
 use XF\Entity\Thread;
 use XF\Entity\ThreadReplyBan;
@@ -11,12 +12,14 @@ use XF\Entity\User;
 use XF\Entity\Warning;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
+use function assert;
 
 /**
  * COLUMNS
  *
  * @property int            $warning_log_id
  * @property int            $warning_edit_date
+ * @property bool           $is_latest_version
  * @property string         $operation_type
  * @property int|null       $warning_id
  * @property string         $content_type
@@ -137,6 +140,11 @@ class WarningLog extends Entity
         );
     }
 
+    public function isUserOperation(): bool
+    {
+        return $this->operation_type == WarningType::Acknowledge;
+    }
+
     protected function _preSave()
     {
         if ($this->public_banner_ === '')
@@ -145,9 +153,58 @@ class WarningLog extends Entity
         }
     }
 
-    public function isUserOperation(): bool
+    public function resyncLatestVersionFlag(): void
     {
-        return $this->operation_type == WarningType::Acknowledge;
+        $db = $this->db();
+        $finder = $this->finder('SV\ReportImprovements:WarningLog');
+        assert($finder instanceof WarningLogFinder);
+
+        $latestWarningLogId = 0;
+        if ($this->warning_id !== null)
+        {
+            $latestWarningLogId = (int)$db->fetchOne('
+                SELECT warning_log_id
+                FROM xf_sv_warning_log
+                WHERE content_type = ? AND content_id = ?
+                ORDER BY warning_edit_date DESC 
+                LIMIT 1
+            ', [$this->content_type, $this->content_id]);
+            $finder->where('content_type', $this->content_type)
+                   ->where('content_id', $this->content_id);
+        }
+        else if ($this->reply_ban_thread_id !== null)
+        {
+            $latestWarningLogId = (int)$db->fetchOne('
+                SELECT warning_log_id
+                FROM xf_sv_warning_log
+                WHERE reply_ban_thread_id = ? AND user_id = ?
+                ORDER BY warning_edit_date DESC 
+                LIMIT 1
+            ', [$this->reply_ban_thread_id, $this->user_id]);
+            $finder->where('reply_ban_thread_id', $this->reply_ban_thread_id)
+                   ->where('user_id', $this->user_id);
+        }
+
+        if ($latestWarningLogId !== 0 && $latestWarningLogId === $this->warning_log_id)
+        {
+            // while only 1 should be the latest, but patching any out-of-sync records is simple
+            $warningLogs = $finder->where('is_latest_version', true)->fetch();
+            foreach ($warningLogs as $warningLog)
+            {
+                $warningLog->fastUpdate('is_latest_version', false);
+            }
+            $this->fastUpdate('is_latest_version', true);
+        }
+    }
+
+    protected function _postSave()
+    {
+        parent::_postSave();
+
+        if ($this->isInsert())
+        {
+            $this->resyncLatestVersionFlag();
+        }
     }
 
     /**
@@ -163,6 +220,7 @@ class WarningLog extends Entity
         $structure->columns = [
             'warning_log_id'        => ['type' => self::UINT, 'autoIncrement' => true, 'nullable' => true],
             'warning_edit_date'     => ['type' => self::UINT, 'required' => true, 'default' => \XF::$time],
+            'is_latest_version'     => ['type' => self::BOOL, 'default' => false],
             'operation_type'        => ['type' => self::STR, 'allowedValues' => WarningType::get(), 'required' => true],
             'warning_id'            => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'content_type'          => ['type' => self::BINARY, 'maxLength' => 25, 'required' => true],
@@ -244,7 +302,7 @@ class WarningLog extends Entity
         ];
         $structure->defaultWith[] = 'Warning';
         $structure->getters = [
-            'OperationTypePhrase' => ['getter' => 'getOperationTypePhrase', 'cache' => true],
+            'OperationTypePhrase' => ['getter' => 'getOperationTypePhrase', 'cache' => false],
             'ReplyBan'            => ['getter' => 'getReplyBan','cache' => true],
             'ReplyBanLink'        => ['getter' => 'getReplyBanLink','cache' => true],
         ];

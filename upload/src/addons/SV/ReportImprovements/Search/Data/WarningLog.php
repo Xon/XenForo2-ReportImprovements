@@ -200,6 +200,11 @@ class WarningLog extends AbstractData
             $metaData['post_reply_ban'] = $warningLog->reply_ban_post_id;
         }
 
+        if ($warningLog->is_latest_version)
+        {
+            $metaData['is_latest_version'] = true;
+        }
+
         return $metaData;
     }
 
@@ -236,6 +241,7 @@ class WarningLog extends AbstractData
         $structure->addField('issuer_user', MetadataStructure::INT);
         $structure->addField('thread_reply_ban', MetadataStructure::INT);
         $structure->addField('post_reply_ban', MetadataStructure::INT);
+        $structure->addField('is_latest_version', MetadataStructure::BOOL);
     }
 
     public function getSearchFormTab(): ?array
@@ -303,6 +309,7 @@ class WarningLog extends AbstractData
         $this->searcher->handler('report_comment')->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
 
         $constraints = $request->filter([
+            'c.warning.latest'       => '?bool',
             'c.warning.type'         => 'array-str',
             'c.warning.mod'          => 'str',
             'c.warning.points.lower' => 'uint',
@@ -313,6 +320,22 @@ class WarningLog extends AbstractData
         ]);
 
         $repo = \SV\SearchImprovements\Globals::repo();
+
+        if ($constraints['c.warning.latest'] !== null)
+        {
+            if ($constraints['c.warning.latest'])
+            {
+                $query->withMetadata(new ExistsConstraint('is_latest_version'));
+            }
+            else
+            {
+                $query->withMetadata(new NotConstraint(new ExistsConstraint('is_latest_version')));
+            }
+        }
+        else
+        {
+            Arr::unsetUrlConstraint($urlConstraints, 'c.warning.latest');
+        }
 
         $rawWarningTypes = $constraints['c.warning.type'];
         assert(is_array($rawWarningTypes));

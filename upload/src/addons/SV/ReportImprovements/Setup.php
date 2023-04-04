@@ -362,12 +362,17 @@ class Setup extends AbstractSetup
         );
     }
 
-    public function upgrade1680418221Step1(): void
+    public function upgrade1680418222Step1(): void
+    {
+        $this->customizeWarningLogContentTypePhrases();
+    }
+
+    public function upgrade1680418223Step1(): void
     {
         $this->installStep1();
     }
 
-    public function upgrade1680418221Step2(): void
+    public function upgrade1680418223Step2(): void
     {
         $this->schemaManager()->alterTable('xf_sv_warning_log', function (Alter $table) {
             $table->dropIndexes([
@@ -376,13 +381,10 @@ class Setup extends AbstractSetup
                 'expiry',
                 'operation_type',
                 'warning_edit_date',
+                'reply_ban_thread_id_warning_edit_date',
+                'warning_id_warning_edit_date',
             ]);
         });
-    }
-
-    public function upgrade1680418222Step1(): void
-    {
-        $this->customizeWarningLogContentTypePhrases();
     }
 
     /**
@@ -813,9 +815,10 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'reply_ban_thread_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'reply_ban_post_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'public_banner', 'varchar', 255)->nullable()->setDefault(null);
+            $this->addOrChangeColumn($table, 'is_latest_version', 'tinyint')->setDefault(0);
 
-            $table->addKey(['warning_id', 'warning_edit_date']);
-            $table->addKey(['reply_ban_thread_id', 'warning_edit_date']);
+            $table->addKey(['content_type', 'content_id','warning_edit_date']);
+            $table->addKey(['reply_ban_thread_id', 'user_id', 'warning_edit_date']);
         };
 
         return $tables;

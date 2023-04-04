@@ -11,10 +11,17 @@
 	</xf:checkboxrow>
 </xf:if>
 
+<xf:checkboxrow>
+	<xf:option label="{{ phrase('svReportImprove_only_latest_version') }}"
+			   name="c[warning][latest]"
+			   selected="{{ $input.c.warning.latest ? '1' : '' }}" 
+			   />
+</xf:checkboxrow>
+
 <xf:macro name="svSearchImprov_macros::multi_select_list"
 		  arg-name="warning.type"
 		  arg-label="{{ phrase('svReportImprove_warning_type') }}"
-		  arg-default="{{ ['new','edit'] }}"
+		  arg-default="{{ $input.c.warning.latest ? [] : ['new','edit'] }}"
 		  arg-keyValues="{$warningTypes}"
 		  />
 
