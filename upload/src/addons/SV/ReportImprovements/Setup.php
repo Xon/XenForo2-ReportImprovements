@@ -360,6 +360,24 @@ class Setup extends AbstractSetup
         );
     }
 
+    public function upgrade1680418221Step1(): void
+    {
+        $this->installStep1();
+    }
+
+    public function upgrade1680418221Step2(): void
+    {
+        $this->schemaManager()->alterTable('xf_sv_warning_log', function (Alter $table) {
+            $table->dropIndexes([
+                'content_type_id',
+                'user_id_date',
+                'expiry',
+                'operation_type',
+                'warning_edit_date',
+            ]);
+        });
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -745,12 +763,8 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'reply_ban_post_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'public_banner', 'varchar', 255)->nullable()->setDefault(null);
 
-            $table->addKey('warning_id');
-            $table->addKey(['content_type', 'content_id'], 'content_type_id');
-            $table->addKey(['user_id', 'warning_date'], 'user_id_date');
-            $table->addKey(['expiry_date'], 'expiry');
-            $table->addKey(['operation_type'], 'operation_type');
-            $table->addKey(['warning_edit_date'], 'warning_edit_date');
+            $table->addKey(['warning_id', 'warning_edit_date']);
+            $table->addKey(['reply_ban_thread_id', 'warning_edit_date']);
         };
 
         return $tables;
