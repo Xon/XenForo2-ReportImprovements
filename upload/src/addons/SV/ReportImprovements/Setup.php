@@ -7,6 +7,7 @@ use SV\ReportImprovements\Job\Upgrades\EnrichReportPostInstall;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090100Step1;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090200Step1;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1680521965Step1;
+use SV\ReportImprovements\Job\Upgrades\Upgrade1680614325Step3;
 use SV\ReportImprovements\Job\WarningLogMigration;
 use SV\StandardLib\InstallerHelper;
 use XF\AddOn\AbstractSetup;
@@ -367,12 +368,12 @@ class Setup extends AbstractSetup
         $this->customizeWarningLogContentTypePhrases();
     }
 
-    public function upgrade1680418223Step1(): void
+    public function upgrade1680614325Step1(): void
     {
         $this->installStep1();
     }
 
-    public function upgrade1680418223Step2(): void
+    public function upgrade1680614325Step2(): void
     {
         $this->schemaManager()->alterTable('xf_sv_warning_log', function (Alter $table) {
             $table->dropIndexes([
@@ -385,6 +386,14 @@ class Setup extends AbstractSetup
                 'warning_id_warning_edit_date',
             ]);
         });
+    }
+
+    public function upgrade1680614325Step3(): void
+    {
+        $this->app->jobManager()->enqueueUnique(
+            'svRIUpgrade1680614325Step3',
+            Upgrade1680614325Step3::class
+        );
     }
 
     /**

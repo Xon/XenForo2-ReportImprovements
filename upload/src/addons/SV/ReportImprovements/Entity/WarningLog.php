@@ -153,7 +153,7 @@ class WarningLog extends Entity
         }
     }
 
-    public function resyncLatestVersionFlag(): void
+    public function rebuildLatestVersionFlag(bool $doIndexUpdate = true): void
     {
         $db = $this->db();
         $finder = $this->finder('SV\ReportImprovements:WarningLog');
@@ -185,23 +185,44 @@ class WarningLog extends Entity
                    ->where('user_id', $this->user_id);
         }
 
-        if ($latestWarningLogId !== 0 && $latestWarningLogId === $this->warning_log_id)
+        $wasLatest = $this->is_latest_version;
+        if ($latestWarningLogId === 0 || $latestWarningLogId === $this->warning_log_id)
         {
             // while only 1 should be the latest, but patching any out-of-sync records is simple
             $warningLogs = $finder->where('is_latest_version', true)->fetch();
             foreach ($warningLogs as $warningLog)
             {
                 assert($warningLog instanceof WarningLog);
+                // use fastUpdate() otherwise save() will trigger a loop
                 $warningLog->fastUpdate('is_latest_version', false);
-
-                $indexable = $warningLog->getBehavior('XF:Indexable');
-                if ($indexable !== null)
+                $this->triggerReindex();
+            }
+            if (!$wasLatest)
+            {
+                $this->fastUpdate('is_latest_version', true);
+                if ($doIndexUpdate)
                 {
-                    assert($indexable instanceof \XF\Behavior\Indexable);
-                    $indexable->triggerReindex();
+                    $this->triggerReindex();
                 }
             }
-            $this->fastUpdate('is_latest_version', true);
+        }
+        else if ($wasLatest)
+        {
+            $this->fastUpdate('is_latest_version', false);
+            if ($doIndexUpdate)
+            {
+                $this->triggerReindex();
+            }
+        }
+    }
+
+    protected function triggerReindex(): void
+    {
+        $indexable = $this->getBehavior('XF:Indexable');
+        if ($indexable !== null)
+        {
+            assert($indexable instanceof \XF\Behavior\Indexable);
+            $indexable->triggerReindex();
         }
     }
 
@@ -211,7 +232,11 @@ class WarningLog extends Entity
 
         if ($this->isInsert())
         {
-            $this->resyncLatestVersionFlag();
+            $this->rebuildLatestVersionFlag(false);
+        }
+        else if ($this->isChanged('is_latest_version'))
+        {
+            $this->rebuildLatestVersionFlag(true);
         }
     }
 
