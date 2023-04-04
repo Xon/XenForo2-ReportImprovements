@@ -204,6 +204,10 @@ class WarningLog extends Entity
                 $warningLog->fastUpdate('is_latest_version', false);
                 $this->triggerReindex();
             }
+            if (!$isLatestVersion)
+            {
+                $this->fastUpdate('is_latest_version', true);
+            }
         }
         else if ($isLatestVersion)
         {
