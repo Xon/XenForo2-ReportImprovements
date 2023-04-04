@@ -166,7 +166,7 @@ class WarningLog extends Entity
                 SELECT warning_log_id
                 FROM xf_sv_warning_log
                 WHERE content_type = ? AND content_id = ?
-                ORDER BY warning_edit_date DESC 
+                ORDER BY warning_edit_date DESC, warning_log_id DESC 
                 LIMIT 1
             ', [$this->content_type, $this->content_id]);
             $finder->where('content_type', $this->content_type)
@@ -178,7 +178,7 @@ class WarningLog extends Entity
                 SELECT warning_log_id
                 FROM xf_sv_warning_log
                 WHERE reply_ban_thread_id = ? AND user_id = ?
-                ORDER BY warning_edit_date DESC 
+                ORDER BY warning_edit_date DESC, warning_log_id DESC  
                 LIMIT 1
             ', [$this->reply_ban_thread_id, $this->user_id]);
             $finder->where('reply_ban_thread_id', $this->reply_ban_thread_id)
@@ -191,7 +191,15 @@ class WarningLog extends Entity
             $warningLogs = $finder->where('is_latest_version', true)->fetch();
             foreach ($warningLogs as $warningLog)
             {
+                assert($warningLog instanceof WarningLog);
                 $warningLog->fastUpdate('is_latest_version', false);
+
+                $indexable = $warningLog->getBehavior('XF:Indexable');
+                if ($indexable !== null)
+                {
+                    assert($indexable instanceof \XF\Behavior\Indexable);
+                    $indexable->triggerReindex();
+                }
             }
             $this->fastUpdate('is_latest_version', true);
         }
@@ -305,6 +313,12 @@ class WarningLog extends Entity
             'OperationTypePhrase' => ['getter' => 'getOperationTypePhrase', 'cache' => false],
             'ReplyBan'            => ['getter' => 'getReplyBan','cache' => true],
             'ReplyBanLink'        => ['getter' => 'getReplyBanLink','cache' => true],
+        ];
+
+        // currently deliberately empty checkForUpdates, as this is indexed when a linked ReportComment is created
+        // except for the resyncLatestVersionFlag function which explicitly triggers re-indexing
+        $structure->behaviors['XF:Indexable'] = [
+            'checkForUpdates' => [],
         ];
 
         return $structure;
