@@ -37,6 +37,9 @@
 	</xf:option>
 </xf:radiorow>
 
+<xf:if is="$input.c.replies">
+	<xf:macro name="svSearchImprov_macros::replies" arg-label="{{ phrase('svReportImpov_comment_count') }}"/>
+</xf:if>
 
 <xf:macro template="search_form_macros"
 		  name="order"
