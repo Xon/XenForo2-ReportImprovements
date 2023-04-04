@@ -185,8 +185,15 @@ class WarningLog extends Entity
                    ->where('user_id', $this->user_id);
         }
 
-        $wasLatest = $this->is_latest_version;
-        if ($latestWarningLogId === 0 || $latestWarningLogId === $this->warning_log_id)
+        $isLatestVersion = $this->is_latest_version;
+        if ($latestWarningLogId === 0)
+        {
+            if (!$isLatestVersion)
+            {
+                $this->fastUpdate('is_latest_version', true);
+            }
+        }
+        else if ($latestWarningLogId === $this->warning_log_id)
         {
             // while only 1 should be the latest, but patching any out-of-sync records is simple
             $warningLogs = $finder->where('is_latest_version', true)->fetch();
@@ -197,22 +204,15 @@ class WarningLog extends Entity
                 $warningLog->fastUpdate('is_latest_version', false);
                 $this->triggerReindex();
             }
-            if (!$wasLatest)
-            {
-                $this->fastUpdate('is_latest_version', true);
-                if ($doIndexUpdate)
-                {
-                    $this->triggerReindex();
-                }
-            }
         }
-        else if ($wasLatest)
+        else if ($isLatestVersion)
         {
             $this->fastUpdate('is_latest_version', false);
-            if ($doIndexUpdate)
-            {
-                $this->triggerReindex();
-            }
+        }
+
+        if ($doIndexUpdate && $isLatestVersion !== $this->is_latest_version)
+        {
+            $this->triggerReindex();
         }
     }
 
