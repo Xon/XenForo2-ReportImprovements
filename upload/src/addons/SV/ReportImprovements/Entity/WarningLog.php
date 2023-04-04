@@ -149,6 +149,7 @@ class WarningLog extends Entity
         $structure->table = 'xf_sv_warning_log';
         $structure->shortName = 'SV\ReportImprovements:WarningLog';
         $structure->primaryKey = 'warning_log_id';
+        $structure->contentType = 'warning_log';
         $structure->columns = [
             'warning_log_id'        => ['type' => self::UINT, 'autoIncrement' => true, 'nullable' => true],
             'warning_edit_date'     => ['type' => self::UINT, 'required' => true, 'default' => \XF::$time],

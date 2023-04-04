@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Repository;
 
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\XF\Entity\ReportComment;
+use SV\ReportImprovements\Entity\WarningLog;
 use XF\Db\Exception;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -20,13 +21,19 @@ use function sort;
  */
 class Report extends XFCP_Report
 {
-    public function svPreloadReportComments(AbstractCollection $reportComments)
+    public function svPreloadReportComments(AbstractCollection $entities)
     {
         $reports = [];
-        /** @var \SV\ReportImprovements\XF\Entity\ReportComment $reportComment */
-        foreach ($reportComments as $reportComment)
+        foreach ($entities as $entity)
         {
-            $reports[$reportComment->report_id] = $reportComment->Report;
+            if ($entity instanceof WarningLog)
+            {
+                $entity = $entity->ReportComment;
+            }
+            if ($entity instanceof ReportComment)
+            {
+                $reports[$entity->report_id] = $entity->Report;
+            }
         }
 
         $this->svPreloadReports(new ArrayCollection($reports));

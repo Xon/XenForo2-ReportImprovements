@@ -1,5 +1,5 @@
 {
-    "content_type": "warning",
+    "content_type": "warning_log",
     "field_name": "search_handler_class",
     "field_value": "SV\\ReportImprovements\\Search\\Data\\WarningLog"
 }

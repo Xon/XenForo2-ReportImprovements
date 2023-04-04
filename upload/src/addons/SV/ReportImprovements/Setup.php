@@ -15,6 +15,8 @@ use XF\AddOn\StepRunnerUninstallTrait;
 use XF\AddOn\StepRunnerUpgradeTrait;
 use XF\Db\Schema\Alter;
 use XF\Db\Schema\Create;
+use function array_keys;
+use function assert;
 
 /**
  * Class Setup
@@ -378,6 +380,11 @@ class Setup extends AbstractSetup
         });
     }
 
+    public function upgrade1680418222Step1(): void
+    {
+        $this->customizeWarningLogContentTypePhrases();
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -407,10 +414,54 @@ class Setup extends AbstractSetup
         }
     }
 
+    protected function customizeWarningLogContentTypePhrases(): void
+    {
+        $map = [
+            'warning'  => 'warning_log',
+            'warnings' => 'warning_logs',
+        ];
+        $phrases = $this->app->finder('XF:Phrase')
+                             ->where('language_id', '<>', 0)
+                             ->where('title', array_keys($map))
+                             ->fetch();
+        foreach ($phrases as $stockPhrase)
+        {
+            assert($stockPhrase instanceof \XF\Entity\Phrase);
+            $title = $map[$stockPhrase->title];
+
+            $phrase = $this->app->finder('XF:Phrase')
+                                ->where('language_id', '<>', 0)
+                                ->where('title', $title)
+                                ->fetchOne();
+            if ($phrase === null)
+            {
+                $phrase = $this->app->em()->create('XF:Phrase');
+                assert($phrase instanceof \XF\Entity\Phrase);
+                $phrase->language_id = $stockPhrase->language_id;
+                $phrase->title = $title;
+            }
+
+            $phrase->phrase_text = $stockPhrase->phrase_text;
+            $phrase->addon_id = $this->addOn->getAddOnId();
+            $phrase->version_id = $this->addOn->getJsonVersion()['version_id'];
+            $phrase->version_string = $this->addOn->getJsonVersion()['version_string'];
+            try
+            {
+                // this can still throw, but it should throw less
+                $phrase->save(false);
+            }
+            catch (\Exception $e)
+            {
+                \XF::logException($e);
+            }
+        }
+    }
+
     public function postInstall(array &$stateChanges)
     {
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
+        $this->customizeWarningLogContentTypePhrases();
 
         $atomicJobs[] = EnrichReportPostInstall::class;
         $atomicJobs[] = Upgrade1090100Step1::class;

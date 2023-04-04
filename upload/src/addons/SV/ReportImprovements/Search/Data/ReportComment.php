@@ -116,7 +116,7 @@ class ReportComment extends AbstractData
 
     public function getEntityWith($forView = false): array
     {
-        $get = ['Report', 'User', 'WarningLog'];
+        $get = ['Report', 'User'];
 
         if ($forView)
         {
@@ -141,10 +141,9 @@ class ReportComment extends AbstractData
             return null;
         }
 
-        $warningLog = $entity->WarningLog;
-        if ($warningLog !== null)
+        if ($entity->warning_log_id !== null)
         {
-            return $this->searcher->handler('warning')->getIndexData($entity);
+            return $this->searcher->handler('warning_log')->getIndexData($entity->WarningLog);
         }
 
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
@@ -304,9 +303,9 @@ class ReportComment extends AbstractData
                 if (in_array(ReportType::Reply_ban, $reportTypes, true) || in_array(ReportType::Warning, $reportTypes, true))
                 {
                     $types = $query->getTypes() ?? [];
-                    if (count($types) !== 0 && !in_array('warning', $types, true))
+                    if (count($types) !== 0 && !in_array('warning_log', $types, true))
                     {
-                        $types[] = 'warning';
+                        $types[] = 'warning_log';
                         $query->inTypes($types);
                     }
                 }

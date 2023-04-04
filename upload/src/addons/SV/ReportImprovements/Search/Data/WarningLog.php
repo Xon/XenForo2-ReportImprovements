@@ -2,9 +2,9 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
-use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\ExistsConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\NotConstraint;
@@ -29,21 +29,33 @@ class WarningLog extends ReportComment
 {
     public function getIndexData(Entity $entity): ?IndexRecord
     {
-        assert($entity instanceof ReportCommentEntity);
-        $warningLog = $entity->WarningLog;
-        if ($warningLog == null)
+        assert($entity instanceof WarningLogEntity);
+        $reportComment = $entity->ReportComment;
+        if ($reportComment === null)
         {
             return null;
         }
 
-        return IndexRecord::create('warning', $entity->report_comment_id, [
-            'title'         => $warningLog->title,
-            'message'       => $this->getMessage($entity),
-            'date'          => $entity->comment_date,
-            'user_id'       => $entity->user_id,
-            'discussion_id' => $entity->report_id,
-            'metadata'      => $this->getMetaData($entity),
+        return IndexRecord::create('warning_log', $entity->warning_log_id, [
+            'title'         => $entity->title,
+            'message'       => $this->getMessage($reportComment),
+            'date'          => $reportComment->comment_date,
+            'user_id'       => $reportComment->user_id,
+            'discussion_id' => $reportComment->report_id,
+            'metadata'      => $this->getMetaData($reportComment),
         ]);
+    }
+
+    public function getEntityWith($forView = false): array
+    {
+        $get = parent::getEntityWith($forView);
+
+        foreach ($get as &$with)
+        {
+            $with = 'ReportComment.' . $with;
+        }
+
+        return $get;
     }
 
     /**
@@ -79,7 +91,8 @@ class WarningLog extends ReportComment
 
         $finder = $em->getFinder($entityId)
                      ->where($key, '>', $lastId)
-                     ->where('warning_log_id', '<>', null)
+                     ->with('ReportComment', true)
+                     //->where('ReportComment.warning_log_id', '<>', null)
                      ->order($key)
                      ->with($this->getEntityWith($forView));
 
@@ -102,7 +115,6 @@ class WarningLog extends ReportComment
     protected function getMetaData(ReportCommentEntity $entity): array
     {
         $metaData = parent::getMetaData($entity);
-        assert($entity instanceof ReportCommentEntity);
         $warningLog = $entity->WarningLog;
 
         $metaData['warning_type'] = $warningLog->operation_type;
@@ -142,18 +154,30 @@ class WarningLog extends ReportComment
         $structure->addField('post_reply_ban', MetadataStructure::INT);
     }
 
+    public function canViewContent(Entity $entity, &$error = null): bool
+    {
+        assert($entity instanceof WarningLogEntity);
+        return parent::canViewContent($entity->ReportComment, $error);
+    }
+
+    public function getResultDate(Entity $entity): int
+    {
+        assert($entity instanceof WarningLogEntity);
+        return parent::getResultDate($entity->ReportComment);
+    }
+
     public function getTemplateData(Entity $entity, array $options = []): array
     {
-        assert($entity instanceof ReportCommentEntity);
-        $data = parent::getTemplateData($entity);
-        $data['warningLog'] = $entity->WarningLog;
+        assert($entity instanceof WarningLogEntity);
+        $data = parent::getTemplateData($entity->ReportComment);
+        $data['warningLog'] = $entity;
 
         return $data;
     }
 
     public function getSearchableContentTypes(): array
     {
-        return ['warning'];
+        return ['warning_log'];
     }
 
     public function getSearchFormTab(): ?array
