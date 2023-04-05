@@ -30,7 +30,6 @@ use function count;
 use function get_class;
 use function is_array;
 use function sort;
-use function strcmp;
 use function trigger_error;
 
 /**
@@ -381,12 +380,13 @@ class Report extends XFCP_Report
         /** @var array<int,ModeratorEntity> $moderators */
         $moderators = [];
 
-        $fakeMod = function(int $userId): ModeratorEntity {
+        $fakeMod = function (int $userId): ModeratorEntity {
             /** @var ModeratorEntity $moderator */
             $moderator = $this->em->create('XF:Moderator');
             $moderator->setTrusted('user_id', $userId);
             $moderator->hydrateRelation('User', $this->em->find('XF:User', $userId));
             $moderator->setReadOnly(true);
+
             return $moderator;
         };
 
@@ -447,7 +447,7 @@ class Report extends XFCP_Report
         $canViewFunc = function () use ($report) {
             return $report->canView() && $report->canUpdate();
         };
-        foreach ($moderators AS $id => $moderator)
+        foreach ($moderators as $id => $moderator)
         {
             if (!\XF::asVisitor($moderator->User, $canViewFunc))
             {
@@ -455,11 +455,16 @@ class Report extends XFCP_Report
             }
         }
 
-        uasort($moderators, function (ModeratorEntity $a, ModeratorEntity $b): int {
-            return strcmp($a->User->username, $b->User->username);
-        });
+        // sorting string is hard, use mysql to at least be consistent with how XF returns this list
+        $db = $this->db();
+        $keys = $db->fetchAllColumn('
+            select user_id 
+            from xf_user 
+            where user_id in (' . $db->quote(array_keys($moderators)) . ')
+            order by username
+        ');
 
-        return new ArrayCollection($moderators);
+        return (new ArrayCollection($moderators))->sortByList($keys);
     }
 
     /**
