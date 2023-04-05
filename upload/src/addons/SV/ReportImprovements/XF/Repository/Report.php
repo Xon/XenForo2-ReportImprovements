@@ -728,6 +728,8 @@ class Report extends XFCP_Report
      */
     public function getWarningDefinitionsForSearch(): array
     {
+        $phrasePairs = [];
+
         $warningRepo = $this->repository('XF:Warning');
         assert($warningRepo instanceof \XF\Repository\Warning);
         if (\XF::isAddOnActive('SV/WarningImprovements'))
@@ -752,7 +754,7 @@ class Report extends XFCP_Report
                     assert($warningDefinition instanceof \SV\WarningImprovements\XF\Entity\WarningDefinition);
                     if ($warningDefinition->isUsable())
                     {
-                        $definitions[$id] = $warningDefinition;
+                        $phrasePairs[$id] = $warningDefinition->title;
                     }
                 }
             }
@@ -761,21 +763,14 @@ class Report extends XFCP_Report
         {
             $definitions = $warningRepo->findWarningDefinitionsForList()->fetch();
 
-            // "Custom Warning" is a faux definition, the id needs to be set to find the phrases
-            $customDefinition = $this->em->create('XF:WarningDefinition');
-            assert($customDefinition instanceof \XF\Entity\WarningDefinition);
-            $customDefinition->setTrusted('warning_definition_id', 0);
-            $customDefinition->setTrusted('is_editable' , true);
-            $customDefinition->setReadOnly(true);
-
-            // preserve ordering
-            $definitions = [0 => $customDefinition] + $definitions->toArray();
-        }
-
-        $phrasePairs = [];
-        foreach ($definitions as $id => $definition)
-        {
-            $phrasePairs[$id] = $definition->title;
+            $phrasePairs = [
+                0 => \XF::phrase('custom_warning'),
+            ];
+            foreach ($definitions as $id => $warningDefinition)
+            {
+                assert($warningDefinition instanceof \XF\Entity\WarningDefinition);
+                $phrasePairs[$id] = $warningDefinition->title;
+            }
         }
 
         return $phrasePairs;
