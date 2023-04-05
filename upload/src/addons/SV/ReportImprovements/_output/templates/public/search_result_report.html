@@ -18,7 +18,7 @@
 					<xf:if is="$report.assigned_user_id && $report.AssignedUser">
 						<li>{{ phrase('svReportImprov_assigned_to:') }} <xf:username user="{$report.AssignedUser}"/></li>
 						<xf:if is="$report.assigned_user_id !== $report.assigner_user_id && $report.AssignerUser">
-						<li>{{ phrase('svReportImprov_assigner_by:') }} <xf:username user="{$report.AssignerUser}"/></li>
+						<li>{{ phrase('svReportImprov_by_assigner_x:', {'value':  username_link($report.AssignedUser) }) }}</li>
 						</xf:if>
 					</xf:if>
 				</ul>
