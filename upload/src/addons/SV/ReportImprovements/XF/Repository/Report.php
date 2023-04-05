@@ -13,6 +13,7 @@ use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Report\AbstractHandler;
 use XF\Search\MetadataStructure;
+use function assert;
 use function get_class;
 use function sort;
 
@@ -721,4 +722,63 @@ class Report extends XFCP_Report
 
         return $contentTypes;
     }
+
+    /**
+     * @return array<string,\XF\Phrase>
+     */
+    public function getWarningDefinitionsForSearch(): array
+    {
+        $warningRepo = $this->repository('XF:Warning');
+        assert($warningRepo instanceof \XF\Repository\Warning);
+        if (\XF::isAddOnActive('SV/WarningImprovements'))
+        {
+            assert($warningRepo instanceof \SV\WarningImprovements\XF\Repository\Warning);
+
+            $categoryRepo = $this->repository('SV\WarningImprovements:WarningCategory');
+            assert($categoryRepo instanceof \SV\WarningImprovements\Repository\WarningCategory);
+
+            $categories = $categoryRepo->findCategoryList()->fetch();
+            $categoryTree = $categoryRepo->createCategoryTree($categories);
+            $warningsByCategory = $warningRepo->findWarningDefinitionsForListGroupedByCategory();
+
+            $definitions = [];
+            foreach ($categoryTree->getFlattened(0) as $treeNode)
+            {
+                $category = $treeNode['record'];
+                assert($category instanceof \SV\WarningImprovements\Entity\WarningCategory);
+                $warningDefinitions = $warningsByCategory[$category->category_id] ?? [];
+                foreach ($warningDefinitions as $id => $warningDefinition)
+                {
+                    assert($warningDefinition instanceof \SV\WarningImprovements\XF\Entity\WarningDefinition);
+                    if ($warningDefinition->isUsable())
+                    {
+                        $definitions[$id] = $warningDefinition;
+                    }
+                }
+            }
+        }
+        else
+        {
+            $definitions = $warningRepo->findWarningDefinitionsForList()->fetch();
+
+            // "Custom Warning" is a faux definition, the id needs to be set to find the phrases
+            $customDefinition = $this->em->create('XF:WarningDefinition');
+            assert($customDefinition instanceof \XF\Entity\WarningDefinition);
+            $customDefinition->setTrusted('warning_definition_id', 0);
+            $customDefinition->setTrusted('is_editable' , true);
+            $customDefinition->setReadOnly(true);
+
+            // preserve ordering
+            $definitions = [0 => $customDefinition] + $definitions->toArray();
+        }
+
+        $phrasePairs = [];
+        foreach ($definitions as $id => $definition)
+        {
+            $phrasePairs[$id] = $definition->title;
+        }
+
+        return $phrasePairs;
+    }
+
 }

@@ -91,6 +91,22 @@ class Search extends XFCP_Search
 
             return true;
         }
+        else if ($key === 'warning_definition' && is_array($value))
+        {
+            $reportRepo = \XF::repository('XF:Report');
+            assert($reportRepo instanceof ReportRepo);
+            $states = $reportRepo->getWarningDefinitionsForSearch();
+
+            foreach ($value as $subKey => $id)
+            {
+                $id = (string)$id;
+                $query[$key . '_' . $subKey] = \XF::phrase('svSearchConstraint.warning_definition', [
+                    'definition' => $states[$id] ?? $id,
+                ]);
+            }
+
+            return true;
+        }
         else if ($key === 'categories' && is_array($value))
         {
             /** @var \NF\Tickets\Repository\Category $categoryRepo */

@@ -20,6 +20,7 @@ use XF\Search\Query\MetadataConstraint;
 use XF\Search\Query\Query;
 use XF\Search\Query\TableReference;
 use function array_merge_recursive;
+use function array_unique;
 use function assert;
 use function count;
 use function in_array;
@@ -178,6 +179,8 @@ class WarningLog extends AbstractData
             // distinct for WarningLog
             'warning_type' => $warningLog->operation_type,
             'issuer_user'  => $warningLog->warning_user_id,
+            // explicitly include even if it has a '0' to allow selecting on "Custom Warning" which in SV/WarningImprovements has a backing record
+            'warning_definition' => $warningLog->warning_definition_id,
         ];
 
         if ($warningLog->expiry_date)
@@ -242,6 +245,7 @@ class WarningLog extends AbstractData
         $structure->addField('thread_reply_ban', MetadataStructure::INT);
         $structure->addField('post_reply_ban', MetadataStructure::INT);
         $structure->addField('is_latest_version', MetadataStructure::BOOL);
+        $structure->addField('warning_definition', MetadataStructure::INT);
     }
 
     public function getSearchFormTab(): ?array
@@ -295,6 +299,7 @@ class WarningLog extends AbstractData
         $form['reportHandlers'] = $handlers;
         $form['reportTypes'] = ReportType::getPairs();
         $form['warningTypes'] = WarningType::getPairs();
+        $form['warningDefinitions'] = $this->reportRepo->getWarningDefinitionsForSearch();
 
         return $form;
     }
@@ -317,6 +322,7 @@ class WarningLog extends AbstractData
             'c.warning.expiry_type'  => 'str',
             'c.warning.expiry.lower' => 'datetime',
             'c.warning.expiry.upper' => '?datetime,empty-str-to-null',
+            'c.warning.definition'   => 'array-uint',
         ]);
 
         $repo = \SV\SearchImprovements\Globals::repo();
@@ -403,6 +409,37 @@ class WarningLog extends AbstractData
             'c.warning.expiry.lower', 'c.warning.expiry.upper', 'expiry_date',
             $this->getWarningLogQueryTableReference(), 'warning_log'
         );
+
+        $warningDefinitions = $constraints['c.warning.definition'];
+        assert(is_array($rawWarningTypes));
+        if (count($warningDefinitions) !== 0)
+        {
+            $warningDefinitions = array_unique($warningDefinitions);
+
+            $validDefinitions  = [];
+            $warningDefinitionEntities = $this->reportRepo->getWarningDefinitionsForSearch();
+            foreach ($warningDefinitions as $warningDefinition)
+            {
+                if ($warningDefinition === 0 || isset($warningDefinitionEntities[$warningDefinition]))
+                {
+                    $validDefinitions[] = $warningDefinition;
+                }
+            }
+
+            if (count($validDefinitions) !== 0 && count($warningDefinitionEntities) !== count($validDefinitions))
+            {
+                $query->withMetadata('warning_definition', $validDefinitions);
+                Arr::setUrlConstraint($urlConstraints, 'c.warning.definition', $validDefinitions);
+            }
+            else
+            {
+                Arr::unsetUrlConstraint($urlConstraints, 'c.warning.definition');
+            }
+        }
+        else
+        {
+            Arr::unsetUrlConstraint($urlConstraints, 'c.warning.definition');
+        }
     }
 
     /**
