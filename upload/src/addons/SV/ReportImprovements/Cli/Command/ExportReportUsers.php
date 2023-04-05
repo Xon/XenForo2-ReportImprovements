@@ -1,7 +1,11 @@
 <?php
+/**
+ * @noinspection PhpMissingParentCallCommonInspection
+ */
 
 namespace SV\ReportImprovements\Cli\Command;
 
+use SV\ReportImprovements\XF\Repository\Report;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,49 +29,78 @@ class ExportReportUsers extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('report-id');
         $report = \XF::app()->find('XF:Report', $id);
         if ($report === null)
         {
-            $output->writeln("<error>Report not found.</error>");
+            $output->writeln('<error>Report not found.</error>');
+
             return 1;
         }
         assert($report instanceof \XF\Entity\Report);
         $reportRepo = \XF::repository('XF:Report');
-        assert($reportRepo instanceof \SV\ReportImprovements\XF\Repository\Report);
+        assert($reportRepo instanceof Report);
 
         $cache = (bool)$input->getOption('cache');
 
         if ($cache)
         {
-            $output->writeln("Fetching from cache");
+            $output->writeln('Fetching from cache');
         }
         else
         {
-            $output->writeln("Skipping cache");
+            $output->writeln('Skipping cache');
         }
 
-        \XF::options()->offsetSet('svNonModeratorReportHandlingLimit', 0);
-        $userIds = $reportRepo->getNonModeratorsWhoCanHandleReport($report, $cache);
+        \XF::options()->offsetSet('svReportHandlingLimit', 0);
+        $userIds = $reportRepo->svGetUsersWhoCanHandleReport($report, $cache);
         if (count($userIds) === 0)
         {
-            $output->writeln("No non-moderator users detected for report {$report->report_id}.");
+            $output->writeln("No users detected for report: {$report->report_id}");
+
             return 0;
         }
         $db = \XF::app()->db();
-        $usernames = $db->fetchAllColumn("select username from xf_user where user_id in ({$db->quote($userIds)})");
+        $usernames = $db->fetchAllColumn("
+            select username 
+            from xf_user 
+            where user_id in ({$db->quote($userIds)}) and is_moderator = 1
+            order by username
+        ");
         if (count($usernames) === 0)
         {
-            $output->writeln("No non-moderator users detected for report {$report->report_id}.");
-            return 0;
+            $output->writeln("No moderators detected for report ({$report->report_id})");
+        }
+        else
+        {
+            $output->writeln("List of moderators who have some permissions assigned for report ({$report->report_id}):");
+            foreach ($usernames as $username)
+            {
+                $output->writeln($username);
+            }
+            $output->writeln('');
         }
 
-        $output->writeln("List of users who have some permissions assigned for report {$report->report_id}:");
-        foreach($usernames as $username)
+        $usernames = $db->fetchAllColumn("
+            select username 
+            from xf_user 
+            where user_id in ({$db->quote($userIds)}) and is_moderator = 0 
+            order by username
+        ");
+        if (count($usernames) === 0)
         {
-            $output->writeln($username);
+            $output->writeln("No non-moderators detected for report ({$report->report_id})");
+        }
+        else
+        {
+            $output->writeln("List of non-moderators who have some permissions assigned for report ({$report->report_id}):");
+            foreach ($usernames as $username)
+            {
+                $output->writeln($username);
+            }
+            $output->writeln('');
         }
 
         return 0;

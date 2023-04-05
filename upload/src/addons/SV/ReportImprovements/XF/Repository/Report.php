@@ -1,21 +1,36 @@
 <?php
+/**
+ * @noinspection PhpMissingReturnTypeInspection
+ */
 
 namespace SV\ReportImprovements\XF\Repository;
 
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
+use SV\ReportImprovements\Repository\ReportQueue;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Entity\WarningLog;
+use SV\ReportImprovements\XF\Entity\User;
+use SV\WarningImprovements\Entity\WarningCategory;
 use XF\Db\Exception;
 use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
+use XF\Entity\Moderator as ModeratorEntity;
+use XF\Entity\User as UserEntity;
+use XF\Entity\WarningDefinition;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
+use XF\Phrase;
 use XF\Report\AbstractHandler;
+use XF\Repository\Moderator;
 use XF\Search\MetadataStructure;
+use function array_keys;
 use function assert;
+use function count;
 use function get_class;
 use function sort;
+use function strcmp;
+use function trigger_error;
 
 /**
  * Class Report
@@ -93,7 +108,7 @@ class Report extends XFCP_Report
     public function svPreloadReports(AbstractCollection $reports)
     {
         $reportsByContentType = [];
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @var ReportEntity $report */
         foreach ($reports as $report)
         {
             if (!$report)
@@ -120,7 +135,7 @@ class Report extends XFCP_Report
             {
                 continue;
             }
-            $contentIds = \array_keys($reports);
+            $contentIds = array_keys($reports);
             if (!$contentIds)
             {
                 continue;
@@ -128,7 +143,7 @@ class Report extends XFCP_Report
             $reportContents = $handler->getContent($contentIds);
             foreach ($reportContents as $contentId => $reportContent)
             {
-                /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+                /** @var ReportEntity $report */
                 $report = $reports[$contentId] ?? null;
                 if (!$report)
                 {
@@ -159,12 +174,12 @@ class Report extends XFCP_Report
     /** @noinspection PhpUnusedParameterInspection */
     protected function getReportAssignableNonModeratorsCacheTime(int $reportQueueId): int
     {
-        return 86400; // 1 day
+        return 3600; // 1 hour
     }
 
     protected function getReportAssignableNonModeratorsCacheKey(int $reportQueueId): string
     {
-        return 'reports-non-mods-assignable-' . $reportQueueId;
+        return 'reports-assignable-' . $reportQueueId;
     }
 
     public function deferResetNonModeratorsWhoCanHandleReportCache()
@@ -182,7 +197,7 @@ class Report extends XFCP_Report
             return;
         }
 
-        /** @var \SV\ReportImprovements\Repository\ReportQueue $entryRepo */
+        /** @var ReportQueue $entryRepo */
         $entryRepo = $this->repository('SV\ReportImprovements:ReportQueue');
         /** @var int[] $reportQueueIds */
         $reportQueueIds = $entryRepo->getReportQueueList()->keys();
@@ -206,7 +221,7 @@ class Report extends XFCP_Report
      * @noinspection PhpDocMissingThrowsInspection
      * @noinspection SqlResolve
      */
-    public function getNonModeratorsWhoCanHandleReport(\XF\Entity\Report $report, bool $doCache = true)
+    public function svGetUsersWhoCanHandleReport(\XF\Entity\Report $report, bool $doCache = true): ?array
     {
         $reportQueueId = (int)($report->queue_id ?? 0);
         $key = $this->getReportAssignableNonModeratorsCacheKey($reportQueueId);
@@ -222,7 +237,7 @@ class Report extends XFCP_Report
 
         // apply sanity check limit <= 0 means no limit. WHY
         $options = \XF::options();
-        $limit = (int)($options->svNonModeratorReportHandlingLimit ?? 1000);
+        $limit = (int)($options->svReportHandlingLimit ?? 1000);
         $limit = max(0, $limit);
 
         if (!\is_array($userIds))
@@ -242,7 +257,7 @@ class Report extends XFCP_Report
                     $error = "Unexpected {$entityName} configuration, expected ";
                     if (\XF::$debugMode)
                     {
-                        \trigger_error($error, E_USER_WARNING);
+                        trigger_error($error, E_USER_WARNING);
                     }
                     \XF::logError($error);
 
@@ -280,8 +295,6 @@ class Report extends XFCP_Report
                     WHERE 
                          groupPerm.permission_group_id = 'general' AND groupPerm.permission_id = 'viewReports'
                 ) a
-                STRAIGHT_JOIN xf_user AS xu ON xu.user_id = a.user_id
-                WHERE xu.is_moderator = 0 AND xu.user_state = 'valid'
                 ON DUPLICATE KEY UPDATE
                     canView = if(canView = 0 OR a.permission_value = 'never' OR a.permission_value = 'reset', 0, if(a.permission_value = 'allow', 1, NULL))
             ");
@@ -289,17 +302,17 @@ class Report extends XFCP_Report
                 INSERT INTO xf_sv_non_moderator_report_users (user_id, canView)
                 SELECT DISTINCT userPerm.user_id, if(permission_value = 'allow', 1, 0) as val
                 FROM xf_permission_entry AS userPerm use index (permission_group_id_permission_id)
-                STRAIGHT_JOIN xf_user AS xu ON userPerm.user_id = xu.user_id
-                WHERE xu.is_moderator = 0 AND xu.user_state = 'valid' AND
-                      userPerm.permission_group_id = 'general' AND userPerm.permission_id = 'viewReports'
+                WHERE userPerm.permission_group_id = 'general' AND userPerm.permission_id = 'viewReports'
                 ON DUPLICATE KEY UPDATE
                     canView = if(canView = 0 OR userPerm.permission_value = 'never' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow', 1, NULL))
             ");
-            // prune the set
+            // prune the set. phpstorm gets a left-join is null wrong
+            /** @noinspection SqlConstantExpression */
             $db->query("
                 DELETE reportUsers
                 FROM xf_sv_non_moderator_report_users AS reportUsers
-                WHERE canView = 0 or canView is null or user_id = 0
+                LEFT JOIN xf_user AS xu ON reportUsers.user_id = xu.user_id
+                WHERE reportUsers.canView = 0 or reportUsers.canView is null or reportUsers.user_id = 0 or xu.user_id is null or xu.user_state <> 'valid'
             ");
 
             $tablesToCheck = [
@@ -327,11 +340,11 @@ class Report extends XFCP_Report
                     ");
                 }
 
-                $db->query("
+                $db->query('
                     DELETE reportUsers
                     FROM xf_sv_non_moderator_report_users AS reportUsers
                     WHERE canView = 0 or canView is null
-                ");
+                ');
             }
             // merge in the list of users who can update reports
             foreach ($tablesToCheck as $table => $contentFilterSql)
@@ -359,13 +372,13 @@ class Report extends XFCP_Report
             }
         }
 
-        $count = \count($userIds);
+        $count = count($userIds);
         if ($limit && $count > $limit)
         {
             $error = "Potential miss-configuration detected. {$count} users have access to handle/update this report via permissions. Sanity limit is {$limit}, to adjust edit the 'Maximum non-moderator users who can handle reports' option";
             if (\XF::$debugMode)
             {
-                \trigger_error($error, E_USER_WARNING);
+                trigger_error($error, E_USER_WARNING);
             }
             \XF::logError($error);
             return [];
@@ -378,60 +391,86 @@ class Report extends XFCP_Report
      * @param \XF\Entity\Report $report
      * @return ArrayCollection
      * @throws \Exception
+     * @noinspection PhpMissingParentCallCommonInspection
      */
     public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
         /** @var ReportEntity $report */
-        $nodeId = (int)($report->content_info['node_id'] ?? 0);
-        if ($nodeId !== 0)
+        $userIds = $this->svGetUsersWhoCanHandleReport($report);
+        if (count($userIds) === 0)
         {
-            $this->app()->em()->find('XF:Forum', $nodeId);
+            // no users who can have reports assigned to them. permissions need fixing
+            if (\XF::$debugMode)
+            {
+                trigger_error('No users have the "Update Report" permission', E_USER_WARNING);
+            }
+
+            return new ArrayCollection([]);
         }
 
-        /** @var \XF\Repository\Moderator $moderatorRepo */
+        // load into memory, but this is non-authoritative
+        /** @var Moderator $moderatorRepo */
         $moderatorRepo = $this->repository('XF:Moderator');
-
-        /** @var \XF\Entity\Moderator[] $moderators */
-        $moderators = $moderatorRepo->findModeratorsForList()
-                                    ->with('User.PermissionCombination')
-                                    ->fetch()
-                                    ->toArray();
+        $moderatorRepo->findModeratorsForList()
+                      ->fetch();
 
         $permCombinationIds = [];
-        foreach ($moderators AS $moderator)
-        {
-            $id = $moderator->User->permission_combination_id;
-            $permCombinationIds[$id] = $id;
-        }
+        $usersToFetch = [];
+        /** @var array<int,ModeratorEntity> $moderators */
+        $moderators = [];
 
-        $fakeModerators = $this->getNonModeratorsWhoCanHandleReport($report);
-        if ($fakeModerators)
+        $fakeMod = function(int $userId): ModeratorEntity {
+            /** @var ModeratorEntity $moderator */
+            $moderator = $this->em->create('XF:Moderator');
+            $moderator->setTrusted('user_id', $userId);
+            $moderator->hydrateRelation('User', $this->em->find('XF:User', $userId));
+            $moderator->setReadOnly(true);
+            return $moderator;
+        };
+
+        foreach ($userIds as $userId)
         {
-            $users = \XF::finder('XF:User')
-                        ->with('PermissionCombination')
-                        ->where('user_id', '=', $fakeModerators)
-                        ->order('user_id')
-                        ->fetch();
-            $em = \XF::em();
-            /** @var \XF\Entity\User $user */
-            foreach ($users as $userId => $user)
+            $user = $this->em->findCached('XF:User', $userId);
+            if ($user instanceof UserEntity)
             {
                 $id = $user->permission_combination_id;
                 $permCombinationIds[$id] = $id;
 
-                /** @var \XF\Entity\Moderator $moderator */
-                $moderator = $em->create('XF:Moderator');
-                $moderator->setTrusted('user_id', $userId);
-                $moderator->hydrateRelation('User', $user);
-                $moderator->setReadOnly(true);
-
-                $moderators[$userId] = $moderator;
+                $moderator = $this->em->findCached('XF:Moderator', $userId);
+                $moderators[$userId] = $moderator instanceof ModeratorEntity
+                    ? $moderator
+                    : $fakeMod($userId);
+            }
+            else
+            {
+                $usersToFetch[$userId] = $userId;
             }
         }
 
-        if (\count($permCombinationIds) !== 0)
+        if (count($usersToFetch) !== 0)
         {
-            $permCombinationIds = \array_keys($permCombinationIds);
+            $users = \XF::finder('XF:User')
+                        ->where('user_id', '=', $usersToFetch)
+                        ->order('user_id')
+                        ->fetch();
+            foreach ($users as $userId => $user)
+            {
+                assert($user instanceof UserEntity);
+                $id = $user->permission_combination_id;
+                $permCombinationIds[$id] = $id;
+
+                $moderators[$userId] = $fakeMod($userId);
+            }
+        }
+
+        if (count($permCombinationIds) !== 0)
+        {
+            $permCombinationIds = array_keys($permCombinationIds);
+            $nodeId = (int)($report->content_info['node_id'] ?? 0);
+            if ($nodeId !== 0)
+            {
+                $this->em->find('XF:Forum', $nodeId);
+            }
             if ($nodeId !== 0)
             {
                 $this->app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'node', $nodeId);
@@ -443,17 +482,20 @@ class Report extends XFCP_Report
             }
         }
 
+        $canViewFunc = function () use ($report) {
+            return $report->canView() && $report->canUpdate();
+        };
         foreach ($moderators AS $id => $moderator)
         {
-            /** @var int $id */
-            $canView = \XF::asVisitor($moderator->User,
-                function () use ($report) { return $report->canView() && $report->canUpdate(); }
-            );
-            if (!$canView)
+            if (!\XF::asVisitor($moderator->User, $canViewFunc))
             {
                 unset($moderators[$id]);
             }
         }
+
+        usort($moderators, function (ModeratorEntity $a, ModeratorEntity $b): int {
+            return strcmp($a->User->username, $b->User->username);
+        });
 
         return new ArrayCollection($moderators);
     }
@@ -461,6 +503,7 @@ class Report extends XFCP_Report
     /**
      * @param AbstractCollection $reports
      * @return AbstractCollection
+     * @noinspection PhpMissingParentCallCommonInspection
      */
     public function filterViewableReports($reports)
     {
@@ -492,7 +535,7 @@ class Report extends XFCP_Report
 
         if ($userIds)
         {
-            $em->findByIds('XF:User', \array_keys($userIds));
+            $em->findByIds('XF:User', array_keys($userIds));
         }
 
         return $reports;
@@ -519,7 +562,7 @@ class Report extends XFCP_Report
                 $moderators = $this->getModeratorsWhoCanHandleReport($entity);
                 if ($moderators->count())
                 {
-                    /** @var \XF\Entity\Moderator $moderator */
+                    /** @var ModeratorEntity $moderator */
                     foreach ($moderators AS $moderator)
                     {
                         $userIds[] = $moderator->user_id;
@@ -540,7 +583,7 @@ class Report extends XFCP_Report
                 ', [$entity->report_id, $entity->user_id]);
             }
 
-            /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+            /** @var ReportEntity $report */
             $report = $entity->Report;
             if ($entity->state_change === 'assigned' && $report->assigned_user_id)
             {
@@ -560,12 +603,12 @@ class Report extends XFCP_Report
     protected $userReportCountCache = null;
 
     /**
-     * @param \XF\Entity\User|\SV\ReportImprovements\XF\Entity\User $user
-     * @param int                                                   $daysLimit
-     * @param string                                                $state
+     * @param UserEntity|User $user
+     * @param int             $daysLimit
+     * @param string          $state
      * @return int
      */
-    public function countReportsByUser(\XF\Entity\User $user, int $daysLimit, string $state = '')
+    public function countReportsByUser(UserEntity $user, int $daysLimit, string $state = ''): int
     {
         if ($this->userReportCountCache === null)
         {
@@ -662,7 +705,7 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @return array<string,\XF\Phrase>
+     * @return array<string,Phrase>
      */
     public function getReportStatePairs(): array
     {
@@ -678,7 +721,7 @@ class Report extends XFCP_Report
     /**
      * This function exists to allow templates to access it via $xf.app.em.getRepository('XF:Report').getReportTypePairs()
      *
-     * @return array<string,\XF\Phrase>
+     * @return array<string,Phrase>
      */
     public function getReportTypePairs(): array
     {
@@ -687,7 +730,7 @@ class Report extends XFCP_Report
 
     /**
      * @param bool $plural
-     * @return array<string,\XF\Phrase>
+     * @return array<string,Phrase>
      */
     public function getReportContentTypePhrasePairs(bool $plural): array
     {
@@ -724,7 +767,7 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @return array<string,\XF\Phrase>
+     * @return array<string,Phrase>
      */
     public function getWarningDefinitionsForSearch(): array
     {
@@ -743,11 +786,10 @@ class Report extends XFCP_Report
             $categoryTree = $categoryRepo->createCategoryTree($categories);
             $warningsByCategory = $warningRepo->findWarningDefinitionsForListGroupedByCategory();
 
-            $definitions = [];
             foreach ($categoryTree->getFlattened(0) as $treeNode)
             {
                 $category = $treeNode['record'];
-                assert($category instanceof \SV\WarningImprovements\Entity\WarningCategory);
+                assert($category instanceof WarningCategory);
                 $warningDefinitions = $warningsByCategory[$category->category_id] ?? [];
                 foreach ($warningDefinitions as $id => $warningDefinition)
                 {
@@ -768,7 +810,7 @@ class Report extends XFCP_Report
             ];
             foreach ($definitions as $id => $warningDefinition)
             {
-                assert($warningDefinition instanceof \XF\Entity\WarningDefinition);
+                assert($warningDefinition instanceof WarningDefinition);
                 $phrasePairs[$id] = $warningDefinition->title;
             }
         }

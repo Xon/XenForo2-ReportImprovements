@@ -396,6 +396,11 @@ class Setup extends AbstractSetup
         );
     }
 
+    public function upgrade1680614327Step1(): void
+    {
+        $this->renameOption('svNonModeratorReportHandlingLimit', 'svReportHandlingLimit');
+    }
+
     /**
      * Drops add-on tables.
      */
