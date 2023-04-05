@@ -16,7 +16,10 @@
 				</ul>
 			</div>
 			<h3 class="contentRow-title">
-				<a href="{{ link('reports/comment', $reportComment) }}">{{ snippet($warningLog.title, 100, {'term': $options.term, 'fromStart': true, 'stripPlainTag': true}) }}</a>
+				<a href="{{ link('reports/comment', $reportComment) }}">{$warningLog.title}{{ ($warningLog.canShowDefinition() && $warningLog.definition_title !== $warningLog.title) 
+					? ' '.$xf.language.parenthesis_open . $warningLog.definition_title . $xf.language.parenthesis_close
+					: ''
+					}}</a>
 			</h3>
 			
 			<div class="contentRow-snippet">{{ snippet(trim($warningLog.notes), 300, {'term': $options.term, 'stripQuote': true}) }}</div>

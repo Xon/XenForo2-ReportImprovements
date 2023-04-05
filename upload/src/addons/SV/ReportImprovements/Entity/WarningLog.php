@@ -5,6 +5,7 @@ namespace SV\ReportImprovements\Entity;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Finder\WarningLog as WarningLogFinder;
+use SV\WarningImprovements\XF\Entity\WarningDefinition as ExtendedWarningDefinitionEntity;
 use XF\Behavior\Indexable;
 use XF\Entity\Post;
 use XF\Entity\Thread;
@@ -21,42 +22,46 @@ use function assert;
 /**
  * COLUMNS
  *
- * @property int            $warning_log_id
- * @property int            $warning_edit_date
- * @property bool           $is_latest_version
- * @property string         $operation_type
- * @property int|null       $warning_id
- * @property string         $content_type
- * @property int            $content_id
- * @property string         $content_title
- * @property int            $user_id
- * @property int            $warning_date
- * @property int            $warning_user_id
- * @property int            $warning_definition_id
- * @property string         $title
- * @property string         $notes
- * @property int            $points
- * @property int            $expiry_date
- * @property int            $is_expired
- * @property string         $extra_user_group_ids
- * @property int|null       $reply_ban_thread_id
- * @property int|null       $reply_ban_post_id
- * @property string|null    $public_banner
- * @property string|null    $public_banner_
+ * @property ?int                    $warning_log_id
+ * @property int                     $warning_edit_date
+ * @property bool                    $is_latest_version
+ * @property string                  $operation_type
+ * @property ?int                    $warning_id
+ * @property string                  $content_type
+ * @property int                     $content_id
+ * @property string                  $content_title
+ * @property int                     $user_id
+ * @property int                     $warning_date
+ * @property int                     $warning_user_id
+ * @property int                     $warning_definition_id
+ * @property string                  $title
+ * @property string                  $notes
+ * @property int                     $points
+ * @property int                     $expiry_date
+ * @property int                     $is_expired
+ * @property string                  $extra_user_group_ids
+ * @property ?int                    $reply_ban_thread_id
+ * @property ?int                    $reply_ban_post_id
+ * @property ?string                 $public_banner_
  * GETTERS
- * @property-read ThreadReplyBan|null $ReplyBan
+ * @property-read ?Phrase            $definition_title
+ * @property-read ?string            $public_banner
+ * @property-read ?ThreadReplyBan    $ReplyBan
+ * @property-read ?WarningDefinition $Definition
  * RELATIONS
- * @property-read ThreadReplyBan|null $ReplyBan_
- * @property-read Warning|null        $Warning
- * @property-read ?WarningDefinition  $Definition
- * @property-read ?User               $WarnedBy
- * @property-read User|null           $User
- * @property-read Thread|null         $ReplyBanThread
- * @property-read Post|null           $ReplyBanPost
- * @property-read ReportComment|null  $ReportComment
+ * @property-read ?ThreadReplyBan    $ReplyBan_
+ * @property-read ?Warning           $Warning
+ * @property-read ?WarningDefinition $Definition_
+ * @property-read ?User              $WarnedBy
+ * @property-read ?User              $User
+ * @property-read ?Thread            $ReplyBanThread
+ * @property-read ?Post              $ReplyBanPost
+ * @property-read ?ReportComment     $ReportComment
  */
 class WarningLog extends Entity
 {
+    use WarningInfoTrait;
+
     public function canView(): bool
     {
         if ($this->ReportComment === null)
@@ -92,10 +97,7 @@ class WarningLog extends Entity
         ]);
     }
 
-    /**
-     * @return ThreadReplyBan|null
-     */
-    public function getReplyBan()
+    public function getReplyBan(): ? ThreadReplyBan
     {
         if (\array_key_exists('ReplyBan', $this->_relations))
         {
@@ -110,10 +112,7 @@ class WarningLog extends Entity
         return $this->ReplyBanThread->ReplyBans[$this->user_id];
     }
 
-    /**
-     * @return string|null
-     */
-    public function getReplyBanLink()
+    public function getReplyBanLink():? string
     {
         $router = $this->app()->router('public');
 
@@ -153,6 +152,8 @@ class WarningLog extends Entity
 
     protected function _preSave()
     {
+        parent::_preSave();
+
         if ($this->public_banner_ === '')
         {
             $this->public_banner = null;
@@ -253,6 +254,7 @@ class WarningLog extends Entity
     /**
      * @param Structure $structure
      * @return Structure
+     * @noinspection PhpMissingParentCallCommonInspection
      */
     public static function getStructure(Structure $structure): Structure
     {
@@ -348,8 +350,8 @@ class WarningLog extends Entity
             'OperationTypePhrase' => ['getter' => 'getOperationTypePhrase', 'cache' => false],
             'ReplyBan'            => ['getter' => 'getReplyBan','cache' => true],
             'ReplyBanLink'        => ['getter' => 'getReplyBanLink','cache' => true],
+            'definition_title'    => ['getter' => 'getDefinitionTitle', 'cache' => true],
         ];
-
         // currently deliberately empty checkForUpdates, as this is indexed when a linked ReportComment is created
         // except for the resyncLatestVersionFlag function which explicitly triggers re-indexing
         $structure->behaviors['XF:Indexable'] = [

@@ -1,0 +1,9 @@
+{
+    "template": "warning_info",
+    "description": "Inject warning definition title if it doesn't match the warning title",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#[\\t ]*<xf:formrow label=\"{{ phrase\\('details_of_warning#si",
+    "replace": "<xf:include template=\"svReportImprov_warning_info_definition_title\" />\n$0"
+}

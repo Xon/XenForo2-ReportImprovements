@@ -5,19 +5,24 @@ namespace SV\ReportImprovements\XF\Entity;
 use SV\ReportImprovements\Behavior\ReportResolver;
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
+use SV\ReportImprovements\Entity\WarningInfoTrait;
 use XF\Mvc\Entity\Structure;
+use XF\Phrase;
 
 /**
  * Class Warning
  * Extends \XF\Entity\Warning
  *
  * @package SV\ReportImprovements\XF\Entity
+ * GETTERS
+ * @property-read ?Phrase $definition_title
  * RELATIONS
- * @property-read Report $Report
+ * @property-read ?Report $Report
  */
 class Warning extends XFCP_Warning implements IReportResolver
 {
     use ReportResolverTrait;
+    use WarningInfoTrait;
 
     public function getSvLogOperationTypeForReportResolve(): string
     {
@@ -85,6 +90,8 @@ class Warning extends XFCP_Warning implements IReportResolver
     public static function getStructure(Structure $structure)
     {
         $structure = parent::getStructure($structure);
+
+        $structure->getters['definition_title'] = ['getter' => 'getDefinitionTitle', 'cache' => true];
 
         static::addReportResolverStructureElements($structure, [
             ['content_type', '=', '$content_type'],

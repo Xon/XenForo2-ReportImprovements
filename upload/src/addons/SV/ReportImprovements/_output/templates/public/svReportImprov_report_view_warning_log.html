@@ -1,10 +1,19 @@
+<xf:set var="$warningLog" value="{$comment.WarningLog}" />
 <dl class="pairs pairs--justified fauxBlockLink">
 	<dt>{{ phrase('svReportImprov_operation_type') }}</dt>
-	<dd class="warning_{$comment.WarningLog.operation_type}">{{ $comment.WarningLog.OperationTypePhrase }}</dd>
+	<dd class="warning_{$warningLog.operation_type}">{{ $warningLog.OperationTypePhrase }}</dd>
 </dl>
 
-<xf:set var="$warningTitle" value="{$comment.WarningLog.title}" />
-<xf:set var="$publicBanner" value="{{ ''.$comment.WarningLog.public_banner }}" />
+<xf:set var="$warningTitle" value="{$warningLog.title}" />
+<xf:set var="$publicBanner" value="{{ ''.$warningLog.public_banner }}" />
+
+<xf:if is="$warningLog.canShowDefinition() && $warningLog.definition_title !== $warningTitle">
+	<dl class="pairs pairs--justified fauxBlockLink">
+		<dt>{{ phrase('svReportImprove_definition_title') }}</dt>
+		<dd>{$warningLog.definition_title}</dd>
+	</dl>
+</xf:if>
+
 <dl class="pairs pairs--justified fauxBlockLink">
 	<dt>{{ phrase('warning') }}{{ ($publicBanner !== '' && $publicBanner === $warningTitle) 
 		? ' / ' . phrase('svReportImprove_public_banner') 
@@ -21,44 +30,44 @@
 
 <dl class="pairs pairs--justified fauxBlockLink">
 	<dt>{{ phrase('points') }}</dt>
-	<dd>{$comment.WarningLog.points|number}</dd>
+	<dd>{$warningLog.points|number}</dd>
 </dl>
 
 <dl class="pairs pairs--justified fauxBlockLink">
 	<dt>{{ phrase('expiry') }}</dt>
 	<dd>
-		<xf:if is="$comment.WarningLog.expiry_date">
-			<xf:date time="$comment.WarningLog.expiry_date" />
+		<xf:if is="$warningLog.expiry_date">
+			<xf:date time="$warningLog.expiry_date" />
 		<xf:else />
 			{{ phrase('n_a') }}
 		</xf:if>
 	</dd>
 </dl>
 
-<xf:if is="$comment.WarningLog.Warning">
+<xf:if is="$warningLog.Warning">
 	<dl class="pairs pairs--justified fauxBlockLink">
 		<dt>{{ phrase('warning') }}</dt>
-		<dd><a href="{{ link('warnings', {'warning_id': $comment.WarningLog.warning_id}) }}">{{ phrase('view') }}</a></dd>
+		<dd><a href="{{ link('warnings', {'warning_id': $warningLog.warning_id}) }}">{{ phrase('view') }}</a></dd>
 	</dl>
 </xf:if>
 
-<xf:if is="$comment.WarningLog.ReplyBanLink">
+<xf:if is="$warningLog.ReplyBanLink">
 	<dl class="pairs pairs--justified fauxBlockLink">
 		<dt>{{ phrase('thread') }}</dt>
-		<dd><a href="{$comment.WarningLog.ReplyBanLink}">{{ phrase('view') }}</a>
+		<dd><a href="{$warningLog.ReplyBanLink}">{{ phrase('view') }}</a>
 	</dl>
 </xf:if>
 
-<xf:if is="$comment.WarningLog.ReplyBan">
+<xf:if is="$warningLog.ReplyBan">
 	<dl class="pairs pairs--justified fauxBlockLink">
 		<dt>{{ phrase('svReportImprov_reply_ban') }}</dt>
-		<dd><a href="{{ link('threads/reply-bans', $comment.WarningLog.ReplyBanThread) }}" data-xf-click="overlay">{{ phrase('edit') }}</a></dd>
+		<dd><a href="{{ link('threads/reply-bans', $warningLog.ReplyBanThread) }}" data-xf-click="overlay">{{ phrase('edit') }}</a></dd>
 	</dl>
 </xf:if>
 
-<xf:if is="$comment.WarningLog.notes">
+<xf:if is="$warningLog.notes">
 	<dl class="pairs pairs--justified fauxBlockLink">
 		<dt>{{ phrase('note') }}</dt>
-		<dd>{{ structured_text($comment.WarningLog.notes) }}</dd>
+		<dd>{{ structured_text($warningLog.notes) }}</dd>
 	</dl>
 </xf:if>
