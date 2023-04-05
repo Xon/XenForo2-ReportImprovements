@@ -99,7 +99,7 @@ class Commenter extends XFCP_Commenter
             if ($assignedUser === null)
             {
                 $this->comment->assigned_user_id = null;
-                $this->comment->assigned_username = null;
+                $this->comment->assigned_username = '';
             }
             else
             {
