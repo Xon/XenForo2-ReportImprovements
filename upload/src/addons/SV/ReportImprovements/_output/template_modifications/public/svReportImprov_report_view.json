@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Inject who assigned a report to a user",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:username user=\"$report.AssignedUser\" />",
+    "replace": "$0 {{ $report.AssignerUser ? phrase('svReportImprov_by_assigner_x:', {'value':  username_link($report.AssignedUser) }) : ''}}"
+}
