@@ -9,6 +9,7 @@ use SV\ReportImprovements\Job\Upgrades\Upgrade1090200Step1;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1680521965Step1;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1680614325Step3;
 use SV\ReportImprovements\Job\WarningLogMigration;
+use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use SV\StandardLib\InstallerHelper;
 use XF\AddOn\AbstractSetup;
 use XF\AddOn\StepRunnerInstallTrait;
@@ -520,6 +521,13 @@ class Setup extends AbstractSetup
         }
     }
 
+    public function postRebuild(): void
+    {
+        parent::postRebuild();
+
+        $this->cleanupPermissionChecks();
+    }
+
     protected function cleanupPermissionChecks()
     {
         /** @var \XF\Repository\PermissionEntry $permEntryRepo */
@@ -532,21 +540,9 @@ class Setup extends AbstractSetup
         $permComboRepo = \XF::repository('XF:PermissionCombination');
         $permComboRepo->deleteUnusedPermissionCombinations();
 
-        // add-on upgraded while disabled can get into a very wonky state, so ensure we zap this cache entry
-        /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
-        $repo = \XF::repository('XF:Report');
-        if (\is_callable([$repo, 'deferResetNonModeratorsWhoCanHandleReportCache']))
-        {
-            $repo->deferResetNonModeratorsWhoCanHandleReportCache();
-        }
-        else
-        {
-            $cache = \XF::app()->cache();
-            if ($cache)
-            {
-                $cache->delete('reports-non-mods-assignable');
-            }
-        }
+        $reportQueueRepo = \XF::repository('SV\ReportImprovements:ReportQueue');
+        assert($reportQueueRepo instanceof ReportQueueRepo);
+        $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCache();
     }
 
     /**

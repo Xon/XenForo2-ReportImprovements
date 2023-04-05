@@ -15,6 +15,49 @@ use XF\Mvc\Entity\Repository;
 
 class ReportQueue extends Repository
 {
+    /** @noinspection PhpUnusedParameterInspection */
+    public function getReportAssignableNonModeratorsCacheTime(int $reportQueueId): int
+    {
+        return 7*86400; // 7 days
+    }
+
+    public function getReportAssignableNonModeratorsCacheKey(int $reportQueueId): string
+    {
+        return 'reports-assignable-' . $reportQueueId;
+    }
+
+    public function resetNonModeratorsWhoCanHandleReportCacheLater(): void
+    {
+        \XF::runLater(function(){
+            $this->resetNonModeratorsWhoCanHandleReportCache();
+        });
+    }
+
+    public function resetNonModeratorsWhoCanHandleReportCache(): void
+    {
+        $cache = \XF::app()->cache();
+        if ($cache === null)
+        {
+            return;
+        }
+
+        /** @var ReportQueue $entryRepo */
+        $entryRepo = $this->repository('SV\ReportImprovements:ReportQueue');
+        /** @var int[] $reportQueueIds */
+        $reportQueueIds = $entryRepo->getReportQueueList()->keys();
+        $reportQueueIds[] = 0;
+
+        foreach($reportQueueIds as $reportQueueId)
+        {
+            $key = $this->getReportAssignableNonModeratorsCacheKey($reportQueueId);
+            if ($key)
+            {
+                $cache->delete($key);
+            }
+        }
+    }
+
+
     public function getReportQueueList(): AbstractCollection
     {
         $addOns = \XF::app()->container('addon.cache');

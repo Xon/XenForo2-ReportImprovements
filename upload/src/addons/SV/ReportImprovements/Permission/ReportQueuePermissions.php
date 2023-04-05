@@ -3,8 +3,10 @@
 namespace SV\ReportImprovements\Permission;
 
 use SV\ReportCentreEssentials\Entity\ReportQueue as ReportQueueEntity;
+use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
+use function assert;
 
 class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
 {
@@ -36,14 +38,10 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
 
     public function rebuildCombination(\XF\Entity\PermissionCombination $combination, array $basePerms)
     {
-        // being notified on bulk permission changes is surprisingly challenging
-
-        /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
-        $repo = \XF::repository('XF:Report');
-        if (\is_callable([$repo, 'deferResetNonModeratorsWhoCanHandleReportCache']))
-        {
-            $repo->deferResetNonModeratorsWhoCanHandleReportCache();
-        }
+        // being notified on permission changes is surprisingly challenging
+        $reportQueueRepo = \XF::repository('SV\ReportImprovements:ReportQueue');
+        assert($reportQueueRepo instanceof ReportQueueRepo);
+        $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
 
         parent::rebuildCombination($combination, $basePerms);
     }

@@ -2,7 +2,9 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use XF\Mvc\Entity\Structure;
+use function assert;
 
 /**
  * Class User
@@ -203,9 +205,9 @@ class User extends XFCP_User
 
             if ($doRebuild)
             {
-                /** @var \SV\ReportImprovements\XF\Repository\Report $repo */
-                $repo = \XF::repository('XF:Report');
-                $repo->deferResetNonModeratorsWhoCanHandleReportCache();
+                $reportQueueRepo = \XF::repository('SV\ReportImprovements:ReportQueue');
+                assert($reportQueueRepo instanceof ReportQueueRepo);
+                $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
             }
         }
     }

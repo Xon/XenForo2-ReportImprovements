@@ -7,7 +7,7 @@ namespace SV\ReportImprovements\XF\Repository;
 
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
-use SV\ReportImprovements\Repository\ReportQueue;
+use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\XF\Entity\User;
@@ -171,48 +171,6 @@ class Report extends XFCP_Report
         return $finder;
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-    protected function getReportAssignableNonModeratorsCacheTime(int $reportQueueId): int
-    {
-        return 3600; // 1 hour
-    }
-
-    protected function getReportAssignableNonModeratorsCacheKey(int $reportQueueId): string
-    {
-        return 'reports-assignable-' . $reportQueueId;
-    }
-
-    public function deferResetNonModeratorsWhoCanHandleReportCache()
-    {
-        \XF::runLater(function(){
-            $this->resetNonModeratorsWhoCanHandleReportCache();
-        });
-    }
-
-    public function resetNonModeratorsWhoCanHandleReportCache()
-    {
-        $cache = \XF::app()->cache();
-        if ($cache === null)
-        {
-            return;
-        }
-
-        /** @var ReportQueue $entryRepo */
-        $entryRepo = $this->repository('SV\ReportImprovements:ReportQueue');
-        /** @var int[] $reportQueueIds */
-        $reportQueueIds = $entryRepo->getReportQueueList()->keys();
-        $reportQueueIds[] = 0;
-
-        foreach($reportQueueIds as $reportQueueId)
-        {
-            $key = $this->getReportAssignableNonModeratorsCacheKey($reportQueueId);
-            if ($key)
-            {
-                $cache->delete($key);
-            }
-        }
-    }
-
     /**
      * @param \XF\Entity\Report $report
      * @param bool         $doCache
@@ -223,9 +181,11 @@ class Report extends XFCP_Report
      */
     public function svGetUsersWhoCanHandleReport(\XF\Entity\Report $report, bool $doCache = true): ?array
     {
+        $reportQueueRepo = $this->repository('SV\ReportImprovements:ReportQueue');
+        assert($reportQueueRepo instanceof ReportQueueRepo);
         $reportQueueId = (int)($report->queue_id ?? 0);
-        $key = $this->getReportAssignableNonModeratorsCacheKey($reportQueueId);
-        $cacheTime = $this->getReportAssignableNonModeratorsCacheTime($reportQueueId);
+        $key = $reportQueueRepo->getReportAssignableNonModeratorsCacheKey($reportQueueId);
+        $cacheTime = $reportQueueRepo->getReportAssignableNonModeratorsCacheTime($reportQueueId);
         $cache = \XF::app()->cache();
 
         $userIds = null;
