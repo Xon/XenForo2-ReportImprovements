@@ -698,7 +698,7 @@ class Setup extends AbstractSetup
                                         {
                                             if (empty($newPermissions[$category][$newPerm]))
                                             {
-                                                $newPermissions[$category][$newPerm] = "allow";
+                                                $newPermissions[$category][$newPerm] = 'allow';
                                             }
                                         }
                                     }

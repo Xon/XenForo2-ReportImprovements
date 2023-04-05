@@ -8,9 +8,9 @@ use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\Attachment;
 use XF\Entity\ReactionTrait;
+use XF\Entity\User as UserEntity;
 use XF\Mvc\Entity\AbstractCollection as AbstractCollection;
 use XF\Mvc\Entity\Structure;
-use function preg_match;
 
 /**
  * Class ReportComment
@@ -43,6 +43,7 @@ use function preg_match;
  * @property-read \XF\Entity\LikedContent[]       $Likes
  * @property-read WarningLog|null                 $WarningLog
  * @property-read Report|null                     $Report
+ * @property-read User|null                       $User
  */
 class ReportComment extends XFCP_ReportComment
 {
@@ -217,7 +218,7 @@ class ReportComment extends XFCP_ReportComment
     }
 
     /**
-     * @return \XF\Entity\User|User
+     * @return UserEntity|User
      */
     public function getViewableUser()
     {

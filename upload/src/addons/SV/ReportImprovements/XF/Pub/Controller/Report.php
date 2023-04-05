@@ -135,7 +135,7 @@ class Report extends XFCP_Report
         $reportCommentId = $reportCommentId ?: (int)$params->get('report_comment_id'); // support older style links
 
         $reportComment = $this->assertViewableReportComment($reportCommentId);
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @var ExtendedReportEntity $report */
         $reportId = (int)$params->get('report_id');
         $report = $reportId ? $this->assertViewableReport($reportId) : $reportComment->Report;
 
@@ -255,7 +255,7 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param \XF\Entity\ReportComment|\SV\ReportImprovements\XF\Entity\ReportComment $reportComment
+     * @param \XF\Entity\ReportComment|ExtendedReportCommentEntity $reportComment
      * @return \SV\ReportImprovements\Service\Report\CommentEditor
      */
     protected function setupReportCommentEdit(\XF\Entity\ReportComment $reportComment)
@@ -279,7 +279,7 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param \XF\Entity\Report|\SV\ReportImprovements\XF\Entity\Report $report
+     * @param \XF\Entity\Report|ExtendedReportEntity $report
      * @return \XF\Service\Report\Commenter
      * @throws \XF\Mvc\Reply\Exception
      */
@@ -346,14 +346,14 @@ class Report extends XFCP_Report
 
     /**
      * @param ParameterBag $params
-     * @return \XF\Mvc\Reply\AbstractReply
+     * @return AbstractReply
      * @throws \XF\Mvc\Reply\Exception
      */
     public function actionReassign(ParameterBag $params)
     {
         $this->assertPostOnly();
 
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @var ExtendedReportEntity $report */
         /** @noinspection PhpUndefinedFieldInspection */
         $report = $this->assertViewableReport($params->report_id);
         if (!$report->canAssign($error))
@@ -366,7 +366,7 @@ class Report extends XFCP_Report
 
     /**
      * @param ParameterBag $params
-     * @return \XF\Mvc\Reply\AbstractReply
+     * @return AbstractReply
      * @throws \XF\Mvc\Reply\Exception
      */
     public function actionCommentReact(ParameterBag $params)
@@ -391,8 +391,7 @@ class Report extends XFCP_Report
 
     /**
      * @param ParameterBag $params
-     *
-     * @return \XF\Mvc\Reply\AbstractReply
+     * @return AbstractReply
      * @throws \XF\Mvc\Reply\Exception
      */
     public function actionCommentReactions(ParameterBag $params)
@@ -416,7 +415,7 @@ class Report extends XFCP_Report
     public function actionConversationJoin(ParameterBag $params)
     {
         /** @noinspection PhpUndefinedFieldInspection */
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @var ExtendedReportEntity $report */
         $report = $this->assertViewableReport($params->report_id);
 
         if (!$report->canJoinConversation())

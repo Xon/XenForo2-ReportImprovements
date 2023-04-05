@@ -315,7 +315,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
                 $this->hydrateRelation('LastModified', $reportComment);
             }
         }
-        else if (!\array_key_exists('LastModified', $this->_relations))
+        else if (!array_key_exists('LastModified', $this->_relations))
         {
             $finder = $this->getRelationFinder('LastModified');
             $finder->with($this->getCommentWith());
@@ -416,7 +416,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
      */
     protected function getUsername()
     {
-        if (\is_callable([parent::class,'getUsername']))
+        if (is_callable([parent::class, 'getUsername']))
         {
             /** @noinspection PhpUndefinedMethodInspection */
             return parent::getUsername();

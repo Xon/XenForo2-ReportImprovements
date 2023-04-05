@@ -122,7 +122,7 @@ class ReportComment extends AbstractHandler
         }
         else
         {
-            throw new \InvalidArgumentException("Entity must be a ReportComment or Report");
+            throw new \InvalidArgumentException('Entity must be a ReportComment or Report');
         }
 
         return $extraContext;

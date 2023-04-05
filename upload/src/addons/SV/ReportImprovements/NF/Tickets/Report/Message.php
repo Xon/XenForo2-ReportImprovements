@@ -83,7 +83,7 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
         $this->getSearchHandler()->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
     }
 
-    public function populateMetaData(\XF\Entity\Report $entity, array &$metaData): void
+    public function populateMetaData(Report $entity, array &$metaData): void
     {
         // see setupReportEntityContent for attributes cached on the report
         $ticketId = $entity->content_info['ticket_id'] ?? null;

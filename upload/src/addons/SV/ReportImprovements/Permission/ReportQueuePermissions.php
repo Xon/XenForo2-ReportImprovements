@@ -25,7 +25,7 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
 
     public function getContentList(): AbstractCollection
     {
-        /** @var \SV\ReportImprovements\Repository\ReportQueue $entryRepo */
+        /** @var ReportQueueRepo $entryRepo */
         $entryRepo = $this->builder->em()->getRepository('SV\ReportImprovements:ReportQueue');
         return $entryRepo->getReportQueueList();
     }

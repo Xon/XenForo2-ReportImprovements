@@ -117,7 +117,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         $this->getSearchHandler()->setupMetadataStructure($structure);
     }
 
-    public function populateMetaData(\XF\Entity\Report $entity, array &$metaData): void
+    public function populateMetaData(Report $entity, array &$metaData): void
     {
         // see setupReportEntityContent for attributes cached on the report
         $threadId = $entity->content_info['thread_id'] ?? null;

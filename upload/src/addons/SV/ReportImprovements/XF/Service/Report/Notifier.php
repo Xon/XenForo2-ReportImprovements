@@ -74,11 +74,7 @@ class Notifier extends XFCP_Notifier
         $this->notifyCommenterUserIds = [];
     }
 
-    /**
-     * @return array|\XF\Mvc\Entity\ArrayCollection
-     * @throws \Exception
-     */
-    protected function getUsersForCommentInsertNotification()
+    protected function getUsersForCommentInsertNotification(): array
     {
         $userIds = $this->getNotifyCommenterUserIds();
         if (!$userIds)

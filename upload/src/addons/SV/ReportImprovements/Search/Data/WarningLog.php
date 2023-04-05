@@ -73,9 +73,9 @@ class WarningLog extends AbstractData
      * @param int $lastId
      * @param int $amount
      * @param bool $forView
-     * @return \XF\Mvc\Entity\AbstractCollection
+     * @return AbstractCollection
      */
-    public function getContentInRange($lastId, $amount, $forView = false): \XF\Mvc\Entity\AbstractCollection
+    public function getContentInRange($lastId, $amount, $forView = false): AbstractCollection
     {
         if (!$this->isAddonFullyActive)
         {

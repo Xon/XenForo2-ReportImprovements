@@ -12,11 +12,13 @@ use XF\PrintableException;
  * Extends \XF\Service\User\Warn
  *
  * @package SV\ReportImprovements\XF\Service\User
+ *
+ * @property \SV\ReportImprovements\XF\Entity\Warning $warning
  */
 class Warn extends XFCP_Warn
 {
     /**
-     * @return \ SV\ReportImprovements\XF\Entity\Warning|\XF\Entity\Warning|Entity|null
+     * @return \SV\ReportImprovements\XF\Entity\Warning|Warning|null
      */
     public function getWarning()
     {
@@ -93,10 +95,8 @@ class Warn extends XFCP_Warn
 
         if ($this->replyBanSvc)
         {
-            /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
-            $warning = $this->warning;
             // ensure the reply-ban is saved transactionally
-            $warning->setSvReplyBan($this->replyBanSvc->getReplyBan());
+            $this->warning->setSvReplyBan($this->replyBanSvc->getReplyBan());
         }
 
         $warning = parent::_save();

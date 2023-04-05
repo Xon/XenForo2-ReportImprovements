@@ -198,7 +198,7 @@ class ReportQueue extends Repository
      * @param Entity|IReportResolver $entity
      * @param string                 $type
      * @param bool                   $canReopenReport
-     * @param boolean                $resolveReport
+     * @param bool                   $resolveReport
      * @param bool                   $alert
      * @param string                 $alertComment
      * @throws \Exception

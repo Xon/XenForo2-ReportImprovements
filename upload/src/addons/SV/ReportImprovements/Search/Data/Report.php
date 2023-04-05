@@ -2,8 +2,6 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
-use SV\ReportImprovements\Enums\ReportType;
-use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use XF\Mvc\Entity\AbstractCollection;
