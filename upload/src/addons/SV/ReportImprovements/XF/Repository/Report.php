@@ -409,21 +409,22 @@ class Report extends XFCP_Report
             $users = \XF::finder('XF:User')
                         ->with('PermissionCombination')
                         ->where('user_id', '=', $fakeModerators)
+                        ->order('user_id')
                         ->fetch();
             $em = \XF::em();
             /** @var \XF\Entity\User $user */
-            foreach ($users as $user)
+            foreach ($users as $userId => $user)
             {
                 $id = $user->permission_combination_id;
                 $permCombinationIds[$id] = $id;
 
                 /** @var \XF\Entity\Moderator $moderator */
                 $moderator = $em->create('XF:Moderator');
-                $moderator->setTrusted('user_id', $user->user_id);
+                $moderator->setTrusted('user_id', $userId);
                 $moderator->hydrateRelation('User', $user);
                 $moderator->setReadOnly(true);
 
-                $moderators[] = $moderator;
+                $moderators[$userId] = $moderator;
             }
         }
 
