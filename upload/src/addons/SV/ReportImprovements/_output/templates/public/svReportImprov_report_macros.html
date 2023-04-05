@@ -121,7 +121,7 @@
 		<xf:if is="$comment.assigned_user_id">
 		{{ 
 			($comment.assigned_user_id === $comment.user_id)
-			? phrase('svReportImprov_self_assigned')
+			? phrase('(svReportImprov_self_assigned)')
 			: phrase('(svReportImprov_assigned_to_x_by_assigner_y)', {
 				'assignee':  username_link($comment.AssignedUser, false, {'defaultname': $comment.assigned_username}),
 				'assigner':  username_link($comment.User, false, {'defaultname': $comment.username})
