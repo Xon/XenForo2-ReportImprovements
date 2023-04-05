@@ -28,6 +28,7 @@ use function array_keys;
 use function assert;
 use function count;
 use function get_class;
+use function is_array;
 use function sort;
 use function strcmp;
 use function trigger_error;
@@ -179,7 +180,7 @@ class Report extends XFCP_Report
      * @noinspection PhpDocMissingThrowsInspection
      * @noinspection SqlResolve
      */
-    public function svGetUsersWhoCanHandleReport(\XF\Entity\Report $report, bool $doCache = true): ?array
+    public function svGetUsersWhoCanHandleReport(\XF\Entity\Report $report, bool $doCache = true): array
     {
         $reportQueueRepo = $this->repository('SV\ReportImprovements:ReportQueue');
         assert($reportQueueRepo instanceof ReportQueueRepo);
@@ -192,7 +193,7 @@ class Report extends XFCP_Report
         if ($doCache && $cache && $key && $cacheTime)
         {
             $userIds = @$cache->fetch($key);
-            $userIds = \is_array($userIds) ? $userIds : null;
+            $userIds = is_array($userIds) ? $userIds : null;
         }
 
         // apply sanity check limit <= 0 means no limit. WHY
@@ -200,7 +201,7 @@ class Report extends XFCP_Report
         $limit = (int)($options->svReportHandlingLimit ?? 1000);
         $limit = max(0, $limit);
 
-        if (!\is_array($userIds))
+        if (!is_array($userIds))
         {
             // sanity check permissions have the expected range of values
             foreach ([
@@ -332,6 +333,7 @@ class Report extends XFCP_Report
             }
         }
 
+        assert(is_array($userIds));
         $count = count($userIds);
         if ($limit && $count > $limit)
         {
@@ -356,7 +358,7 @@ class Report extends XFCP_Report
     public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
         /** @var ReportEntity $report */
-        $userIds = $this->svGetUsersWhoCanHandleReport($report);
+        $userIds = $this->svGetUsersWhoCanHandleReport($report, false);
         if (count($userIds) === 0)
         {
             // no users who can have reports assigned to them. permissions need fixing
@@ -453,7 +455,7 @@ class Report extends XFCP_Report
             }
         }
 
-        usort($moderators, function (ModeratorEntity $a, ModeratorEntity $b): int {
+        uasort($moderators, function (ModeratorEntity $a, ModeratorEntity $b): int {
             return strcmp($a->User->username, $b->User->username);
         });
 
