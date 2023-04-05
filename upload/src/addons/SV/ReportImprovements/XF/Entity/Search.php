@@ -101,9 +101,9 @@ class Search extends XFCP_Search
 
             foreach ($value as $subKey => $id)
             {
-                $id = (string)$id;
+                $id = (int)$id;
                 $query[$key . '_' . $subKey] = \XF::phrase('svSearchConstraint.warning_definition', [
-                    'definition' => $states[$id] ?? $id,
+                    'value' => $states[$id] ?? $id,
                 ]);
             }
 
