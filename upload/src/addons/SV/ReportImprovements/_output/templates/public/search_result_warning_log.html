@@ -8,7 +8,7 @@
 			<div class="contentRow-extra contentRow-extra--small">
 				<ul class="listInline listInline--bullet">
 					<xf:if is="$reportComment.state_change">
-						<li>{{ phrase('status_changed:') }} {$report.getReportState($reportComment.state_change)}</li>
+						<li><xf:macro name="svReportImprov_report_macros::comment_status_update" arg-report="{$report}" arg-comment="{$reportComment}" /></li>
 					</xf:if>
 					<xf:if is="$reportComment.WarningLog">
 						<li>{{ phrase('svReportImprov_operation_type:') }} {$reportComment.WarningLog.OperationTypePhrase}</li>

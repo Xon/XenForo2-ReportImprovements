@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Better comment status reporting",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "{{ phrase('status_changed:') }} {$report.getReportState($comment.state_change)}",
+    "replace": "<xf:macro name=\"svReportImprov_report_macros::comment_status_update\" arg-report=\"{$report}\" arg-comment=\"{$comment}\" />"
+}

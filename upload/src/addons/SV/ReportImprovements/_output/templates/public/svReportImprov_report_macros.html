@@ -114,3 +114,21 @@
 		: username_link($report.AssignedUser)
 	}}
 </xf:macro>
+
+<xf:macro name="comment_status_update" arg-comment="!">
+	{{ phrase('status_changed:') }} {$comment.Report.getReportState($comment.state_change)}
+	<xf:if is="$comment.state_change === 'assigned'">
+		<xf:if is="$comment.assigned_user_id">
+		{{ 
+			($comment.assigned_user_id === $comment.user_id)
+			? phrase('svReportImprov_self_assigned')
+			: phrase('(svReportImprov_assigned_to_x_by_assigner_y)', {
+				'assignee':  username_link($comment.AssignedUser, false, {'defaultname': $comment.assigned_username}),
+				'assigner':  username_link($comment.User, false, {'defaultname': $comment.username})
+			}) 
+		}}
+		<xf:else />
+			phrase('(svReportImprov_assigned_action)')
+		</xf:if>
+	</xf:if>
+</xf:macro>
