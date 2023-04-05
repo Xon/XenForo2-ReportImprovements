@@ -136,6 +136,11 @@ class ReportComment extends XFCP_ReportComment
         return $this->hasReportPermission('reportReact');
     }
 
+    public function getReportStateChange(): \XF\Phrase
+    {
+        return $this->Report->getReportState($this->state_change);
+    }
+
     /**
      * @param string $permission
      * @return bool|int
