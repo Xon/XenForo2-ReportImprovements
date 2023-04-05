@@ -104,3 +104,13 @@
 		</xf:if>
 	</xf:if>
 </xf:macro>
+
+<xf:macro name="report_assigned_user" arg-report="!">
+	{{ $report.AssignerUser 
+		? phrase('svReportImprov_assigned_to_x_by_assigner_y', {
+			'assignee':  username_link($report.AssignedUser),
+			'assigner':  username_link($report.AssignerUser)
+			}) 
+		: username_link($report.AssignedUser)
+	}}
+</xf:macro>

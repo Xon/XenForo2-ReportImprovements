@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Inject who assigned a report to a user",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:username user=\"$report.AssignedUser\" />",
+    "replace": "<xf:trim><xf:macro name=\"svReportImprov_report_macros::report_assigned_user\" arg-report=\"{$report}\" /></xf:trim>"
+}
