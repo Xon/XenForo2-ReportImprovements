@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:username user=\"$report.AssignedUser\" />",
-    "replace": "$0 {{ $report.AssignerUser ? phrase('svReportImprov_by_assigner_x:', {'value':  username_link($report.AssignedUser) }) : ''}}"
+    "replace": "{{ $report.AssignerUser \n? phrase('svReportImprov_assigned_to_x_by_assigner_y', {\n    'assignee':  username_link($report.AssignedUser),\n    'assigner':  username_link($report.AssignerUser)\n}) \n: username_link($report.AssignedUser)\n}}"
 }
