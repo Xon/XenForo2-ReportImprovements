@@ -10,6 +10,7 @@ use XF\Entity\Thread;
 use XF\Entity\ThreadReplyBan;
 use XF\Entity\User;
 use XF\Entity\Warning;
+use XF\Entity\WarningDefinition;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 use function assert;
@@ -44,6 +45,8 @@ use function assert;
  * RELATIONS
  * @property-read ThreadReplyBan|null $ReplyBan_
  * @property-read Warning|null        $Warning
+ * @property-read ?WarningDefinition  $Definition
+ * @property-read ?User               $WarnedBy
  * @property-read User|null           $User
  * @property-read Thread|null         $ReplyBanThread
  * @property-read Post|null           $ReplyBanPost
