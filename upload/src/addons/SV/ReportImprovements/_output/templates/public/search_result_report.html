@@ -17,6 +17,7 @@
 					<li><xf:date time="{$report.first_report_date}" /></li>
 					<xf:if is="$report.assigned_user_id && $report.AssignedUser">
 						<li>{{ phrase('svReportImprov_assigned_to:') }} <xf:macro name="svReportImprov_report_macros::report_assigned_user" arg-report="$report" /></li>
+					</xf:if>
 				</ul>
 			</div>
 		</div>
