@@ -2,6 +2,8 @@
 
 namespace SV\ReportImprovements\Alert;
 
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use SV\ReportImprovements\XF\Repository\Report;
 use XF\Alert\AbstractHandler;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
@@ -34,7 +36,7 @@ class ReportComment extends AbstractHandler
      */
     public function getOptOutActions()
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var ExtendedUserEntity $visitor */
         $visitor = \XF::visitor();
 
         if (!$visitor->canViewReports())
@@ -54,7 +56,7 @@ class ReportComment extends AbstractHandler
 
         if ($entities instanceof AbstractCollection)
         {
-            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+            /** @var Report $reportRepo */
             $reportRepo = \XF::repository('XF:Report');
             $reportRepo->svPreloadReportComments($entities);
         }

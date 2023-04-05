@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\ModeratorLog;
 
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\ModeratorLog;
+use XF\Entity\User;
 use XF\ModeratorLog\AbstractHandler;
 use XF\Mvc\Entity\Entity;
 
@@ -14,7 +15,7 @@ use XF\Mvc\Entity\Entity;
  */
 class ReportComment extends AbstractHandler
 {
-    public function isLoggableUser(\XF\Entity\User $actor)
+    public function isLoggableUser(User $actor)
     {
         return true;
     }

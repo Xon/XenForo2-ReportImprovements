@@ -2,8 +2,11 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
+use XF\Mvc\Entity\ArrayCollection;
+use XF\Mvc\Entity\Finder;
 use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\AbstractReply;
+use XF\Mvc\Reply\Redirect as RedirectReply;
 
 /**
  * @see \XF\Pub\Controller\ApprovalQueue
@@ -19,7 +22,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $filters = $this->getQueueFilterInput();
         $this->applyQueueFilters($unapprovedFinder, $filters);
 
-        /** @var \XF\Entity\ApprovalQueue[]|\XF\Mvc\Entity\ArrayCollection $unapprovedItems */
+        /** @var \XF\Entity\ApprovalQueue[]|ArrayCollection $unapprovedItems */
         $unapprovedItems = $unapprovedFinder->fetch();
         $numUnapprovedItems = $unapprovedFinder->total();
 
@@ -56,7 +59,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $filters = $this->getQueueFilterInput();
         $this->applyQueueFilters($unapprovedFinder, $filters);
 
-        /** @var \XF\Entity\ApprovalQueue[]|\XF\Mvc\Entity\ArrayCollection $unapprovedItems */
+        /** @var \XF\Entity\ApprovalQueue[]|ArrayCollection $unapprovedItems */
         $unapprovedItems = $unapprovedFinder->fetch();
         $numUnapprovedItems = $unapprovedItems->count();
 
@@ -157,11 +160,11 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     }
 
     /**
-     * @param \XF\Mvc\Entity\Finder $finder
+     * @param Finder $finder
      * @param array $filters
      * @return void
      */
-    protected function applyQueueFilters(\XF\Mvc\Entity\Finder $finder, array $filters)
+    protected function applyQueueFilters(Finder $finder, array $filters)
     {
         parent::applyQueueFilters($finder, $filters);
 
@@ -175,7 +178,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     public function actionFilters(ParameterBag $params)
     {
         $result = parent::actionFilters($params);
-        if ($result instanceof \XF\Mvc\Reply\Redirect)
+        if ($result instanceof RedirectReply)
         {
             if ($this->filter('save', 'bool') && $this->isPost())
             {

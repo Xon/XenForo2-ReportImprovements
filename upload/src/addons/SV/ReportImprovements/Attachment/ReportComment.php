@@ -9,6 +9,7 @@ use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Attachment\AbstractHandler;
 use XF\Entity\Attachment;
+use XF\Entity\Report;
 use XF\Mvc\Entity\Entity;
 
 class ReportComment extends AbstractHandler
@@ -116,7 +117,7 @@ class ReportComment extends AbstractHandler
         {
             $extraContext['report_comment_id'] = $entity->report_comment_id;
         }
-        else if ($entity instanceof \XF\Entity\Report)
+        else if ($entity instanceof Report)
         {
             $extraContext['report_id'] = $entity->report_id;
         }

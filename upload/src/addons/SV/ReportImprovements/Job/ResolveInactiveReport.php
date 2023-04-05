@@ -2,6 +2,9 @@
 
 namespace SV\ReportImprovements\Job;
 
+use SV\ReportImprovements\XF\Entity\Report;
+use SV\ReportImprovements\XF\Service\Report\Commenter;
+use XF\Entity\User;
 use XF\Job\AbstractRebuildJob;
 use XF\Mvc\Entity\AbstractCollection;
 
@@ -12,7 +15,7 @@ use XF\Mvc\Entity\AbstractCollection;
  */
 class ResolveInactiveReport extends AbstractRebuildJob
 {
-    /** @var \XF\Entity\User|null */
+    /** @var User|null */
     protected $reporter = null;
 
     /**  @var int */
@@ -76,7 +79,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @var Report $report */
         $report = $this->app->em()->find('XF:Report', $id);
         if ($report === null)
         {
@@ -84,7 +87,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
         }
 
         \XF::asVisitor($this->reporter, function () use ($report) {
-            /** @var \SV\ReportImprovements\XF\Service\Report\Commenter $commenterService */
+            /** @var Commenter $commenterService */
             $commenterService = $this->app->service('XF:Report\Commenter', $report);
             $commenterService->setReportState($this->expireAction);
             if ($commenterService->validate($errors))

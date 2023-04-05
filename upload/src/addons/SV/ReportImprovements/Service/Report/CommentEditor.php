@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\Service\Report;
 
 use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use XF\App;
 use XF\Mvc\Entity\Repository;
 use XF\Repository\EditHistory as EditHistoryRepo;
 use XF\Service\AbstractService;
@@ -44,7 +45,7 @@ class CommentEditor extends AbstractService
      */
     protected $commentPreparer;
 
-    public function __construct(\XF\App $app, ReportCommentEntity $comment)
+    public function __construct(App $app, ReportCommentEntity $comment)
     {
         parent::__construct($app);
 
@@ -231,7 +232,7 @@ class CommentEditor extends AbstractService
         return $content;
     }
 
-    protected function app() : \XF\App
+    protected function app() : App
     {
         return $this->app;
     }

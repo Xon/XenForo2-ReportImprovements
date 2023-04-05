@@ -1,20 +1,18 @@
 <?php
-/*
- * This file is part of a XenForo add-on.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace SV\ReportImprovements\Listener;
+
+use SV\ReportImprovements\XF\Repository\Report;
+use XF\Pub\App;
 
 abstract class appStart
 {
     private function __construct() { }
 
-    public static function appPubStartEnd(\XF\Pub\App $app)
+    public static function appPubStartEnd(App $app)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        // Don't assert the type hint here.
+        // $visitor can be very briefly not extended but this function called when the add-on is being upgraded due to is_processing behavior
         $visitor = \XF::visitor();
         $session = $app->session();
 
@@ -32,7 +30,7 @@ abstract class appStart
             || ($sessionReportCounts && ($sessionReportCounts['lastBuilt'] < $registryReportCounts['lastModified']))
         )
         {
-            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+            /** @var Report $reportRepo */
             $reportRepo = $app->repository('XF:Report');
             $session['reportCounts'] = $reportRepo->rebuildSessionReportCounts($registryReportCounts);
         }

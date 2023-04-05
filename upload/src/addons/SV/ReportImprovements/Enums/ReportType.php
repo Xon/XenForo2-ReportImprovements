@@ -3,6 +3,8 @@
 namespace SV\ReportImprovements\Enums;
 
 // One day this will be an enum
+use XF\Phrase;
+
 class ReportType
 {
     public const Reported_content = 'reported_content';
@@ -18,7 +20,7 @@ class ReportType
     }
 
     /**
-     * @return array<string,\XF\Phrase>
+     * @return array<string,Phrase>
      */
     public static function getPairs(): array
     {

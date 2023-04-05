@@ -2,17 +2,28 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
+use SV\ReportImprovements\Repository\ReportQueue;
+use SV\ReportImprovements\Service\Report\CommentEditor;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\ReportImprovements\XF\Service\Report\Commenter;
 use XF\ControllerPlugin\BbCodePreview as BbCodePreviewPlugin;
+use XF\ControllerPlugin\Editor;
+use XF\ControllerPlugin\Ip;
 use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
+use XF\Entity\ConversationMessage;
+use XF\Entity\ReportComment;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\AbstractReply;
+use XF\Mvc\Reply\Exception as ReplyException;
 use XF\Mvc\Reply\View;
 use XF\Mvc\Reply\View as ViewReply;
+use XF\Repository\Attachment;
+use XF\Repository\Unfurl;
+use XF\Service\Conversation\Inviter;
 
 /**
  * Class Report
@@ -23,13 +34,13 @@ use XF\Mvc\Reply\View as ViewReply;
 class Report extends XFCP_Report
 {
     /**
-     * @param              $action
+     * @param string       $action
      * @param ParameterBag $params
-     * @throws \XF\Mvc\Reply\Exception
+     * @throws ReplyException
      */
     protected function preDispatchController($action, ParameterBag $params)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var ExtendedUserEntity $visitor */
         $visitor = \XF::visitor();
         if (!$visitor->canViewReports($error))
         {
@@ -111,15 +122,15 @@ class Report extends XFCP_Report
             /** @var ExtendedReportEntity $report */
             /** @var AbstractCollection|array $comments */
 
-            /** @var \SV\ReportImprovements\Repository\ReportQueue $reportQueueRepo */
+            /** @var ReportQueue $reportQueueRepo */
             $reportQueueRepo = $this->repository('SV\ReportImprovements:ReportQueue');
             $reportQueueRepo->addReplyBansToComments($comments);
 
-            /** @var \XF\Repository\Attachment $attachmentRepo */
+            /** @var Attachment $attachmentRepo */
             $attachmentRepo = $this->repository('XF:Attachment');
             $attachmentRepo->addAttachmentsToContent($comments, 'report_comment');
 
-            /** @var \XF\Repository\Unfurl $unfurlRepo */
+            /** @var Unfurl $unfurlRepo */
             $unfurlRepo = $this->repository('XF:Unfurl');
             $unfurlRepo->addUnfurlsToContent($comments, $this->isRobot());
 
@@ -152,7 +163,7 @@ class Report extends XFCP_Report
         $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
         $breadcrumbs = $reportComment->getBreadcrumbs();
 
-        /** @var \XF\ControllerPlugin\Ip $ipPlugin */
+        /** @var Ip $ipPlugin */
         $ipPlugin = $this->plugin('XF:Ip');
         return $ipPlugin->actionIp($reportComment, $breadcrumbs);
     }
@@ -177,7 +188,7 @@ class Report extends XFCP_Report
 
             if ($this->filter('_xfWithData', 'bool') && $this->filter('_xfInlineEdit', 'bool'))
             {
-                /** @var \XF\Repository\Attachment $attachmentRepo */
+                /** @var Attachment $attachmentRepo */
                 $attachmentRepo = $this->repository('XF:Attachment');
                 $attachmentRepo->addAttachmentsToContent([
                     $reportComment->report_comment_id => $reportComment
@@ -201,7 +212,7 @@ class Report extends XFCP_Report
         {
             if ($reportComment->Report->canUploadAndManageAttachments())
             {
-                /** @var \XF\Repository\Attachment $attachmentRepo */
+                /** @var Attachment $attachmentRepo */
                 $attachmentRepo = $this->repository('XF:Attachment');
                 $attachmentData = $attachmentRepo->getEditorData('report_comment', $reportComment);
             }
@@ -246,7 +257,7 @@ class Report extends XFCP_Report
                 $attachmentHash = $report->draft_comment->attachment_hash;
             }
 
-            /** @var \XF\Repository\Attachment $attachmentRepo */
+            /** @var Attachment $attachmentRepo */
             $attachmentRepo = $this->repository('XF:Attachment');
             return $attachmentRepo->getEditorData('report_comment', $report, $attachmentHash);
         }
@@ -255,16 +266,16 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param \XF\Entity\ReportComment|ExtendedReportCommentEntity $reportComment
-     * @return \SV\ReportImprovements\Service\Report\CommentEditor
+     * @param ReportComment|ExtendedReportCommentEntity $reportComment
+     * @return CommentEditor
      */
-    protected function setupReportCommentEdit(\XF\Entity\ReportComment $reportComment)
+    protected function setupReportCommentEdit(ReportComment $reportComment)
     {
-        /** @var \XF\ControllerPlugin\Editor $editorPlugin */
+        /** @var Editor $editorPlugin */
         $editorPlugin = $this->plugin('XF:Editor');
         $message = $editorPlugin->fromInput('message');
 
-        /** @var \SV\ReportImprovements\Service\Report\CommentEditor $editor */
+        /** @var CommentEditor $editor */
         $editor = \XF::app()->service('SV\ReportImprovements:Report\CommentEditor', $reportComment);
         $editor->setMessage($message);
 
@@ -281,7 +292,7 @@ class Report extends XFCP_Report
     /**
      * @param \XF\Entity\Report|ExtendedReportEntity $report
      * @return \XF\Service\Report\Commenter
-     * @throws \XF\Mvc\Reply\Exception
+     * @throws ReplyException
      */
     protected function setupReportComment(\XF\Entity\Report $report)
     {
@@ -300,7 +311,7 @@ class Report extends XFCP_Report
         $selfAssignUnassign = $this->filter('self_assign_unassign', 'bool');
         if ($selfAssignUnassign)
         {
-            /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+            /** @var ExtendedUserEntity $visitor */
             $visitor = \XF::visitor();
             $reportState = 'assigned';
 
@@ -347,7 +358,7 @@ class Report extends XFCP_Report
     /**
      * @param ParameterBag $params
      * @return AbstractReply
-     * @throws \XF\Mvc\Reply\Exception
+     * @throws ReplyException
      */
     public function actionReassign(ParameterBag $params)
     {
@@ -367,7 +378,7 @@ class Report extends XFCP_Report
     /**
      * @param ParameterBag $params
      * @return AbstractReply
-     * @throws \XF\Mvc\Reply\Exception
+     * @throws ReplyException
      */
     public function actionCommentReact(ParameterBag $params)
     {
@@ -392,7 +403,7 @@ class Report extends XFCP_Report
     /**
      * @param ParameterBag $params
      * @return AbstractReply
-     * @throws \XF\Mvc\Reply\Exception
+     * @throws ReplyException
      */
     public function actionCommentReactions(ParameterBag $params)
     {
@@ -423,7 +434,7 @@ class Report extends XFCP_Report
             return $this->notFound();
         }
 
-        /** @var \XF\Entity\ConversationMessage $conversationMessage */
+        /** @var ConversationMessage $conversationMessage */
         $conversationMessage = $report->Content;
         if (!$conversationMessage || !$conversationMessage->Conversation)
         {
@@ -441,7 +452,7 @@ class Report extends XFCP_Report
             }
             else
             {
-                /** @var \XF\Service\Conversation\Inviter $service */
+                /** @var Inviter $service */
                 $service = \XF::service('XF:Conversation\Inviter', $conversationMessage->Conversation, $conversationMessage->Conversation->Starter);
                 $service->setAutoSendNotifications(false);
                 $service->setRecipientsTrusted($visitor);
@@ -482,7 +493,7 @@ class Report extends XFCP_Report
 
         if ($report->canUploadAndManageAttachments())
         {
-            /** @var \XF\Repository\Attachment $attachmentRepo */
+            /** @var Attachment $attachmentRepo */
             $attachmentRepo = $this->repository('XF:Attachment');
             $attachmentData = $attachmentRepo->getEditorData('report_comment', $reportComment, $tempHash);
             $attachments = $attachmentData['attachments'];
@@ -498,7 +509,7 @@ class Report extends XFCP_Report
      * @param int   $reportId
      * @param array $extraWith
      * @return \XF\Entity\Report
-     * @throws \XF\Mvc\Reply\Exception
+     * @throws ReplyException
      */
     protected function assertViewableReport($reportId, array $extraWith = [])
     {
@@ -514,7 +525,7 @@ class Report extends XFCP_Report
      * @param int   $reportCommentId
      * @param array $extraWith
      * @return ExtendedReportCommentEntity
-     * @throws \XF\Mvc\Reply\Exception
+     * @throws ReplyException
      */
     protected function assertViewableReportComment(int $reportCommentId, array $extraWith = []): ExtendedReportCommentEntity
     {

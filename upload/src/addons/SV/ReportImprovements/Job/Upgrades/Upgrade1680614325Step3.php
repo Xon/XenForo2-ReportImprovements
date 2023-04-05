@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\Job\Upgrades;
 
 use SV\ReportImprovements\Entity\WarningLog;
 use XF\Job\AbstractRebuildJob;
+use XF\Phrase;
 
 /**
  * Class Upgrade1090200Step1
@@ -44,7 +45,7 @@ class Upgrade1680614325Step3 extends AbstractRebuildJob
     }
 
     /**
-     * @return \XF\Phrase
+     * @return Phrase
      */
     protected function getStatusType()
     {

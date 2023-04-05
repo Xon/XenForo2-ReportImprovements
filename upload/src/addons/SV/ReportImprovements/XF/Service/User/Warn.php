@@ -3,6 +3,8 @@
 namespace SV\ReportImprovements\XF\Service\User;
 
 use SV\ReportImprovements\Entity\IReportResolver;
+use SV\ReportImprovements\XF\Service\Thread\ReplyBan;
+use XF\Entity\Post;
 use XF\Entity\Warning;
 use XF\Mvc\Entity\Entity;
 use XF\PrintableException;
@@ -26,7 +28,7 @@ class Warn extends XFCP_Warn
     }
 
     /**
-     * @var \XF\Service\Thread\ReplyBan|\SV\ReportImprovements\XF\Service\Thread\ReplyBan
+     * @var \XF\Service\Thread\ReplyBan|ReplyBan
      */
     protected $replyBanSvc;
 
@@ -47,7 +49,7 @@ class Warn extends XFCP_Warn
 
     public function setupReplyBan(bool $sendAlert, string $reason, int $banLengthValue = null, string $banLengthUnit = null)
     {
-        if (!$this->content instanceof \XF\Entity\Post)
+        if (!$this->content instanceof Post)
         {
             throw new \LogicException('Content must be instance of post.');
         }

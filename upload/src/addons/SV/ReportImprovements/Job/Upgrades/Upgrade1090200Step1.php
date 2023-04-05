@@ -2,7 +2,10 @@
 
 namespace SV\ReportImprovements\Job\Upgrades;
 
+use XF\Entity\ReportComment;
 use XF\Job\AbstractRebuildJob;
+use XF\Phrase;
+use XF\Service\Report\CommentPreparer;
 
 /**
  * Class Upgrade1090200Step1
@@ -37,7 +40,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        /** @var \XF\Entity\ReportComment $comment */
+        /** @var ReportComment $comment */
         $comment = \XF::app()->find('XF:ReportComment', $id);
         if ($comment)
         {
@@ -52,7 +55,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
                 $options->autoEmbedMedia['embedType'] = 0;
                 try
                 {
-                    /** @var \XF\Service\Report\CommentPreparer $commentPreparer */
+                    /** @var CommentPreparer $commentPreparer */
                     $commentPreparer = \XF::service('XF:Report\CommentPreparer', $comment);
 
                     $commentPreparer->setMessage($comment->message);
@@ -74,7 +77,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
     }
 
     /**
-     * @return \XF\Phrase
+     * @return Phrase
      */
     protected function getStatusType()
     {

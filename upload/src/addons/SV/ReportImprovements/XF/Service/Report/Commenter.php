@@ -5,7 +5,9 @@ namespace SV\ReportImprovements\XF\Service\Report;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use SV\ReportImprovements\XF\Repository\Report;
 use XF\Entity\ReportComment as ReportCommentEntity;
+use XF\Entity\User;
 
 /**
  * Class Commenter
@@ -67,9 +69,9 @@ class Commenter extends XFCP_Commenter
 
     /**
      * @param null                 $newState
-     * @param \XF\Entity\User|null $assignedUser
+     * @param User|null $assignedUser
      */
-    public function setReportState($newState = null, \XF\Entity\User $assignedUser = null)
+    public function setReportState($newState = null, User $assignedUser = null)
     {
         if (Globals::$suppressReportStateChange)
         {
@@ -148,7 +150,7 @@ class Commenter extends XFCP_Commenter
      */
     public function sendNotifications()
     {
-        /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+        /** @var Report $reportRepo */
         $reportRepo = $this->repository('XF:Report');
         Globals::$notifyReportUserIds = $reportRepo->findUserIdsToAlertForSvReportImprov($this->comment);
         try

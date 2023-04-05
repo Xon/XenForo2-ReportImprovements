@@ -5,6 +5,7 @@ namespace SV\ReportImprovements\XF\Entity;
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Globals;
+use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
@@ -24,7 +25,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
     use ReportResolverTrait;
 
     /**
-     * @return Report|\XF\Mvc\Entity\Entity|null
+     * @return Report|Entity|null
      */
     protected function getReport()
     {

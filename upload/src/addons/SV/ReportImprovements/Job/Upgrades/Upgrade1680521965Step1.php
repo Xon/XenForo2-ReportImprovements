@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Job\Upgrades;
 
 use XF\Job\AbstractRebuildJob;
+use XF\Phrase;
 
 /**
  * Class Upgrade1090200Step1
@@ -51,7 +52,7 @@ class Upgrade1680521965Step1 extends AbstractRebuildJob
     }
 
     /**
-     * @return \XF\Phrase
+     * @return Phrase
      */
     protected function getStatusType()
     {

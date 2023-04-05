@@ -2,9 +2,11 @@
 
 namespace SV\ReportImprovements\Job\Upgrades;
 
+use NF\Tickets\Entity\Message;
 use SV\ReportImprovements\XF\Entity\Report;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\XF\Entity\Thread;
+use XF\Entity\Post;
 use XF\Job\AbstractRebuildJob;
 use function array_key_exists;
 use function assert;
@@ -47,7 +49,7 @@ class EnrichReportPostInstall extends AbstractRebuildJob
         $content = $report->Content;
         $contentInfo = $report->content_info;
         $hasChanges = false;
-        if ($content instanceof \XF\Entity\Post)
+        if ($content instanceof Post)
         {
             if (!array_key_exists('post_date', $contentInfo))
             {
@@ -62,7 +64,7 @@ class EnrichReportPostInstall extends AbstractRebuildJob
                 $hasChanges = true;
             }
         }
-        else if ($content instanceof \NF\Tickets\Entity\Message)
+        else if ($content instanceof Message)
         {
             if (!array_key_exists('message_date', $contentInfo))
             {

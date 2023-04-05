@@ -6,10 +6,13 @@ use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use SV\SearchImprovements\Globals;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\ExistsConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\NotConstraint;
+use XF\Http\Request;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
@@ -251,7 +254,7 @@ class WarningLog extends AbstractData
     public function getSearchFormTab(): ?array
     {
         $visitor = \XF::visitor();
-        if (!($visitor instanceof \SV\ReportImprovements\XF\Entity\User))
+        if (!($visitor instanceof ExtendedUserEntity))
         {
             // This function may be invoked when the add-on is disabled, just return nothing to show
             return null;
@@ -306,10 +309,10 @@ class WarningLog extends AbstractData
 
     /**
      * @param Query            $query
-     * @param \XF\Http\Request $request
+     * @param Request $request
      * @param array            $urlConstraints
      */
-    public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints): void
+    public function applyTypeConstraintsFromInput(Query $query, Request $request, array &$urlConstraints): void
     {
         $this->searcher->handler('report_comment')->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
 
@@ -325,7 +328,7 @@ class WarningLog extends AbstractData
             'c.warning.definition'   => 'array-uint',
         ]);
 
-        $repo = \SV\SearchImprovements\Globals::repo();
+        $repo = Globals::repo();
 
         if ($constraints['c.warning.latest'] !== null)
         {

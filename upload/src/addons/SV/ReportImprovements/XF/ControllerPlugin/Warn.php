@@ -3,10 +3,16 @@
 namespace SV\ReportImprovements\XF\ControllerPlugin;
 
 use SV\ReportImprovements\Entity\IReportResolver;
+use SV\ReportImprovements\XF\Entity\Thread;
 use SV\WarningImprovements\XF\Entity\WarningDefinition;
+use XF\Entity\Post;
+use XF\Entity\User;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
+use XF\Mvc\Reply\AbstractReply;
+use XF\Mvc\Reply\Exception as ReplyException;
 use XF\Mvc\Reply\View;
+use XF\Warning\AbstractHandler;
 
 /**
  * Class Warn
@@ -59,15 +65,15 @@ class Warn extends XFCP_Warn
     }
 
     /**
-     * @param \XF\Warning\AbstractHandler $warningHandler
-     * @param \XF\Entity\User             $user
+     * @param AbstractHandler $warningHandler
+     * @param User             $user
      * @param string                      $contentType
      * @param Entity                      $content
      * @param array                       $input
      * @return \XF\Service\User\Warn
-     * @throws \XF\Mvc\Reply\Exception
+     * @throws ReplyException
      */
-    protected function setupWarnService(\XF\Warning\AbstractHandler $warningHandler, \XF\Entity\User $user, $contentType, Entity $content, array $input)
+    protected function setupWarnService(AbstractHandler $warningHandler, User $user, $contentType, Entity $content, array $input)
     {
         /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
@@ -78,8 +84,8 @@ class Warn extends XFCP_Warn
             $input['ban_length'] !== '' &&
             $input['ban_length'] !== 'none')
         {
-            /** @var \XF\Entity\Post $content */
-            /** @var \SV\ReportImprovements\XF\Entity\Thread $thread */
+            /** @var Post $content */
+            /** @var Thread $thread */
             $thread = $content->Thread;
             if (!$thread || !$thread->canReplyBan($error))
             {
@@ -121,7 +127,7 @@ class Warn extends XFCP_Warn
      * @param Entity $content
      * @param string $warnUrl
      * @param array  $breadcrumbs
-     * @return \XF\Mvc\Reply\AbstractReply
+     * @return AbstractReply
      */
     public function actionWarn($contentType, Entity $content, $warnUrl, array $breadcrumbs = [])
     {

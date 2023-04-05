@@ -5,14 +5,17 @@ namespace SV\ReportImprovements\Entity;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Finder\WarningLog as WarningLogFinder;
+use XF\Behavior\Indexable;
 use XF\Entity\Post;
 use XF\Entity\Thread;
 use XF\Entity\ThreadReplyBan;
 use XF\Entity\User;
 use XF\Entity\Warning;
 use XF\Entity\WarningDefinition;
+use XF\Mvc\Entity\DeferredValue;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
+use XF\Phrase;
 use function assert;
 
 /**
@@ -64,7 +67,7 @@ class WarningLog extends Entity
         return $this->ReportComment->canView();
     }
 
-    protected function getContentTypeForOperationType(): ?\XF\Phrase
+    protected function getContentTypeForOperationType(): ?Phrase
     {
         if ($this->warning_id)
         {
@@ -82,7 +85,7 @@ class WarningLog extends Entity
         return null;
     }
 
-    public function getOperationTypePhrase(): \XF\Phrase
+    public function getOperationTypePhrase(): Phrase
     {
         return \XF::phrase('svReportImprov_operation_type.' . $this->operation_type, [
             'contentType' => $this->getContentTypeForOperationType() ?? '',
@@ -134,7 +137,7 @@ class WarningLog extends Entity
         return null;
     }
 
-    public function getDeferredPrimaryId(): \XF\Mvc\Entity\DeferredValue
+    public function getDeferredPrimaryId(): DeferredValue
     {
         return $this->_getDeferredValue(
             function () {
@@ -228,7 +231,7 @@ class WarningLog extends Entity
         $indexable = $this->getBehavior('XF:Indexable');
         if ($indexable !== null)
         {
-            assert($indexable instanceof \XF\Behavior\Indexable);
+            assert($indexable instanceof Indexable);
             $indexable->triggerReindex();
         }
     }

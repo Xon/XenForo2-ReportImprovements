@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use XF\Mvc\Entity\Structure;
+use XF\Phrase;
 use function assert;
 
 /**
@@ -15,7 +16,7 @@ use function assert;
 class User extends XFCP_User
 {
     /**
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      * @noinspection PhpMissingReturnTypeInspection
@@ -47,7 +48,7 @@ class User extends XFCP_User
 
     /**
      * @param Report                 $report
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
@@ -65,7 +66,7 @@ class User extends XFCP_User
 
     /**
      * @param Report                 $report
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      */
     public function canViewProfilePostCommentReport(Report $report, &$error = null): bool
@@ -75,7 +76,7 @@ class User extends XFCP_User
 
     /**
      * @param Report                 $report
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
@@ -93,7 +94,7 @@ class User extends XFCP_User
 
     /**
      * @param Report                 $report
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
@@ -111,7 +112,7 @@ class User extends XFCP_User
 
     /**
      * @param int  $nodeId
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
@@ -135,7 +136,7 @@ class User extends XFCP_User
     }
 
     /**
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
@@ -150,7 +151,7 @@ class User extends XFCP_User
     }
 
     /**
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */

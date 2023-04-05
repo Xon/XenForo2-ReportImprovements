@@ -2,7 +2,10 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
+use SV\ReportImprovements\XF\ControllerPlugin\Warn as WarnPlugin;
 use XF\Mvc\ParameterBag;
+use XF\Mvc\Reply\AbstractReply;
+use XF\Mvc\Reply\Exception as ReplyException;
 
 /**
  * Class Warning
@@ -16,7 +19,7 @@ class Warning extends XFCP_Warning
      * @param int   $id
      * @param array $extraWith
      * @return \XF\Entity\Warning
-     * @throws \XF\Mvc\Reply\Exception
+     * @throws ReplyException
      */
     protected function assertViewableWarning($id, array $extraWith = [])
     {
@@ -27,8 +30,8 @@ class Warning extends XFCP_Warning
 
     /**
      * @param ParameterBag $params
-     * @return \XF\Mvc\Reply\AbstractReply
-     * @throws \XF\Mvc\Reply\Exception
+     * @return AbstractReply
+     * @throws ReplyException
      */
     public function actionDelete(ParameterBag $params)
     {
@@ -36,7 +39,7 @@ class Warning extends XFCP_Warning
         /** @noinspection PhpUndefinedFieldInspection */
         $warning = $this->assertViewableWarning($params->warning_id);
 
-        /** @var \SV\ReportImprovements\XF\ControllerPlugin\Warn $warnPlugin */
+        /** @var WarnPlugin $warnPlugin */
         $warnPlugin = $this->plugin('XF:Warn');
         $warnPlugin->resolveReportFor($warning);
 
@@ -45,8 +48,8 @@ class Warning extends XFCP_Warning
 
     /**
      * @param ParameterBag $params
-     * @return \XF\Mvc\Reply\AbstractReply
-     * @throws \XF\Mvc\Reply\Exception
+     * @return AbstractReply
+     * @throws ReplyException
      */
     public function actionExpire(ParameterBag $params)
     {
@@ -54,7 +57,7 @@ class Warning extends XFCP_Warning
         /** @noinspection PhpUndefinedFieldInspection */
         $warning = $this->assertViewableWarning($params->warning_id);
 
-        /** @var \SV\ReportImprovements\XF\ControllerPlugin\Warn $warnPlugin */
+        /** @var WarnPlugin $warnPlugin */
         $warnPlugin = $this->plugin('XF:Warn');
         $warnPlugin->resolveReportFor($warning);
 

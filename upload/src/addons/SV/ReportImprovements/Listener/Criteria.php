@@ -2,13 +2,16 @@
 
 namespace SV\ReportImprovements\Listener;
 
+use SV\ReportImprovements\XF\Repository\Report;
+use XF\Entity\User;
+
 abstract class Criteria
 {
     private function __construct() { }
 
-    public static function criteriaUser(string $rule, array $data, \XF\Entity\User $user, bool &$eventReturnValue): bool
+    public static function criteriaUser(string $rule, array $data, User $user, bool &$eventReturnValue): bool
     {
-        /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+        /** @var Report $reportRepo */
         $reportRepo = \XF::repository('XF:Report');
 
         switch ($rule)

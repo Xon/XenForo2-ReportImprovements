@@ -4,7 +4,7 @@ namespace SV\ReportImprovements\Entity;
 
 use SV\ReportImprovements\Behavior\ReportResolver;
 use SV\ReportImprovements\XF\Entity\Report;
-use SV\ReportImprovements\XF\Entity\User;
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
@@ -16,7 +16,7 @@ trait ReportResolverTrait
         $report = $this->getRelation('Report');
         if ($report === null)
         {
-            /** @var User $visitor */
+            /** @var ExtendedUserEntity $visitor */
             $visitor = \XF::visitor();
 
             return $visitor->canViewReports();

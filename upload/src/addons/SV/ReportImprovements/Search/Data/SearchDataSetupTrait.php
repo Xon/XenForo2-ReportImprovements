@@ -3,6 +3,8 @@
 namespace SV\ReportImprovements\Search\Data;
 
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
+use SV\SearchImprovements\Globals;
+use XF\Search\Search;
 
 trait SearchDataSetupTrait
 {
@@ -17,9 +19,9 @@ trait SearchDataSetupTrait
 
     /**
      * @param string            $contentType
-     * @param \XF\Search\Search $searcher
+     * @param Search $searcher
      */
-    public function __construct($contentType, \XF\Search\Search $searcher)
+    public function __construct($contentType, Search $searcher)
     {
         /** @noinspection PhpMultipleClassDeclarationsInspection */
         parent::__construct($contentType, $searcher);
@@ -27,6 +29,6 @@ trait SearchDataSetupTrait
         $this->reportRepo = \XF::repository('XF:Report');
         $this->searchRepo = \XF::repository('SV\SearchImprovements:Search');
         $this->isAddonFullyActive = $this->reportRepo instanceof ReportRepo;
-        $this->isUsingElasticSearch = \SV\SearchImprovements\Globals::repo()->isUsingElasticSearch();
+        $this->isUsingElasticSearch = Globals::repo()->isUsingElasticSearch();
     }
 }

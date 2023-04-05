@@ -10,9 +10,9 @@ use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Entity\WarningLog;
-use SV\ReportImprovements\XF\Entity\User;
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\WarningImprovements\Entity\WarningCategory;
-use XF\Db\Exception;
+use XF\Db\Exception as DbException;
 use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
 use XF\Entity\Moderator as ModeratorEntity;
 use XF\Entity\User as UserEntity;
@@ -175,7 +175,7 @@ class Report extends XFCP_Report
      * @param \XF\Entity\Report $report
      * @param bool         $doCache
      * @return int[]
-     * @throws Exception
+     * @throws DbException
      * @noinspection PhpDocMissingThrowsInspection
      * @noinspection SqlResolve
      */
@@ -563,7 +563,7 @@ class Report extends XFCP_Report
     protected $userReportCountCache = null;
 
     /**
-     * @param UserEntity|User $user
+     * @param UserEntity|ExtendedUserEntity $user
      * @param int             $daysLimit
      * @param string          $state
      * @return int

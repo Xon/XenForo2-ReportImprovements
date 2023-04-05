@@ -7,8 +7,10 @@ use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity
 use XF\Behavior\Indexable;
 use XF\Behavior\IndexableContainer;
 use XF\Mvc\Entity\Entity;
+use XF\Repository\Ip;
 use XF\Service\AbstractService;
 use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
+use XF\Service\Message\Preparer;
 use function assert;
 use function in_array;
 use function strlen;
@@ -22,7 +24,7 @@ use function strlen;
  */
 class CommentPreparer extends XFCP_CommentPreparer
 {
-    /** @var \XF\Service\Message\Preparer */
+    /** @var Preparer */
     protected $preparer;
 
     /**  @var string|null  */
@@ -63,7 +65,7 @@ class CommentPreparer extends XFCP_CommentPreparer
     /**
      * @param bool $format
      *
-     * @return \XF\Service\Message\Preparer
+     * @return Preparer
      */
     protected function getMessagePreparer($format = true)
     {
@@ -171,7 +173,7 @@ class CommentPreparer extends XFCP_CommentPreparer
         /** @var ExtendedReportCommentEntity $reportComment */
         $reportComment = $this->getComment();
 
-        /** @var \XF\Repository\IP $ipRepo */
+        /** @var IP $ipRepo */
         $ipRepo = $this->repository('XF:Ip');
         $ipEnt = $ipRepo->logIp($reportComment->user_id, $ip, 'report_comment', $reportComment->report_comment_id);
         if ($ipEnt)

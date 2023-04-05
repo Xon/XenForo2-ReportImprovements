@@ -6,10 +6,12 @@ use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\AndConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\OrConstraint;
+use XF\Http\Request;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
@@ -190,7 +192,7 @@ class ReportComment extends AbstractData
     public function getSearchFormTab(): ?array
     {
         $visitor = \XF::visitor();
-        if (!($visitor instanceof \SV\ReportImprovements\XF\Entity\User))
+        if (!($visitor instanceof ExtendedUserEntity))
         {
             // This function may be invoked when the add-on is disabled, just return nothing to show
             return null;
@@ -240,7 +242,7 @@ class ReportComment extends AbstractData
         return $form;
     }
 
-    public function applyTypeConstraintsFromInput(Query $query, \XF\Http\Request $request, array &$urlConstraints): void
+    public function applyTypeConstraintsFromInput(Query $query, Request $request, array &$urlConstraints): void
     {
         $constraints = $request->filter([
             'c.assigned'     => 'str',
@@ -424,7 +426,7 @@ class ReportComment extends AbstractData
         }
 
         // if a visitor can't view the username of a reporter, just prevent searching for reports by users
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var ExtendedUserEntity $visitor */
         $visitor = \XF::visitor();
         if (!$visitor->canViewReporter())
         {

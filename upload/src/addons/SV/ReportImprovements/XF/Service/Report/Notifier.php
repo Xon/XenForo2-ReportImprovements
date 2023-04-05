@@ -3,8 +3,11 @@
 namespace SV\ReportImprovements\XF\Service\Report;
 
 use SV\ReportImprovements\Globals;
+use XF\App;
 use XF\Entity\Report;
 use XF\Entity\ReportComment;
+use XF\Entity\User;
+use XF\Repository\UserAlert;
 
 /**
  * Class Notifier
@@ -16,7 +19,7 @@ use XF\Entity\ReportComment;
  */
 class Notifier extends XFCP_Notifier
 {
-    public function __construct(\XF\App $app, Report $report, ReportComment $comment)
+    public function __construct(App $app, Report $report, ReportComment $comment)
     {
         parent::__construct($app, $report, $comment);
         if (Globals::$notifyReportUserIds)
@@ -145,10 +148,10 @@ class Notifier extends XFCP_Notifier
     }
 
     /**
-     * @param \XF\Entity\User $user
+     * @param User $user
      * @return bool
      */
-    protected function sendCommentNotification(\XF\Entity\User $user)
+    protected function sendCommentNotification(User $user)
     {
         $comment = $this->comment;
         $commentUserId = $comment->user_id;
@@ -156,7 +159,7 @@ class Notifier extends XFCP_Notifier
 
         if (empty($this->usersAlerted[$userId]) && ($userId !== $commentUserId))
         {
-            /** @var \XF\Repository\UserAlert $alertRepo */
+            /** @var UserAlert $alertRepo */
             $alertRepo = $this->app->repository('XF:UserAlert');
             if ($alertRepo->alert($user, $commentUserId, $comment->username, 'report_comment', $comment->report_comment_id, 'insert', [
                 'depends_on_addon_id' => 'SV/ReportImprovements'

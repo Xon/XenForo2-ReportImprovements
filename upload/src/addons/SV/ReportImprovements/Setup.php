@@ -17,6 +17,15 @@ use XF\AddOn\StepRunnerUninstallTrait;
 use XF\AddOn\StepRunnerUpgradeTrait;
 use XF\Db\Schema\Alter;
 use XF\Db\Schema\Create;
+use XF\Entity\Moderator;
+use XF\Entity\ModeratorContent;
+use XF\Entity\Phrase;
+use XF\Entity\ReportComment;
+use XF\Entity\User;
+use XF\Entity\UserAlert;
+use XF\Repository\PermissionCombination;
+use XF\Repository\PermissionEntry;
+use XF\Service\UpdatePermissions;
 use function array_keys;
 use function assert;
 
@@ -181,9 +190,9 @@ class Setup extends AbstractSetup
         foreach ($alerts as $alert)
         {
             $next++;
-            /** @var \XF\Entity\UserAlert $alert */
+            /** @var UserAlert $alert */
             $extraData = $alert->extra_data;
-            /** @var \XF\Entity\ReportComment $comment */
+            /** @var ReportComment $comment */
             $comment = \XF::finder('XF:ReportComment')->whereId($alert->content_id)->fetchOne();
             if (!$comment)
             {
@@ -443,7 +452,7 @@ class Setup extends AbstractSetup
                              ->fetch();
         foreach ($phrases as $stockPhrase)
         {
-            assert($stockPhrase instanceof \XF\Entity\Phrase);
+            assert($stockPhrase instanceof Phrase);
             $title = $map[$stockPhrase->title];
 
             $phrase = $this->app->finder('XF:Phrase')
@@ -453,7 +462,7 @@ class Setup extends AbstractSetup
             if ($phrase === null)
             {
                 $phrase = $this->app->em()->create('XF:Phrase');
-                assert($phrase instanceof \XF\Entity\Phrase);
+                assert($phrase instanceof Phrase);
                 $phrase->language_id = $stockPhrase->language_id;
                 $phrase->title = $title;
             }
@@ -530,13 +539,13 @@ class Setup extends AbstractSetup
 
     protected function cleanupPermissionChecks()
     {
-        /** @var \XF\Repository\PermissionEntry $permEntryRepo */
+        /** @var PermissionEntry $permEntryRepo */
         $permEntryRepo = \XF::repository('XF:PermissionEntry');
 
         $permEntryRepo->deleteOrphanedGlobalUserPermissionEntries();
         $permEntryRepo->deleteOrphanedContentUserPermissionEntries();
 
-        /** @var \XF\Repository\PermissionCombination $permComboRepo */
+        /** @var PermissionCombination $permComboRepo */
         $permComboRepo = \XF::repository('XF:PermissionCombination');
         $permComboRepo->deleteUnusedPermissionCombinations();
 
@@ -559,18 +568,18 @@ class Setup extends AbstractSetup
             'view', 'edit', 'viewAttachment','uploadAttachment', 'uploadVideo',
             'assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'reportReact',
         ];
-        $whiteListedGroups = [\XF\Entity\User::GROUP_MOD, \XF\Entity\User::GROUP_ADMIN];
+        $whiteListedGroups = [User::GROUP_MOD, User::GROUP_ADMIN];
 
         // content/global moderators before bulk update
         if (!$previousVersion || ($previousVersion <= 1040002) || ($previousVersion >= 2000000 && $previousVersion <= 2011000))
         {
-            /** @var \XF\Repository\PermissionEntry $permissionEntryRepo */
+            /** @var PermissionEntry $permissionEntryRepo */
             $permissionEntryRepo = \XF::repository('XF:PermissionEntry');
             /** @var \XF\Repository\Moderator $modRepo */
             $modRepo = \XF::repository('XF:Moderator');
 
             $contentModerators = $modRepo->findContentModeratorsForList()->fetch();
-            /** @var \XF\Entity\ModeratorContent $contentModerator */
+            /** @var ModeratorContent $contentModerator */
             foreach ($contentModerators as $contentModerator)
             {
                 $user = $contentModerator->User;
@@ -610,7 +619,7 @@ class Setup extends AbstractSetup
 
                     if ($newGlobalPerms !== $globalPerms)
                     {
-                        /** @var \XF\Service\UpdatePermissions $permissionUpdater */
+                        /** @var UpdatePermissions $permissionUpdater */
                         $permissionUpdater = \XF::service('XF:UpdatePermissions');
                         $permissionUpdater->setUser($user);
                         $permissionUpdater->setGlobal();
@@ -620,7 +629,7 @@ class Setup extends AbstractSetup
                 /** @noinspection PhpConditionAlreadyCheckedInspection */
                 if ($newPermissions != $permissions)
                 {
-                    /** @var \XF\Service\UpdatePermissions $permissionUpdater */
+                    /** @var UpdatePermissions $permissionUpdater */
                     $permissionUpdater = \XF::service('XF:UpdatePermissions');
                     $permissionUpdater->setUser($user);
                     $permissionUpdater->setContent($contentModerator->content_type, $contentModerator->content_id);
@@ -667,7 +676,7 @@ class Setup extends AbstractSetup
             ];
 
             $moderators = $modRepo->findModeratorsForList()->fetch();
-            /** @var \XF\Entity\Moderator $moderator */
+            /** @var Moderator $moderator */
             foreach ($moderators as $moderator)
             {
                 if (!$moderator->User)
@@ -711,7 +720,7 @@ class Setup extends AbstractSetup
                 /** @noinspection PhpConditionAlreadyCheckedInspection */
                 if ($newPermissions != $permissions)
                 {
-                    /** @var \XF\Service\UpdatePermissions $permissionUpdater */
+                    /** @var UpdatePermissions $permissionUpdater */
                     $permissionUpdater = \XF::service('XF:UpdatePermissions');
                     $permissionUpdater->setUser($moderator->User);
                     $permissionUpdater->setGlobal();

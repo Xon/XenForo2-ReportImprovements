@@ -6,8 +6,15 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\XF\Service\Report\Commenter;
+use XF\App;
+use XF\Entity\Post;
+use XF\Entity\Report;
+use XF\Entity\ReportComment;
 use XF\Entity\ThreadReplyBan;
 use XF\Entity\Warning;
+use XF\Phrase;
+use XF\PrintableException;
 use XF\Service\AbstractService;
 use XF\Service\ValidateAndSavableTrait;
 
@@ -52,7 +59,7 @@ class Creator extends AbstractService
     protected $reportCreator;
 
     /**
-     * @var \XF\Service\Report\Commenter|\SV\ReportImprovements\XF\Service\Report\Commenter
+     * @var \XF\Service\Report\Commenter|Commenter
      */
     protected $reportCommenter;
 
@@ -72,12 +79,12 @@ class Creator extends AbstractService
     /**
      * Creator constructor.
      *
-     * @param \XF\App         $app
+     * @param App         $app
      * @param IReportResolver $content
      * @param string          $operationType
      * @throws \Exception
      */
-    public function __construct(\XF\App $app, IReportResolver $content, string $operationType)
+    public function __construct(App $app, IReportResolver $content, string $operationType)
     {
         parent::__construct($app);
 
@@ -248,7 +255,7 @@ class Creator extends AbstractService
     }
 
     /**
-     * @return \SV\ReportImprovements\XF\Entity\Report|\XF\Entity\Report|null
+     * @return \SV\ReportImprovements\XF\Entity\Report|Report|null
      */
     protected function setupDefaultsForWarning()
     {
@@ -326,7 +333,7 @@ class Creator extends AbstractService
         $warningLog->expiry_date = (int)$threadReplyBan->expiry_date;
         $warningLog->is_expired = $threadReplyBan->expiry_date > \XF::$time;
         $warningLog->reply_ban_thread_id = $threadReplyBan->thread_id;
-        $warningLog->reply_ban_post_id = $content instanceof \XF\Entity\Post ? $content->getEntityId() : 0;
+        $warningLog->reply_ban_post_id = $content instanceof Post ? $content->getEntityId() : 0;
         $warningLog->user_id = $threadReplyBan->user_id;
         $warningLog->warning_user_id = \XF::visitor()->user_id;
         $warningLog->warning_definition_id = null;
@@ -379,7 +386,7 @@ class Creator extends AbstractService
             {
                 foreach ($errors as $key => $error)
                 {
-                    if ($error instanceof \XF\Phrase)
+                    if ($error instanceof Phrase)
                     {
                         $error = $error->render('raw');
                     }
@@ -435,7 +442,7 @@ class Creator extends AbstractService
 
     /**
      * @return WarningLog
-     * @throws \XF\PrintableException
+     * @throws PrintableException
      * @throws \Exception
      */
     protected function _save(): WarningLog
@@ -447,13 +454,13 @@ class Creator extends AbstractService
         if ($this->reportCreator)
         {
             $this->_saveReport();
-            /** @var \XF\Entity\Report $report */
+            /** @var Report $report */
             $report = $this->reportCreator->save();
         }
         else if ($this->reportCommenter)
         {
             $this->_saveReportComment();
-            /** @var \XF\Entity\ReportComment $comment */
+            /** @var ReportComment $comment */
             $comment = $this->reportCommenter->save();
             $report = $comment ? $comment->Report : null;
         }

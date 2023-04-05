@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Option;
 
 use XF\Entity\Option;
+use XF\Entity\WarningDefinition;
 use XF\Option\AbstractOption;
 
 class Warnings extends AbstractOption
@@ -21,7 +22,7 @@ class Warnings extends AbstractOption
 
         foreach ($warnings as $warningDefinitionId => $warningDefinition)
         {
-            /** @var \XF\Entity\WarningDefinition $warningDefinition */
+            /** @var WarningDefinition $warningDefinition */
             $choices[$warningDefinitionId] = [
                 '_type' => 'option',
                 'value' => $warningDefinitionId,

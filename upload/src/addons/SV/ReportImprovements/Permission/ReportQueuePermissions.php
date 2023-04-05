@@ -4,11 +4,15 @@ namespace SV\ReportImprovements\Permission;
 
 use SV\ReportCentreEssentials\Entity\ReportQueue as ReportQueueEntity;
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
+use XF\Entity\Permission;
+use XF\Entity\PermissionCombination;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
+use XF\Permission\FlatContentPermissions;
+use XF\Phrase;
 use function assert;
 
-class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
+class ReportQueuePermissions extends FlatContentPermissions
 {
     protected $privatePermissionGroupId = 'general';
     protected $privatePermissionId = 'viewReports';
@@ -18,7 +22,7 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
         return 'report_queue';
     }
 
-    public function getAnalysisTypeTitle(): \XF\Phrase
+    public function getAnalysisTypeTitle(): Phrase
     {
         return \XF::phrase('svReportImprovements_report_queue_permissions');
     }
@@ -36,7 +40,7 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
         return $entity->queue_name;
     }
 
-    public function rebuildCombination(\XF\Entity\PermissionCombination $combination, array $basePerms)
+    public function rebuildCombination(PermissionCombination $combination, array $basePerms)
     {
         // being notified on permission changes is surprisingly challenging
         $reportQueueRepo = \XF::repository('SV\ReportImprovements:ReportQueue');
@@ -46,7 +50,7 @@ class ReportQueuePermissions extends \XF\Permission\FlatContentPermissions
         parent::rebuildCombination($combination, $basePerms);
     }
 
-    public function isValidPermission(\XF\Entity\Permission $permission): bool
+    public function isValidPermission(Permission $permission): bool
     {
         return $permission->permission_group_id === 'report_queue' ||
                ($permission->permission_group_id === $this->privatePermissionGroupId && $permission->permission_id === $this->privatePermissionId);

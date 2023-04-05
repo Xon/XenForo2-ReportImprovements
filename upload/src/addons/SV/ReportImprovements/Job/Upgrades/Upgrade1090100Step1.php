@@ -2,7 +2,9 @@
 
 namespace SV\ReportImprovements\Job\Upgrades;
 
+use XF\Db\Exception as DbException;
 use XF\Job\AbstractRebuildJob;
+use XF\Phrase;
 
 /**
  * Class Upgrade1090100Step1
@@ -33,7 +35,7 @@ class Upgrade1090100Step1 extends AbstractRebuildJob
 
     /**
      * @param $id
-     * @throws \XF\Db\Exception
+     * @throws DbException
      */
     protected function rebuildById($id)
     {
@@ -64,7 +66,7 @@ class Upgrade1090100Step1 extends AbstractRebuildJob
     }
 
     /**
-     * @return \XF\Phrase
+     * @return Phrase
      */
     protected function getStatusType()
     {

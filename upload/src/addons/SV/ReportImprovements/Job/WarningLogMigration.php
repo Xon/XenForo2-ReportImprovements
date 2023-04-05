@@ -4,6 +4,9 @@ namespace SV\ReportImprovements\Job;
 
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\Service\WarningLog\Creator;
+use SV\ReportImprovements\XF\Entity\Warning as WarningEntity;
+use XF\Entity\Post;
 use XF\Job\AbstractRebuildJob;
 
 /**
@@ -39,13 +42,12 @@ class WarningLogMigration extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
         $warning = $this->app->em()->find('XF:Warning', $id, ['User', 'WarnedBy']);
-        if ($warning !== null)
+        if ($warning instanceof WarningEntity)
         {
             // On a detached thread, just pretend the post no longer exists
             $content = $warning->Content ?? null;
-            if ($content instanceof \XF\Entity\Post && $content->Thread === null)
+            if ($content instanceof Post && $content->Thread === null)
             {
                 $warning->setContent(null);
             }
@@ -70,7 +72,7 @@ class WarningLogMigration extends AbstractRebuildJob
                 \XF::$time = $warning->warning_date;
                 try
                 {
-                    /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
+                    /** @var Creator $warningLogCreator */
                     $warningLogCreator = \XF::app()->service('SV\ReportImprovements:WarningLog\Creator', $warning, WarningType::New);
                     $warningLogCreator->setAutoResolve(true, false, '');
                     $warningLogCreator->setCanReopenReport(false);

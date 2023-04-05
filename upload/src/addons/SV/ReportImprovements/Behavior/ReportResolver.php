@@ -5,6 +5,8 @@ namespace SV\ReportImprovements\Behavior;
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\Repository\ReportQueue;
+use SV\ReportImprovements\XF\Entity\Report;
 use XF\Mvc\Entity\Behavior;
 use XF\Mvc\Entity\Entity;
 
@@ -14,7 +16,7 @@ class ReportResolver extends Behavior
      * @param bool   $resolveReport
      * @param bool   $alert
      * @param string $alertComment
-     * @return \SV\ReportImprovements\XF\Entity\Report|null
+     * @return Report|null
      */
     public function resolveReportFor(bool $resolveReport, bool $alert, string $alertComment)
     {
@@ -165,7 +167,7 @@ class ReportResolver extends Behavior
 
         $entity = $this->entity;
 
-        /** @var \SV\ReportImprovements\Repository\ReportQueue $reportQueueRepo */
+        /** @var ReportQueue $reportQueueRepo */
         $reportQueueRepo = $this->repository('SV\ReportImprovements:ReportQueue');
         $reportQueueRepo->logToReport($this->entity, $operationType,
             (bool)$entity->getOption('svCanReopenReport'),

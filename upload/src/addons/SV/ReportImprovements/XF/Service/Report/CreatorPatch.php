@@ -2,6 +2,8 @@
 
 namespace SV\ReportImprovements\XF\Service\Report;
 
+use XF\Entity\Report;
+use XF\Entity\Thread;
 use XF\Mvc\Entity\Entity;
 
 /**
@@ -54,10 +56,10 @@ class CreatorPatch extends XFCP_CreatorPatch
             $this->threadCreator = null;
         }
 
-        /** @var \XF\Entity\Report|\XF\Entity\Thread $reportOrThread */
+        /** @var Report|Thread $reportOrThread */
         $reportOrThread = parent::_save();
 
-        if ($reportOrThread instanceof \XF\Entity\Report)
+        if ($reportOrThread instanceof Report)
         {
             $this->postSaveReport();
         }

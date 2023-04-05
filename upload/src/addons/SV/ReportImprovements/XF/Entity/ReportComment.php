@@ -7,10 +7,12 @@ use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\Attachment;
+use XF\Entity\ReactionContent;
 use XF\Entity\ReactionTrait;
 use XF\Entity\User as UserEntity;
 use XF\Mvc\Entity\AbstractCollection as AbstractCollection;
 use XF\Mvc\Entity\Structure;
+use XF\Phrase;
 
 /**
  * Class ReportComment
@@ -40,7 +42,7 @@ use XF\Mvc\Entity\Structure;
  * @property mixed                                $reaction_users
  * RELATIONS
  * @property-read AbstractCollection|Attachment[] $Attachments
- * @property-read \XF\Entity\LikedContent[]       $Likes
+ * @property-read ReactionContent[]               $Reactions
  * @property-read WarningLog|null                 $WarningLog
  * @property-read Report|null                     $Report
  * @property-read User|null                       $User
@@ -60,7 +62,7 @@ class ReportComment extends XFCP_ReportComment
     }
 
     /**
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      */
     public function canEdit(&$error = null): bool
@@ -115,7 +117,7 @@ class ReportComment extends XFCP_ReportComment
     }
 
     /**
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      *
      * @return bool
      */
@@ -137,7 +139,7 @@ class ReportComment extends XFCP_ReportComment
         return $this->hasReportPermission('reportReact');
     }
 
-    public function getReportStateChange(): \XF\Phrase
+    public function getReportStateChange(): Phrase
     {
         return $this->Report->getReportState($this->state_change);
     }

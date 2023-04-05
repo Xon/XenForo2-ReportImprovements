@@ -3,10 +3,15 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\Report\ContentInterface;
 use SV\SearchImprovements\Search\Features\ISearchableDiscussionUser;
 use SV\SearchImprovements\Search\Features\ISearchableReplyCount;
+use XF\Behavior\IndexableContainer;
+use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
+use XF\Mvc\Entity\Finder;
 use XF\Mvc\Entity\Structure;
+use XF\Phrase;
 use function array_key_exists;
 use function assert;
 use function is_callable;
@@ -57,7 +62,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     }
 
     /**
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
@@ -80,7 +85,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     }
 
     /**
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
@@ -103,7 +108,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     }
 
     /**
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      * @noinspection PhpUnusedParameterInspection
      */
@@ -139,7 +144,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     }
 
     /**
-     * @param \XF\Phrase|String|null $error
+     * @param Phrase|String|null $error
      * @return bool
      */
     public function canViewReporter(&$error = null): bool
@@ -256,7 +261,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     {
         $handler = $this->Handler;
 
-        if (!($handler instanceof \SV\ReportImprovements\Report\ContentInterface))
+        if (!($handler instanceof ContentInterface))
         {
             return null;
         }
@@ -392,7 +397,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         return $with;
     }
 
-    public function getCommentsFinder(): \XF\Mvc\Entity\Finder
+    public function getCommentsFinder(): Finder
     {
         $direction = (\XF::app()->options()->sv_reverse_report_comment_order ?? false) ? 'DESC' : 'ASC';
 
@@ -405,7 +410,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         return $finder;
     }
 
-    public function getComments(): \XF\Mvc\Entity\AbstractCollection
+    public function getComments(): AbstractCollection
     {
         return $this->getCommentsFinder()->fetch();
     }
@@ -466,10 +471,10 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
 
     protected function getTitleString(): string
     {
-        /** @var \XF\Phrase|string|mixed $value */
+        /** @var Phrase|string|mixed $value */
         $value = $this->title;
 
-        if ($value instanceof \XF\Phrase)
+        if ($value instanceof Phrase)
         {
             return $value->render('raw');
         }
@@ -497,10 +502,10 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         $this->getBehaviors();
         if (!array_key_exists('XF:IndexableContainer', $this->_behaviors))
         {
-            $class = \XF::extendClass(\XF\Behavior\IndexableContainer::class);
+            $class = \XF::extendClass(IndexableContainer::class);
 
             $behavior = new $class($this, $this->structure()->behaviors['XF:IndexableContainer']);
-            assert($behavior instanceof \XF\Behavior\IndexableContainer);
+            assert($behavior instanceof IndexableContainer);
             $behavior->onSetup();
 
             $this->_behaviors['XF:IndexableContainer'] = $behavior;

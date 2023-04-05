@@ -4,9 +4,11 @@ namespace SV\ReportImprovements\Repository;
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\Service\WarningLog\Creator;
 use SV\ReportImprovements\XF\Entity\Post;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\XF\Entity\Thread;
+use SV\StandardLib\Helper;
 use XF\Entity\ThreadReplyBan;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -152,7 +154,7 @@ class ReportQueue extends Repository
                 /** @var WarningLog $warningLog */
                 /** @var int $threadId */
                 /** @var int $userId */
-                list ($warningLog, $threadId, $userId) = $data;
+                [$warningLog, $threadId, $userId] = $data;
 
                 $conditions[] = [
                     ['thread_id', '=', $threadId],
@@ -223,7 +225,7 @@ class ReportQueue extends Repository
             }
             if (!$reporter)
             {
-                $reporter = \SV\StandardLib\Helper::repo()->getUserEntity($entity);
+                $reporter = Helper::repo()->getUserEntity($entity);
             }
             if (!$reporter)
             {
@@ -232,7 +234,7 @@ class ReportQueue extends Repository
         }
 
         \XF::asVisitor($reporter, function () use ($reporter, $entity, $type, $resolveReport, $canReopenReport, $alert, $alertComment) {
-            /** @var \SV\ReportImprovements\Service\WarningLog\Creator $warningLogCreator */
+            /** @var Creator $warningLogCreator */
             $warningLogCreator = $this->app()->service('SV\ReportImprovements:WarningLog\Creator', $entity, $type);
             $warningLogCreator->setAutoResolve($resolveReport, $alert, $alertComment);
             $warningLogCreator->setCanReopenReport($canReopenReport);

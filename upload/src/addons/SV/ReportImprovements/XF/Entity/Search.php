@@ -5,10 +5,12 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use NF\Tickets\Repository\Category as TicketCategory;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use XF\Entity\LinkableInterface;
+use XF\Phrase;
 use function assert;
 use function is_array;
 
@@ -109,7 +111,7 @@ class Search extends XFCP_Search
         }
         else if ($key === 'categories' && is_array($value))
         {
-            /** @var \NF\Tickets\Repository\Category $categoryRepo */
+            /** @var TicketCategory $categoryRepo */
             $categoryRepo = \XF::repository('NF\Tickets:Category');
             $categories = $categoryRepo->getViewableCategories();
 
@@ -123,7 +125,6 @@ class Search extends XFCP_Search
                     continue;
                 }
 
-                /** @var \NF\Tickets\Entity\Category|null $category */
                 $category = $categories[$id] ?? null;
                 if ($category instanceof LinkableInterface)
                 {
@@ -138,7 +139,7 @@ class Search extends XFCP_Search
         return parent::expandStructuredSearchConstraint($query, $key, $value);
     }
 
-    protected function getSpecializedSearchConstraintPhrase(string $key, $value): ?\XF\Phrase
+    protected function getSpecializedSearchConstraintPhrase(string $key, $value): ?Phrase
     {
         if ($key === 'warning_expiry_type')
         {

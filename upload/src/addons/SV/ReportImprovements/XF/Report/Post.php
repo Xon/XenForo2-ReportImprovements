@@ -6,9 +6,11 @@ use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\Thread;
 use XF\Entity\Report;
+use XF\Http\Request;
 use XF\Mvc\Entity\Entity;
 use XF\Search\Data\Post as PostSearch;
 use XF\Search\MetadataStructure;
+use XF\Search\Query\Query;
 use function assert;
 
 /**
@@ -107,7 +109,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         return $this->getSearchHandler()->getSearchFormData();
     }
 
-    public function applySearchTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array $urlConstraints): void
+    public function applySearchTypeConstraintsFromInput(Query $query, Request $request, array $urlConstraints): void
     {
         $this->getSearchHandler()->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
     }
