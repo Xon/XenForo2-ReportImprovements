@@ -74,8 +74,11 @@ class EnrichReportPostInstall extends AbstractRebuildJob
             if (!array_key_exists('ticket_status_id', $contentInfo))
             {
                 $ticket = $content->Ticket;
-                $contentInfo['ticket_status_id'] = $ticket->status_id;
-                $hasChanges = true;
+                if ($ticket !== null)
+                {
+                    $contentInfo['ticket_status_id'] = $ticket->status_id;
+                    $hasChanges = true;
+                }
             }
         }
         if ($hasChanges)
