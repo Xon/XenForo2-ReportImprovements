@@ -24,7 +24,7 @@ class RebuildCommentCount extends AbstractRebuildJob
         return $db->fetchAllColumn($db->limit(
             '
             SELECT report_id
-            FROM xf_report_comment 
+            FROM xf_report
             WHERE report_id > ?
             ORDER BY report_id
 			', $batch
@@ -37,7 +37,6 @@ class RebuildCommentCount extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        // note: this upgrade required a search rebuild so no point doing that here
         $this->app->db()->query("
             UPDATE xf_report
             SET comment_count = (

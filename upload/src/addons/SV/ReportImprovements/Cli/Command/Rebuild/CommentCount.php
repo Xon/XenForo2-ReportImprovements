@@ -15,7 +15,7 @@ class CommentCount extends AbstractRebuildCommand
 
     protected function getRebuildDescription(): string
     {
-        return 'Rebuild report comment counts';
+        return 'Rebuild report comment counts. Does not trigger a re-index';
     }
 
     protected function getRebuildClass(): string
