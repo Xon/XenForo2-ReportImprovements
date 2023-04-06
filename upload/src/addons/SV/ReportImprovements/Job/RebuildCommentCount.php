@@ -43,8 +43,11 @@ class RebuildCommentCount extends AbstractRebuildJob
                 SELECT COUNT(*) 
                 FROM xf_report_comment AS comment
                 WHERE xf_report.report_id = comment.report_id
-                      AND (comment.message <> '' OR (comment.warning_log_id IS NOT NULL and comment.is_report = 0)) 
-            
+                    AND comment.is_report = 0
+                    AND (
+                        comment.message <> '' 
+                        OR comment.warning_log_id IS NOT NULL
+                    )
             )
             WHERE report_id = ?
         ", $id);
