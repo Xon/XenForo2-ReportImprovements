@@ -175,7 +175,7 @@ class WarningLog extends AbstractData
         $report = $reportComment->Report;
         $metaData = $this->reportRepo->getReportSearchMetaData($report);
         $this->populateDiscussionMetaData($report, $metaData);
-        $metaData += [
+        $metaData = [
             // shared with ReportComment::getMetaData
             'state_change' => $reportComment->state_change ?: '',
             'report_type'  => $reportComment->getReportType(),
@@ -184,7 +184,7 @@ class WarningLog extends AbstractData
             'issuer_user'  => $warningLog->warning_user_id,
             // explicitly include even if it has a '0' to allow selecting on "Custom Warning" which in SV/WarningImprovements has a backing record
             'warning_definition' => $warningLog->warning_definition_id,
-        ];
+        ] + $metaData;
 
         if ($warningLog->expiry_date)
         {
