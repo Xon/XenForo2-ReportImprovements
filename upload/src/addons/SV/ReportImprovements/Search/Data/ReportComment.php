@@ -186,8 +186,8 @@ class ReportComment extends AbstractData
     {
         $this->reportRepo->setupMetadataStructureForReport($structure);
         $this->setupDiscussionMetadataStructure($structure);
+        $structure->addField('state_change', MetadataStructure::KEYWORD);
     }
-
 
     public function getSearchFormTab(): ?array
     {

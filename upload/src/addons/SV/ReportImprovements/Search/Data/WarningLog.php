@@ -239,6 +239,7 @@ class WarningLog extends AbstractData
     {
         $this->reportRepo->setupMetadataStructureForReport($structure);
         $this->setupDiscussionMetadataStructure($structure);
+        $structure->addField('state_change', MetadataStructure::KEYWORD);
 
         // warning bits
         $structure->addField('warning_type', MetadataStructure::KEYWORD);
