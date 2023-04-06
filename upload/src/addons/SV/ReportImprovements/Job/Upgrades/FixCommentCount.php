@@ -10,7 +10,7 @@ use XF\Phrase;
  *
  * @package SV\ReportImprovements\Job\Upgrades
  */
-class Upgrade1680521965Step1 extends AbstractRebuildJob
+class FixCommentCount extends AbstractRebuildJob
 {
     /**
      * @param int $start

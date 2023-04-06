@@ -3,11 +3,12 @@
 namespace SV\ReportImprovements;
 
 use SV\ReportImprovements\Enums\WarningType;
+use SV\ReportImprovements\Job\RebuildWarningLogLatestVersion;
+use SV\ReportImprovements\Job\Upgrade1680614325Step3;
 use SV\ReportImprovements\Job\Upgrades\EnrichReportPostInstall;
+use SV\ReportImprovements\Job\Upgrades\FixCommentCount;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090100Step1;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090200Step1;
-use SV\ReportImprovements\Job\Upgrades\Upgrade1680521965Step1;
-use SV\ReportImprovements\Job\Upgrades\Upgrade1680614325Step3;
 use SV\ReportImprovements\Job\WarningLogMigration;
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use SV\StandardLib\InstallerHelper;
@@ -23,6 +24,7 @@ use XF\Entity\Phrase;
 use XF\Entity\ReportComment;
 use XF\Entity\User;
 use XF\Entity\UserAlert;
+use XF\Job\Atomic as AtomicJob;
 use XF\Repository\PermissionCombination;
 use XF\Repository\PermissionEntry;
 use XF\Service\UpdatePermissions;
@@ -365,14 +367,6 @@ class Setup extends AbstractSetup
         ]);
     }
 
-    public function upgrade1680521965Step1(): void
-    {
-        $this->app->jobManager()->enqueueUnique(
-            'svRIUpgrade1680521965Step1',
-            Upgrade1680521965Step1::class
-        );
-    }
-
     public function upgrade1680418222Step1(): void
     {
         $this->customizeWarningLogContentTypePhrases();
@@ -396,14 +390,6 @@ class Setup extends AbstractSetup
                 'warning_id_warning_edit_date',
             ]);
         });
-    }
-
-    public function upgrade1680614325Step3(): void
-    {
-        $this->app->jobManager()->enqueueUnique(
-            'svRIUpgrade1680614325Step3',
-            Upgrade1680614325Step3::class
-        );
     }
 
     public function upgrade1680614327Step1(): void
@@ -485,6 +471,8 @@ class Setup extends AbstractSetup
 
     public function postInstall(array &$stateChanges)
     {
+        parent::postInstall($stateChanges);
+
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
         $this->customizeWarningLogContentTypePhrases();
@@ -494,11 +482,11 @@ class Setup extends AbstractSetup
         $atomicJobs[] = Upgrade1090200Step1::class;
         $atomicJobs[] = WarningLogMigration::class;
 
-        if ($atomicJobs)
+        if (count($atomicJobs) !== 0)
         {
             \XF::app()->jobManager()->enqueueUnique(
                 'report-improvements-installer',
-                'XF:Atomic', ['execute' => $atomicJobs]
+                AtomicJob::class, ['execute' => $atomicJobs]
             );
         }
     }
@@ -506,12 +494,20 @@ class Setup extends AbstractSetup
     public function postUpgrade($previousVersion, array &$stateChanges)
     {
         $previousVersion = (int)$previousVersion;
+        parent::postUpgrade($previousVersion, $stateChanges);
+
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
 
         if ($previousVersion < 2140002)
         {
             $atomicJobs[] = EnrichReportPostInstall::class;
+        }
+
+        if ($previousVersion < 1680751722)
+        {
+            $atomicJobs[] = FixCommentCount::class;
+            $atomicJobs[] = [RebuildWarningLogLatestVersion::class, ['reindex' => false]];
         }
 
         $atomicJobs[] = WarningLogMigration::class;
@@ -521,11 +517,11 @@ class Setup extends AbstractSetup
             $atomicJobs[] = 'XF:PermissionRebuild';
         }
 
-        if ($atomicJobs)
+        if (count($atomicJobs) !== 0)
         {
             \XF::app()->jobManager()->enqueueUnique(
                 'report-improvements-installer',
-                'XF:Atomic', ['execute' => $atomicJobs]
+                AtomicJob::class, ['execute' => $atomicJobs]
             );
         }
     }

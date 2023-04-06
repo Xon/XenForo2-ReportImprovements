@@ -1,18 +1,30 @@
 <?php
 
-namespace SV\ReportImprovements\Job\Upgrades;
+namespace SV\ReportImprovements\Job;
 
 use SV\ReportImprovements\Entity\WarningLog;
 use XF\Job\AbstractRebuildJob;
 use XF\Phrase;
+use function array_merge;
 
 /**
  * Class Upgrade1090200Step1
  *
  * @package SV\ReportImprovements\Job\Upgrades
  */
-class Upgrade1680614325Step3 extends AbstractRebuildJob
+class RebuildWarningLogLatestVersion extends AbstractRebuildJob
 {
+    protected $optionData = [
+        'reindex' => false,
+    ];
+
+    protected function setupData(array $data)
+    {
+        $this->defaultData = array_merge($this->optionData, $this->defaultData);
+
+        return parent::setupData($data);
+    }
+
     /**
      * @param int $start
      * @param int $batch
@@ -41,7 +53,7 @@ class Upgrade1680614325Step3 extends AbstractRebuildJob
     {
         $warningLog = \XF::app()->find('SV\ReportImprovements:WarningLog', $id);
         assert($warningLog instanceof WarningLog);
-        $warningLog->rebuildLatestVersionFlag(false);
+        $warningLog->rebuildLatestVersionFlag($this->data['reindex']);
     }
 
     /**
