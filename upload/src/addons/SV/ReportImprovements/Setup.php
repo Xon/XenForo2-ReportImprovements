@@ -3,10 +3,9 @@
 namespace SV\ReportImprovements;
 
 use SV\ReportImprovements\Enums\WarningType;
+use SV\ReportImprovements\Job\RebuildCommentCount;
 use SV\ReportImprovements\Job\RebuildWarningLogLatestVersion;
-use SV\ReportImprovements\Job\Upgrade1680614325Step3;
 use SV\ReportImprovements\Job\Upgrades\EnrichReportPostInstall;
-use SV\ReportImprovements\Job\Upgrades\FixCommentCount;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090100Step1;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090200Step1;
 use SV\ReportImprovements\Job\WarningLogMigration;
@@ -506,7 +505,7 @@ class Setup extends AbstractSetup
 
         if ($previousVersion < 1680751722)
         {
-            $atomicJobs[] = FixCommentCount::class;
+            $atomicJobs[] = RebuildCommentCount::class;
             $atomicJobs[] = [RebuildWarningLogLatestVersion::class, ['reindex' => false]];
         }
 

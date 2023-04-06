@@ -1,6 +1,6 @@
 <?php
 
-namespace SV\ReportImprovements\Job\Upgrades;
+namespace SV\ReportImprovements\Job;
 
 use XF\Job\AbstractRebuildJob;
 use XF\Phrase;
@@ -10,7 +10,7 @@ use XF\Phrase;
  *
  * @package SV\ReportImprovements\Job\Upgrades
  */
-class FixCommentCount extends AbstractRebuildJob
+class RebuildCommentCount extends AbstractRebuildJob
 {
     /**
      * @param int $start
