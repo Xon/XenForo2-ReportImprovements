@@ -32,8 +32,8 @@
     },
     "require-soft": {
         "NF/Tickets": [
-            "2.6.0",
-            "Tickets v2.6.0+",
+            "2.0.0",
+            "NixFifty's Tickets v2.0.0+",
             false
         ],
         "SV/ThreadReplyBanTeeth": [
