@@ -45,7 +45,7 @@ use function assert;
  * @property ?string                 $public_banner_
  * GETTERS
  * @property-read ?Phrase            $definition_title
- * @property-read ?string            $public_banner
+ * @property ?string                 $public_banner
  * @property-read ?ThreadReplyBan    $ReplyBan
  * @property-read ?WarningDefinition $Definition
  * RELATIONS
