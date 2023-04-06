@@ -44,7 +44,7 @@ use function assert;
  * @property ?int                    $reply_ban_post_id
  * @property ?string                 $public_banner_
  * GETTERS
- * @property-read ?Phrase            $definition_title
+ * @property-read ?string            $definition_title
  * @property ?string                 $public_banner
  * @property-read ?ThreadReplyBan    $ReplyBan
  * @property-read ?WarningDefinition $Definition

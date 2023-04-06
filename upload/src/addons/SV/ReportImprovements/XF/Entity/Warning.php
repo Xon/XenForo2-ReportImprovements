@@ -15,7 +15,7 @@ use XF\Phrase;
  *
  * @package SV\ReportImprovements\XF\Entity
  * GETTERS
- * @property-read ?Phrase $definition_title
+ * @property-read ?string $definition_title
  * RELATIONS
  * @property-read ?Report $Report
  */

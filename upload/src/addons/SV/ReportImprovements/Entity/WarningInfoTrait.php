@@ -32,7 +32,7 @@ trait WarningInfoTrait
         return true;
     }
 
-    protected function getDefinitionTitle(): ?Phrase
+    protected function getDefinitionTitle(): ?string
     {
         if ($this->warning_definition_id === 0)
         {
@@ -43,9 +43,15 @@ trait WarningInfoTrait
                 return $warningRepo->getCustomWarningDefinition()->title;
             }
 
-            return \XF::phrase('custom_warning');
+            return (string)\XF::phrase('custom_warning');
         }
 
-        return $this->Definition_->title ?? null;
+        $definition_ = $this->Definition_;
+        if ($definition_ === null)
+        {
+            return $definition_;
+        }
+
+        return $definition_->title->render('raw');
     }
 }
