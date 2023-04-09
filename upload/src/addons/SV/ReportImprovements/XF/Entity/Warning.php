@@ -8,6 +8,7 @@ use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Entity\WarningInfoTrait;
 use XF\Mvc\Entity\Structure;
 use XF\Phrase;
+use function strlen;
 
 /**
  * Class Warning
@@ -81,6 +82,20 @@ class Warning extends XFCP_Warning implements IReportResolver
             $reporter = $this->WarnedBy;
         }
         return $reporter;
+    }
+
+    protected function verifyTitle(string &$title): bool
+    {
+        // prevent silent truncation of the warning title
+        // This prevents errors when attempting to apply a public banner which is too long
+        $maxLength = (int)($this->_structure->columns['title']['maxLength'] ?? 0);
+        if ($maxLength > 0 && strlen($title) > $maxLength)
+        {
+            $this->error(\XF::phrase('sv_please_enter_warning_title_using_x_characters_or_fewer', ['count' => $maxLength]),'title');
+            return false;
+        }
+
+        return true;
     }
 
     /**
