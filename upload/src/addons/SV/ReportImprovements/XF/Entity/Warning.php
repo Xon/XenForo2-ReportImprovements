@@ -87,7 +87,7 @@ class Warning extends XFCP_Warning implements IReportResolver
     protected function verifyTitle(string &$title): bool
     {
         // prevent silent truncation of the warning title
-        // This prevents errors when attempting to apply a public banner which is too long
+        // This prevents errors when attempting to copy the title to WarningLog
         $maxLength = (int)($this->_structure->columns['title']['maxLength'] ?? 0);
         if ($maxLength > 0 && strlen($title) > $maxLength)
         {
