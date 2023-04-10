@@ -129,7 +129,7 @@ class Report extends AbstractData
     {
         try
         {
-            $message = $entity->getHandler()->getContentMessage($entity);
+            $message = $entity->getHandler()->getContentMessage($entity)  ?? '';
         }
         catch (\Exception $e)
         {
