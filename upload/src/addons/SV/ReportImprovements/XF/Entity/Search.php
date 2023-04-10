@@ -5,11 +5,10 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
-use NF\Tickets\Repository\Category as TicketCategory;
+
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
-use XF\Entity\LinkableInterface;
 use XF\Phrase;
 use function assert;
 use function is_array;
@@ -108,32 +107,6 @@ class Search extends XFCP_Search
             }
 
             return true;
-        }
-        else if ($key === 'categories' && is_array($value) && \XF::isAddOnActive('NF/Tickets'))
-        {
-            /** @var TicketCategory $categoryRepo */
-            $categoryRepo = \XF::repository('NF\Tickets:Category');
-            $categories = $categoryRepo->getViewableCategories();
-
-            // This can be a ticket category or XFRM/etc :(
-            // for now assume tickets
-            foreach ($value as $subKey => $id)
-            {
-                $id = (int)$id;
-                if ($id === 0)
-                {
-                    continue;
-                }
-
-                $category = $categories[$id] ?? null;
-                if ($category instanceof LinkableInterface)
-                {
-                    $query[$key . '_' . $subKey] = \XF::phrase('svSearchConstraint.nodes', [
-                        'url' => $category->getContentUrl(),
-                        'node' => $category->getContentTitle(),
-                    ]);
-                }
-            }
         }
 
         return parent::expandStructuredSearchConstraint($query, $key, $value);
