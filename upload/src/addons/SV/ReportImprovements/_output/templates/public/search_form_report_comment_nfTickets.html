@@ -3,14 +3,14 @@
 	label="{{ phrase('nf_tickets_search_in_categories') }}" controlid="{$categoriesControlId}">
 
 	<ul class="inputList">
-		<li><xf:select name="c[categories][]" size="7" multiple="multiple" value="{$input.c.categories|default([0])}" id="{$categoriesControlId}">
+		<li><xf:select name="c[nfTickets][categories][]" size="7" multiple="multiple" value="{$input.c.nfTickets.categories|default([0])}" id="{$categoriesControlId}">
 			<xf:option value="">{{ phrase('nf_tickets_all_categories') }}</xf:option>
 			<xf:foreach loop="$categoryTree.getFlattened(0)" value="$treeEntry">
 				<xf:option value="{$treeEntry.record.ticket_category_id}">{{ repeat('&nbsp;&nbsp;', $treeEntry.depth)|raw }} {$treeEntry.record.title}</xf:option>
 			</xf:foreach>
 		</xf:select></li>
 		<li><xf:checkbox standalone="true">
-			<xf:option name="c[child_categories]" selected="{{ (!$input.c || $input.c.child_categories) }}" label="{{ phrase('nf_tickets_search_sub_categories_as_well') }}" />
+			<xf:option name="c[nfTickets][child_categories]" selected="{{ (!$input.c || $input.c.nfTickets.child_categories) }}" label="{{ phrase('nf_tickets_search_sub_categories_as_well') }}" />
 		</xf:checkbox></li>
 	</ul>
 </xf:formrow>
