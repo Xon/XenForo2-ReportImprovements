@@ -109,7 +109,7 @@ class Search extends XFCP_Search
 
             return true;
         }
-        else if ($key === 'categories' && is_array($value))
+        else if ($key === 'categories' && is_array($value) && \XF::isAddOnActive('NF/Tickets'))
         {
             /** @var TicketCategory $categoryRepo */
             $categoryRepo = \XF::repository('NF\Tickets:Category');
