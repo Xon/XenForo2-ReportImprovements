@@ -1,8 +1,7 @@
-<xf:set var="$actionUser" value="{{ $warningLog.isUserOperation() ? $warningLog.User  : $warningLog.WarnedBy }}"/>
-<li class="block-row block-row--separated" data-author="{{ $actionUser.username }}">
+<li class="block-row block-row--separated" data-author="{{ $warningLog.User.username }}">
 	<div class="contentRow">
 		<span class="contentRow-figure">
-			<xf:avatar user="{$actionUser}" size="s" defaultname="{$reportComment.username}" />
+			<xf:avatar user="{$warningLog.User}" size="s" />
 		</span>
 		<div class="contentRow-main">
 			<div class="contentRow-extra contentRow-extra--small">
@@ -26,7 +25,8 @@
 
 			<div class="contentRow-minor contentRow-minor--hideLinks">
 				<ul class="listInline listInline--bullet">
-					<li><xf:username user="{$actionUser}" defaultname="{$reportComment.username}" /></li>
+					<li><xf:username user="{$warningLog.User}" /></li>
+					<li>{{ phrase('svReportImprov_warning_by_user:') }} <xf:username user="{$warningLog.WarnedBy}" /></li>
 					<li><xf:trim>
 						<xf:if is="$reportComment.WarningLog">
 							{{ phrase('warning') }}
