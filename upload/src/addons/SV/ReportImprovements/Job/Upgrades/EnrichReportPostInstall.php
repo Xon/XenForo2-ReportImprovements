@@ -60,8 +60,11 @@ class EnrichReportPostInstall extends AbstractRebuildJob
             {
                 /** @var Thread|\SV\MultiPrefix\XF\Entity\Thread $thread */
                 $thread = $content->Thread;
-                $contentInfo['prefix_id'] = $thread->sv_prefix_ids ?? $thread->prefix_id;
-                $hasChanges = true;
+                if ($thread !== null)
+                {
+                    $contentInfo['prefix_id'] = $thread->sv_prefix_ids ?? $thread->prefix_id;
+                    $hasChanges = true;
+                }
             }
         }
         else if ($content instanceof Message)
