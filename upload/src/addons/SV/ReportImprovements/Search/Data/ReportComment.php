@@ -131,6 +131,7 @@ class ReportComment extends AbstractData
 
         if ($entity->warning_log_id !== null)
         {
+            $entity->WarningLog->hydrateRelation('ReportComment', $entity);
             return $this->searcher->handler('warning_log')->getIndexData($entity->WarningLog);
         }
 
