@@ -293,7 +293,6 @@ class WarningLog extends Entity
                 'entity'     => 'XF:ReportComment',
                 'type'       => self::TO_ONE,
                 'conditions' => 'warning_log_id',
-                'primary'    => true,
             ],
             'Warning'        => [
                 'entity'     => 'XF:Warning',
