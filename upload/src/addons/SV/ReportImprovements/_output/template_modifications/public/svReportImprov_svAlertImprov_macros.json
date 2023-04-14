@@ -1,0 +1,9 @@
+{
+    "template": "svAlertImprov_macros",
+    "description": "Anonymize reporter username (SV/AlertImprovements)",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<xf:avatar user=\"$alert.User\" size=\"xxs\" defaultname=\"{$alert.username}\" />",
+    "replace": "<xf:if is=\"$alert.content_type === 'report_comment'\">\n\t<xf:avatar user=\"$alert.Content.ViewableUser\" size=\"xxs\" defaultname=\"{$alert.Content.ViewableUsername}\" />\n<xf:else />\n\t$0\n</xf:if>"
+}
