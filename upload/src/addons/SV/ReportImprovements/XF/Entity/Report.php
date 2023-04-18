@@ -453,7 +453,10 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         }
         catch (\Exception $e)
         {
-            \XF::logException($e, false, 'Error accessing title for report ('.$this->report_id.')');
+            if (\XF::$debugMode)
+            {
+                \XF::logException($e, false, 'Error accessing title for report (' . $this->report_id . ')');
+            }
             return '';
         }
     }

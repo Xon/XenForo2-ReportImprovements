@@ -133,7 +133,10 @@ class Report extends AbstractData
         }
         catch (\Exception $e)
         {
-            \XF::logException($e, false, 'Error accessing reported content for report ('.$entity->report_id.')');
+            if (\XF::$debugMode)
+            {
+                \XF::logException($e, false, 'Error accessing reported content for report (' . $entity->report_id . ')');
+            }
             $message = '';
         }
 
