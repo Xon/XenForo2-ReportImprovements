@@ -116,16 +116,22 @@ class CommentPreparer extends XFCP_CommentPreparer
         }
     }
 
+    protected function isCountedAsComment(): bool
+    {
+        return strlen($this->comment->message) !== 0
+               || $this->comment->WarningLog !== null
+            ;
+    }
+
     public function afterCommentInsert(): void
     {
         $this->afterInsert();
 
-        $countsAsComment = strlen($this->comment->message) !== 0 || $this->comment->WarningLog !== null;
-        if ($countsAsComment)
+        if ($this->isCountedAsComment())
         {
             $report = $this->comment->Report;
-            // Adding a WarningLog entry is considered a comment, but in XF it isn't
-            if (!$this->comment->is_report && $this->comment->WarningLog !== null)
+            // XF only considers having a message as a comment, so ensure the comment count is updated as expected
+            if (strlen($this->comment->message) === 0)
             {
                 $report->fastUpdate('comment_count', $report->comment_count + 1);
             }

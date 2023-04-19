@@ -37,6 +37,7 @@ class RebuildCommentCount extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
+        // This should match CommentPreparer::isCountedAsComment()
         $this->app->db()->query("
             UPDATE xf_report
             SET comment_count = (
