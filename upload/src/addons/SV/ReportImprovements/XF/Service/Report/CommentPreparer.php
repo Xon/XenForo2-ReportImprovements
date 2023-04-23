@@ -94,7 +94,8 @@ class CommentPreparer extends XFCP_CommentPreparer
 
     protected function triggerReindex(Entity $entity, string $field): void
     {
-        $behavior = $entity->getBehavior('XF:Indexable');
+        $behaviors = $entity->getBehaviors();
+        $behavior = $behaviors['XF:Indexable'] ?? null;
         if ($behavior !== null)
         {
             assert($behavior instanceof Indexable);
@@ -104,7 +105,7 @@ class CommentPreparer extends XFCP_CommentPreparer
                 $behavior->triggerReindex();
             }
         }
-        $behavior = $entity->getBehavior('XF:IndexableContainer');
+        $behavior = $behaviors['XF:IndexableContainer'] ?? null;
         if ($behavior !== null)
         {
             assert($behavior instanceof IndexableContainer);
