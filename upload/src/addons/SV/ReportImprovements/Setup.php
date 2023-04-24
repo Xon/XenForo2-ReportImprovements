@@ -764,7 +764,7 @@ class Setup extends AbstractSetup
             );
             $db->query(
                 "INSERT IGNORE INTO xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
-                SELECT DISTINCT user_group_id, user_id, convert(permission_group_id USING utf8), 'viewReportUser', permission_value, permission_value_int
+                SELECT DISTINCT user_group_id, user_id, 'report_queue', 'viewReportUser', permission_value, permission_value_int
                 FROM xf_permission_entry
                 WHERE permission_group_id = 'general' AND  permission_id IN ('warn','editBasicProfile')
                     AND user_group_id in ({$db->quote($whiteListedGroups)})
