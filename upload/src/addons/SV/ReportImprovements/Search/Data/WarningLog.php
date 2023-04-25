@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\ElasticSearchEssentials\XF\Repository\ImpossibleSearchResultsException;
 use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Enums\WarningType;
@@ -453,7 +454,21 @@ class WarningLog extends AbstractData
      */
     public function getTypePermissionConstraints(Query $query, $isOnlyType): array
     {
-        return $this->searcher->handler('report_comment')->getTypePermissionConstraints($query, $isOnlyType);
+        /** @var ExtendedUserEntity $visitor */
+        $visitor = \XF::visitor();
+        if (!\SV\ReportImprovements\Globals::$reportInAccountPostings || !$visitor->canReportSearch())
+        {
+            if (\XF::isAddOnActive('SV/ElasticSearchEssentials'))
+            {
+                throw new ImpossibleSearchResultsException();
+            }
+
+            return [
+                new MetadataConstraint('type', $this->getSearchableContentTypes(), 'none'),
+            ];
+        }
+
+        return [];
     }
 
     /**

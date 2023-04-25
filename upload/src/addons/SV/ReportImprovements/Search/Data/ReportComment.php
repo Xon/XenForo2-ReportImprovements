@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
+use SV\ElasticSearchEssentials\XF\Repository\ImpossibleSearchResultsException;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
@@ -419,16 +420,21 @@ class ReportComment extends AbstractData
      */
     public function getTypePermissionConstraints(Query $query, $isOnlyType): array
     {
-        if (!Globals::$reportInAccountPostings)
+        /** @var ExtendedUserEntity $visitor */
+        $visitor = \XF::visitor();
+        if (!Globals::$reportInAccountPostings || !$visitor->canReportSearch())
         {
+            if (\XF::isAddOnActive('SV/ElasticSearchEssentials'))
+            {
+                throw new ImpossibleSearchResultsException();
+            }
+
             return [
-                new MetadataConstraint('type', 'report', 'none'),
+                new MetadataConstraint('type', $this->getSearchableContentTypes(), 'none'),
             ];
         }
 
         // if a visitor can't view the username of a reporter, just prevent searching for reports by users
-        /** @var ExtendedUserEntity $visitor */
-        $visitor = \XF::visitor();
         if (!$visitor->canViewReporter())
         {
             return [
