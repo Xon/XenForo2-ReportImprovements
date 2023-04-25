@@ -6,13 +6,15 @@ use SV\ElasticSearchEssentials\XF\Repository\ImpossibleSearchResultsException;
 use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Enums\WarningType;
+use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
-use SV\SearchImprovements\Globals;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\ExistsConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\NotConstraint;
+use SV\SearchImprovements\XF\Search\Query\Constraints\PermissionConstraint;
+use SV\SearchImprovements\XF\Search\Query\Constraints\TypeConstraint;
 use XF\Http\Request;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -330,7 +332,7 @@ class WarningLog extends AbstractData
             'c.warning.definition'   => 'array-uint',
         ]);
 
-        $repo = Globals::repo();
+        $repo = $this->searchRepo;
 
         if ($constraints['c.warning.latest'] !== null)
         {
@@ -456,15 +458,23 @@ class WarningLog extends AbstractData
     {
         /** @var ExtendedUserEntity $visitor */
         $visitor = \XF::visitor();
-        if (!\SV\ReportImprovements\Globals::$reportInAccountPostings || !$visitor->canReportSearch())
+        if (!Globals::$reportInAccountPostings || !$visitor->canReportSearch())
         {
+            if (!$this->isUsingElasticSearch)
+            {
+                // This is probably wrong for MySQL support
+                return [
+                    new MetadataConstraint('type', $this->getSearchableContentTypes(), 'none')
+                ];
+            }
+
             if (\XF::isAddOnActive('SV/ElasticSearchEssentials'))
             {
                 throw new ImpossibleSearchResultsException();
             }
 
             return [
-                new MetadataConstraint('type', $this->getSearchableContentTypes(), 'none'),
+                new PermissionConstraint(new TypeConstraint(...$this->getSearchableContentTypes()))
             ];
         }
 

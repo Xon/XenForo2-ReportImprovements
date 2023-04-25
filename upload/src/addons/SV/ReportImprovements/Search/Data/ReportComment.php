@@ -12,6 +12,8 @@ use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\AndConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\OrConstraint;
+use SV\SearchImprovements\XF\Search\Query\Constraints\PermissionConstraint;
+use SV\SearchImprovements\XF\Search\Query\Constraints\TypeConstraint;
 use XF\Http\Request;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -393,8 +395,8 @@ class ReportComment extends AbstractData
             }
         }
 
-        $repo = \SV\SearchImprovements\Globals::repo();
 
+        $repo = $this->searchRepo;
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
             'c.report.user', 'content_user'
         );
@@ -424,13 +426,21 @@ class ReportComment extends AbstractData
         $visitor = \XF::visitor();
         if (!Globals::$reportInAccountPostings || !$visitor->canReportSearch())
         {
+            if (!$this->isUsingElasticSearch)
+            {
+                // This is probably wrong for MySQL support
+                return [
+                    new MetadataConstraint('type', $this->getSearchableContentTypes(), 'none')
+                ];
+            }
+
             if (\XF::isAddOnActive('SV/ElasticSearchEssentials'))
             {
                 throw new ImpossibleSearchResultsException();
             }
 
             return [
-                new MetadataConstraint('type', $this->getSearchableContentTypes(), 'none'),
+                new PermissionConstraint(new TypeConstraint(...$this->getSearchableContentTypes()))
             ];
         }
 
