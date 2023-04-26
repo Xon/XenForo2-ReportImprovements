@@ -419,6 +419,7 @@ class ReportComment extends AbstractData
      * @param Query $query
      * @param bool  $isOnlyType
      * @return MetadataConstraint[]
+     * @throws ImpossibleSearchResultsException
      */
     public function getTypePermissionConstraints(Query $query, $isOnlyType): array
     {
@@ -426,24 +427,7 @@ class ReportComment extends AbstractData
         $visitor = \XF::visitor();
         if (!Globals::$reportInAccountPostings || !$visitor->canReportSearch())
         {
-            if (\XF::isAddOnActive('SV/ElasticSearchEssentials'))
-            {
-                throw new ImpossibleSearchResultsException();
-            }
-            else if ($this->isUsingElasticSearch)
-            {
-                // XF constraints are AND'ed together for positive queries (ANY/ALL), and OR'ed for all negative queries (NONE).
-                // PermissionConstraint forces the sub-query as a negative query instead of being part of the AND'ed positive queries
-                return [
-                    new PermissionConstraint(new TypeConstraint(...$this->getSearchableContentTypes()))
-                ];
-            }
-            else // mysql
-            {
-                return [
-                    new MetadataConstraint('report_type', ReportType::get(), MetadataConstraint::MATCH_NONE)
-                ];
-            }
+            return $this->getImpossibleTypePermissionConstraints($query, $isOnlyType);
         }
         // todo: filter by report_content_type based on user permission
 
