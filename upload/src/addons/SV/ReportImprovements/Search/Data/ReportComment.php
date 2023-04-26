@@ -440,12 +440,12 @@ class ReportComment extends AbstractData
             }
             else // mysql
             {
-                // This is probably wrong for MySQL support
                 return [
-                    new MetadataConstraint('type', $this->getSearchableContentTypes(), MetadataConstraint::MATCH_NONE)
+                    new MetadataConstraint('report_type', ReportType::get(), MetadataConstraint::MATCH_NONE)
                 ];
             }
         }
+        // todo: filter by report_content_type based on user permission
 
         // if a visitor can't view the username of a reporter, just prevent searching for reports by users
         if (!$visitor->canViewReporter())

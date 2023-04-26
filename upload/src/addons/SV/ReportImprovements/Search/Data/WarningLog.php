@@ -474,12 +474,12 @@ class WarningLog extends AbstractData
             }
             else // mysql
             {
-                // This is probably wrong for MySQL support
                 return [
-                    new MetadataConstraint('type', $this->getSearchableContentTypes(), MetadataConstraint::MATCH_NONE)
+                    new MetadataConstraint('report_type', ReportType::get(), MetadataConstraint::MATCH_NONE)
                 ];
             }
         }
+        // todo: filter by report_content_type based on user permission
 
         return [];
     }
