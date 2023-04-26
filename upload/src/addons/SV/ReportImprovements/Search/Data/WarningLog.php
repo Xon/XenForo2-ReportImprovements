@@ -460,22 +460,23 @@ class WarningLog extends AbstractData
         $visitor = \XF::visitor();
         if (!Globals::$reportInAccountPostings || !$visitor->canReportSearch())
         {
-            if (!$this->isUsingElasticSearch)
+            if (\XF::isAddOnActive('SV/ElasticSearchEssentials'))
+            {
+                throw new ImpossibleSearchResultsException();
+            }
+            else if ($this->isUsingElasticSearch)
+            {
+                return [
+                    new PermissionConstraint(new TypeConstraint(...$this->getSearchableContentTypes()))
+                ];
+            }
+            else // mysql
             {
                 // This is probably wrong for MySQL support
                 return [
                     new MetadataConstraint('type', $this->getSearchableContentTypes(), 'none')
                 ];
             }
-
-            if (\XF::isAddOnActive('SV/ElasticSearchEssentials'))
-            {
-                throw new ImpossibleSearchResultsException();
-            }
-
-            return [
-                new PermissionConstraint(new TypeConstraint(...$this->getSearchableContentTypes()))
-            ];
         }
 
         return [];
