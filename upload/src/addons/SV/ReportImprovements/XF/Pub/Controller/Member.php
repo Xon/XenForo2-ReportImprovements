@@ -13,14 +13,15 @@ class Member extends XFCP_Member
 {
     public function actionRecentContent(ParameterBag $params)
     {
-        Globals::$reportInAccountPostings = \XF::options()->svReportInAccountPostings ?? false;
+        $visitor = \XF::visitor();
+        $visitor->setOption('reportSearch', (bool)(\XF::options()->svReportInAccountPostings ?? false));
         try
         {
             return parent::actionRecentContent($params);
         }
         finally
         {
-            Globals::$reportInAccountPostings = true;
+            $visitor->resetOption('reportSearch');
         }
     }
 }

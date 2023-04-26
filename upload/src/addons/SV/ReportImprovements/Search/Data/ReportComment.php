@@ -425,7 +425,7 @@ class ReportComment extends AbstractData
     {
         /** @var ExtendedUserEntity $visitor */
         $visitor = \XF::visitor();
-        if (!Globals::$reportInAccountPostings || !$visitor->canReportSearch())
+        if (!$visitor->canReportSearch())
         {
             return $this->getImpossibleTypePermissionConstraints($query, $isOnlyType);
         }

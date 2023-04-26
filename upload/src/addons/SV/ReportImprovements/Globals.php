@@ -9,11 +9,6 @@ namespace SV\ReportImprovements;
  */
 abstract class Globals
 {
-    /**
-     * @var bool
-     */
-    public static $reportInAccountPostings = true;
-
     /** @var bool */
     public static $resolveReplyBanOnDelete = false;
 
