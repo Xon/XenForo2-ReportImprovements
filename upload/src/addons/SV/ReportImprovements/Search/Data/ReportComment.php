@@ -432,6 +432,8 @@ class ReportComment extends AbstractData
             }
             else if ($this->isUsingElasticSearch)
             {
+                // XF constraints are AND'ed together for positive queries (ANY/ALL), and OR'ed for all negative queries (NONE).
+                // PermissionConstraint forces the sub-query as a negative query instead of being part of the AND'ed positive queries
                 return [
                     new PermissionConstraint(new TypeConstraint(...$this->getSearchableContentTypes()))
                 ];
