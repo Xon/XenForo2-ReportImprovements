@@ -440,7 +440,7 @@ class ReportComment extends AbstractData
             {
                 // This is probably wrong for MySQL support
                 return [
-                    new MetadataConstraint('type', $this->getSearchableContentTypes(), 'none')
+                    new MetadataConstraint('type', $this->getSearchableContentTypes(), MetadataConstraint::MATCH_NONE)
                 ];
             }
         }
