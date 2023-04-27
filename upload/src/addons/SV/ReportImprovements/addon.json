@@ -26,8 +26,7 @@
         ],
         "SV/SearchImprovements": [
             "2.10.0",
-            "Search Improvements 2.10.0+",
-            true
+            "Search Improvements 2.10.0+"
         ]
     },
     "require-soft": {
