@@ -2,6 +2,8 @@
 
 namespace SV\ReportImprovements\Cron;
 
+use SV\ReportImprovements\Job\ResolveInactiveReport;
+
 /**
  * Class Report
  *
@@ -21,7 +23,7 @@ class Report
 
         \XF::app()->jobManager()->enqueueUnique(
             'resolveInactiveReports',
-            'SV\ReportImprovements:ResolveInactiveReport',
+            ResolveInactiveReport::class,
             []
         );
     }
