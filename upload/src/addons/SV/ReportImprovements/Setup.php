@@ -571,6 +571,11 @@ class Setup extends AbstractSetup
 
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
+        // updating permissions should be done first!
+        if ($this->applyDefaultPermissions($previousVersion))
+        {
+            $atomicJobs[] = 'XF:PermissionRebuild';
+        }
 
         if ($previousVersion < 2140002)
         {
@@ -584,11 +589,6 @@ class Setup extends AbstractSetup
         }
 
         $atomicJobs[] = WarningLogMigration::class;
-
-        if ($this->applyDefaultPermissions($previousVersion))
-        {
-            $atomicJobs[] = 'XF:PermissionRebuild';
-        }
 
         if (count($atomicJobs) !== 0)
         {
