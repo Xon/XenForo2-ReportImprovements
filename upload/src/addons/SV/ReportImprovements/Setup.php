@@ -29,6 +29,7 @@ use XF\Repository\PermissionEntry;
 use XF\Service\UpdatePermissions;
 use function array_keys;
 use function assert;
+use function count;
 
 /**
  * Class Setup
@@ -77,19 +78,83 @@ class Setup extends AbstractSetup
         $this->applyDefaultPermissions();
     }
 
-    public function installStep6()
+    public function installStep4(array $stepParams): ?array
     {
-        /** @noinspection SqlResolve */
-        /** @noinspection SqlWithoutWhere */
-        $this->db()->query('
-          UPDATE xf_report
-          SET last_modified_id = coalesce((SELECT report_comment_id 
-                                  FROM xf_report_comment 
-                                  WHERE xf_report_comment.report_id = xf_report.report_id
-                                  ORDER BY comment_date DESC
-                                  LIMIT 1), 0)
-        ');
+        $stepData = $stepParams[2] ?? [];
+        if (!isset($stepData['ids']))
+        {
+            $stepData['ids'] = array_values($this->db()->fetchAllColumn("
+                SELECT combinationGroup.permission_combination_id
+                FROM 
+                (
+                    SELECT entry.user_group_id
+                    FROM xf_permission_entry AS entry
+                    WHERE entry.user_group_id <> 0
+                          AND entry.permission_value = 'allow'
+                          AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
+                    UNION 
+                    SELECT entry.user_group_id
+                    FROM xf_permission_entry_content AS entry
+                    WHERE entry.user_group_id <> 0
+                          AND entry.permission_value = 'content_allow'
+                          AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
+                ) entry
+                JOIN xf_permission_combination AS combinationGroup ON FIND_IN_SET(entry.user_group_id, combinationGroup.user_group_list)
+                UNION
+                SELECT combinationGroup.permission_combination_id
+                FROM xf_permission_entry AS entry
+                JOIN xf_permission_combination AS combinationGroup ON combinationGroup.user_id = entry.user_id
+                WHERE entry.user_id <> 0
+                      AND entry.permission_value = 'allow'
+                      AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
+                UNION 
+                SELECT combinationGroup.permission_combination_id
+                FROM xf_permission_entry_content AS entry
+                JOIN xf_permission_combination AS combinationGroup ON combinationGroup.user_id = entry.user_id
+                WHERE entry.user_id <> 0
+                      AND entry.permission_value = 'content_allow'
+                      AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
+            "));
+            sort($stepData['ids']);
+            $stepData['max'] = count($stepData['ids']);
+        }
+
+        if (count($stepData['ids']) === 0)
+        {
+            return null;
+        }
+
+        $permissionBuilder = $this->app->permissionBuilder();
+        $em = $this->app->em();
+
+        $i = 0;
+        $next = $stepParams[0] ?? 0;
+        foreach ($stepData['ids'] AS $k => $combinationId)
+        {
+            $i += 1;
+            if ($i > 10)
+            {
+                break;
+            }
+
+            $next += 1;
+            unset($stepData['ids'][$k]);
+
+            /** @var ?\XF\Entity\PermissionCombination $combination */
+            $combination = $em->find('XF:PermissionCombination', $combinationId);
+            if ($combination !== null)
+            {
+                $permissionBuilder->rebuildCombination($combination);
+            }
+        }
+
+        return [
+            $next,
+            "{$next} / {$stepData['max']}",
+            $stepData
+        ];
     }
+
 
     public function upgrade1090100Step1()
     {
@@ -158,7 +223,16 @@ class Setup extends AbstractSetup
 
     public function upgrade2010400Step1()
     {
-        $this->installStep6();
+        /** @noinspection SqlResolve */
+        /** @noinspection SqlWithoutWhere */
+        $this->db()->query('
+          UPDATE xf_report
+          SET last_modified_id = COALESCE((SELECT report_comment_id 
+                                  FROM xf_report_comment 
+                                  WHERE xf_report_comment.report_id = xf_report.report_id
+                                  ORDER BY comment_date DESC
+                                  LIMIT 1), 0)
+        ');
     }
 
     public function upgrade2020200Step1()
@@ -187,7 +261,7 @@ class Setup extends AbstractSetup
             return null;
         }
 
-        $next = 0;
+        $next = $stepParams[0] ?? 0;
         foreach ($alerts as $alert)
         {
             $next++;
