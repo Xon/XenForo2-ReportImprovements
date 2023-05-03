@@ -3,7 +3,7 @@
 		<div class="menu-row">
 			<div class="inputGroup">
 				<xf:checkbox>
-					<xf:set var="$defaultReportTypes" value="{{ ['comment','user_report'] }}" />
+					<xf:set var="$defaultReportTypes" value="$xf.app.em.getRepository('XF:Report').getReportTypeDefaultsForSearch(false)" />
 					<xf:foreach loop="$xf.app.em.getRepository('XF:Report').getReportTypePairs()" key="$value" value="$phrase">
 						<xf:option name="c[report][type][]" value="{$value}"
 								   label="{$phrase}"

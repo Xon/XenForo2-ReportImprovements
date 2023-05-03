@@ -695,6 +695,17 @@ class Report extends XFCP_Report
         return ReportType::getPairs();
     }
 
+    public function getReportTypeDefaultsForSearch(bool $isAdvancedSearch): array
+    {
+        // no types selected === all
+        if ($isAdvancedSearch)
+        {
+            return [];
+        }
+
+        return ReportType::get();
+    }
+
     /**
      * @param bool $plural
      * @return array<string,Phrase>

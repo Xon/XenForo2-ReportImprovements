@@ -18,7 +18,7 @@
 <xf:macro name="svSearchImprov_macros::multi_select_list"
 		  arg-name="report.type"
 		  arg-label="{{ phrase('svReportImprove_include_report_type') }}"
-		  arg-default="{{ ['user_report', 'comment'] }}"
+		  arg-default="{{ $xf.app.em.getRepository('XF:Report').getReportTypeDefaultsForSearch(true) }}"
 		  arg-keyValues="{$reportTypes}"
 		  />
 
