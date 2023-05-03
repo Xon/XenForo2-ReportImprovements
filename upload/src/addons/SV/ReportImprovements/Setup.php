@@ -24,12 +24,19 @@ use XF\Entity\ReportComment;
 use XF\Entity\User;
 use XF\Entity\UserAlert;
 use XF\Job\Atomic as AtomicJob;
+use XF\Job\PermissionRebuild;
+use XF\Job\PermissionRebuildPartial;
 use XF\Repository\PermissionCombination;
 use XF\Repository\PermissionEntry;
 use XF\Service\UpdatePermissions;
 use function array_keys;
+use function array_values;
 use function assert;
 use function count;
+use function implode;
+use function md5;
+use function sort;
+use function substr;
 
 /**
  * Class Setup
@@ -78,81 +85,17 @@ class Setup extends AbstractSetup
         $this->applyDefaultPermissions();
     }
 
-    public function installStep4(array $stepParams): ?array
+    public function installStep4(): void
     {
-        $stepData = $stepParams[2] ?? [];
-        if (!isset($stepData['ids']))
+        $ids = $this->getPermissionCombinationIdsToRebuild();
+        if (count($ids) !== 0)
         {
-            $stepData['ids'] = array_values($this->db()->fetchAllColumn("
-                SELECT combinationGroup.permission_combination_id
-                FROM 
-                (
-                    SELECT entry.user_group_id
-                    FROM xf_permission_entry AS entry
-                    WHERE entry.user_group_id <> 0
-                          AND entry.permission_value = 'allow'
-                          AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
-                    UNION 
-                    SELECT entry.user_group_id
-                    FROM xf_permission_entry_content AS entry
-                    WHERE entry.user_group_id <> 0
-                          AND entry.permission_value = 'content_allow'
-                          AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
-                ) entry
-                JOIN xf_permission_combination AS combinationGroup ON FIND_IN_SET(entry.user_group_id, combinationGroup.user_group_list)
-                UNION
-                SELECT combinationGroup.permission_combination_id
-                FROM xf_permission_entry AS entry
-                JOIN xf_permission_combination AS combinationGroup ON combinationGroup.user_id = entry.user_id
-                WHERE entry.user_id <> 0
-                      AND entry.permission_value = 'allow'
-                      AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
-                UNION 
-                SELECT combinationGroup.permission_combination_id
-                FROM xf_permission_entry_content AS entry
-                JOIN xf_permission_combination AS combinationGroup ON combinationGroup.user_id = entry.user_id
-                WHERE entry.user_id <> 0
-                      AND entry.permission_value = 'content_allow'
-                      AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
-            "));
-            sort($stepData['ids']);
-            $stepData['max'] = count($stepData['ids']);
+            $this->app->jobManager()->enqueueUnique(
+                'permissionRebuild:' . substr(md5(implode(',', $ids)), 0, 16),
+                PermissionRebuildPartial::class,
+                ['combinationIds' => $ids]
+            );
         }
-
-        if (count($stepData['ids']) === 0)
-        {
-            return null;
-        }
-
-        $permissionBuilder = $this->app->permissionBuilder();
-        $em = $this->app->em();
-
-        $i = 0;
-        $next = $stepParams[0] ?? 0;
-        foreach ($stepData['ids'] AS $k => $combinationId)
-        {
-            $i += 1;
-            if ($i > 10)
-            {
-                break;
-            }
-
-            $next += 1;
-            unset($stepData['ids'][$k]);
-
-            /** @var ?\XF\Entity\PermissionCombination $combination */
-            $combination = $em->find('XF:PermissionCombination', $combinationId);
-            if ($combination !== null)
-            {
-                $permissionBuilder->rebuildCombination($combination);
-            }
-        }
-
-        return [
-            $next,
-            "{$next} / {$stepData['max']}",
-            $stepData
-        ];
     }
 
 
@@ -572,9 +515,17 @@ class Setup extends AbstractSetup
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
         // updating permissions should be done first!
-        if ($this->applyDefaultPermissions($previousVersion))
+        if ($this->applyDefaultPermissions($previousVersion, $doFullRebuild))
         {
-            $atomicJobs[] = 'XF:PermissionRebuild';
+            if ($doFullRebuild)
+            {
+                $atomicJobs[] = PermissionRebuild::class;
+            }
+            else
+            {
+                $ids = $this->getPermissionCombinationIdsToRebuild();
+                $atomicJobs[] = [PermissionRebuildPartial::class, ['combinationIds' => $ids]];
+            }
         }
 
         if ($previousVersion < 2140002)
@@ -625,11 +576,13 @@ class Setup extends AbstractSetup
 
     /**
      * @noinspection PhpDocMissingThrowsInspection
-     * @param int|null $previousVersion
+     * @param int       $previousVersion
+     * @param bool|null $doFullRebuild
      * @return bool True if permissions were applied.
      */
-    protected function applyDefaultPermissions(int $previousVersion = 0): bool
+    protected function applyDefaultPermissions(int $previousVersion = 0, ?bool &$doFullRebuild = null): bool
     {
+        $doFullRebuild = false;
         $applied = false;
         $db = $this->db();
         $globalReportPerms = ['viewReports'];
@@ -874,6 +827,45 @@ class Setup extends AbstractSetup
         }
 
         return $applied;
+    }
+
+    protected function getPermissionCombinationIdsToRebuild(): array
+    {
+        $permissionCombinationIds = array_values($this->db()->fetchAllColumn("
+                SELECT combinationGroup.permission_combination_id
+                FROM 
+                (
+                    SELECT entry.user_group_id
+                    FROM xf_permission_entry AS entry
+                    WHERE entry.user_group_id <> 0
+                          AND entry.permission_value = 'allow'
+                          AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
+                    UNION 
+                    SELECT entry.user_group_id
+                    FROM xf_permission_entry_content AS entry
+                    WHERE entry.user_group_id <> 0
+                          AND entry.permission_value = 'content_allow'
+                          AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
+                ) entry
+                JOIN xf_permission_combination AS combinationGroup ON FIND_IN_SET(entry.user_group_id, combinationGroup.user_group_list)
+                UNION
+                SELECT combinationGroup.permission_combination_id
+                FROM xf_permission_entry AS entry
+                JOIN xf_permission_combination AS combinationGroup ON combinationGroup.user_id = entry.user_id
+                WHERE entry.user_id <> 0
+                      AND entry.permission_value = 'allow'
+                      AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
+                UNION 
+                SELECT combinationGroup.permission_combination_id
+                FROM xf_permission_entry_content AS entry
+                JOIN xf_permission_combination AS combinationGroup ON combinationGroup.user_id = entry.user_id
+                WHERE entry.user_id <> 0
+                      AND entry.permission_value = 'content_allow'
+                      AND ((entry.permission_group_id = 'report_queue') OR (entry.permission_group_id = 'general' AND entry.permission_id = 'viewReports'))
+            "));
+        sort($permissionCombinationIds);
+
+        return $permissionCombinationIds;
     }
 
     protected function getTables(): array
