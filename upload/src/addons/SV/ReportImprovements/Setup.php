@@ -387,9 +387,18 @@ class Setup extends AbstractSetup
         $this->renameOption('svNonModeratorReportHandlingLimit', 'svReportHandlingLimit');
     }
 
-    public function upgrade1683211173Step1(): void
+    public function upgrade1683897240Step1(): void
     {
         $this->applySchemaNewTables();
+    }
+
+    public function upgrade1683897240Step2(): void
+    {
+        $this->db()->query('
+            UPDATE xf_sv_warning_log
+            SET warning_definition_id = NULL
+            WHERE warning_definition_id = 0
+        ');
     }
 
     /**
