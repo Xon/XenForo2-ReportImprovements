@@ -50,34 +50,14 @@ class Setup extends AbstractSetup
     use StepRunnerUpgradeTrait;
     use StepRunnerUninstallTrait;
 
-    /**
-     * Creates add-on tables.
-     */
     public function installStep1()
     {
-        $sm = $this->schemaManager();
-
-        foreach ($this->getTables() as $tableName => $callback)
-        {
-            $sm->createTable($tableName, $callback);
-            $sm->alterTable($tableName, $callback);
-        }
+        $this->applySchemaNewTables();
     }
 
-    /**
-     * Alters core tables.
-     */
     public function installStep2()
     {
-        $sm = $this->schemaManager();
-
-        foreach ($this->getAlterTables() as $tableName => $callback)
-        {
-            if ($sm->tableExists($tableName))
-            {
-                $sm->alterTable($tableName, $callback);
-            }
-        }
+        $this->applySchemaUpdates();
     }
 
     public function installStep3()
@@ -97,7 +77,6 @@ class Setup extends AbstractSetup
             );
         }
     }
-
 
     public function upgrade1090100Step1()
     {
@@ -126,12 +105,12 @@ class Setup extends AbstractSetup
 
     public function upgrade2000002Step1()
     {
-        $this->installStep1();
+        $this->applySchemaNewTables();
     }
 
     public function upgrade2000002Step2()
     {
-        $this->installStep2();
+        $this->applySchemaUpdates();
     }
 
     public function upgrade2000002Step4()
@@ -278,12 +257,12 @@ class Setup extends AbstractSetup
 
     public function upgrade2050100Step1()
     {
-        $this->installStep1();
+        $this->applySchemaNewTables();
     }
 
     public function upgrade2050100Step2()
     {
-        $this->installStep2();
+        $this->applySchemaUpdates();
     }
 
     public function upgrade2070000Step1()
@@ -296,17 +275,17 @@ class Setup extends AbstractSetup
 
     public function upgrade2070100Step1()
     {
-        $this->installStep2();
+        $this->applySchemaUpdates();
     }
 
     public function upgrade2100000Step1()
     {
-        $this->installStep1();
+        $this->applySchemaNewTables();
     }
 
     public function upgrade2100000Step2()
     {
-        $this->installStep2();
+        $this->applySchemaUpdates();
     }
 
     public function upgrade2100000Step3()
@@ -341,7 +320,7 @@ class Setup extends AbstractSetup
 
     public function upgrade2100100Step1()
     {
-        $this->installStep1();
+        $this->applySchemaNewTables();
     }
 
     public function upgrade2101200Step1()
@@ -356,14 +335,9 @@ class Setup extends AbstractSetup
         ');
     }
 
-    public function upgrade2140000Step1()
-    {
-        $this->installStep2();
-    }
-
     public function upgrade2140005Step1(): void
     {
-        $this->installStep2();
+        $this->applySchemaUpdates();
     }
 
     public function upgrade2140005Step2(): void
@@ -390,7 +364,7 @@ class Setup extends AbstractSetup
 
     public function upgrade1680614325Step1(): void
     {
-        $this->installStep1();
+        $this->applySchemaNewTables();
     }
 
     public function upgrade1680614325Step2(): void
@@ -411,6 +385,11 @@ class Setup extends AbstractSetup
     public function upgrade1680614327Step1(): void
     {
         $this->renameOption('svNonModeratorReportHandlingLimit', 'svReportHandlingLimit');
+    }
+
+    public function upgrade1683211173Step1(): void
+    {
+        $this->applySchemaNewTables();
     }
 
     /**
@@ -868,6 +847,31 @@ class Setup extends AbstractSetup
         return $permissionCombinationIds;
     }
 
+
+    public function applySchemaNewTables(): void
+    {
+        $sm = $this->schemaManager();
+
+        foreach ($this->getTables() as $tableName => $callback)
+        {
+            $sm->createTable($tableName, $callback);
+            $sm->alterTable($tableName, $callback);
+        }
+    }
+
+    public function applySchemaUpdates(): void
+    {
+        $sm = $this->schemaManager();
+
+        foreach ($this->getAlterTables() as $tableName => $callback)
+        {
+            if ($sm->tableExists($tableName))
+            {
+                $sm->alterTable($tableName, $callback);
+            }
+        }
+    }
+
     protected function getTables(): array
     {
         $tables = [];
@@ -884,7 +888,7 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'user_id', 'int');
             $this->addOrChangeColumn($table, 'warning_date', 'int');
             $this->addOrChangeColumn($table, 'warning_user_id', 'int');
-            $this->addOrChangeColumn($table, 'warning_definition_id', 'int')->setDefault(0);
+            $this->addOrChangeColumn($table, 'warning_definition_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'title', 'varchar', 255);
             $this->addOrChangeColumn($table, 'notes', 'text');
             $this->addOrChangeColumn($table, 'points', 'smallint')->setDefault(0);
