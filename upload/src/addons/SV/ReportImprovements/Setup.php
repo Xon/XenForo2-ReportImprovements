@@ -387,12 +387,12 @@ class Setup extends AbstractSetup
         $this->renameOption('svNonModeratorReportHandlingLimit', 'svReportHandlingLimit');
     }
 
-    public function upgrade1683897240Step1(): void
+    public function upgrade1683897241Step1(): void
     {
         $this->applySchemaNewTables();
     }
 
-    public function upgrade1683897240Step2(): void
+    public function upgrade1683897241Step2(): void
     {
         $this->db()->query('
             UPDATE xf_sv_warning_log
@@ -900,7 +900,7 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'warning_definition_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'title', 'varchar', 255);
             $this->addOrChangeColumn($table, 'notes', 'text');
-            $this->addOrChangeColumn($table, 'points', 'smallint')->setDefault(0);
+            $this->addOrChangeColumn($table, 'points', 'smallint')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'expiry_date', 'int');
             $this->addOrChangeColumn($table, 'is_expired', 'tinyint', 3);
             $this->addOrChangeColumn($table, 'extra_user_group_ids', 'varbinary', 255);
