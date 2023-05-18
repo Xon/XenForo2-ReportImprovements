@@ -1,6 +1,15 @@
 <xf:css src="svReportImprov_member_warn_content_report.less" />
 
-<xf:if is="$report && $report.canView()">
+<xf:if is="!$report && $xf.visitor.canViewReports()">
+	<h2 class="block-formSectionHeader"><span class="block-formSectionHeader-aligner">{{ phrase('report') }}</span></h2>
+	<div class="block-body">
+		<xf:formrow rowtype="reportItem">
+			<div class="block-row">
+				{{ phrase('svReportImprov_no_report_for_content') }}
+			</div>
+		</xf:formrow>
+	</div>
+<xf:elseif is="$report && $report.canView()"/>
 	<h2 class="block-formSectionHeader"><span class="block-formSectionHeader-aligner">{{ phrase('report') }}</span></h2>
 
 	<div class="block-body">
@@ -11,12 +20,16 @@
 </xf:if>
 
 <xf:if is="$proposedWarning && $proposedWarning.canResolveLinkedReport()">
-	<h2 class="block-formSectionHeader"><span class="block-formSectionHeader-aligner">{{ phrase('svReportImprov_report_action') }}</span></h2>
+	<xf:if is="$report">
+		<h2 class="block-formSectionHeader"><span class="block-formSectionHeader-aligner">{{ phrase('svReportImprov_report_action') }}</span></h2>
 
-	<div class="block-body">
-		<xf:macro template="svReportImprov_report_macros"
-				  name="resolve_report" 
-				  arg-report="{$report}"
-				  />
-	</div>
+		<div class="block-body">
+			<xf:macro template="svReportImprov_report_macros"
+					  name="resolve_report" 
+					  arg-report="{$report}"
+					  />
+		</div>
+	<xf:else />
+		<xf:hiddenval name="resolve_report" value="1" />
+	</xf:if>
 </xf:if>
