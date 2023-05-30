@@ -1,9 +1,11 @@
 <xf:macro name="filters_above" arg-filters="!">
     <div class="menu-row menu-row--separated">
+		<xf:hiddenval name="include_reported">0</xf:hiddenval>
         <xf:checkbox>
             <xf:option name="include_reported" selected="{{ $filters is not empty ? $filters.include_reported : 0 }}">{{ phrase('svReportImprov_include_reported_content') }}</xf:option>
         </xf:checkbox>
 		<xf:if is="is_addon_active('NF/Tickets')">
+			<xf:hiddenval name="without_tickets">0</xf:hiddenval>
 			<xf:checkbox>
 				<xf:option name="without_tickets" selected="{{ $filters is not empty ? $filters.without_tickets : 0 }}">{{ phrase('svReportImprov_include_users_without_tickets') }}</xf:option>
 			</xf:checkbox>
