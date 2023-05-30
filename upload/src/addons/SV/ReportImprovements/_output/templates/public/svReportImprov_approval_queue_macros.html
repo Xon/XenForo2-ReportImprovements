@@ -11,15 +11,13 @@
 <xf:macro name="filter_bar" arg-filters="!">
     <xf:if is="$filters.include_reported">
         <li><a href="{{ link('approval-queue', null, $filters|replace({'include_reported': null})) }}"
-               class="filterBar-filterToggle" data-xf-init="tooltip" title="{{ phrase('remove_this_filter')|for_attr }}">
-            <span class="filterBar-filterToggle-label">{{ phrase('svReportImprov_include_reported_content:') }}</span>
-            {{ phrase('yes') }}
+               class="filterBar-filterToggle" data-xf-init="tooltip" title="{{ phrase('svReportImprov_toggle_filter')|for_attr }}">
+            {{ phrase('svReportImprov_include_reported_content') }}
         </a></li>
 	<xf:else />
         <li><a href="{{ link('approval-queue', null, $filters|replace({'include_reported': 1})) }}"
-               class="filterBar-filterToggle" data-xf-init="tooltip" title="{{ phrase('remove_this_filter')|for_attr }}">
-            <span class="filterBar-filterToggle-label">{{ phrase('svReportImprov_include_reported_content:') }}</span>
-            {{ phrase('no') }}
+               class="filterBar-filterToggle" data-xf-init="tooltip" title="{{ phrase('svReportImprov_toggle_filter')|for_attr }}">
+            {{ phrase('svReportImprov_exclude_reported_content') }}
         </a></li>
     </xf:if>
 </xf:macro>
