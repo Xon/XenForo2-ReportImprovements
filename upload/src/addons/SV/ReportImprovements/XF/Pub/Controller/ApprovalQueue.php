@@ -142,11 +142,11 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             $filters['applied_filters'] = true;
         }
 
-        $filters['include_reported'] = $input['include_reported'];
+        $filters['include_reported'] = $input['include_reported'] ?? false;
 
         if (\XF::isAddOnActive('NF/Tickets'))
         {
-            $filters['without_tickets'] = $input['without_tickets'];
+            $filters['without_tickets'] = $input['without_tickets'] ?? false;
         }
 
         if ($input['content_type'])
