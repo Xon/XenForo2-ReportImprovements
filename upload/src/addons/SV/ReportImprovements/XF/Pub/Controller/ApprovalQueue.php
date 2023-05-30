@@ -13,6 +13,7 @@ use XF\Mvc\Reply\Redirect as RedirectReply;
  */
 class ApprovalQueue extends XFCP_ApprovalQueue
 {
+    /** @noinspection PhpMissingParentCallCommonInspection */
     public function actionIndex()
     {
         $approvalQueueRepo = $this->getApprovalQueueRepo();
@@ -94,36 +95,40 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         ];
     }
 
-    protected function getQueueFilterInput()
+    protected function isLoadingDefaultFilters(array $inputDefinitions): bool
     {
-        $loadSaved = !$this->request->exists('applied_filters');
+        $request = $this->request;
 
-        $inputDefinitions = $this->getQueueFilterInputDefinitions();
+        if ($request->exists('applied_filters'))
+        {
+            return false;
+        }
+
         foreach ($inputDefinitions as $key => $type)
         {
-            if ($this->request->exists($key))
+            if ($request->exists($key))
             {
-                $loadSaved = false;
-                break;
+                return false;
             }
         }
 
-        $filters = [];
+        return true;
+    }
 
+    /** @noinspection PhpMissingParentCallCommonInspection */
+    protected function getQueueFilterInput()
+    {
+        $filters = [];
+        $inputDefinitions = $this->getQueueFilterInputDefinitions();
         $input = $this->filter($inputDefinitions);
 
-        if ($loadSaved)
+        if ($this->isLoadingDefaultFilters($inputDefinitions))
         {
             /** @var \SV\ReportImprovements\XF\Repository\ApprovalQueue $approvalQueueRepo */
             $approvalQueueRepo = $this->repository('XF:ApprovalQueue');
 
             $savedFilters = $approvalQueueRepo->getUserDefaultFilters(\XF::visitor());
             $input = array_replace($input, $savedFilters);
-
-            if (isset($savedFilters['include_reported']))
-            {
-                $this->request->set('include_reported', $savedFilters['include_reported']);
-            }
         }
         else
         {
@@ -168,7 +173,8 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     {
         parent::applyQueueFilters($finder, $filters);
 
-        if (!isset($filters['include_reported']) || !$filters['include_reported'])
+        $includeReported = (bool)($filters['include_reported'] ?? false);
+        if (!$includeReported)
         {
             $finder->where('Report.report_id', null);
         }
