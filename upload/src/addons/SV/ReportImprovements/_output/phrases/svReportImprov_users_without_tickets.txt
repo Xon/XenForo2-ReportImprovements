@@ -1,0 +1,1 @@
+Users without tickets: {value}

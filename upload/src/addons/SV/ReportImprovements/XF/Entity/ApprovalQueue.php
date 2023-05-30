@@ -65,6 +65,15 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             ],
         ];
 
+        $structure->relations['User'] = [
+            'entity'     => 'XF:User',
+            'type'       => self::TO_ONE,
+            'conditions' => [
+                ['$content_type', '=', 'user'],
+                ['user_id', '=', '$content_id'],
+            ],
+        ];
+
         return $structure;
     }
 }

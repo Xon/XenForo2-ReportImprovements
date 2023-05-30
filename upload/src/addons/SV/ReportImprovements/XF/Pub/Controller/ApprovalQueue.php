@@ -87,12 +87,19 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
     protected function getQueueFilterInputDefinitions()
     {
-        return [
+        $arr = [
             'content_type' => 'str',
             'order' => 'str',
             'direction' => 'str',
             'include_reported' => 'bool',
         ];
+
+        if (\XF::isAddOnActive('NF/Tickets'))
+        {
+            $arr['without_tickets'] = 'bool';
+        }
+
+        return $arr;
     }
 
     protected function isLoadingDefaultFilters(array $inputDefinitions): bool
@@ -135,9 +142,11 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             $filters['applied_filters'] = true;
         }
 
-        if ($input['include_reported'])
+        $filters['include_reported'] = $input['include_reported'];
+
+        if (\XF::isAddOnActive('NF/Tickets'))
         {
-            $filters['include_reported'] = $input['include_reported'];
+            $filters['without_tickets'] = $input['without_tickets'];
         }
 
         if ($input['content_type'])
@@ -178,8 +187,19 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         {
             $finder->where('Report.report_id', null);
         }
-    }
 
+        if (\XF::isAddOnActive('NF/Tickets'))
+        {
+            $includeWithoutTickets = (bool)($filters['without_tickets'] ?? false);
+            if (!$includeWithoutTickets)
+            {
+                $finder->whereOr(
+                    ['content_type', '<>', 'user'],
+                    ['User.nf_tickets_count', '<>', 0]
+                );
+            }
+        }
+    }
 
     public function actionFilters(ParameterBag $params)
     {
