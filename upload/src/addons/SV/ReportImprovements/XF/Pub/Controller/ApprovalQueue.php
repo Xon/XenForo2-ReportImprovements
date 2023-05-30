@@ -91,12 +91,12 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             'content_type' => 'str',
             'order' => 'str',
             'direction' => 'str',
-            'include_reported' => 'bool',
+            'include_reported' => '?bool',
         ];
 
         if (\XF::isAddOnActive('NF/Tickets'))
         {
-            $arr['without_tickets'] = 'bool';
+            $arr['without_tickets'] = '?bool';
         }
 
         return $arr;
@@ -208,7 +208,9 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         {
             if ($this->filter('save', 'bool') && $this->isPost())
             {
+                $this->request->set('applied_filters', true);
                 $filters = $this->getQueueFilterInput();
+                unset($filters['applied_filters']);
                 /** @var \SV\ReportImprovements\XF\Repository\ApprovalQueue $approvalQueueRepo */
                 $approvalQueueRepo = $this->repository('XF:ApprovalQueue');
                 $approvalQueueRepo->saveUserDefaultFilters(\XF::visitor(), $filters);
