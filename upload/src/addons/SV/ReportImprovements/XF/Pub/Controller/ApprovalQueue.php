@@ -141,12 +141,13 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         {
             $filters['applied_filters'] = true;
         }
+        $defaults = \XF::options()->svApprovalQueueFilterDefaults ?? [];
 
-        $filters['include_reported'] = $input['include_reported'] ?? false;
+        $filters['include_reported'] = (bool)($input['include_reported'] ?? $defaults['include_reported'] ?? true);
 
         if (\XF::isAddOnActive('NF/Tickets'))
         {
-            $filters['without_tickets'] = $input['without_tickets'] ?? false;
+            $filters['without_tickets'] = (bool)($input['without_tickets'] ?? $defaults['without_tickets'] ?? true);
         }
 
         if ($input['content_type'])
@@ -182,7 +183,9 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     {
         parent::applyQueueFilters($finder, $filters);
 
-        $includeReported = (bool)($filters['include_reported'] ?? false);
+        // note; defaults here should match XF defaults, not addon defaults
+
+        $includeReported = (bool)($filters['include_reported'] ?? true);
         if (!$includeReported)
         {
             $finder->where('Report.report_id', null);
@@ -190,7 +193,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
         if (\XF::isAddOnActive('NF/Tickets'))
         {
-            $includeWithoutTickets = (bool)($filters['without_tickets'] ?? false);
+            $includeWithoutTickets = (bool)($filters['without_tickets'] ?? true);
             if (!$includeWithoutTickets)
             {
                 $finder->whereOr(
@@ -211,6 +214,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
                 $this->request->set('applied_filters', true);
                 $filters = $this->getQueueFilterInput();
                 unset($filters['applied_filters']);
+
                 /** @var \SV\ReportImprovements\XF\Repository\ApprovalQueue $approvalQueueRepo */
                 $approvalQueueRepo = $this->repository('XF:ApprovalQueue');
                 $approvalQueueRepo->saveUserDefaultFilters(\XF::visitor(), $filters);

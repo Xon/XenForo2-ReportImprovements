@@ -1,0 +1,15 @@
+{
+    "edit_format": "template",
+    "edit_format_params": "svReportImprov_option_template_approval_queue_filter",
+    "data_type": "array",
+    "sub_options": [
+        "*"
+    ],
+    "validation_class": "",
+    "validation_method": "",
+    "advanced": false,
+    "default_value": "{\"include_reported\":false}",
+    "relations": {
+        "svReportImprovements": 410
+    }
+}

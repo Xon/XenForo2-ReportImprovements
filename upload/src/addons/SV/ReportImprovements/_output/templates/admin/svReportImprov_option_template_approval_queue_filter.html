@@ -1,0 +1,14 @@
+<xf:hiddenval name="{$inputName}[include_reported]">0</xf:hiddenval>
+<xf:if is="is_addon_active('NF/Tickets')">
+	<xf:hiddenval name="{$inputName}[without_tickets]">0</xf:hiddenval>
+</xf:if>
+<xf:checkboxrow
+				label="{$option.title}"
+				hint="{$hintHtml}"
+				explain="{$explainHtml}"
+				html="{$listedHtml}">
+	<xf:option name="{$inputName}[include_reported]" selected="{{ $option.option_value.include_reported ? '1' : '0' }}">{{ phrase('svReportImprov_include_reported_content') }}</xf:option>
+	<xf:if is="is_addon_active('NF/Tickets')">
+		<xf:option name="{$inputName}[without_tickets]" selected="{{ $option.option_value.without_tickets ? '1' : '0' }}">{{ phrase('svReportImprov_include_users_without_tickets') }}</xf:option>
+	</xf:if>
+</xf:checkboxrow>

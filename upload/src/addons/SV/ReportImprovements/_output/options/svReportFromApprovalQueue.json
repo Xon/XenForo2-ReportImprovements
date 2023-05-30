@@ -8,6 +8,6 @@
     "advanced": false,
     "default_value": "1",
     "relations": {
-        "svReportImprovements": 30
+        "svReportImprovements": 400
     }
 }
