@@ -23,6 +23,7 @@ use XF\Mvc\Entity\Entity;
 use XF\Phrase;
 use XF\Report\AbstractHandler;
 use XF\Repository\Moderator;
+use XF\Search\IndexRecord;
 use XF\Search\MetadataStructure;
 use function array_keys;
 use function assert;
@@ -73,9 +74,35 @@ class Report extends XFCP_Report
             {
                 $metaData['content_warned'] = true;
             }
+            $contentIndexRecord = $this->getContentIndexRecord($report);
+            if ($contentIndexRecord === null || $contentIndexRecord->hidden)
+            {
+                $metaData['content_deleted'] = true;
+            }
         }
 
         return $metaData;
+    }
+
+    protected function getContentIndexRecord(ReportEntity $report): ?IndexRecord
+    {
+        /** @var Entity|null $content */
+        $content = $report->Content;
+        if ($content === null)
+        {
+            return null;
+        }
+
+        $searcher = $this->app()->search();
+        /** @var string|null $contentType */
+        $contentType = $content->getEntityContentType();
+        if ($contentType === null  || !$searcher->isValidContentType($contentType))
+        {
+            return null;
+        }
+        $searchHandler = $searcher->handler($contentType);
+
+        return $searchHandler->getIndexData($content);
     }
 
     public function setupMetadataStructureForReport(MetadataStructure $structure): void
@@ -95,6 +122,7 @@ class Report extends XFCP_Report
         $structure->addField('assigned_user', MetadataStructure::INT);
         $structure->addField('assigner_user', MetadataStructure::INT);
         $structure->addField('content_warned', MetadataStructure::BOOL);
+        $structure->addField('content_deleted', MetadataStructure::BOOL);
     }
 
     protected function isContentWarned(Entity $content): bool
