@@ -6,6 +6,7 @@ use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\SearchImprovements\Search\Features\ISearchableDiscussionUser;
 use SV\SearchImprovements\Search\Features\ISearchableReplyCount;
+use XF\Behavior\Indexable;
 use XF\Behavior\IndexableContainer;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
@@ -489,6 +490,18 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     {
         // do not consider the report count, since that doesn't signal much that is useful
         return $this->comment_count;
+    }
+
+    public function triggerReindex(): void
+    {
+        $this->getBehaviors();
+        $indexable = $this->_behaviors['XF:Indexable'] ?? null;
+        if ($indexable === null)
+        {
+            return;
+        }
+        assert($indexable instanceof Indexable);
+        $indexable->triggerReindex();
     }
 
     public function svDisableIndexing(): void

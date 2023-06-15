@@ -63,7 +63,24 @@ class Warning extends XFCP_Warning implements IReportResolver
             $this->hydrateRelation('Report', $this->svReplyBan->Report);
         }
 
+        $report = $this->Report;
+        if ($this->isInsert() && $report !== null)
+        {
+            $report->triggerReindex();
+        }
+
         parent::_postSave();
+    }
+
+    protected function _postDelete()
+    {
+        parent::_postDelete();
+
+        $report = $this->Report;
+        if ($report !== null)
+        {
+            $report->triggerReindex();
+        }
     }
 
     /**

@@ -66,6 +66,15 @@ class Report extends XFCP_Report
             $reportHandler->populateMetaData($report, $metaData);
         }
 
+        $content = $report->Content;
+        if ($content !== null)
+        {
+            if ($this->isContentWarned($content))
+            {
+                $metaData['content_warned'] = true;
+            }
+        }
+
         return $metaData;
     }
 
@@ -85,6 +94,32 @@ class Report extends XFCP_Report
         $structure->addField('content_user', MetadataStructure::INT);
         $structure->addField('assigned_user', MetadataStructure::INT);
         $structure->addField('assigner_user', MetadataStructure::INT);
+        $structure->addField('content_warned', MetadataStructure::BOOL);
+    }
+
+    protected function isContentWarned(Entity $content): bool
+    {
+        $structure = $content->structure();
+        $contentType = $structure->contentType ?? '';
+        if ($contentType === '')
+        {
+            return false;
+        }
+        $key = $structure->primaryKey;
+        if (is_array($key))
+        {
+            return false;
+        }
+        $contentId = $content->get($key);
+
+        return (bool)$this->db()->fetchOne('
+            select warning_id 
+            from xf_warning 
+            where content_type = ? and content_id = ?
+            ',[
+            $contentType,
+            $contentId
+        ]);
     }
 
     public function svPreloadReportComments(AbstractCollection $entities)
@@ -795,5 +830,4 @@ class Report extends XFCP_Report
 
         return $phrasePairs;
     }
-
 }

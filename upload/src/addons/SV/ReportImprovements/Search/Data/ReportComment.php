@@ -10,6 +10,7 @@ use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\AndConstraint;
+use SV\SearchImprovements\XF\Search\Query\Constraints\ExistsConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\OrConstraint;
 use XF\Http\Request;
 use XF\Mvc\Entity\AbstractCollection;
@@ -257,6 +258,7 @@ class ReportComment extends AbstractData
             'c.report.type'    => 'array-str',
             'c.report.content' => 'array-str',
             'c.report.state'   => 'array-str',
+            'c.content_warned' => 'bool',
         ]);
 
         $rawReportTypes = $constraints['c.report.type'];
@@ -392,6 +394,15 @@ class ReportComment extends AbstractData
             }
         }
 
+        $hasWarning = $constraints['c.content_warned'];
+        if ($hasWarning)
+        {
+            $query->withMetadata(new ExistsConstraint('content_warned'));
+        }
+        else
+        {
+            Arr::unsetUrlConstraint($urlConstraints, 'c.content_warned');
+        }
 
         $repo = $this->searchRepo;
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
