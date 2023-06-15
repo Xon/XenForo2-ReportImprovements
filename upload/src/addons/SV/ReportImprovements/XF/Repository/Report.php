@@ -28,10 +28,34 @@ use XF\Search\MetadataStructure;
 use function array_keys;
 use function assert;
 use function count;
+use function function_exists;
 use function get_class;
+use function in_array;
 use function is_array;
 use function sort;
+use function strlen;
+use function substr_compare;
 use function trigger_error;
+
+if (!function_exists('str_ends_with'))
+{
+    function str_ends_with(string $haystack, string $needle): bool
+    {
+        if ('' === $needle || $needle === $haystack)
+        {
+            return true;
+        }
+
+        if ('' === $haystack)
+        {
+            return false;
+        }
+
+        $needleLength = strlen($needle);
+
+        return $needleLength <= strlen($haystack) && 0 === substr_compare($haystack, $needle, -$needleLength);
+    }
+}
 
 /**
  * Class Report
@@ -41,6 +65,36 @@ use function trigger_error;
  */
 class Report extends XFCP_Report
 {
+    public function hasContentVisibilityChanged(Entity $entity): bool
+    {
+        foreach ($entity->structure()->columns as $column => $def)
+        {
+            if (($def['type'] ?? '') !== Entity::STR)
+            {
+                continue;
+            }
+
+            // todo support php enums
+            $allowedValues = $def['allowedValues'] ?? null;
+            if (!is_array($allowedValues) || !in_array('visible', $allowedValues, true))
+            {
+                continue;
+            }
+
+            if (!str_ends_with($column, '_state'))
+            {
+                continue;
+            }
+
+            if ($entity->isChanged($column) && ($entity->getPreviousValue($column) === 'visible' || $entity->get($column) === 'visible'))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getReportSearchMetaData(ReportEntity $report): array
     {
         $metaData = [

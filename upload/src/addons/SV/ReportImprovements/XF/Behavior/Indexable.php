@@ -3,7 +3,7 @@
 namespace SV\ReportImprovements\XF\Behavior;
 
 use SV\ReportImprovements\XF\Entity\Report;
-use XF\Repository\Report as ReportRepo;
+use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use XF\Entity\Report as ReportEntity;
 use function assert;
 
@@ -12,10 +12,56 @@ use function assert;
  */
 class Indexable extends XFCP_Indexable
 {
+    protected $svWasVisible = false;
+    protected $svHasApprovalDeleteRelations = false;
+
+    protected function svCheckVisibleRelations(): bool
+    {
+        // by convention, ApprovalQueue/DeletionLog indicate if an entity is in the approval queue or deleted
+        // but XF does not enforce this and the visible flag is entity dependant
+        foreach (['ApprovalQueue', 'DeletionLog'] as $relation)
+        {
+            if ($this->entity->hasRelation($relation))
+            {
+                $this->svHasApprovalDeleteRelations = true;
+                $relationObj = $this->entity->getRelation($relation);
+                if ($relationObj !== null && $relationObj->exists())
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public function preSave()
+    {
+        $this->svWasVisible = $this->svCheckVisibleRelations();
+
+        parent::preSave();
+    }
+
     public function postSave()
     {
         parent::postSave();
-        // todo: try to detect visibility state changing
+
+        if ($this->svHasApprovalDeleteRelations)
+        {
+            $isVisible = $this->svCheckVisibleRelations();
+            if ($isVisible !== $this->svWasVisible)
+            {
+                $this->triggerReportReIndex();
+            }
+            return;
+        }
+
+        $reportRepo = $this->repository('XF:Report');
+        assert($reportRepo instanceof ReportRepo);
+        if ($reportRepo->hasContentVisibilityChanged($this->entity))
+        {
+            $this->triggerReportReIndex();
+        }
     }
 
     public function postDelete()

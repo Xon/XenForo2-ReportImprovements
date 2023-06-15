@@ -3,7 +3,7 @@
 namespace SV\ReportImprovements\XF\Behavior;
 
 use SV\ReportImprovements\Job\ReindexReportsForContainer;
-use XF\Repository\Report as ReportRepo;
+use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use function assert;
 
 /**
@@ -11,18 +11,64 @@ use function assert;
  */
 class IndexableContainer extends XFCP_IndexableContainer
 {
+    protected $svWasVisible = false;
+    protected $svHasApprovalDeleteRelations = false;
+
+    protected function svCheckVisibleRelations(bool $withExists): bool
+    {
+        foreach (['ApprovalQueue', 'DeletionLog'] as $relation)
+        {
+            if ($this->entity->hasRelation($relation))
+            {
+                $this->svHasApprovalDeleteRelations = true;
+                $relationObj = $this->entity->getRelation($relation);
+                if ($relationObj !== null && (!$withExists || $relationObj->exists()))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public function preSave()
+    {
+        $this->svWasVisible = $this->svCheckVisibleRelations(false);
+
+        parent::preSave();
+    }
+
     public function postSave()
     {
         parent::postSave();
-        // todo: try to detect visibility state changing
-        //$this->triggerReportReIndex($this->getChildIds());
+
+        if ($this->svHasApprovalDeleteRelations)
+        {
+            $isVisible = $this->svCheckVisibleRelations(true);
+            if ($isVisible !== $this->svWasVisible)
+            {
+                $this->triggerReportReIndex($this->getChildIds());
+            }
+            return;
+        }
+
+        $reportRepo = $this->repository('XF:Report');
+        assert($reportRepo instanceof ReportRepo);
+        if ($reportRepo->hasContentVisibilityChanged($this->entity))
+        {
+            $this->triggerReportReIndex($this->getChildIds());
+        }
     }
 
     public function postDelete()
     {
         parent::postDelete();
-        // content is hard deleted
-        $this->triggerReportReIndex($this->onDeleteChildIds);
+        if ($this->onDeleteChildIds)
+        {
+            // content is hard deleted
+            $this->triggerReportReIndex($this->onDeleteChildIds);
+        }
     }
 
     protected function triggerReportReIndex(array $childIds): void
