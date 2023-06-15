@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Behavior;
 
 use SV\ReportImprovements\XF\Entity\Report;
 use XF\Repository\Report as ReportRepo;
+use XF\Entity\Report as ReportEntity;
 use function assert;
 
 /**
@@ -35,11 +36,19 @@ class Indexable extends XFCP_Indexable
             return;
         }
 
-        $report = $this->app()
-                       ->finder('XF:Report')
-                       ->where('content_type', $contentType)
-                       ->where('content_id', $this->entity->getEntityId())
-                       ->fetchOne();
+        $report = null;
+        if ($this->entity->hasRelation('Report'))
+        {
+            $report = $this->entity->getRelation('Report');
+        }
+        if (!($report instanceof ReportEntity))
+        {
+            $report = $this->app()
+                           ->finder('XF:Report')
+                           ->where('content_type', $contentType)
+                           ->where('content_id', $this->entity->getEntityId())
+                           ->fetchOne();
+        }
         if ($report !== null)
         {
             assert($report instanceof Report);
