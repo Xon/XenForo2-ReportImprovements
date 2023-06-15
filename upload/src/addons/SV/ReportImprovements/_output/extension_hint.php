@@ -9,6 +9,12 @@ namespace SV\ReportImprovements\NF\Tickets\Report
 	class XFCP_Message extends \NF\Tickets\Report\Message {}
 }
 
+namespace SV\ReportImprovements\XF\Behavior
+{
+	class XFCP_Indexable extends \XF\Behavior\Indexable {}
+	class XFCP_IndexableContainer extends \XF\Behavior\IndexableContainer {}
+}
+
 namespace SV\ReportImprovements\XF\ControllerPlugin
 {
 	class XFCP_Report extends \XF\ControllerPlugin\Report {}
