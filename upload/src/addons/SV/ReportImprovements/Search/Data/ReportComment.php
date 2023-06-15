@@ -259,6 +259,7 @@ class ReportComment extends AbstractData
             'c.report.content' => 'array-str',
             'c.report.state'   => 'array-str',
             'c.content_warned' => 'bool',
+            'c.content_deleted' => 'bool',
         ]);
 
         $rawReportTypes = $constraints['c.report.type'];
@@ -394,14 +395,24 @@ class ReportComment extends AbstractData
             }
         }
 
-        $hasWarning = $constraints['c.content_warned'];
-        if ($hasWarning)
+        $contentWarned = $constraints['c.content_warned'];
+        if ($contentWarned)
         {
             $query->withMetadata(new ExistsConstraint('content_warned'));
         }
         else
         {
             Arr::unsetUrlConstraint($urlConstraints, 'c.content_warned');
+        }
+
+        $contentDeleted = $constraints['c.content_deleted'];
+        if ($contentDeleted)
+        {
+            $query->withMetadata(new ExistsConstraint('content_deleted'));
+        }
+        else
+        {
+            Arr::unsetUrlConstraint($urlConstraints, 'c.content_deleted');
         }
 
         $repo = $this->searchRepo;
