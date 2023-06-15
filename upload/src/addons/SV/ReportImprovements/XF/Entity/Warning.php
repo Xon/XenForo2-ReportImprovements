@@ -66,7 +66,7 @@ class Warning extends XFCP_Warning implements IReportResolver
         $report = $this->Report;
         if ($this->isInsert() && $report !== null)
         {
-            $report->triggerReindex();
+            $report->triggerReindex(true);
         }
 
         parent::_postSave();
@@ -79,7 +79,7 @@ class Warning extends XFCP_Warning implements IReportResolver
         $report = $this->Report;
         if ($report !== null)
         {
-            $report->triggerReindex();
+            $report->triggerReindex(true);
         }
     }
 
