@@ -7,7 +7,6 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Entity\WarningInfoTrait;
 use XF\Mvc\Entity\Structure;
-use XF\Phrase;
 use function strlen;
 
 /**

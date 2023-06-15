@@ -3,7 +3,6 @@
 namespace SV\ReportImprovements\Cli\Command\Rebuild;
 
 use SV\ReportImprovements\Job\RebuildCommentCount;
-use Symfony\Component\Console\Input\InputOption;
 use XF\Cli\Command\Rebuild\AbstractRebuildCommand;
 
 class CommentCount extends AbstractRebuildCommand

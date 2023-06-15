@@ -4,7 +4,6 @@ namespace SV\ReportImprovements\Search\Data;
 
 use SV\ElasticSearchEssentials\XF\Repository\ImpossibleSearchResultsException;
 use SV\ReportImprovements\Enums\ReportType;
-use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
@@ -12,8 +11,6 @@ use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\AndConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\OrConstraint;
-use SV\SearchImprovements\XF\Search\Query\Constraints\PermissionConstraint;
-use SV\SearchImprovements\XF\Search\Query\Constraints\TypeConstraint;
 use XF\Http\Request;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -27,6 +24,7 @@ use XF\Search\Query\TableReference;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
+use function array_merge;
 use function array_merge_recursive;
 use function array_unique;
 use function assert;
@@ -158,12 +156,11 @@ class ReportComment extends AbstractData
         $report = $reportComment->Report;
         $metaData = $this->reportRepo->getReportSearchMetaData($report);
         $this->populateDiscussionMetaData($report, $metaData);
-        $metaData = [
+
+        return array_merge([
             'state_change' => $reportComment->state_change ?: '',
             'report_type'  => $reportComment->getReportType(),
-        ] + $metaData;
-
-        return $metaData;
+        ], $metaData);
     }
 
     public function getTemplateData(Entity $entity, array $options = []): array

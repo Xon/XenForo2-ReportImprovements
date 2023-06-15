@@ -3,7 +3,6 @@
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
 
-use SV\ReportImprovements\Globals;
 use XF\Mvc\ParameterBag;
 
 /**

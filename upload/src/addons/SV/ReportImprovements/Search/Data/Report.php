@@ -24,6 +24,7 @@ class Report extends AbstractData
     use DiscussionTrait;
     use SearchDataSetupTrait;
 
+    /** @noinspection PhpMissingParentCallCommonInspection */
     public function canViewContent(Entity $entity, &$error = null): bool
     {
         assert($entity instanceof ReportEntity);

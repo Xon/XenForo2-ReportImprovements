@@ -3,7 +3,7 @@
 namespace SV\ReportImprovements\Entity;
 
 use SV\WarningImprovements\XF\Entity\WarningDefinition as ExtendedWarningDefinitionEntity;
-use XF\Phrase;
+use SV\WarningImprovements\XF\Repository\Warning as WarningRepo;
 use function assert;
 
 trait WarningInfoTrait
@@ -38,7 +38,7 @@ trait WarningInfoTrait
         {
             if (\XF::isAddOnActive('SV/WarningImprovements'))
             {
-                /** @var \SV\WarningImprovements\XF\Repository\Warning $warningRepo */
+                /** @var WarningRepo $warningRepo */
                 $warningRepo = $this->repository('XF:Warning');
                 return $warningRepo->getCustomWarningDefinition()->title;
             }

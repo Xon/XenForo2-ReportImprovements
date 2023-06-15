@@ -5,7 +5,6 @@ namespace SV\ReportImprovements\Entity;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Finder\WarningLog as WarningLogFinder;
-use SV\WarningImprovements\XF\Entity\WarningDefinition as ExtendedWarningDefinitionEntity;
 use XF\Behavior\Indexable;
 use XF\Entity\Post;
 use XF\Entity\Thread;
