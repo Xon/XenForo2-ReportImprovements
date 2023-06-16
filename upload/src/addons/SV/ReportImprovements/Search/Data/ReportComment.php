@@ -11,6 +11,7 @@ use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\AndConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\ExistsConstraint;
+use SV\SearchImprovements\XF\Search\Query\Constraints\NotConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\OrConstraint;
 use XF\Http\Request;
 use XF\Mvc\Entity\AbstractCollection;
@@ -258,8 +259,8 @@ class ReportComment extends AbstractData
             'c.report.type'    => 'array-str',
             'c.report.content' => 'array-str',
             'c.report.state'   => 'array-str',
-            'c.content_warned' => 'bool',
-            'c.content_deleted' => 'bool',
+            'c.content_warned' => 'str',
+            'c.content_deleted' => 'str',
         ]);
 
         $rawReportTypes = $constraints['c.report.type'];
@@ -395,25 +396,8 @@ class ReportComment extends AbstractData
             }
         }
 
-        $contentWarned = $constraints['c.content_warned'];
-        if ($contentWarned)
-        {
-            $query->withMetadata(new ExistsConstraint('content_warned'));
-        }
-        else
-        {
-            Arr::unsetUrlConstraint($urlConstraints, 'c.content_warned');
-        }
-
-        $contentDeleted = $constraints['c.content_deleted'];
-        if ($contentDeleted)
-        {
-            $query->withMetadata(new ExistsConstraint('content_deleted'));
-        }
-        else
-        {
-            Arr::unsetUrlConstraint($urlConstraints, 'c.content_deleted');
-        }
+        $this->applyTriStateFlag($query, $constraints, $urlConstraints, 'c.content_warned', 'content_warned');
+        $this->applyTriStateFlag($query, $constraints, $urlConstraints, 'c.content_deleted', 'content_deleted');
 
         $repo = $this->searchRepo;
         $repo->applyUserConstraint($query, $constraints, $urlConstraints,
@@ -432,6 +416,25 @@ class ReportComment extends AbstractData
             'c.replies.lower', 'c.replies.upper', 'replies',
             [$this->getReportQueryTableReference()]
         );
+    }
+
+    protected function applyTriStateFlag(Query $query, $constraints, array $urlConstraints, string $constraintField, string $searchField): void
+    {
+        $action = $constraints[$constraintField] ?? '';
+        assert(is_string($action));
+        switch ($action)
+        {
+            case 'exclude':
+                $query->withMetadata(new NotConstraint(new ExistsConstraint($searchField)));
+                break;
+            case 'only':
+                $query->withMetadata(new ExistsConstraint($searchField));
+                break;
+            case '':
+            default:
+                Arr::unsetUrlConstraint($urlConstraints, $constraintField);
+                break;
+        }
     }
 
     /**

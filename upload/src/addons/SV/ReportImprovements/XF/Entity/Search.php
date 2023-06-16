@@ -112,6 +112,21 @@ class Search extends XFCP_Search
         return parent::expandStructuredSearchConstraint($query, $key, $value);
     }
 
+    protected function formatConstraintValue(string $key, $value)
+    {
+        if ($key === 'content_deleted' || $key === 'content_warned')
+        {
+            if ($value === '')
+            {
+                $value = 'include';
+            }
+
+            return \XF::phrase('svReportImprove_content.'.$value);
+        }
+
+        return parent::formatConstraintValue($key, $value);
+    }
+
     protected function getSpecializedSearchConstraintPhrase(string $key, $value): ?Phrase
     {
         if ($key === 'warning_expiry_type')

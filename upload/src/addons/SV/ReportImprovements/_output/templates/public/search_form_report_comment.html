@@ -35,11 +35,24 @@
 
 <xf:macro name="report_content_flags" />
 
-<xf:macro name="report_content_flags" global="1" arg-label="{{ phrase('svReportImprove_content_flags') }}">
-	<xf:checkboxrow label="{$label}">
-		<xf:option name="c[content_warned]" selected="{{ $input.c.content_warned ? '1' : '' }}">{{ phrase('svReportImprove_content_has_warning') }}</xf:option>
-		<xf:option name="c[content_deleted]" selected="{{ $input.c.content_deleted ? '1' : '' }}">{{ phrase('svReportImprove_content_is_deleted') }}</xf:option>
-	</xf:checkboxrow>
+<xf:macro name="report_content_flags" global="1">
+	<xf:macro name="report_content_flag_tristate" 
+			  arg-label="{{ phrase('svReportImprove_include_content_warned_in_search') }}"
+			  arg-name="content_warned" />
+	<xf:macro name="report_content_flag_tristate" 
+			  arg-label="{{ phrase('svReportImprove_include_content_deleted_in_search') }}"
+			  arg-name="content_deleted" />
+</xf:macro>
+
+<xf:macro name="report_content_flag_tristate" global="1" arg-label="!" arg-name="!">
+	<xf:set var="$constraint" value="c.{$name}" />
+	<xf:radiorow name="{$constraint|dotToArray}"
+				 value="{{ getDotted($input, $constraint, '') }}"
+				 label="{$label}">
+		<xf:option value="">{{ phrase('svReportImprove_content.include') }}</xf:option>
+		<xf:option value="exclude">{{ phrase('svReportImprove_content.exclude') }}</xf:option>			
+		<xf:option value="only">{{ phrase('svReportImprove_content.only') }}</xf:option>
+	</xf:radiorow>
 </xf:macro>
 
 <xf:macro name="report_content_type" global="1" arg-label="!">
