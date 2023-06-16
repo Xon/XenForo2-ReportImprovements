@@ -41,8 +41,8 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $viewParams = [
             'filters' => $filters,
             'count' => $unapprovedItemsSliced->count(),
-            'total' => $numUnapprovedItems,
-            'hasMore' => $unapprovedItemsSliced->count() < $numUnapprovedItems,
+            'total' => $unapprovedItems->count(),
+            'hasMore' => $unapprovedItemsSliced->count() < $unapprovedItems->count(),
             'last' => $unapprovedItemsSliced->last(),
             'unapprovedItems' => $unapprovedItemsSliced,
         ];
