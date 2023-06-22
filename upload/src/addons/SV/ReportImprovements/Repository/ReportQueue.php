@@ -20,7 +20,7 @@ class ReportQueue extends Repository
     /** @noinspection PhpUnusedParameterInspection */
     public function getReportAssignableNonModeratorsCacheTime(int $reportQueueId): int
     {
-        return 7*86400; // 7 days
+        return 300; // 5 minutes
     }
 
     public function getReportAssignableNonModeratorsCacheKey(int $reportQueueId): string

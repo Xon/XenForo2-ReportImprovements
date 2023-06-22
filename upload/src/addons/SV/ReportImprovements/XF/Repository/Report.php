@@ -474,7 +474,7 @@ class Report extends XFCP_Report
     public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
         /** @var ReportEntity $report */
-        $userIds = $this->svGetUsersWhoCanHandleReport($report, false);
+        $userIds = $this->svGetUsersWhoCanHandleReport($report);
         if (count($userIds) === 0)
         {
             // no users who can have reports assigned to them. permissions need fixing
