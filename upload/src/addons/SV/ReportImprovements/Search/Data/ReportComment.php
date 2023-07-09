@@ -159,10 +159,10 @@ class ReportComment extends AbstractData
         $metaData = $this->reportRepo->getReportSearchMetaData($report);
         $this->populateDiscussionMetaData($report, $metaData);
 
-        return array_merge([
+        return [
             'state_change' => $reportComment->state_change ?: '',
             'report_type'  => $reportComment->getReportType(),
-        ], $metaData);
+        ] + $metaData;
     }
 
     public function getTemplateData(Entity $entity, array $options = []): array
