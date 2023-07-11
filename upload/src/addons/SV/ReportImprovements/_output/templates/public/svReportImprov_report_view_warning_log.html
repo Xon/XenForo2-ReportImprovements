@@ -1,3 +1,4 @@
+<xf:css src="svReportImprov_report_view_warning_log.less" />
 <xf:set var="$warningLog" value="{$comment.WarningLog}" />
 <dl class="pairs pairs--justified fauxBlockLink">
 	<dt>{{ phrase('svReportImprov_operation_type') }}</dt>
@@ -28,10 +29,12 @@
 </dl>
 </xf:if>
 
+<xf:if is="$warningLog.Warning">
 <dl class="pairs pairs--justified fauxBlockLink">
 	<dt>{{ phrase('points') }}</dt>
 	<dd>{$warningLog.points|number}</dd>
 </dl>
+</xf:if>
 
 <dl class="pairs pairs--justified fauxBlockLink">
 	<dt>{{ phrase('expiry') }}</dt>
@@ -66,7 +69,7 @@
 </xf:if>
 
 <xf:if is="$warningLog.notes">
-	<dl class="pairs pairs--justified fauxBlockLink">
+	<dl class="pairs pairs--justified fauxBlockLink structure-text">
 		<dt>{{ phrase('note') }}</dt>
 		<dd>{{ structured_text($warningLog.notes) }}</dd>
 	</dl>

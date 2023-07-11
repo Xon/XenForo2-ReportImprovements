@@ -97,7 +97,9 @@
 	</xf:if>
 	<xf:if is="$comment.WarningLog">
 		<article class="message-body">
+			<div class="report-comment-extras">
 			<xf:include template="svReportImprov_report_view_warning_log" />
+			</div>
 		</article>
 		<xf:if is="$comment.message">
 			<hr class="formRowSep" />

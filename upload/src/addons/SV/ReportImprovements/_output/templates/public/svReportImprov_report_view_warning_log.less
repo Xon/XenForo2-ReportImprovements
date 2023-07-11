@@ -1,0 +1,35 @@
+.report-comment-extras .pairs--justified
+{
+	// undo stock css
+	& dt {
+		float: unset;
+	}	
+	& dd {
+		float: unset;
+		text-align: unset;
+	}
+	// new alignment behavior
+	& dt {
+		display: inline-block;
+		min-width: 20%;
+		text-align: right;
+		@media (max-width: @xf-responsiveNarrow) {
+			display: block;
+			min-width: unset;
+			text-align: unset;			
+		}
+	}	
+	& dd {
+		display: inline-block;
+		@media (max-width: @xf-responsiveNarrow) {
+			display: block;
+		}
+	}
+	
+	@media (max-width: @xf-responsiveNarrow) {
+		> dt
+		{
+			padding-top: ((@xf-formRowPaddingV) / 2);
+		}
+	}
+}
