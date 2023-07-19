@@ -304,7 +304,7 @@ class ReportComment extends AbstractData
         assert(is_array($reportStates));
         if (count($reportStates) !== 0 && !in_array('0', $reportStates, true))
         {
-            $reportStates = array_unique($reportStates);
+            $reportStates = array_values(array_unique($reportStates));
 
             $states = $this->reportRepo->getReportStatePairs();
             $badReportStates = array_filter($reportStates, function(string $state) use(&$states) : bool {
