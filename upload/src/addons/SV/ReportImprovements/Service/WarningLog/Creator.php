@@ -298,6 +298,13 @@ class Creator extends AbstractService
         return \XF::config('svIsLoggingReplyBanLinkToReportComment') ?? true;
     }
 
+    protected function isLoggingForumBanLinkToReportComment(): bool
+    {
+        return (\XF::isAddOnActive('SV/ForumBan')
+            && (\XF::config('svIsLoggingForumBanLinkToReportComment') ?? true)
+        );
+    }
+
     /**
      * @return \SV\ReportImprovements\XF\Entity\Report|null
      */
@@ -343,6 +350,10 @@ class Creator extends AbstractService
         if ($this->isLoggingReplyBanLinkToReportComment())
         {
             $notes .= $warningLog->getReplyBanLink() . "\n";
+        }
+        if ($this->isLoggingForumBanLinkToReportComment())
+        {
+            $notes .= $warningLog->getForumBanLink() . "\n";
         }
         $notes .= $threadReplyBan->reason;
         $warningLog->notes = $notes;

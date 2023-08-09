@@ -401,6 +401,11 @@ class Setup extends AbstractSetup
         ');
     }
 
+    public function upgrade1689099183Step1(): void
+    {
+        $this->applySchemaNewTables();
+    }
+
     /**
      * Drops add-on tables.
      */
@@ -905,6 +910,7 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'is_expired', 'tinyint', 3);
             $this->addOrChangeColumn($table, 'extra_user_group_ids', 'varbinary', 255);
 
+            $this->addOrChangeColumn($table, 'reply_ban_node_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'reply_ban_thread_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'reply_ban_post_id', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'public_banner', 'varchar', 255)->nullable()->setDefault(null);
