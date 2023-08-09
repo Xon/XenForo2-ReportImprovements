@@ -20,7 +20,7 @@ abstract class Globals
     /**
      * @var null|bool
      */
-    public static $allowSavingReportComment;
+    public static $forceSavingReportComment;
 
     /** @var bool  */
     public static $suppressReportStateChange = false;

@@ -402,8 +402,8 @@ class Creator extends AbstractService
             }
         };
 
-        $oldVal = Globals::$allowSavingReportComment;
-        Globals::$allowSavingReportComment = true;
+        $oldVal = Globals::$forceSavingReportComment;
+        Globals::$forceSavingReportComment = true;
         try
         {
             $this->warningLog->preSave();
@@ -422,7 +422,7 @@ class Creator extends AbstractService
         }
         finally
         {
-            Globals::$allowSavingReportComment = $oldVal;
+            Globals::$forceSavingReportComment = $oldVal;
         }
         $errorOutput = [];
         $showErrorException('Warning log', $warningLogErrors, $errorOutput);

@@ -208,7 +208,7 @@ class ReportComment extends XFCP_ReportComment
      */
     public function hasSaveableChanges()
     {
-        return Globals::$allowSavingReportComment || $this->warning_log_id || parent::hasSaveableChanges();
+        return Globals::$forceSavingReportComment || $this->warning_log_id || parent::hasSaveableChanges();
     }
 
     /**
