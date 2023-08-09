@@ -32,39 +32,4 @@ class ReplyBan extends XFCP_ReplyBan
     {
         $this->replyBan->post_id = $post->post_id;
     }
-
-    /**
-     * @return array
-     */
-    protected function _validate()
-    {
-        $oldVal = Globals::$allowSavingReportComment;
-        Globals::$allowSavingReportComment = true;
-        try
-        {
-            return parent::_validate();
-        }
-        finally
-        {
-            Globals::$allowSavingReportComment = $oldVal;
-        }
-    }
-
-    /**
-     * @return ThreadReplyBan|Entity|null
-     * @throws PrintableException
-     */
-    protected function _save()
-    {
-        $oldVal = Globals::$allowSavingReportComment;
-        Globals::$allowSavingReportComment = true;
-        try
-        {
-            return parent::_save();
-        }
-        finally
-        {
-            Globals::$allowSavingReportComment = $oldVal;
-        }
-    }
 }
