@@ -68,7 +68,7 @@
     </dl>
 </xf:if>
 
-<xf:if is="$warningLog.ForumBan">
+<xf:if is="is_addon_active('SV/ForumBan') && $warningLog.ForumBan">
     <dl class="pairs pairs--justified fauxBlockLink">
         <dt>{{ phrase('svReportImprov_forum_ban') }}</dt>
         <dd><a href="{{ link('forums/sv-forum-bans', $warningLog.ForumBanForum) }}" data-xf-click="overlay">{{ phrase('edit') }}</a></dd>
