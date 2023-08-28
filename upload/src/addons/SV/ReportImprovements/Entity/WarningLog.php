@@ -6,6 +6,7 @@ use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Finder\WarningLog as WarningLogFinder;
 use XF\Behavior\Indexable;
+use XF\Entity\Forum;
 use XF\Entity\Post;
 use XF\Entity\Thread;
 use XF\Entity\ThreadReplyBan;
@@ -20,42 +21,47 @@ use function assert;
 
 /**
  * COLUMNS
+ * @property int|null                                   $warning_log_id
+ * @property int                                        $warning_edit_date
+ * @property bool                                       $is_latest_version
+ * @property string                                     $operation_type
+ * @property int|null                                   $warning_id
+ * @property string                                     $content_type
+ * @property int                                        $content_id
+ * @property string                                     $content_title
+ * @property int                                        $user_id
+ * @property int                                        $warning_date
+ * @property int                                        $warning_user_id
+ * @property int                                        $warning_definition_id
+ * @property string                                     $title
+ * @property string                                     $notes
+ * @property int                                        $points
+ * @property int                                        $expiry_date
+ * @property int                                        $is_expired
+ * @property string                                     $extra_user_group_ids
+ * @property int|null                                   $reply_ban_node_id
+ * @property int|null                                   $reply_ban_thread_id
+ * @property int|null                                   $reply_ban_post_id
+ * @property string|null                                $public_banner_
  *
- * @property ?int                    $warning_log_id
- * @property int                     $warning_edit_date
- * @property bool                    $is_latest_version
- * @property string                  $operation_type
- * @property ?int                    $warning_id
- * @property string                  $content_type
- * @property int                     $content_id
- * @property string                  $content_title
- * @property int                     $user_id
- * @property int                     $warning_date
- * @property int                     $warning_user_id
- * @property int                     $warning_definition_id
- * @property string                  $title
- * @property string                  $notes
- * @property int                     $points
- * @property int                     $expiry_date
- * @property int                     $is_expired
- * @property string                  $extra_user_group_ids
- * @property ?int                    $reply_ban_thread_id
- * @property ?int                    $reply_ban_post_id
- * @property ?string                 $public_banner_
  * GETTERS
- * @property-read ?string            $definition_title
- * @property ?string                 $public_banner
- * @property-read ?ThreadReplyBan    $ReplyBan
- * @property-read ?WarningDefinition $Definition
+ * @property-read string|null                           $definition_title
+ * @property string|null                                $public_banner
+ * @property-read \SV\ForumBan\Entity\ForumBan|null     $ForumBan
+ * @property-read ThreadReplyBan|null                   $ReplyBan
+ * @property-read WarningDefinition|null                $Definition
+ *
  * RELATIONS
- * @property-read ?ThreadReplyBan    $ReplyBan_
- * @property-read ?Warning           $Warning
- * @property-read ?WarningDefinition $Definition_
- * @property-read ?User              $WarnedBy
- * @property-read ?User              $User
- * @property-read ?Thread            $ReplyBanThread
- * @property-read ?Post              $ReplyBanPost
- * @property-read ?ReportComment     $ReportComment
+ * @property-read \SV\ForumBan\Entity\ForumBan|null     $ForumBan_
+ * @property-read ThreadReplyBan|null                   $ReplyBan_
+ * @property-read Warning|null                          $Warning
+ * @property-read WarningDefinition|null                $Definition_
+ * @property-read User|null                             $WarnedBy
+ * @property-read User|null                             $User
+ * @property-read Forum|null                            $ForumBanForum
+ * @property-read Thread|null                           $ReplyBanThread
+ * @property-read Post|null                             $ReplyBanPost
+ * @property-read ReportComment|null                    $ReportComment
  */
 class WarningLog extends Entity
 {
@@ -84,6 +90,10 @@ class WarningLog extends Entity
         else if ($this->reply_ban_thread_id)
         {
             return \XF::phrase('svReportImprov_operation_type_action.reply_ban');
+        }
+        else if ($this->reply_ban_node_id)
+        {
+            return \XF::phrase('svReportImprov_operation_type_action.forum_ban');
         }
 
         return null;
@@ -130,6 +140,43 @@ class WarningLog extends Entity
         if ($this->reply_ban_thread_id && $this->ReplyBanThread)
         {
             return $router->buildLink('canonical:threads', $this->ReplyBanThread);
+        }
+
+        return null;
+    }
+
+    public function getForumBan(): ?\SV\ForumBan\Entity\ForumBan
+    {
+        if (!\XF::isAddOnActive('SV/ForumBan'))
+        {
+            return null;
+        }
+
+        if (\array_key_exists('ForumBan', $this->_relations))
+        {
+            return $this->ForumBan_;
+        }
+
+        if (!$this->reply_ban_node_id || !$this->ForumBanForum)
+        {
+            return null;
+        }
+
+        return $this->ForumBanForum->SvForumBans[$this->user_id];
+    }
+
+    public function getForumBanLink(): ?string
+    {
+        if (!\XF::isAddOnActive('SV/ForumBan'))
+        {
+            return null;
+        }
+
+        $router = $this->app()->router('public');
+
+        if ($this->reply_ban_node_id && $this->ForumBanForum)
+        {
+            return $router->buildLink('canonical:forums', $this->ForumBanForum);
         }
 
         return null;
@@ -188,7 +235,19 @@ class WarningLog extends Entity
                 LIMIT 1
             ', [$this->reply_ban_thread_id, $this->user_id]);
             $finder->where('reply_ban_thread_id', $this->reply_ban_thread_id)
-                   ->where('user_id', $this->user_id);
+                ->where('user_id', $this->user_id);
+        }
+        else if ($this->reply_ban_node_id !== null)
+        {
+            $latestWarningLogId = (int)$db->fetchOne('
+                SELECT warning_log_id
+                FROM xf_sv_warning_log
+                WHERE reply_ban_node_id = ? AND user_id = ?
+                ORDER BY warning_edit_date DESC, warning_log_id DESC  
+                LIMIT 1
+            ', [$this->reply_ban_node_id, $this->user_id]);
+            $finder->where('reply_ban_node_id', $this->reply_ban_node_id)
+                ->where('user_id', $this->user_id);
         }
 
         $isLatestVersion = $this->is_latest_version;
@@ -284,6 +343,7 @@ class WarningLog extends Entity
                 'type' => self::LIST_COMMA, 'default' => [],
                 'list' => ['type' => 'posint', 'unique' => true, 'sort' => SORT_NUMERIC],
             ],
+            'reply_ban_node_id'     => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'reply_ban_thread_id'   => ['type' => self::UINT, 'default' => null, 'nullable' => true],
             'reply_ban_post_id'     => ['type' => self::UINT, 'default' => null, 'nullable' => true],
         ];
@@ -348,6 +408,8 @@ class WarningLog extends Entity
             'OperationTypePhrase' => ['getter' => 'getOperationTypePhrase', 'cache' => false],
             'ReplyBan'            => ['getter' => 'getReplyBan','cache' => true],
             'ReplyBanLink'        => ['getter' => 'getReplyBanLink','cache' => true],
+            'ForumBan'            => ['getter' => 'getForumBan','cache' => true],
+            'ForumBanLink'        => ['getter' => 'getForumBanLink','cache' => true],
             'definition_title'    => ['getter' => 'getDefinitionTitle', 'cache' => true],
         ];
         // currently deliberately empty checkForUpdates, as this is indexed when a linked ReportComment is created
@@ -355,6 +417,27 @@ class WarningLog extends Entity
         $structure->behaviors['XF:Indexable'] = [
             'checkForUpdates' => [],
         ];
+
+        if (\XF::isAddOnActive('SV/ForumBan'))
+        {
+            $structure->relations['ForumBan'] = [
+                'entity'     => 'SV\ForumBan:ForumBan',
+                'type'       => self::TO_ONE,
+                'conditions' => [
+                    ['node_id', '=', '$reply_ban_node_id'],
+                    ['user_id', '=', '$user_id'],
+                ],
+                'primary'    => true,
+            ];
+            $structure->relations['ForumBanForum'] = [
+                'entity'     => 'XF:Forum',
+                'type'       => self::TO_ONE,
+                'conditions' => [
+                    ['node_id', '=', '$reply_ban_node_id'],
+                ],
+                'primary'    => true,
+            ];
+        }
 
         return $structure;
     }

@@ -16,8 +16,8 @@
 </xf:if>
 
 <dl class="pairs pairs--justified fauxBlockLink">
-	<dt>{{ phrase('warning') }}{{ ($publicBanner !== '' && $publicBanner === $warningTitle) 
-		? ' / ' . phrase('svReportImprove_public_banner') 
+	<dt>{{ phrase('warning') }}{{ ($publicBanner !== '' && $publicBanner === $warningTitle)
+		? ' / ' . phrase('svReportImprove_public_banner')
 		: '' }}</dt>
 	<dd>{$warningTitle}</dd>
 </dl>
@@ -62,10 +62,17 @@
 </xf:if>
 
 <xf:if is="$warningLog.ReplyBan">
-	<dl class="pairs pairs--justified fauxBlockLink">
-		<dt>{{ phrase('svReportImprov_reply_ban') }}</dt>
-		<dd><a href="{{ link('threads/reply-bans', $warningLog.ReplyBanThread) }}" data-xf-click="overlay">{{ phrase('edit') }}</a></dd>
-	</dl>
+    <dl class="pairs pairs--justified fauxBlockLink">
+        <dt>{{ phrase('svReportImprov_reply_ban') }}</dt>
+        <dd><a href="{{ link('threads/reply-bans', $warningLog.ReplyBanThread) }}" data-xf-click="overlay">{{ phrase('edit') }}</a></dd>
+    </dl>
+</xf:if>
+
+<xf:if is="is_addon_active('SV/ForumBan') && $warningLog.ForumBan">
+    <dl class="pairs pairs--justified fauxBlockLink">
+        <dt>{{ phrase('svReportImprov_forum_ban') }}</dt>
+        <dd><a href="{{ link('forums/sv-forum-bans', $warningLog.ForumBanForum) }}" data-xf-click="overlay">{{ phrase('edit') }}</a></dd>
+    </dl>
 </xf:if>
 
 <xf:if is="$warningLog.notes">

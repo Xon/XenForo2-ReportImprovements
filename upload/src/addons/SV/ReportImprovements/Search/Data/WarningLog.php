@@ -196,6 +196,11 @@ class WarningLog extends AbstractData
             $metaData['points'] = $warningLog->points;
         }
 
+        if ($warningLog->reply_ban_node_id)
+        {
+            $metaData['forum_reply_ban'] = $warningLog->reply_ban_node_id;
+        }
+
         if ($warningLog->reply_ban_thread_id)
         {
             $metaData['thread_reply_ban'] = $warningLog->reply_ban_thread_id;
@@ -246,6 +251,7 @@ class WarningLog extends AbstractData
         $structure->addField('points', MetadataStructure::INT);
         $structure->addField('expiry_date', MetadataStructure::INT);
         $structure->addField('issuer_user', MetadataStructure::INT);
+        $structure->addField('forum_reply_ban', MetadataStructure::INT);
         $structure->addField('thread_reply_ban', MetadataStructure::INT);
         $structure->addField('post_reply_ban', MetadataStructure::INT);
         $structure->addField('is_latest_version', MetadataStructure::BOOL);

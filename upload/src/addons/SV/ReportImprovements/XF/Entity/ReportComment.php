@@ -258,9 +258,17 @@ class ReportComment extends XFCP_ReportComment
     {
         if ($this->warning_log_id)
         {
-            if ($this->WarningLog !== null && $this->WarningLog->reply_ban_thread_id)
+            if ($this->WarningLog !== null)
             {
-                return ReportType::Reply_ban;
+                if ($this->WarningLog->reply_ban_thread_id)
+                {
+                    return ReportType::Reply_ban;
+                }
+
+                if (\XF::isAddOnActive('SV/ForumBan') && $this->WarningLog->reply_ban_node_id)
+                {
+                    return ReportType::Forum_ban;
+                }
             }
 
             return ReportType::Warning;
