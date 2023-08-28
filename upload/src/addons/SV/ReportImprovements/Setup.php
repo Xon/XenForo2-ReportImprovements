@@ -667,6 +667,12 @@ class Setup extends AbstractSetup
                 ],
                 [
                     [
+                        'general'      => ['warn', 'editBasicProfile'],
+                    ],
+                    ['report_queue' => ['viewReportUser']]
+                ],
+                [
+                    [
                         'profilePost' => ['warn', 'editAnyPost', 'viewAny'],
                     ],
                     ['general' => ['viewReportProfilePost']]
