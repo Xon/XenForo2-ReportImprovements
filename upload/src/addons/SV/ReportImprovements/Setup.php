@@ -675,13 +675,13 @@ class Setup extends AbstractSetup
                     [
                         'profilePost' => ['warn', 'editAnyPost', 'viewAny'],
                     ],
-                    ['general' => ['viewReportProfilePost']]
+                    ['report_queue' => ['viewReportProfilePost']]
                 ],
                 [
                     [
                         'conversation' => ['alwaysInvite', 'editAnyPost', 'viewAny'],
                     ],
-                    ['general' => ['viewReportConversation']]
+                    ['report_queue' => ['viewReportConversation']]
                 ],
                 [
                     [
