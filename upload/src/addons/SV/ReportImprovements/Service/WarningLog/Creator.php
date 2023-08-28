@@ -319,7 +319,7 @@ class Creator extends AbstractService
         $content = $user;
         $contentTitle = $user->username;
 
-        $warningLog->hydrateRelation('ReplyBanThread', $threadReplyBan);
+        $warningLog->hydrateRelation('ReplyBanThread', $threadReplyBan->Thread);
         $warningLog->hydrateRelation('User', $user);
 
         /** @var \SV\ReportImprovements\XF\Entity\Post $post */
