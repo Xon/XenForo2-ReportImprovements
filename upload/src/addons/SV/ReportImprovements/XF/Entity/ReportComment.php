@@ -265,7 +265,7 @@ class ReportComment extends XFCP_ReportComment
                     return ReportType::Reply_ban;
                 }
 
-                if ($this->WarningLog->reply_ban_node_id)
+                if (\XF::isAddOnActive('SV/ForumBan') && $this->WarningLog->reply_ban_node_id)
                 {
                     return ReportType::Forum_ban;
                 }

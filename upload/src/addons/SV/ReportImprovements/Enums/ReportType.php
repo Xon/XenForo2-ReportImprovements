@@ -17,7 +17,14 @@ class ReportType
 
     public static function get(): array
     {
-        return [self::Reported_content, self::User_report, self::Comment, self::Warning, self::Reply_ban, self::Forum_ban];
+        $types = [self::Reported_content, self::User_report, self::Comment, self::Warning, self::Reply_ban];
+
+        if (\XF::isAddOnActive('SV/ForumBan'))
+        {
+            $types[] = self::Forum_ban;
+        }
+
+        return $types;
     }
 
     /**
