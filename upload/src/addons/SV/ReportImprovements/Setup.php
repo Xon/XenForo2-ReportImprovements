@@ -60,24 +60,6 @@ class Setup extends AbstractSetup
         $this->applySchemaUpdates();
     }
 
-    public function installStep3()
-    {
-        $this->applyDefaultPermissions();
-    }
-
-    public function installStep4(): void
-    {
-        $ids = $this->getPermissionCombinationIdsToRebuild();
-        if (count($ids) !== 0)
-        {
-            $this->app->jobManager()->enqueueUnique(
-                'permissionRebuild:' . substr(md5(implode(',', $ids)), 0, 16),
-                PermissionRebuildPartial::class,
-                ['combinationIds' => $ids]
-            );
-        }
-    }
-
     public function upgrade1090100Step1()
     {
         $this->app->jobManager()->enqueueUnique(
@@ -480,6 +462,18 @@ class Setup extends AbstractSetup
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
         $this->customizeWarningLogContentTypePhrases();
+        if ($this->applyDefaultPermissions(0, $doFullRebuild))
+        {
+            if ($doFullRebuild)
+            {
+                $atomicJobs[] = PermissionRebuild::class;
+            }
+            else
+            {
+                $ids = $this->getPermissionCombinationIdsToRebuild();
+                $atomicJobs[] = [PermissionRebuildPartial::class, ['combinationIds' => $ids]];
+            }
+        }
 
         $atomicJobs[] = EnrichReportPostInstall::class;
         $atomicJobs[] = Upgrade1090100Step1::class;
