@@ -278,8 +278,10 @@ class ReportComment extends AbstractData
             }
             if (count($reportTypes) !== 0  && count($reportTypes) < count($types))
             {
-                if (in_array(ReportType::Reply_ban, $reportTypes, true) || in_array(ReportType::Warning, $reportTypes, true))
-                {
+                if (in_array(ReportType::Reply_ban, $reportTypes, true)
+                    || in_array(ReportType::Forum_ban, $reportTypes, true)
+                    || in_array(ReportType::Warning, $reportTypes, true)
+                ) {
                     $types = $query->getTypes() ?? [];
                     if (count($types) !== 0 && !in_array('warning_log', $types, true))
                     {
