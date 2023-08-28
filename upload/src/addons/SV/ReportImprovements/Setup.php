@@ -33,10 +33,7 @@ use function array_keys;
 use function array_values;
 use function assert;
 use function count;
-use function implode;
-use function md5;
 use function sort;
-use function substr;
 
 /**
  * Class Setup
@@ -58,6 +55,17 @@ class Setup extends AbstractSetup
     public function installStep2()
     {
         $this->applySchemaUpdates();
+    }
+
+    // debug code
+    public function installStep99(): void
+    {
+        $atomicJobs = [];
+        $this->applyPerms(0, $atomicJobs);
+        \XF::app()->jobManager()->enqueueUnique(
+            'report-improvements-installer',
+            AtomicJob::class, ['execute' => $atomicJobs]
+        );
     }
 
     public function upgrade1090100Step1()
@@ -455,14 +463,9 @@ class Setup extends AbstractSetup
         }
     }
 
-    public function postInstall(array &$stateChanges)
+    protected function applyPerms(int $versionId, array &$atomicJobs): void
     {
-        parent::postInstall($stateChanges);
-
-        $atomicJobs = [];
-        $this->cleanupPermissionChecks();
-        $this->customizeWarningLogContentTypePhrases();
-        if ($this->applyDefaultPermissions(0, $doFullRebuild))
+        if ($this->applyDefaultPermissions($versionId, $doFullRebuild))
         {
             if ($doFullRebuild)
             {
@@ -474,6 +477,16 @@ class Setup extends AbstractSetup
                 $atomicJobs[] = [PermissionRebuildPartial::class, ['combinationIds' => $ids]];
             }
         }
+    }
+
+    public function postInstall(array &$stateChanges)
+    {
+        parent::postInstall($stateChanges);
+
+        $atomicJobs = [];
+        $this->cleanupPermissionChecks();
+        $this->customizeWarningLogContentTypePhrases();
+        $this->applyPerms(0, $atomicJobs);
 
         $atomicJobs[] = EnrichReportPostInstall::class;
         $atomicJobs[] = Upgrade1090100Step1::class;
@@ -497,18 +510,7 @@ class Setup extends AbstractSetup
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
         // updating permissions should be done first!
-        if ($this->applyDefaultPermissions($previousVersion, $doFullRebuild))
-        {
-            if ($doFullRebuild)
-            {
-                $atomicJobs[] = PermissionRebuild::class;
-            }
-            else
-            {
-                $ids = $this->getPermissionCombinationIdsToRebuild();
-                $atomicJobs[] = [PermissionRebuildPartial::class, ['combinationIds' => $ids]];
-            }
-        }
+        $this->applyPerms($previousVersion, $atomicJobs);
 
         if ($previousVersion < 2140002)
         {
