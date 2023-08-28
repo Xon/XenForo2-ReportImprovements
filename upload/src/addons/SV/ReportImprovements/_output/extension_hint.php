@@ -9,6 +9,11 @@ namespace SV\ReportImprovements\NF\Tickets\Report
 	class XFCP_Message extends \NF\Tickets\Report\Message {}
 }
 
+namespace SV\ReportImprovements\SV\ForumBan\Entity
+{
+	class XFCP_ForumBan extends \SV\ForumBan\Entity\ForumBan {}
+}
+
 namespace SV\ReportImprovements\XF\Behavior
 {
 	class XFCP_Indexable extends \XF\Behavior\Indexable {}
@@ -38,6 +43,7 @@ namespace SV\ReportImprovements\XF\Entity
 namespace SV\ReportImprovements\XF\Pub\Controller
 {
 	class XFCP_ApprovalQueue extends \XF\Pub\Controller\ApprovalQueue {}
+	class XFCP_Forum extends \XF\Pub\Controller\Forum {}
 	class XFCP_Member extends \XF\Pub\Controller\Member {}
 	class XFCP_Report extends \XF\Pub\Controller\Report {}
 	class XFCP_ReportPatch extends \XF\Pub\Controller\Report {}

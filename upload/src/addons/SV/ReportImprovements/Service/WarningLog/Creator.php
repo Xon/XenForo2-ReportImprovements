@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Service\WarningLog;
 
+use SV\ForumBan\Entity\ForumBan;
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Enums\WarningType;
@@ -36,6 +37,11 @@ class Creator extends AbstractService
      * @var ThreadReplyBan|\SV\ReportImprovements\XF\Entity\ThreadReplyBan
      */
     protected $threadReplyBan;
+
+    /**
+     * @var ForumBan
+     */
+    protected $forumBan;
 
     /**
      * @var string
@@ -102,6 +108,10 @@ class Creator extends AbstractService
         else if ($content instanceof ThreadReplyBan)
         {
             $this->threadReplyBan = $content;
+        }
+        else if ($content instanceof ForumBan)
+        {
+            $this->forumBan = $content;
         }
         else
         {
@@ -182,6 +192,10 @@ class Creator extends AbstractService
             else if ($this->threadReplyBan)
             {
                 $report = $this->setupDefaultsForThreadReplyBan();
+            }
+            else if ($this->forumBan)
+            {
+                $report = $this->setupDefaultsForForumBan();
             }
         }
         finally
@@ -319,6 +333,7 @@ class Creator extends AbstractService
         $content = $user;
         $contentTitle = $user->username;
 
+        $warningLog->hydrateRelation('ReplyBan', $threadReplyBan);
         $warningLog->hydrateRelation('ReplyBanThread', $threadReplyBan->Thread);
         $warningLog->hydrateRelation('User', $user);
 
@@ -351,10 +366,6 @@ class Creator extends AbstractService
         {
             $notes .= $warningLog->getReplyBanLink() . "\n";
         }
-        if ($this->isLoggingForumBanLinkToReportComment())
-        {
-            $notes .= $warningLog->getForumBanLink() . "\n";
-        }
         $notes .= $threadReplyBan->reason;
         $warningLog->notes = $notes;
 
@@ -370,6 +381,62 @@ class Creator extends AbstractService
 
         $threadReplyBan->clearCache('Report');
         $threadReplyBan->hydrateRelation('Report', $report);
+
+        return $report;
+    }
+
+
+
+    /**
+     * @return \SV\ReportImprovements\XF\Entity\Report|null
+     */
+    protected function setupDefaultsForForumBan()
+    {
+        $warningLog = $this->warningLog;
+        $forumBan = $this->forumBan;
+        $warningLog->warning_date = \XF::$time;
+
+        $report = $forumBan->Report;
+        $user = $forumBan->User;
+        $content = $user;
+        $contentTitle = $user->username;
+
+        $warningLog->hydrateRelation('ForumBan', $forumBan);
+        $warningLog->hydrateRelation('ForumBanForum', $forumBan->Forum);
+        $warningLog->hydrateRelation('User', $user);
+
+        $warningLog->content_type = $content->getEntityContentType();
+        $warningLog->content_id = $content->getExistingEntityId();
+        $warningLog->content_title = $contentTitle;
+        $warningLog->public_banner = $forumBan->getOption('svPublicBanner');
+        $warningLog->expiry_date = (int)$forumBan->expiry_date;
+        $warningLog->is_expired = $forumBan->expiry_date > \XF::$time;
+        $warningLog->reply_ban_node_id = $forumBan->node_id;
+        $warningLog->user_id = $forumBan->user_id;
+        $warningLog->warning_user_id = \XF::visitor()->user_id;
+        $warningLog->warning_definition_id = null;
+        $warningLog->title = \XF::phrase('svReportImprov_forum_banned')->render('raw');
+
+        $notes = '';
+        if ($this->isLoggingForumBanLinkToReportComment())
+        {
+            $notes .= $warningLog->getForumBanLink() . "\n";
+        }
+        $notes .= $forumBan->reason;
+        $warningLog->notes = $notes;
+
+        if ($report)
+        {
+            $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
+        }
+        else
+        {
+            $this->reportCreator = $this->service('XF:Report\Creator', $content->getEntityContentType(), $content);
+            $report = $this->reportCreator->getReport();
+        }
+
+        $forumBan->clearCache('Report');
+        $forumBan->hydrateRelation('Report', $report);
 
         return $report;
     }
@@ -487,6 +554,11 @@ class Creator extends AbstractService
             {
                 $this->threadReplyBan->clearCache('Report');
                 $this->threadReplyBan->hydrateRelation('Report', $report);
+            }
+            else if ($this->forumBan)
+            {
+                $this->forumBan->clearCache('Report');
+                $this->forumBan->hydrateRelation('Report', $report);
             }
         }
 
