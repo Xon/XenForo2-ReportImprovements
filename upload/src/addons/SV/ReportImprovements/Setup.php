@@ -391,9 +391,14 @@ class Setup extends AbstractSetup
         ');
     }
 
-    public function upgrade1689099183Step1(): void
+    public function upgrade1693830360Step1(): void
     {
         $this->applySchemaNewTables();
+    }
+
+    public function upgrade1693830360Step2(): void
+    {
+        $this->applySchemaUpdates();
     }
 
     /**
