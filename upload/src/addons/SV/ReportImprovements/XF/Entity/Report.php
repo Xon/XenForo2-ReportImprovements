@@ -536,6 +536,16 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         }
     }
 
+    public function isClosed()
+    {
+        if ($this->getOption('svFakeOpen'))
+        {
+            return false;
+        }
+
+        return parent::isClosed();
+    }
+
     /**
      * @param Structure $structure
      * @return Structure
@@ -617,6 +627,8 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
             $structure->behaviors['XF:IndexableContainer']['checkForUpdates'][] = 'report_count';
             $structure->behaviors['XF:IndexableContainer']['checkForUpdates'][] = 'comment_count';
         }
+
+        $structure->options['svFakeOpen'] = false;
 
         return $structure;
     }

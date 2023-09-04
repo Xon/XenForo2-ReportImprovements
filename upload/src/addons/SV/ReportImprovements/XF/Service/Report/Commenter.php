@@ -52,8 +52,25 @@ class Commenter extends XFCP_Commenter
 
     protected function setCommentDefaults()
     {
-        parent::setCommentDefaults();
         $report = $this->report;
+        $wasSet = $report->getOption('svFakeOpen');
+        if (Globals::$suppressReportStateChange && !$wasSet)
+        {
+            $report->setOption('svFakeOpen', true);
+            try
+            {
+                parent::setCommentDefaults();
+            }
+            finally
+            {
+                $report->resetOption('svFakeOpen');
+            }
+        }
+        else
+        {
+            parent::setCommentDefaults();
+        }
+
         $report->last_modified_date = \XF::$time;
         if ($report->last_modified_date < $report->getPreviousValue('last_modified_date'))
         {
