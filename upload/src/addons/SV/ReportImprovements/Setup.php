@@ -57,17 +57,6 @@ class Setup extends AbstractSetup
         $this->applySchemaUpdates();
     }
 
-    // debug code
-    public function installStep99(): void
-    {
-        $atomicJobs = [];
-        $this->applyPerms(0, $atomicJobs);
-        \XF::app()->jobManager()->enqueueUnique(
-            'report-improvements-installer',
-            AtomicJob::class, ['execute' => $atomicJobs]
-        );
-    }
-
     public function upgrade1090100Step1()
     {
         $this->app->jobManager()->enqueueUnique(
