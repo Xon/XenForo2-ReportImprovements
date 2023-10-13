@@ -6,7 +6,7 @@
     "validation_class": "",
     "validation_method": "",
     "advanced": false,
-    "default_value": "1000",
+    "default_value": "100",
     "relations": {
         "svReportImprovements": 10000
     }

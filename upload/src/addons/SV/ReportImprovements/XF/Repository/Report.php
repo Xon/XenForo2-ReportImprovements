@@ -314,7 +314,7 @@ class Report extends XFCP_Report
 
         // apply sanity check limit <= 0 means no limit. WHY
         $options = \XF::options();
-        $limit = (int)($options->svReportHandlingLimit ?? 1000);
+        $limit = (int)($options->svReportHandlingLimit ?? 100);
         $limit = max(0, $limit);
 
         if (!is_array($userIds))
