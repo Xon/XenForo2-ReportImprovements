@@ -13,7 +13,10 @@ class PermissionEntryContent extends XFCP_PermissionEntryContent
     protected function _postSave()
     {
         parent::_postSave();
-        $this->svInvalidateReportCache();
+        if ($this->isInsert() || $this->isChanged('permission_value'))
+        {
+            $this->svInvalidateReportCache();
+        }
     }
 
     protected function _postDelete()
