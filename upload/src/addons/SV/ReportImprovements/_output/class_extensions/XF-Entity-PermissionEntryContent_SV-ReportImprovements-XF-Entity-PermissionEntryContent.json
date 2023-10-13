@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Entity\\PermissionEntryContent",
+    "to_class": "SV\\ReportImprovements\\XF\\Entity\\PermissionEntryContent",
+    "execute_order": 10,
+    "active": true
+}

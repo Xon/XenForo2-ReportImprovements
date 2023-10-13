@@ -29,6 +29,8 @@ namespace SV\ReportImprovements\XF\ControllerPlugin
 namespace SV\ReportImprovements\XF\Entity
 {
 	class XFCP_ApprovalQueue extends \XF\Entity\ApprovalQueue {}
+	class XFCP_PermissionEntry extends \XF\Entity\PermissionEntry {}
+	class XFCP_PermissionEntryContent extends \XF\Entity\PermissionEntryContent {}
 	class XFCP_Post extends \XF\Entity\Post {}
 	class XFCP_Report extends \XF\Entity\Report {}
 	class XFCP_ReportComment extends \XF\Entity\ReportComment {}
