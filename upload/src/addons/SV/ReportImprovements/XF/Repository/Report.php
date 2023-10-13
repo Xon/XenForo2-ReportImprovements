@@ -441,7 +441,7 @@ class Report extends XFCP_Report
                 ");
             }
 
-            $userIds = $db->fetchAllColumn('SELECT user_id FROM xf_sv_non_moderator_report_users where canUpdate = 1 and user_id <> 0');
+            $userIds = $db->fetchAllColumn('SELECT user_id FROM xf_sv_non_moderator_report_users where canUpdate = 1 and canView = 1 and user_id <> 0');
 
             if ($cache && $key && $cacheTime)
             {
