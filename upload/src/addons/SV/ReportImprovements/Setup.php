@@ -361,11 +361,6 @@ class Setup extends AbstractSetup
         });
     }
 
-    public function upgrade1680614327Step1(): void
-    {
-        $this->renameOption('svNonModeratorReportHandlingLimit', 'svReportHandlingLimit');
-    }
-
     public function upgrade1683897241Step1(): void
     {
         $this->applySchemaNewTables();
@@ -388,6 +383,11 @@ class Setup extends AbstractSetup
     public function upgrade1693830360Step2(): void
     {
         $this->applySchemaUpdates();
+    }
+
+    public function upgrade1697196794Step1(): void
+    {
+        $this->renameOption('svNonModeratorReportHandlingLimit', 'svReportHandlingLimit');
     }
 
     /**
