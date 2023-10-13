@@ -383,13 +383,19 @@ class Report extends XFCP_Report
                 ON DUPLICATE KEY UPDATE
                     canView = if(canView = 0 OR userPerm.permission_value = 'never' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow', 1, NULL))
             ");
-            // prune the set. phpstorm gets a left-join is null wrong
+            // prune the set of users who can't view the report center at all
+            $db->query('
+                DELETE reportUsers
+                FROM xf_sv_non_moderator_report_users AS reportUsers
+                WHERE user_id = 0 or canView = 0 or canView is null
+            ');
+            // prune users who aren't in a valid state. phpstorm gets a left-join is null wrong
             /** @noinspection SqlConstantExpression */
             $db->query("
                 DELETE reportUsers
                 FROM xf_sv_non_moderator_report_users AS reportUsers
                 LEFT JOIN xf_user AS xu ON reportUsers.user_id = xu.user_id
-                WHERE reportUsers.canView = 0 or reportUsers.canView is null or reportUsers.user_id = 0 or xu.user_id is null or xu.user_state <> 'valid'
+                WHERE xu.user_id is null or xu.user_state <> 'valid'
             ");
 
             $tablesToCheck = [
