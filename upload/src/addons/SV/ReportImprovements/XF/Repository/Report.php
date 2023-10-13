@@ -369,8 +369,8 @@ class Report extends XFCP_Report
                     SELECT DISTINCT gr.user_id, groupPerm.permission_value 
                     FROM xf_permission_entry AS groupPerm use index (permission_group_id_permission_id)
                     STRAIGHT_JOIN xf_user_group_relation AS gr use index (user_group_id_is_primary) ON groupPerm.user_group_id = gr.user_group_id
-                    WHERE 
-                         groupPerm.permission_group_id = 'general' AND groupPerm.permission_id = 'viewReports'
+                    WHERE
+                         groupPerm.user_group_id <> 0 AND groupPerm.permission_group_id = 'general' AND groupPerm.permission_id = 'viewReports'
                 ) a
                 ON DUPLICATE KEY UPDATE
                     canView = if(canView = 0 OR a.permission_value = 'never' OR a.permission_value = 'reset', 0, if(a.permission_value = 'allow', 1, NULL))
@@ -379,7 +379,7 @@ class Report extends XFCP_Report
                 INSERT INTO xf_sv_non_moderator_report_users (user_id, canView)
                 SELECT DISTINCT userPerm.user_id, if(permission_value = 'allow', 1, 0) as val
                 FROM xf_permission_entry AS userPerm use index (permission_group_id_permission_id)
-                WHERE userPerm.permission_group_id = 'general' AND userPerm.permission_id = 'viewReports'
+                WHERE userPerm.user_id <> 0 AND userPerm.permission_group_id = 'general' AND userPerm.permission_id = 'viewReports'
                 ON DUPLICATE KEY UPDATE
                     canView = if(canView = 0 OR userPerm.permission_value = 'never' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow', 1, NULL))
             ");
@@ -413,13 +413,13 @@ class Report extends XFCP_Report
                         JOIN xf_user_group_relation AS gr ON reportUsers.user_id = gr.user_id
                         JOIN $table AS groupPerm On groupPerm.user_group_id = gr.user_group_id                
                         set reportUsers.canView = if(canView = 0 OR groupPerm.permission_value = 'deny' OR groupPerm.permission_value = 'reset', 0, if(groupPerm.permission_value = 'allow' or groupPerm.permission_value = 'content_allow', 1, NULL))
-                        WHERE $contentFilterSql groupPerm.permission_group_id = 'report_queue' AND groupPerm.permission_id = 'view'
+                        WHERE $contentFilterSql groupPerm.user_group_id <> 0 AND groupPerm.permission_group_id = 'report_queue' AND groupPerm.permission_id = 'view'
                     ");
                     $db->query("
                         UPDATE xf_sv_non_moderator_report_users as reportUsers
                         JOIN $table AS userPerm On reportUsers.user_id = userPerm.user_id                
                         set reportUsers.canView = if(canView = 0 OR userPerm.permission_value = 'deny' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow' or userPerm.permission_value = 'content_allow', 1, NULL))
-                        WHERE $contentFilterSql userPerm.permission_group_id = 'report_queue' AND userPerm.permission_id = 'view'
+                        WHERE $contentFilterSql userPerm.user_id <> 0 AND userPerm.permission_group_id = 'report_queue' AND userPerm.permission_id = 'view'
                     ");
                 }
 
@@ -437,13 +437,13 @@ class Report extends XFCP_Report
                     JOIN xf_user_group_relation AS gr ON reportUsers.user_id = gr.user_id
                     JOIN $table AS groupPerm On groupPerm.user_group_id = gr.user_group_id                
                     set reportUsers.canUpdate = if(canUpdate = 0 OR groupPerm.permission_value = 'deny' OR groupPerm.permission_value = 'reset', 0, if(groupPerm.permission_value = 'allow' or groupPerm.permission_value = 'content_allow', 1, NULL))
-                    WHERE $contentFilterSql groupPerm.permission_group_id = 'report_queue' AND groupPerm.permission_id = 'updateReport'
+                    WHERE $contentFilterSql groupPerm.user_group_id <> 0 AND groupPerm.permission_group_id = 'report_queue' AND groupPerm.permission_id = 'updateReport'
                 ");
                 $db->query("
                     UPDATE xf_sv_non_moderator_report_users as reportUsers
                     JOIN $table AS userPerm On reportUsers.user_id = userPerm.user_id                
                     set reportUsers.canUpdate = if(canUpdate = 0 OR userPerm.permission_value = 'deny' OR userPerm.permission_value = 'reset', 0, if(userPerm.permission_value = 'allow' or userPerm.permission_value = 'content_allow', 1, NULL))
-                    WHERE $contentFilterSql userPerm.permission_group_id = 'report_queue' AND userPerm.permission_id = 'updateReport'
+                    WHERE $contentFilterSql userPerm.user_id <> 0 AND userPerm.permission_group_id = 'report_queue' AND userPerm.permission_id = 'updateReport'
                 ");
             }
 
