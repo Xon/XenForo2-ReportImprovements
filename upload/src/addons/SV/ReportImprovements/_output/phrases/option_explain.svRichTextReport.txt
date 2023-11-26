@@ -1,0 +1,1 @@
+Display the XF rich text editor in the report create dialog. Note even without this option, raw bb-code can be used.

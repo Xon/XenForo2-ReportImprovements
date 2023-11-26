@@ -1,0 +1,9 @@
+{
+    "template": "report_create",
+    "description": "Inject rich text editor in report create view",
+    "execution_order": 69050,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#([\\t ]*<xf:textarearow)(.*?/>)#si",
+    "replace": "<xf:if is=\"$xf.options.svRichTextReport\">\n<xf:editorrow $2\n<xf:else />\n$0\n</xf:if>"
+}
