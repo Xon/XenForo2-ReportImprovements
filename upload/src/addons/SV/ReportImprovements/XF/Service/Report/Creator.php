@@ -29,6 +29,7 @@ class Creator extends XFCP_Creator
         }
 
         $this->report->hydrateRelation('LastModified', $this->comment);
+        $this->commentPreparer->setDisableEmbedsInUserReports(\XF::options()->svDisableEmbedsInUserReports  ?? true);
     }
 
     /**

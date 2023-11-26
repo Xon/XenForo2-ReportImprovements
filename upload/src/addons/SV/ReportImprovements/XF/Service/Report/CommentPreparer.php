@@ -33,6 +33,9 @@ class CommentPreparer extends XFCP_CommentPreparer
     /** @var bool */
     protected $logIp = false;
 
+    /** @var bool */
+    protected $disableEmbedsInUserReports = false;
+
     public function logIp(bool $logIp)
     {
         $this->logIp = $logIp;
@@ -55,11 +58,36 @@ class CommentPreparer extends XFCP_CommentPreparer
 
     public function setMessage($message, $format = true)
     {
-        $ret = parent::setMessage($message, $format);
+        $options = \XF::options();
+        $disableEmbedsInUserReports = $this->disableEmbedsInUserReports;
+        if ($disableEmbedsInUserReports)
+        {
+            $urlToRichPreview = $options->urlToRichPreview;
+            $autoEmbedMedia = $options->autoEmbedMedia;
+            $options->urlToPageTitle['enabled'] = false;
+            $options->urlToRichPreview = false;
+        }
+        try
+        {
+            $ret = parent::setMessage($message, $format);
+        }
+        finally
+        {
+            if ($disableEmbedsInUserReports)
+            {
+                $options->autoEmbedMedia = $autoEmbedMedia;
+                $options->urlToRichPreview = $urlToRichPreview;
+            }
+        }
 
         $this->comment->embed_metadata = $this->preparer->getEmbedMetadata();
 
         return $ret;
+    }
+
+    public function setDisableEmbedsInUserReports(bool $value): void
+    {
+        $this->disableEmbedsInUserReports = $value;
     }
 
     /**

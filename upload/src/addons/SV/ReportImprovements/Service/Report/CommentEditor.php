@@ -76,6 +76,10 @@ class CommentEditor extends AbstractService
 
     protected function setCommentDefaults()
     {
+        if ($this->comment->is_report)
+        {
+            $this->commentPreparer->setDisableEmbedsInUserReports(\XF::options()->svDisableEmbedsInUserReports ?? true);
+        }
     }
 
     public function setOldMessage(string $oldMessage = null): self
