@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:avatar user=\"$alert.User\" size=\"xxs\" defaultname=\"{$alert.username}\" />",
-    "replace": "<xf:if is=\"$alert.content_type === 'report_comment' && $alert.action == 'insert'\">\n\t<xf:avatar user=\"$alert.Content.ViewableUser\" size=\"xxs\" defaultname=\"{$alert.Content.ViewableUsername}\" />\n<xf:else />\n\t$0\n</xf:if>"
+    "replace": "<xf:if is=\"$alert.content_type === 'report_comment'\">\n\t<xf:avatar user=\"$alert.Content.ViewableUser\" size=\"xxs\" defaultname=\"{$alert.Content.ViewableUsername}\" />\n<xf:else />\n\t$0\n</xf:if>"
 }
