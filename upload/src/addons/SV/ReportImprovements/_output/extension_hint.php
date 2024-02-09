@@ -29,6 +29,7 @@ namespace SV\ReportImprovements\XF\ControllerPlugin
 namespace SV\ReportImprovements\XF\Entity
 {
 	class XFCP_ApprovalQueue extends \XF\Entity\ApprovalQueue {}
+	class XFCP_ApprovalQueuePatch extends \XF\Entity\ApprovalQueue {}
 	class XFCP_PermissionEntry extends \XF\Entity\PermissionEntry {}
 	class XFCP_PermissionEntryContent extends \XF\Entity\PermissionEntryContent {}
 	class XFCP_Post extends \XF\Entity\Post {}
@@ -40,6 +41,11 @@ namespace SV\ReportImprovements\XF\Entity
 	class XFCP_User extends \XF\Entity\User {}
 	class XFCP_UserOption extends \XF\Entity\UserOption {}
 	class XFCP_Warning extends \XF\Entity\Warning {}
+}
+
+namespace SV\ReportImprovements\XF\Finder
+{
+	class XFCP_ApprovalQueue extends \XF\Finder\ApprovalQueue {}
 }
 
 namespace SV\ReportImprovements\XF\Pub\Controller

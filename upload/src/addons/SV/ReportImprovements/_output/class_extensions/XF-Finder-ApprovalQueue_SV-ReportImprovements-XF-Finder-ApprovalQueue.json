@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Finder\\ApprovalQueue",
+    "to_class": "SV\\ReportImprovements\\XF\\Finder\\ApprovalQueue",
+    "execute_order": 9,
+    "active": true
+}

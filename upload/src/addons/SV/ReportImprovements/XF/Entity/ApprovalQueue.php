@@ -2,33 +2,40 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use XF\Entity\Report as ReportEntity;
+use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
+use XF\Repository\Report as ReportRepo;
+use function array_key_exists;
+use function assert;
+use function is_callable;
 
 /**
  * Class ApprovalQueue
  * Extends \XF\Entity\ApprovalQueue
  *
  * @package SV\ReportImprovements\XF\Entity
- * @property-read Report $Report
+ * @property-read ?Report $Report
+ * @property-read ?Report $Report_
+ * @property-read ?Entity $ReportableContent
  */
 class ApprovalQueue extends XFCP_ApprovalQueue
 {
-    public function canReport(&$error = null)
+    public function canReport(&$error = null): bool
     {
-        /** @var \XF\Repository\Report $reportRepo */
-        $reportRepo = $this->repository('XF:Report');
-        if (!$reportRepo->getReportHandler($this->content_type))
+        $reportableContent = $this->ReportableContent;
+        if ($reportableContent === null)
         {
             return false;
         }
 
-        if (\is_callable([$this->Content, 'canReportFromApprovalQueue']))
+        if (is_callable([$reportableContent, 'canReportFromApprovalQueue']))
         {
-            $canReport = $this->Content->canReportFromApprovalQueue($error);
+            $canReport = $reportableContent->canReportFromApprovalQueue($error);
         }
-        else if (\is_callable([$this->Content, 'canReport']))
+        else if (is_callable([$reportableContent, 'canReport']))
         {
-            $canReport = $this->Content->canReport($error);
+            $canReport = $reportableContent->canReport($error);
         }
         else
         {
@@ -40,12 +47,111 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             return false;
         }
 
-        if ($this->Report)
+        if ($this->Report !== null)
         {
             return false;
         }
 
         return true;
+    }
+
+    protected function getReportableContent(): ?Entity
+    {
+        return $this->getReportableContentInternal($this->Content);
+    }
+
+    protected function getReportableContentInternal(Entity $content, int $recursionLimit = 10): ?Entity
+    {
+        $contentType = $content->getEntityContentType();
+
+        /** @var ReportRepo $reportRepo */
+        $reportRepo = $this->repository('XF:Report');
+        if ($reportRepo->getReportHandler($contentType, false))
+        {
+            // has a report handler so get return the content type and content id
+            return $content;
+        }
+
+        // see SV\ReportImprovements\XF\Finder::getContainerToContentJoins to what is basically the SQL version of this
+        switch($this->content_type)
+        {
+            case 'thread':
+                assert($content instanceof \XF\Entity\Thread);
+                return $content->FirstPost;
+            default:
+                $nestedContent = null;
+
+                // nested Content thingy?
+                if (($content->isValidGetter('Content') || $content->isValidRelation('Content')))
+                {
+                    $nestedContent = $content->get('Content');
+                }
+
+                if ($recursionLimit > 0 && $nestedContent instanceof Entity)
+                {
+                    $reportableContent = $this->getReportableContentInternal($nestedContent, $recursionLimit - 1);
+                    if ($reportableContent !== null)
+                    {
+                        return $reportableContent;
+                    }
+                }
+
+                return null;
+        }
+    }
+
+    protected function getSvReport(): ?ReportEntity
+    {
+        if (array_key_exists('Report', $this->_relations))
+        {
+            return $this->_relations['Report'];
+        }
+
+        $content = $this->ReportableContent;
+        if ($content === null)
+        {
+            return null;
+        }
+
+        if ($content->isValidKey('Report'))
+        {
+            $report = $content->get('Report');
+            if ($report instanceof ReportEntity)
+            {
+                $this->hydrateRelation('Report', $report);
+                return $report;
+            }
+
+            $this->hydrateRelation('Report', null);
+            return null;
+        }
+
+        /** @var \XF\Finder\Report $reportFinder */
+        $reportFinder = $this->finder('XF:Report');
+        /** @var ReportEntity $report */
+        $report = $reportFinder
+            ->where('content_type', $content->getEntityContentType())
+            ->where('content_id', $content->getEntityId())
+            ->fetchOne();
+
+        $this->hydrateRelation('Report', $report);
+
+        return $report;
+    }
+
+    /**
+     * @param Entity|null $content
+     */
+    public function setContent(Entity $content = null)
+    {
+        parent::setContent($content);
+
+        unset($this->_relations['Report']);
+        $report = $this->Report;
+        if ($report !== null && $content !== null)
+        {
+            $report->setContent($this->ReportableContent);
+        }
     }
 
     /**
@@ -63,6 +169,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
                 ['content_type', '=', '$content_type'],
                 ['content_id', '=', '$content_id'],
             ],
+            'primary' => true,
         ];
 
         $structure->relations['User'] = [
@@ -73,6 +180,9 @@ class ApprovalQueue extends XFCP_ApprovalQueue
                 ['user_id', '=', '$content_id'],
             ],
         ];
+
+        $structure->getters['Report'] = ['getter' => 'getSvReport', 'cache' => true];
+        $structure->getters['ReportableContent'] = ['getter' => 'getReportableContent', 'cache' => true];
 
         return $structure;
     }

@@ -50,3 +50,16 @@
         </xf:checkbox>
     </div>
 </xf:macro>
+
+<xf:macro name="report_button" arg-unapprovedItem="!" arg-content="!">
+	<xf:if is="!($unapprovedItem instanceof '\XF\Entity\ApprovalQueue')"><xf:set var="$unapprovedItem" value="{{ $__globals.unapprovedItem }}" /></xf:if>
+	<xf:if is="$xf.options.svReportFromApprovalQueue && callable($unapprovedItem, 'canReport') && $unapprovedItem.ReportableContent !== null && $unapprovedItem.canReport()">
+		<xf:button href="{{ link('approval-queue/report', null, {'content_type': $unapprovedItem.content_type, 'content_id': $unapprovedItem.content_id}) }}" data-xf-click="overlay" class="button--fullWidth" style="margin-bottom: 6px;">
+			<xf:if is="$unapprovedItem.ReportableContent instanceof 'XF\Entity\User'">
+				{{ phrase('svReportImprovements_report_user') }}
+			<xf:else />
+				{{ phrase('report') }}
+			</xf:if>
+		</xf:button>
+	</xf:if>
+</xf:macro>

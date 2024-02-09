@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
+use SV\ReportImprovements\XF\Finder\ApprovalQueue as ApprovalQueueFinder;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Finder;
 use XF\Mvc\ParameterBag;
@@ -175,8 +176,8 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     }
 
     /**
-     * @param Finder $finder
-     * @param array $filters
+     * @param Finder|ApprovalQueueFinder $finder
+     * @param array                      $filters
      * @return void
      */
     protected function applyQueueFilters(Finder $finder, array $filters)
@@ -188,7 +189,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $includeReported = (bool)($filters['include_reported'] ?? true);
         if (!$includeReported)
         {
-            $finder->where('Report.report_id', null);
+            $finder->withoutReport();
         }
 
         if (\XF::isAddOnActive('NF/Tickets'))
@@ -196,10 +197,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             $includeWithoutTickets = (bool)($filters['without_tickets'] ?? true);
             if (!$includeWithoutTickets)
             {
-                $finder->whereOr(
-                    ['content_type', '<>', 'user'],
-                    ['User.nf_tickets_count', '<>', 0]
-                );
+                $finder->withoutTicket();
             }
         }
     }
@@ -242,10 +240,12 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             return $this->noPermission($error);
         }
 
+        $reportableContent = $approvalQueueItem->ReportableContent;
+
         /** @var \XF\ControllerPlugin\Report $reportPlugin */
         $reportPlugin = $this->plugin('XF:Report');
         return $reportPlugin->actionReport(
-            $approvalQueueItem->content_type, $approvalQueueItem->Content,
+            $reportableContent->getEntityContentType(), $reportableContent,
             $this->buildLink('approval-queue/report', null, [
                 'content_type' => $approvalQueueItem->content_type,
                 'content_id' => $approvalQueueItem->content_id,

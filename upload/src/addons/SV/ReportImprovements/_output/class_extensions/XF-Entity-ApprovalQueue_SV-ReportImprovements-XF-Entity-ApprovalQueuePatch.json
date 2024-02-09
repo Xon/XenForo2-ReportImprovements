@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Entity\\ApprovalQueue",
+    "to_class": "SV\\ReportImprovements\\XF\\Entity\\ApprovalQueuePatch",
+    "execute_order": 6905000,
+    "active": true
+}
