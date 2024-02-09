@@ -9,7 +9,7 @@ use function assert;
 
 /**
  * Class User
- * Extends \XF\Entity\User
+ * @extends \XF\Entity\User
  *
  * @package SV\ReportImprovements\XF\Entity
  */

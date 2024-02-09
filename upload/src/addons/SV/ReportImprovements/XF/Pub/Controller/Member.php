@@ -6,7 +6,7 @@ namespace SV\ReportImprovements\XF\Pub\Controller;
 use XF\Mvc\ParameterBag;
 
 /**
- * Extends \XF\Pub\Controller\Member
+ * @extends \XF\Pub\Controller\Member
  */
 class Member extends XFCP_Member
 {

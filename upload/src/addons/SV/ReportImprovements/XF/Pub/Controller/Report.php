@@ -27,7 +27,7 @@ use XF\Service\Conversation\Inviter;
 
 /**
  * Class Report
- * Extends \XF\Pub\Controller\Report
+ * @extends \XF\Pub\Controller\Report
  *
  * @package SV\ReportImprovements\XF\Pub\Controller
  */

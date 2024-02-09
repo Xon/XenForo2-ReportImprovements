@@ -10,7 +10,7 @@ use XF\PrintableException;
 
 /**
  * Class ReplyBan
- * Extends \XF\Service\Thread\ReplyBan
+ * @extends \XF\Service\Thread\ReplyBan
  *
  * @package SV\ReportImprovements\XF\Service\Thread
  * @property \SV\ReportImprovements\XF\Entity\ThreadReplyBan $replyBan

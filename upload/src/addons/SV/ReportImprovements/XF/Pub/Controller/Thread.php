@@ -9,7 +9,7 @@ use XF\Mvc\ParameterBag;
 
 /**
  * Class Thread
- * Extends \XF\Pub\Controller\Thread
+ * @extends \XF\Pub\Controller\Thread
  *
  * @package SV\ReportImprovements\XF\Pub\Controller
  */

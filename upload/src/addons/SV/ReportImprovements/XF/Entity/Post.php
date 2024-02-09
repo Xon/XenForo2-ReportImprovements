@@ -6,7 +6,7 @@ use XF\Mvc\Entity\Structure;
 
 /**
  * Class Post
- * Extends \XF\Entity\Post
+ * @extends \XF\Entity\Post
  *
  * @package SV\ReportImprovements\XF\Entity
  * @property-read Report $Report

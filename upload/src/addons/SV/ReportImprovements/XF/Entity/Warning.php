@@ -11,7 +11,7 @@ use function strlen;
 
 /**
  * Class Warning
- * Extends \XF\Entity\Warning
+ * @extends \XF\Entity\Warning
  *
  * @package SV\ReportImprovements\XF\Entity
  * GETTERS

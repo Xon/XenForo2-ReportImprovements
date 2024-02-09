@@ -7,7 +7,7 @@ use XF\Entity\User as UserEntity;
 
 /**
  * Class Warning
- * Extends \XF\Repository\Warning
+ * @extends \XF\Repository\Warning
  *
  * @package SV\ReportImprovements\XF\Repository
  */

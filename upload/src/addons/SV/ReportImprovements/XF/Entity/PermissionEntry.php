@@ -6,7 +6,7 @@ use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use function assert;
 
 /**
- * Extends \XF\Entity\PermissionEntry
+ * @extends \XF\Entity\PermissionEntry
  */
 class PermissionEntry extends XFCP_PermissionEntry
 {

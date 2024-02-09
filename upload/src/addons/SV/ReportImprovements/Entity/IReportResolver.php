@@ -6,7 +6,7 @@ use SV\ReportImprovements\XF\Entity\Report;
 use XF\Entity\User;
 
 /**
- * @property Report|null Report
+ * @property-read Report|null $Report
  */
 interface IReportResolver
 {

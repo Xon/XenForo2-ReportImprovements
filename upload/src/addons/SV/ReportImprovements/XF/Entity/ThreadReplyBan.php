@@ -10,7 +10,7 @@ use XF\Mvc\Entity\Structure;
 
 /**
  * Class ThreadReplyBan
- * Extends \XF\Entity\ThreadReplyBan
+ * @extends \XF\Entity\ThreadReplyBan
  *
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS

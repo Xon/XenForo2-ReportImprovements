@@ -59,7 +59,7 @@ if (!function_exists('str_ends_with'))
 
 /**
  * Class Report
- * Extends \XF\Repository\Report
+ * @extends \XF\Repository\Report
  *
  * @package SV\ReportImprovements\XF\Repository
  */

@@ -12,7 +12,7 @@ use function is_callable;
 
 /**
  * Class ApprovalQueue
- * Extends \XF\Entity\ApprovalQueue
+ * @extends \XF\Entity\ApprovalQueue
  *
  * @package SV\ReportImprovements\XF\Entity
  * @property-read ?Report $Report

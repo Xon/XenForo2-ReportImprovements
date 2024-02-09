@@ -6,7 +6,7 @@ use SV\ReportImprovements\XF\Entity\Report;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 
 /**
- * Extends \XF\Service\Report\Creator
+ * @extends \XF\Service\Report\Creator
  *
  * @property Report          $report
  * @property ReportComment   $comment

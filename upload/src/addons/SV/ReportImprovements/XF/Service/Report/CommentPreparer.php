@@ -16,7 +16,7 @@ use function in_array;
 use function strlen;
 
 /**
- * Extends \XF\Service\Report\CommentPreparer
+ * @extends \XF\Service\Report\CommentPreparer
  *
  * @package SV\ReportImprovements\XF\Service\Report
  * @property ExtendedReportEntity        $report

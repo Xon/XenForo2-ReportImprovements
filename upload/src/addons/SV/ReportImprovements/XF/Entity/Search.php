@@ -14,7 +14,7 @@ use function assert;
 use function is_array;
 
 /**
- * Extends \XF\Entity\Search
+ * @extends \XF\Entity\Search
  */
 class Search extends XFCP_Search
 {

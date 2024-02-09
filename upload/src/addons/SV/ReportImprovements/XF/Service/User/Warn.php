@@ -11,7 +11,7 @@ use XF\PrintableException;
 
 /**
  * Class Warn
- * Extends \XF\Service\User\Warn
+ * @extends \XF\Service\User\Warn
  *
  * @package SV\ReportImprovements\XF\Service\User
  *

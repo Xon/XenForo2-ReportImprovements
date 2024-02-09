@@ -7,7 +7,7 @@ use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use function assert;
 
 /**
- * Extends \XF\Behavior\IndexableContainer
+ * @extends \XF\Behavior\IndexableContainer
  */
 class IndexableContainer extends XFCP_IndexableContainer
 {

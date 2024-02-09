@@ -9,7 +9,7 @@ use XF\Mvc\Reply\Exception as ReplyException;
 
 /**
  * Class Warning
- * Extends \XF\Pub\Controller\Warning
+ * @extends \XF\Pub\Controller\Warning
  *
  * @package SV\ReportImprovements\XF\Pub\Controller
  */

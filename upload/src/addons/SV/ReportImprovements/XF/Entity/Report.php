@@ -19,7 +19,7 @@ use function is_callable;
 
 /**
  * Class Report
- * Extends \XF\Entity\Report
+ * @extends \XF\Entity\Report
  *
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS

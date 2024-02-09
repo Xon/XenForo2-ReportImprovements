@@ -16,7 +16,7 @@ use XF\Phrase;
 
 /**
  * Class ReportComment
- * Extends \XF\Entity\ReportComment
+ * @extends \XF\Entity\ReportComment
  *
  * @package SV\ReportImprovements\XF\Entity
  * COLUMNS

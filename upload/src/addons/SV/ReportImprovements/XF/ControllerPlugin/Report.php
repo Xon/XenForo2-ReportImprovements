@@ -8,7 +8,7 @@ use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\Exception as ReplyException;
 
 /**
- * Extends \XF\ControllerPlugin\Report
+ * @extends \XF\ControllerPlugin\Report
  */
 class Report extends XFCP_Report
 {

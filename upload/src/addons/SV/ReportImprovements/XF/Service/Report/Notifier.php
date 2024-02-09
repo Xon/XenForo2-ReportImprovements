@@ -11,7 +11,7 @@ use XF\Repository\UserAlert;
 
 /**
  * Class Notifier
- * Extends \XF\Service\Report\Notifier
+ * @extends \XF\Service\Report\Notifier
  *
  * @package SV\ReportImprovements\XF\Service\Report
  * @property \SV\ReportImprovements\XF\Entity\Report        $report

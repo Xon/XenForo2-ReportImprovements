@@ -15,7 +15,7 @@ use function assert;
 
 /**
  * Class Post
- * Extends \XF\Report\Post
+ * @extends \XF\Report\Post
  *
  * @package SV\ReportImprovements\XF\Report
  */

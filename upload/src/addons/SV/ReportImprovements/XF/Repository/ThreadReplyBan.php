@@ -4,7 +4,7 @@ namespace SV\ReportImprovements\XF\Repository;
 
 /**
  * Class ThreadReplyBan
- * Extends \XF\Repository\ThreadReplyBan
+ * @extends \XF\Repository\ThreadReplyBan
  *
  * @package SV\ReportImprovements\XF\Repository
  */

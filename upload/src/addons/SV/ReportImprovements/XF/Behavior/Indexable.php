@@ -8,7 +8,7 @@ use XF\Entity\Report as ReportEntity;
 use function assert;
 
 /**
- * Extends \XF\Behavior\Indexable
+ * @extends \XF\Behavior\Indexable
  */
 class Indexable extends XFCP_Indexable
 {

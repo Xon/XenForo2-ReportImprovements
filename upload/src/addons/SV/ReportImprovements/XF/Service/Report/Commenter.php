@@ -11,7 +11,7 @@ use XF\Entity\User;
 
 /**
  * Class Commenter
- * Extends \XF\Service\Report\Commenter
+ * @extends \XF\Service\Report\Commenter
  *
  * @package SV\ReportImprovements\XF\Service\Report
  * @property ExtendedReportEntity        $report

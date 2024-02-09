@@ -6,7 +6,7 @@ use SV\ReportImprovements\XF\Repository\Warning as WarningRepo;
 use SV\WarningImprovements\XF\Entity\WarningDefinition;
 
 /**
- * Extends \XF\Pub\View\Member\WarnFill
+ * @extends \XF\Pub\View\Member\WarnFill
  */
 class WarnFill extends XFCP_WarnFill
 {

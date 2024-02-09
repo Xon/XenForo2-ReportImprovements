@@ -7,7 +7,7 @@ use XF\Entity\Thread;
 use XF\Mvc\Entity\Entity;
 
 /**
- * Extends \XF\Service\Report\Creator
+ * @extends \XF\Service\Report\Creator
  *
  * @property CommentPreparer             $commentPreparer
  */

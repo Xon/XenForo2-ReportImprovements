@@ -13,7 +13,7 @@ use XF\Search\Query\Query;
 use function assert;
 
 /**
- * Extends \NF\Tickets\Report\Message
+ * @extends \NF\Tickets\Report\Message
  */
 class Message extends XFCP_Message implements ContentInterface, ReportSearchFormInterface
 {

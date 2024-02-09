@@ -8,7 +8,7 @@ use XF\Mvc\Entity\Entity;
 
 /**
  * Class ProfilePostComment
- * Extends \XF\Report\ProfilePostComment
+ * @extends \XF\Report\ProfilePostComment
  *
  * @package SV\ReportImprovements\XF\Report
  */

@@ -6,7 +6,7 @@ use XF\Entity\Report;
 
 /**
  * Class User
- * Extends \XF\Report\User
+ * @extends \XF\Report\User
  *
  * @package SV\ReportImprovements\XF\Report
  */

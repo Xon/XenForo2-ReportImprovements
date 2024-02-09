@@ -8,7 +8,7 @@ use XF\Mvc\Entity\Entity;
 
 /**
  * Class ConversationMessage
- * Extends \XF\Report\ConversationMessage
+ * @extends \XF\Report\ConversationMessage
  *
  * @package SV\ReportImprovements\XF\Report
  */

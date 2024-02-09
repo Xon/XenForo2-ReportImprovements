@@ -16,7 +16,7 @@ use XF\Warning\AbstractHandler;
 
 /**
  * Class Warn
- * Extends \XF\ControllerPlugin\Warn
+ * @extends \XF\ControllerPlugin\Warn
  *
  * @package SV\ReportImprovements\XF\ControllerPlugin
  */

@@ -6,7 +6,7 @@ use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use function assert;
 
 /**
- * Extends \XF\Repository\PermissionCombination
+ * @extends \XF\Repository\PermissionCombination
  */
 class PermissionCombination extends XFCP_PermissionCombination
 {
