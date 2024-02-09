@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\ApprovalQueue\\Thread",
+    "to_class": "SV\\ReportImprovements\\XF\\ApprovalQueue\\Thread",
+    "execute_order": 10,
+    "active": true
+}

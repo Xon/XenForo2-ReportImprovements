@@ -2,7 +2,10 @@
 
 namespace SV\ReportImprovements\XF\Finder;
 
+use SV\ReportImprovements\ApprovalQueue\IContainerToContent;
 use SV\StandardLib\Finder\SqlJoinTrait;
+use XF\Repository\ApprovalQueue as ApprovalQueueRepo;
+use function array_merge;
 
 /**
  * @extends \XF\Finder\ApprovalQueue
@@ -13,12 +16,19 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
     public function getContainerToContentJoins(): array
     {
-        return [
-            'XF:Post' => [
-                'container' => 'XF:Thread',
-                'contentKey' => 'first_post_id',
-            ],
-        ];
+        $joins = [];
+        /** @var ApprovalQueueRepo $approvalQueueRepo */
+        $approvalQueueRepo = \XF::repository('XF:ApprovalQueue');
+        $handlers = $approvalQueueRepo->getApprovalQueueHandlers(false);
+        foreach ($handlers as $handler)
+        {
+            if ($handler instanceof IContainerToContent)
+            {
+                $joins = array_merge($joins, $handler->getContainerToContentJoins());
+            }
+        }
+
+        return $joins;
     }
 
     /**
@@ -31,9 +41,9 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
         $aliasCounter = 0;
         $joins = $this->getContainerToContentJoins();
-        foreach ($joins as $entityName => $details)
+        foreach ($joins as $containerEntityName => $details)
         {
-            $containerEntityName = $details['container'] ?? null;
+            $entityName = $details['content'] ?? null;
             $contentKey = $details['contentKey'] ?? null;
             if ($containerEntityName === null || $contentKey === null)
             {

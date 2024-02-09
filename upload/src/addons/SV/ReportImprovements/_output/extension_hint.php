@@ -14,6 +14,11 @@ namespace SV\ReportImprovements\SV\ForumBan\Entity
 	class XFCP_ForumBan extends \SV\ForumBan\Entity\ForumBan {}
 }
 
+namespace SV\ReportImprovements\XF\ApprovalQueue
+{
+	class XFCP_Thread extends \XF\ApprovalQueue\Thread {}
+}
+
 namespace SV\ReportImprovements\XF\Behavior
 {
 	class XFCP_Indexable extends \XF\Behavior\Indexable {}

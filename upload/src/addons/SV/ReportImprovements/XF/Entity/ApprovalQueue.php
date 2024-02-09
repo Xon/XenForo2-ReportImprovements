@@ -2,9 +2,11 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
+use SV\ReportImprovements\ApprovalQueue\IContainerToContent;
 use XF\Entity\Report as ReportEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
+use XF\Repository\ApprovalQueue as ApprovalQueueRepo;
 use XF\Repository\Report as ReportRepo;
 use function array_key_exists;
 use function assert;
@@ -72,32 +74,25 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             return $content;
         }
 
-        // see SV\ReportImprovements\XF\Finder::getContainerToContentJoins to what is basically the SQL version of this
-        switch($this->content_type)
+        $handler = $this->getHandler();
+        if ($handler instanceof IContainerToContent)
         {
-            case 'thread':
-                assert($content instanceof \XF\Entity\Thread);
-                return $content->FirstPost;
-            default:
-                $nestedContent = null;
-
-                // nested Content thingy?
-                if (($content->isValidGetter('Content') || $content->isValidRelation('Content')))
-                {
-                    $nestedContent = $content->get('Content');
-                }
-
-                if ($recursionLimit > 0 && $nestedContent instanceof Entity)
-                {
-                    $reportableContent = $this->getReportableContentInternal($nestedContent, $recursionLimit - 1);
-                    if ($reportableContent !== null)
-                    {
-                        return $reportableContent;
-                    }
-                }
-
-                return null;
+            return $handler->getReportableContent($content);
         }
+
+        // nested Content thingy?
+        if (!$content->isValidKey('Content'))
+        {
+            return null;
+        }
+
+        $nestedContent = $content->get('Content');
+        if ($recursionLimit > 0 && $nestedContent instanceof Entity)
+        {
+            return $this->getReportableContentInternal($nestedContent, $recursionLimit - 1);
+        }
+
+        return null;
     }
 
     protected function getSvReport(): ?ReportEntity
