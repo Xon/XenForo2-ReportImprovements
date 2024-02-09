@@ -1,0 +1,6 @@
+{
+    "from_class": "NF\\Tickets\\ApprovalQueue\\Ticket",
+    "to_class": "SV\\ReportImprovements\\NF\\Tickets\\ApprovalQueue\\Ticket",
+    "execute_order": 9,
+    "active": true
+}
