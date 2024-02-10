@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\BbCode\\Renderer\\Html",
+    "to_class": "SV\\ReportImprovements\\XF\\BbCode\\Renderer\\Html",
+    "execute_order": 6905,
+    "active": true
+}

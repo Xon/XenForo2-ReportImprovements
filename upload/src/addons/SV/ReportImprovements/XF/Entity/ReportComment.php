@@ -182,6 +182,12 @@ class ReportComment extends XFCP_ReportComment
             $options['attachments'] = 0;
             $options['viewAttachments'] = false;
             $options['unfurls'] = [];
+            if (\XF::options()->svDisableEmbedsInUserReports ?? true)
+            {
+                $options['allowUnfurl'] = false;
+                $options['shortenUrl'] = false;
+                $options['svDisableUrlMediaTag'] = true;
+            }
         }
         else
         {

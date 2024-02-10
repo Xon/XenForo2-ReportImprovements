@@ -1,0 +1,9 @@
+{
+    "event_id": "bb_code_rules",
+    "execute_order": 6905,
+    "callback_class": "SV\\ReportImprovements\\Listener\\bbCode",
+    "callback_method": "bbCodeRules",
+    "active": true,
+    "hint": "report_comment",
+    "description": "Optionally disable embeds/images in user reports"
+}

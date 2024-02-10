@@ -24,6 +24,11 @@ namespace SV\ReportImprovements\XF\ApprovalQueue
 	class XFCP_Thread extends \XF\ApprovalQueue\Thread {}
 }
 
+namespace SV\ReportImprovements\XF\BbCode\Renderer
+{
+	class XFCP_Html extends \XF\BbCode\Renderer\Html {}
+}
+
 namespace SV\ReportImprovements\XF\Behavior
 {
 	class XFCP_Indexable extends \XF\Behavior\Indexable {}

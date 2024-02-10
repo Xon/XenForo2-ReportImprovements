@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Inject bb-code rules context when rendering report comments",
+    "execution_order": 9,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "bb_code($comment.message, 'report_comment', $comment)",
+    "replace": "bb_code($comment.message, $comment.is_report ? 'report_comment:report' : 'report_comment:comment', $comment)"
+}
