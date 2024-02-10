@@ -18,9 +18,10 @@
 		  arg-alertEnableName="resolve_alert"
 		  arg-alertCommentName="resolve_alert_comment"
 		  arg-label="{{ phrase('svReportImprov_resolve_report') }}"
+		  arg-fullWidth="{{ false }}"
 		  >
 	<xf:if is="!$report || ($report && $report.canUpdate())">
-		<xf:checkboxrow explain="{{ !$report ? phrase('svReportImprov_report_will_be_created') : '' }}">
+		<xf:checkboxrow explain="{{ !$report ? phrase('svReportImprov_report_will_be_created') : '' }}" rowtype="{{ $fullWidth ? ' fullWidth' :'' }}">
 			<xf:if is="$alert">
 				<xf:option name="{$name}" label="{{ $label }}" checked="{$resolveDefault}">
 					<xf:dependent>
