@@ -13,10 +13,16 @@ abstract class bbCode
         'media',
     ];
 
-    /** @noinspection PhpUnusedParameterInspection */
-    public static function bbCodeRules(RuleSet $ruleSet, string $context, string $subContext): void
+    public static function bbCodeRules(RuleSet $ruleSet, ?string $context, ?string $subContext): void
     {
-        if ($subContext === 'report' && (\XF::options()->svDisableEmbedsInUserReports ?? true))
+        if ($context === null)
+        {
+            // even with a context/hint set, this method can still be called with a null context
+            // https://xenforo.com/community/threads/unexpected-hinted-bb_code_rules-code-event-listener-triggered-without-a-hint.219335/
+            return;
+        }
+
+        if ($subContext !== 'report' && (\XF::options()->svDisableEmbedsInUserReports ?? true))
         {
             foreach (static::$bbCodeToDisable as $tag)
             {
