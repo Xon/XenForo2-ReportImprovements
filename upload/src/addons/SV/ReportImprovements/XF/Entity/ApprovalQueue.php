@@ -59,7 +59,13 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
     protected function getReportableContent(): ?Entity
     {
-        return $this->getReportableContentInternal($this->Content);
+        $content = $this->Content;
+        if ($content === null)
+        {
+            return null;
+        }
+
+        return $this->getReportableContentInternal($content);
     }
 
     protected function getReportableContentInternal(Entity $content, int $recursionLimit = 10): ?Entity
