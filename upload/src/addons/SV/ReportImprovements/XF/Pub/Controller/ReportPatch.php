@@ -5,7 +5,6 @@ namespace SV\ReportImprovements\XF\Pub\Controller;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use XF\Mvc\ParameterBag;
-use XF\Mvc\Reply\View;
 use XF\Mvc\Reply\View as ViewReply;
 
 /**

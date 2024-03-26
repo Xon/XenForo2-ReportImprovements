@@ -6,10 +6,8 @@ use SV\ReportImprovements\ApprovalQueue\IContainerToContent;
 use XF\Entity\Report as ReportEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
-use XF\Repository\ApprovalQueue as ApprovalQueueRepo;
 use XF\Repository\Report as ReportRepo;
 use function array_key_exists;
-use function assert;
 use function is_callable;
 
 /**

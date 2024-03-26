@@ -24,7 +24,6 @@ class ForumBan extends XFCP_ForumBan implements IReportResolver
 
     /**
      * @return Report|Entity|null
-     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function getReport()
     {

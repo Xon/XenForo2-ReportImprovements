@@ -2,6 +2,8 @@
 
 namespace SV\ReportImprovements\Entity;
 
+use SV\ForumBan\Entity\ForumBan;
+use SV\ForumBan\XF\Entity\Forum as ForumBanForum;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Finder\WarningLog as WarningLogFinder;
@@ -21,6 +23,7 @@ use function assert;
 
 /**
  * COLUMNS
+ *
  * @property int|null                                   $warning_log_id
  * @property int                                        $warning_edit_date
  * @property bool                                       $is_latest_version
@@ -43,22 +46,20 @@ use function assert;
  * @property int|null                                   $reply_ban_thread_id
  * @property int|null                                   $reply_ban_post_id
  * @property string|null                                $public_banner_
- *
  * GETTERS
  * @property-read string|null                           $definition_title
  * @property string|null                                $public_banner
- * @property-read \SV\ForumBan\Entity\ForumBan|null     $ForumBan
+ * @property-read ForumBan|null                         $ForumBan
  * @property-read ThreadReplyBan|null                   $ReplyBan
  * @property-read WarningDefinition|null                $Definition
- *
  * RELATIONS
- * @property-read \SV\ForumBan\Entity\ForumBan|null     $ForumBan_
+ * @property-read ForumBan|null                         $ForumBan_
  * @property-read ThreadReplyBan|null                   $ReplyBan_
  * @property-read Warning|null                          $Warning
- * @property-read WarningDefinition|null                $Definition_
+* @property-read WarningDefinition|null                 $Definition_
  * @property-read User|null                             $WarnedBy
  * @property-read User|null                             $User
- * @property-read Forum|null                            $ForumBanForum
+ * @property-read Forum|ForumBanForum|null              $ForumBanForum
  * @property-read Thread|null                           $ReplyBanThread
  * @property-read Post|null                             $ReplyBanPost
  * @property-read ReportComment|null                    $ReportComment
@@ -145,7 +146,7 @@ class WarningLog extends Entity
         return null;
     }
 
-    public function getForumBan(): ?\SV\ForumBan\Entity\ForumBan
+    public function getForumBan(): ?ForumBan
     {
         if (!\XF::isAddOnActive('SV/ForumBan'))
         {

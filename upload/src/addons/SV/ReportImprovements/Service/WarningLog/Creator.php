@@ -39,7 +39,7 @@ class Creator extends AbstractService
     protected $threadReplyBan;
 
     /**
-     * @var ForumBan
+     * @var ForumBan|\SV\ReportImprovements\SV\ForumBan\Entity\ForumBan
      */
     protected $forumBan;
 

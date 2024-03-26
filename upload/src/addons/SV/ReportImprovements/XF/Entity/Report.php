@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Report\ContentInterface;
+use SV\SearchImprovements\Repository\Search as SearchRepo;
 use SV\SearchImprovements\Search\Features\ISearchableDiscussionUser;
 use SV\SearchImprovements\Search\Features\ISearchableReplyCount;
 use XF\Behavior\Indexable;
@@ -622,7 +623,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
             'proxy' => true
         ];
 
-        if (\SV\SearchImprovements\Globals::repo()->isUsingElasticSearch())
+        if (SearchRepo::get()->isUsingElasticSearch())
         {
             $structure->behaviors['XF:IndexableContainer']['checkForUpdates'][] = 'report_count';
             $structure->behaviors['XF:IndexableContainer']['checkForUpdates'][] = 'comment_count';

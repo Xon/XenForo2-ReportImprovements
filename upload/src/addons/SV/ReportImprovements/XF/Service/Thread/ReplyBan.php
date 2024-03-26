@@ -2,11 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Service\Thread;
 
-use SV\ReportImprovements\Globals;
 use XF\Entity\Post;
-use XF\Entity\ThreadReplyBan;
-use XF\Mvc\Entity\Entity;
-use XF\PrintableException;
 
 /**
  * Class ReplyBan

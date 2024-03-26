@@ -43,6 +43,7 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
         parent::setupReportEntityContent($report, $content);
 
         /** @var \NF\Tickets\Entity\Message $content */
+        /** @var \NF\Tickets\Entity\Ticket $ticket */
         $ticket = $content->Ticket;
         $contentInfo = $report->content_info;
         $contentInfo['message_date'] = $content->message_date;

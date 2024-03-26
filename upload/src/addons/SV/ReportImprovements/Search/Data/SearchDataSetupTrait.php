@@ -5,7 +5,7 @@ namespace SV\ReportImprovements\Search\Data;
 use SV\ElasticSearchEssentials\XF\Repository\ImpossibleSearchResultsException;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
-use SV\SearchImprovements\Globals;
+use SV\SearchImprovements\Repository\Search as SearchRepo;
 use SV\SearchImprovements\XF\Search\Query\Constraints\PermissionConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\TypeConstraint;
 use XF\Search\Query\MetadataConstraint;
@@ -16,7 +16,7 @@ trait SearchDataSetupTrait
 {
     /** @var ReportRepo|\XF\Repository\Report */
     protected $reportRepo;
-    /** @var \SV\SearchImprovements\Repository\Search */
+    /** @var SearchRepo */
     protected $searchRepo;
     /** @var bool */
     protected $isAddonFullyActive;
@@ -35,7 +35,7 @@ trait SearchDataSetupTrait
         $this->reportRepo = \XF::repository('XF:Report');
         $this->searchRepo = \XF::repository('SV\SearchImprovements:Search');
         $this->isAddonFullyActive = $this->reportRepo instanceof ReportRepo;
-        $this->isUsingElasticSearch = Globals::repo()->isUsingElasticSearch();
+        $this->isUsingElasticSearch = SearchRepo::get()->isUsingElasticSearch();
     }
 
     /**
