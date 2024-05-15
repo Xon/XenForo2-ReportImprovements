@@ -131,10 +131,10 @@ class ReportComment extends AbstractData
             return null;
         }
 
-        if ($entity->warning_log_id !== null)
+        if ($entity->warning_log_id !== null && ($warningLog = $entity->WarningLog))
         {
-            $entity->WarningLog->hydrateRelation('ReportComment', $entity);
-            return $this->searcher->handler('warning_log')->getIndexData($entity->WarningLog);
+            $warningLog->hydrateRelation('ReportComment', $entity);
+            return $this->searcher->handler('warning_log')->getIndexData($warningLog);
         }
 
         return IndexRecord::create('report_comment', $entity->report_comment_id, [
