@@ -276,6 +276,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         // XF2.2.9 Adds this function, so we can't depend on it existing all the time
         if (is_callable([parent::class,'setContent']))
         {
+            /** @noinspection PhpUndefinedMethodInspection */
             parent::setContent($content);
         }
 

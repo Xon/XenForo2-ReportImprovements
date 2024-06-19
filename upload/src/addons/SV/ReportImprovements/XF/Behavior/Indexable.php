@@ -5,6 +5,7 @@ namespace SV\ReportImprovements\XF\Behavior;
 use SV\ReportImprovements\XF\Entity\Report;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use XF\Entity\Report as ReportEntity;
+use function array_key_exists;
 use function assert;
 
 /**
@@ -17,11 +18,13 @@ class Indexable extends XFCP_Indexable
 
     protected function svCheckVisibleRelations(): bool
     {
+        $structure = $this->entity->structure();
+
         // by convention, ApprovalQueue/DeletionLog indicate if an entity is in the approval queue or deleted
         // but XF does not enforce this and the visible flag is entity dependant
         foreach (['ApprovalQueue', 'DeletionLog'] as $relation)
         {
-            if ($this->entity->hasRelation($relation))
+            if (array_key_exists($relation, $structure->relations))
             {
                 $this->svHasApprovalDeleteRelations = true;
                 $relationObj = $this->entity->getRelation($relation);
@@ -83,7 +86,8 @@ class Indexable extends XFCP_Indexable
         }
 
         $report = null;
-        if ($this->entity->hasRelation('Report'))
+        $structure = $this->entity->structure();
+        if (array_key_exists('Report', $structure->relations))
         {
             $report = $this->entity->getRelation('Report');
         }

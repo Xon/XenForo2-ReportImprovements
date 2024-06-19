@@ -101,8 +101,10 @@ class ReportComment extends AbstractHandler
 
     /**
      * Returns the content title for which is shown to user when viewing edit history.
+     *
      * @param Entity $content
      * @return string|Phrase|null
+     * @noinspection PhpReturnDocTypeMismatchInspection
      */
     public function getContentTitle(Entity $content)
     {

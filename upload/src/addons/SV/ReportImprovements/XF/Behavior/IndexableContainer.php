@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Behavior;
 
 use SV\ReportImprovements\Job\ReindexReportsForContainer;
 use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
+use function array_key_exists;
 use function assert;
 
 /**
@@ -16,9 +17,10 @@ class IndexableContainer extends XFCP_IndexableContainer
 
     protected function svCheckVisibleRelations(bool $withExists): bool
     {
+        $structure = $this->entity->structure();
         foreach (['ApprovalQueue', 'DeletionLog'] as $relation)
         {
-            if ($this->entity->hasRelation($relation))
+            if (array_key_exists($relation, $structure->relations))
             {
                 $this->svHasApprovalDeleteRelations = true;
                 $relationObj = $this->entity->getRelation($relation);
