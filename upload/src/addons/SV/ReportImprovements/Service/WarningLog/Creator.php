@@ -8,6 +8,7 @@ use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Service\Report\Commenter;
+use SV\StandardLib\Helper;
 use XF\App;
 use XF\Entity\Post;
 use XF\Entity\Report;
@@ -314,7 +315,7 @@ class Creator extends AbstractService
 
     protected function isLoggingForumBanLinkToReportComment(): bool
     {
-        return (\XF::isAddOnActive('SV/ForumBan')
+        return (Helper::isAddOnActive('SV/ForumBan')
             && (\XF::config('svIsLoggingForumBanLinkToReportComment') ?? true)
         );
     }

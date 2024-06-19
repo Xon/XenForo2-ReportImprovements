@@ -12,6 +12,7 @@ use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
 use SV\SearchImprovements\XF\Search\Query\Constraints\ExistsConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\NotConstraint;
+use SV\StandardLib\Helper;
 use XF\Http\Request;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -196,7 +197,7 @@ class WarningLog extends AbstractData
             $metaData['points'] = $warningLog->points;
         }
 
-        if (\XF::isAddOnActive('SV/ForumBan') && $warningLog->reply_ban_node_id)
+        if (Helper::isAddOnActive('SV/ForumBan') && $warningLog->reply_ban_node_id)
         {
             $metaData['forum_reply_ban'] = $warningLog->reply_ban_node_id;
         }
@@ -251,7 +252,7 @@ class WarningLog extends AbstractData
         $structure->addField('points', MetadataStructure::INT);
         $structure->addField('expiry_date', MetadataStructure::INT);
         $structure->addField('issuer_user', MetadataStructure::INT);
-        if (\XF::isAddOnActive('SV/ForumBan'))
+        if (Helper::isAddOnActive('SV/ForumBan'))
         {
             $structure->addField('forum_reply_ban', MetadataStructure::INT);
         }

@@ -6,6 +6,7 @@ use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\StandardLib\Helper;
 use XF\Entity\Attachment;
 use XF\Entity\ReactionContent;
 use XF\Entity\ReactionTrait;
@@ -271,7 +272,7 @@ class ReportComment extends XFCP_ReportComment
                     return ReportType::Reply_ban;
                 }
 
-                if (\XF::isAddOnActive('SV/ForumBan') && $this->WarningLog->reply_ban_node_id)
+                if (Helper::isAddOnActive('SV/ForumBan') && $this->WarningLog->reply_ban_node_id)
                 {
                     return ReportType::Forum_ban;
                 }

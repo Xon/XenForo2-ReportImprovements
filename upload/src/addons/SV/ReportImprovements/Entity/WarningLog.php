@@ -7,6 +7,7 @@ use SV\ForumBan\XF\Entity\Forum as ForumBanForum;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Finder\WarningLog as WarningLogFinder;
+use SV\StandardLib\Helper;
 use XF\Behavior\Indexable;
 use XF\Entity\Forum;
 use XF\Entity\Post;
@@ -148,7 +149,7 @@ class WarningLog extends Entity
 
     public function getForumBan(): ?ForumBan
     {
-        if (!\XF::isAddOnActive('SV/ForumBan'))
+        if (!Helper::isAddOnActive('SV/ForumBan'))
         {
             return null;
         }
@@ -168,7 +169,7 @@ class WarningLog extends Entity
 
     public function getForumBanLink(): ?string
     {
-        if (!\XF::isAddOnActive('SV/ForumBan'))
+        if (!Helper::isAddOnActive('SV/ForumBan'))
         {
             return null;
         }
@@ -419,7 +420,7 @@ class WarningLog extends Entity
             'checkForUpdates' => [],
         ];
 
-        if (\XF::isAddOnActive('SV/ForumBan'))
+        if (Helper::isAddOnActive('SV/ForumBan'))
         {
             $structure->relations['ForumBan'] = [
                 'entity'     => 'SV\ForumBan:ForumBan',

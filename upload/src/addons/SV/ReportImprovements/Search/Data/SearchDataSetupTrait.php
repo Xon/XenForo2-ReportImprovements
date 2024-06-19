@@ -8,6 +8,7 @@ use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
 use SV\SearchImprovements\Repository\Search as SearchRepo;
 use SV\SearchImprovements\XF\Search\Query\Constraints\PermissionConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\TypeConstraint;
+use SV\StandardLib\Helper;
 use XF\Search\Query\MetadataConstraint;
 use XF\Search\Query\Query;
 use XF\Search\Search;
@@ -47,7 +48,7 @@ trait SearchDataSetupTrait
      */
     public function getImpossibleTypePermissionConstraints(Query $query, bool $isOnlyType): array
     {
-        if (\XF::isAddOnActive('SV/ElasticSearchEssentials'))
+        if (Helper::isAddOnActive('SV/ElasticSearchEssentials'))
         {
             throw new ImpossibleSearchResultsException();
         }

@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
 use SV\ReportImprovements\XF\Finder\ApprovalQueue as ApprovalQueueFinder;
+use SV\StandardLib\Helper;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Finder;
 use XF\Mvc\ParameterBag;
@@ -95,7 +96,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             'include_reported' => '?bool',
         ];
 
-        if (\XF::isAddOnActive('NF/Tickets'))
+        if (Helper::isAddOnActive('NF/Tickets'))
         {
             $arr['without_tickets'] = '?bool';
         }
@@ -146,7 +147,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
         $filters['include_reported'] = (bool)($input['include_reported'] ?? $defaults['include_reported'] ?? true);
 
-        if (\XF::isAddOnActive('NF/Tickets'))
+        if (Helper::isAddOnActive('NF/Tickets'))
         {
             $filters['without_tickets'] = (bool)($input['without_tickets'] ?? $defaults['without_tickets'] ?? true);
         }
@@ -192,7 +193,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             $finder->withoutReport();
         }
 
-        if (\XF::isAddOnActive('NF/Tickets'))
+        if (Helper::isAddOnActive('NF/Tickets'))
         {
             $includeWithoutTickets = (bool)($filters['without_tickets'] ?? true);
             if (!$includeWithoutTickets)

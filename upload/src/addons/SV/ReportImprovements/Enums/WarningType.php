@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Enums;
 
 // One day this will be an enum
+use SV\StandardLib\Helper;
 use XF\Phrase;
 
 class WarningType
@@ -25,7 +26,7 @@ class WarningType
     public static function get(): array
     {
         $types = [self::New, self::Edit, self::Expire, self::Delete];
-        if (\XF::isAddOnActive('SV/WarningAcknowledgement'))
+        if (Helper::isAddOnActive('SV/WarningAcknowledgement'))
         {
             $types[] = self::Acknowledge;
         }

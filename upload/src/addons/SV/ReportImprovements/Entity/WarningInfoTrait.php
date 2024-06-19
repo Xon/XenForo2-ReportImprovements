@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Entity;
 
+use SV\StandardLib\Helper;
 use SV\WarningImprovements\XF\Entity\WarningDefinition as ExtendedWarningDefinitionEntity;
 use SV\WarningImprovements\XF\Repository\Warning as WarningRepo;
 use function assert;
@@ -21,7 +22,7 @@ trait WarningInfoTrait
             return false;
         }
 
-        if (\XF::isAddOnActive('SV/WarningImprovements'))
+        if (Helper::isAddOnActive('SV/WarningImprovements'))
         {
             $definition = $this->Definition;
             assert($definition instanceof ExtendedWarningDefinitionEntity);
@@ -36,7 +37,7 @@ trait WarningInfoTrait
     {
         if ($this->warning_definition_id === 0)
         {
-            if (\XF::isAddOnActive('SV/WarningImprovements'))
+            if (Helper::isAddOnActive('SV/WarningImprovements'))
             {
                 /** @var WarningRepo $warningRepo */
                 $warningRepo = $this->repository('XF:Warning');

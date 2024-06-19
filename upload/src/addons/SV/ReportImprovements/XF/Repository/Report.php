@@ -11,6 +11,7 @@ use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use SV\StandardLib\Helper;
 use SV\WarningImprovements\Entity\WarningCategory;
 use XF\Db\Exception as DbException;
 use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
@@ -876,7 +877,7 @@ class Report extends XFCP_Report
 
         $warningRepo = $this->repository('XF:Warning');
         assert($warningRepo instanceof \XF\Repository\Warning);
-        if (\XF::isAddOnActive('SV/WarningImprovements'))
+        if (Helper::isAddOnActive('SV/WarningImprovements'))
         {
             assert($warningRepo instanceof \SV\WarningImprovements\XF\Repository\Warning);
 

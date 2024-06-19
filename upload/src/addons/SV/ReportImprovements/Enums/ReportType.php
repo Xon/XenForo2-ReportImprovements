@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Enums;
 
 // One day this will be an enum
+use SV\StandardLib\Helper;
 use XF\Phrase;
 
 class ReportType
@@ -19,7 +20,7 @@ class ReportType
     {
         $types = [self::Reported_content, self::User_report, self::Comment, self::Warning, self::Reply_ban];
 
-        if (\XF::isAddOnActive('SV/ForumBan'))
+        if (Helper::isAddOnActive('SV/ForumBan'))
         {
             $types[] = self::Forum_ban;
         }
