@@ -50,11 +50,41 @@ class Notifier extends XFCP_Notifier
     }
 
     /**
-     * @throws \Exception
-     */
+     * XF2.2 compatibility
+     * */
     public function notify()
     {
         parent::notify();
+
+        $this->svNotifyCommenters();
+    }
+
+    public function notifyCreate()
+    {
+        parent::notifyCreate();
+
+        /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+        $reportRepo = $this->repository('XF:Report');
+        $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($this->report);
+        $this->setCommentersUserIds($userIdsToAlert);
+
+        $this->svNotifyCommenters();
+    }
+
+    public function notifyMentioned()
+    {
+        parent::notifyMentioned();
+
+        $this->svNotifyCommenters();
+    }
+
+    protected function svNotifyCommenters()
+    {
+        if (!$this->report->exists() ||
+            !$this->comment->exists())
+        {
+            return;
+        }
 
         $commenterUsers = $this->getNotifyCommenterUserIds();
         if (!$commenterUsers)

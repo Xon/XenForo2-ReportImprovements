@@ -55,6 +55,11 @@ class Creator extends XFCP_Creator
     {
         parent::sendNotifications();
 
+        if (\XF::$versionId > 2030000)
+        {
+            return;
+        }
+
         if (!$this->report->exists() ||
             !$this->comment->exists())
         {
