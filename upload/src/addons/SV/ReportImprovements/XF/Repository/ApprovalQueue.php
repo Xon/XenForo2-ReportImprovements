@@ -7,7 +7,7 @@ use XF\Entity\User;
 /**
  * Class ApprovalQueue
  *
- * @see \XF\Repository\ApprovalQueue
+ * @extends \XF\Repository\ApprovalQueue
  * @package SV\ReportImprovements\XF\Repository
  */
 class ApprovalQueue extends XFCP_ApprovalQueue

@@ -11,7 +11,7 @@ use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\Redirect as RedirectReply;
 
 /**
- * @see \XF\Pub\Controller\ApprovalQueue
+ * @extends \XF\Pub\Controller\ApprovalQueue
  */
 class ApprovalQueue extends XFCP_ApprovalQueue
 {
