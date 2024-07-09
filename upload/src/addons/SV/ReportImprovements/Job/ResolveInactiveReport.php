@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\Job;
 
 use SV\ReportImprovements\XF\Entity\Report;
 use SV\ReportImprovements\XF\Service\Report\Commenter;
+use SV\StandardLib\Helper;
 use XF\Entity\User;
 use XF\Job\AbstractRebuildJob;
 use XF\Mvc\Entity\AbstractCollection;
@@ -88,7 +89,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
 
         \XF::asVisitor($this->reporter, function () use ($report) {
             /** @var Commenter $commenterService */
-            $commenterService = $this->app->service('XF:Report\Commenter', $report);
+            $commenterService = Helper::service(\XF\Service\Report\Commenter::class, $report);
             $commenterService->setReportState($this->expireAction);
             if ($commenterService->validate($errors))
             {

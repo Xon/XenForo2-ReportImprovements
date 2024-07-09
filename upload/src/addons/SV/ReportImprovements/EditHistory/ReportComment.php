@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\EditHistory;
 
 use SV\ReportImprovements\Service\Report\CommentEditor;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\StandardLib\Helper;
 use XF\EditHistory\AbstractHandler;
 use XF\Entity\EditHistory;
 use XF\Mvc\Entity\Entity;
@@ -50,7 +51,7 @@ class ReportComment extends AbstractHandler
         /** @var ReportCommentEntity $content */
 
         /** @var CommentEditor $editor */
-        $editor = \XF::app()->service('SV\ReportImprovements:Report\CommentEditor', $content);
+        $editor = Helper::service(\SV\ReportImprovements\Service\Report\CommentEditor::class, $content);
 
         $editor->setLogEdit(false);
         $editor->setMessage($history->old_text, false);

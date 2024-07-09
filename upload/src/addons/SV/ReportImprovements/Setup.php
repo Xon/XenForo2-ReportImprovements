@@ -10,6 +10,7 @@ use SV\ReportImprovements\Job\Upgrades\Upgrade1090100Step1;
 use SV\ReportImprovements\Job\Upgrades\Upgrade1090200Step1;
 use SV\ReportImprovements\Job\WarningLogMigration;
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
+use SV\StandardLib\Helper;
 use SV\StandardLib\InstallerHelper;
 use XF\AddOn\AbstractSetup;
 use XF\AddOn\StepRunnerInstallTrait;
@@ -28,7 +29,7 @@ use XF\Job\PermissionRebuild;
 use XF\Job\PermissionRebuildPartial;
 use XF\Repository\PermissionCombination;
 use XF\Repository\PermissionEntry;
-use XF\Service\UpdatePermissions;
+use XF\Service\UpdatePermissions as UpdatePermissionsService;
 use function array_keys;
 use function array_values;
 use function assert;
@@ -144,7 +145,7 @@ class Setup extends AbstractSetup
         ]);
     }
 
-    public function upgrade2020700Step1(array $stepParams)
+    public function upgrade2020700Step1(array $stepParams): ?array
     {
         $finder = \XF::finder('XF:UserAlert')
                      ->where('content_type', '=', 'report_comment')
@@ -624,8 +625,7 @@ class Setup extends AbstractSetup
 
                     if ($newGlobalPerms !== $globalPerms)
                     {
-                        /** @var UpdatePermissions $permissionUpdater */
-                        $permissionUpdater = \XF::service('XF:UpdatePermissions');
+                        $permissionUpdater = Helper::service(UpdatePermissionsService::class);
                         $permissionUpdater->setUser($user);
                         $permissionUpdater->setGlobal();
                         $permissionUpdater->updatePermissions($newGlobalPerms);
@@ -634,8 +634,7 @@ class Setup extends AbstractSetup
                 /** @noinspection PhpConditionAlreadyCheckedInspection */
                 if ($newPermissions != $permissions)
                 {
-                    /** @var UpdatePermissions $permissionUpdater */
-                    $permissionUpdater = \XF::service('XF:UpdatePermissions');
+                    $permissionUpdater = Helper::service(UpdatePermissionsService::class);
                     $permissionUpdater->setUser($user);
                     $permissionUpdater->setContent($contentModerator->content_type, $contentModerator->content_id);
                     $permissionUpdater->updatePermissions($newPermissions);
@@ -731,8 +730,7 @@ class Setup extends AbstractSetup
                 /** @noinspection PhpConditionAlreadyCheckedInspection */
                 if ($newPermissions != $permissions)
                 {
-                    /** @var UpdatePermissions $permissionUpdater */
-                    $permissionUpdater = \XF::service('XF:UpdatePermissions');
+                    $permissionUpdater = Helper::service(UpdatePermissionsService::class);
                     $permissionUpdater->setUser($moderator->User);
                     $permissionUpdater->setGlobal();
                     $permissionUpdater->updatePermissions($newPermissions);

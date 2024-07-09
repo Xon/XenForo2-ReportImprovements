@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Service\User;
 
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\XF\Service\Thread\ReplyBan;
+use SV\StandardLib\Helper;
 use XF\Entity\Post;
 use XF\Entity\Warning;
 use XF\Mvc\Entity\Entity;
@@ -60,7 +61,7 @@ class Warn extends XFCP_Warn
             throw new \LogicException('Post does not have a valid thread.');
         }
 
-        $this->replyBanSvc = $this->service('XF:Thread\ReplyBan', $post->Thread, $this->user);
+        $this->replyBanSvc = Helper::service(\XF\Service\Thread\ReplyBan::class, $post->Thread, $this->user);
         $this->replyBanSvc->setExpiryDate($banLengthUnit, $banLengthValue);
         $this->replyBanSvc->setPost($post);
         $this->replyBanSvc->setSendAlert($sendAlert);

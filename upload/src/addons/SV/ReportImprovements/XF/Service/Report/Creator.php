@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Service\Report;
 
 use SV\ReportImprovements\XF\Entity\Report;
 use SV\ReportImprovements\XF\Entity\ReportComment;
+use SV\StandardLib\Helper;
 
 /**
  * @extends \XF\Service\Report\Creator
@@ -71,7 +72,7 @@ class Creator extends XFCP_Creator
         $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($this->report);
 
         /** @var Notifier $notifier */
-        $notifier = $this->service('XF:Report\Notifier', $this->report, $this->comment);
+        $notifier = Helper::service(\XF\Service\Report\Notifier::class, $this->report, $this->comment);
         $notifier->setCommentersUserIds($userIdsToAlert);
         $notifier->notify();
     }

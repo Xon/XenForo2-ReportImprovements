@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\ControllerPlugin;
 
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\XF\Entity\Thread;
+use SV\StandardLib\Helper;
 use SV\WarningImprovements\XF\Entity\WarningDefinition;
 use XF\Entity\Post;
 use XF\Entity\User;
@@ -162,7 +163,7 @@ class Warn extends XFCP_Warn
                 if ($warningDef !== null)
                 {
                     /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
-                    $warnService = $this->service('XF:User\Warn', $user, $contentType, $content, \XF::visitor());
+                    $warnService = Helper::service(\XF\Service\User\Warn::class, $user, $contentType, $content, \XF::visitor());
                     $warnService->setFromDefinition($warningDef, 0, 0);
                     $warning = $warnService->getWarning();
                 }

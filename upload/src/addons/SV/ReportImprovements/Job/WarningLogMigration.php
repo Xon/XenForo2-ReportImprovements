@@ -6,6 +6,7 @@ use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Service\WarningLog\Creator;
 use SV\ReportImprovements\XF\Entity\Warning as WarningEntity;
+use SV\StandardLib\Helper;
 use XF\Entity\Post;
 use XF\Job\AbstractRebuildJob;
 
@@ -73,7 +74,7 @@ class WarningLogMigration extends AbstractRebuildJob
                 try
                 {
                     /** @var Creator $warningLogCreator */
-                    $warningLogCreator = \XF::app()->service('SV\ReportImprovements:WarningLog\Creator', $warning, WarningType::New);
+                    $warningLogCreator = Helper::service(\SV\ReportImprovements\Service\WarningLog\Creator::class, $warning, WarningType::New);
                     $warningLogCreator->setAutoResolve(true, false, '');
                     $warningLogCreator->setCanReopenReport(false);
                     $warningLogCreator->setAutoResolveNewReports(true);

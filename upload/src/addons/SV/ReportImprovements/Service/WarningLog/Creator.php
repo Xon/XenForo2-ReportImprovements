@@ -293,11 +293,11 @@ class Creator extends AbstractService
 
         if ($report)
         {
-            $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
+            $this->reportCommenter = Helper::service(\XF\Service\Report\Commenter::class, $report);
         }
         else if (($this->app->options()->sv_report_new_warnings ?? false) && $warning->Content)
         {
-            $this->reportCreator = $this->service('XF:Report\Creator', $warning->content_type, $warning->Content);
+            $this->reportCreator = Helper::service(\XF\Service\Report\Creator::class, $warning->content_type, $warning->Content);
             $report = $this->reportCreator->getReport();
 
             $warning->clearCache('Report');
@@ -372,11 +372,11 @@ class Creator extends AbstractService
 
         if ($report)
         {
-            $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
+            $this->reportCommenter = Helper::service(\XF\Service\Report\Commenter::class, $report);
         }
         else
         {
-            $this->reportCreator = $this->service('XF:Report\Creator', $content->getEntityContentType(), $content);
+            $this->reportCreator = Helper::service(\XF\Service\Report\Creator::class, $content->getEntityContentType(), $content);
             $report = $this->reportCreator->getReport();
         }
 
@@ -428,11 +428,11 @@ class Creator extends AbstractService
 
         if ($report)
         {
-            $this->reportCommenter = $this->service('XF:Report\Commenter', $report);
+            $this->reportCommenter = Helper::service(\XF\Service\Report\Commenter::class, $report);
         }
         else
         {
-            $this->reportCreator = $this->service('XF:Report\Creator', $content->getEntityContentType(), $content);
+            $this->reportCreator = Helper::service(\XF\Service\Report\Creator::class, $content->getEntityContentType(), $content);
             $report = $this->reportCreator->getReport();
         }
 

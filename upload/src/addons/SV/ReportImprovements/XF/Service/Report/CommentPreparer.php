@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Service\Report;
 
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use SV\StandardLib\Helper;
 use XF\Behavior\Indexable;
 use XF\Behavior\IndexableContainer;
 use XF\Mvc\Entity\Entity;
@@ -217,12 +218,8 @@ class CommentPreparer extends XFCP_CommentPreparer
         }
     }
 
-    /**
-     * @return AbstractService|AttachmentPreparerSvc
-     * @noinspection PhpReturnDocTypeMismatchInspection
-     */
-    protected function getAttachmentPreparerSvc()
+    protected function getAttachmentPreparerSvc(): \XF\Service\Attachment\Preparer
     {
-        return $this->service('XF:Attachment\Preparer');
+        return Helper::service(\XF\Service\Attachment\Preparer::class);
     }
 }

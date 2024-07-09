@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\Service\Report;
 
 use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\StandardLib\Helper;
 use XF\App;
 use XF\Mvc\Entity\Repository;
 use XF\Repository\EditHistory as EditHistoryRepo;
@@ -55,7 +56,7 @@ class CommentEditor extends AbstractService
         {
             throw new \LogicException('Report comment requires a report when editing');
         }
-        $this->commentPreparer = $this->service('XF:Report\CommentPreparer', $this->comment);
+        $this->commentPreparer = Helper::service(\XF\Service\Report\CommentPreparer::class, $this->comment);
         $this->setCommentDefaults();
     }
 

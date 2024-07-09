@@ -277,7 +277,7 @@ class Report extends XFCP_Report
         $message = $editorPlugin->fromInput('message');
 
         /** @var CommentEditor $editor */
-        $editor = \XF::app()->service('SV\ReportImprovements:Report\CommentEditor', $reportComment);
+        $editor = Helper::service(\SV\ReportImprovements\Service\Report\CommentEditor::class, $reportComment);
         $editor->setMessage($message);
 
         $report = $reportComment->Report;
@@ -455,7 +455,7 @@ class Report extends XFCP_Report
             else
             {
                 /** @var Inviter $service */
-                $service = \XF::service('XF:Conversation\Inviter', $conversationMessage->Conversation, $conversationMessage->Conversation->Starter);
+                $service = Helper::service(\XF\Service\Conversation\Inviter::class, $conversationMessage->Conversation, $conversationMessage->Conversation->Starter);
                 $service->setAutoSendNotifications(false);
                 $service->setRecipientsTrusted($visitor);
                 $service->save();
