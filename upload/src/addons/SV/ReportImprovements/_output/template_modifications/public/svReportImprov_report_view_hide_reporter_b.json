@@ -3,7 +3,7 @@
     "description": "Show \"Content reporter\" if the user has no permission to view reporter #2",
     "execution_order": 6905,
     "enabled": true,
-    "action": "str_replace",
-    "find": "<xf:macro template=\"message_macros\" name=\"user_info_simple\" arg-user=\"{$comment.User}\"  arg-fallbackName=\"{$comment.username}\" />",
-    "replace": "<xf:if is=\"$comment.is_report\">\n\t<xf:macro template=\"message_macros\" name=\"user_info_simple\" arg-user=\"{$comment.ViewableUser}\" arg-fallbackName=\"{$comment.ViewableUsername}\" />\n<xf:else />\n\t$0\n</xf:if>"
+    "action": "preg_replace",
+    "find": "#<xf:macro (?:id=\"message_macros::user_info_simple\"|template=\"message_macros\" name=\"user_info_simple\").*?/>#si",
+    "replace": "<xf:if is=\"$comment.is_report\">\n\t<xf:macro name=\"message_macros::user_info_simple\"\n\t\t\t  arg-user=\"{$comment.ViewableUser}\"\n\t\t\t  arg-fallbackName=\"{$comment.ViewableUsername}\" />\n<xf:else />\n\t$0\n</xf:if>"
 }
