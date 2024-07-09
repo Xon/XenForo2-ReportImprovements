@@ -3,10 +3,11 @@
 namespace SV\ReportImprovements\XF\Service\Report;
 
 use SV\ReportImprovements\Globals;
+use SV\StandardLib\Helper;
 use XF\App;
 use XF\Entity\Report;
 use XF\Entity\ReportComment;
-use XF\Entity\User;
+use XF\Entity\User as UserEntity;
 use XF\Repository\UserAlert;
 
 /**
@@ -154,13 +155,12 @@ class Notifier extends XFCP_Notifier
         }
 
         $userIds = \array_keys($userIds);
-        $em = $this->app->em();
         $toLoad = [];
         $users = [];
         foreach($userIds as $userId)
         {
-            $user = $em->findCached('XF:User', $userId);
-            if ($user)
+            $user = Helper::findCached(UserEntity::class, $userId);
+            if ($user !== null)
             {
                 $users[$userId] = $user;
             }
@@ -179,10 +179,10 @@ class Notifier extends XFCP_Notifier
     }
 
     /**
-     * @param User $user
+     * @param UserEntity $user
      * @return bool
      */
-    protected function sendCommentNotification(User $user)
+    protected function sendCommentNotification(UserEntity $user)
     {
         $comment = $this->comment;
         $commentUserId = $comment->user_id;

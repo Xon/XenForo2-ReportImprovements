@@ -441,8 +441,7 @@ class Setup extends AbstractSetup
                                 ->fetchOne();
             if ($phrase === null)
             {
-                $phrase = $this->app->em()->create('XF:Phrase');
-                assert($phrase instanceof Phrase);
+                $phrase = Helper::createEntity(Phrase::class);
                 $phrase->language_id = $stockPhrase->language_id;
                 $phrase->title = $title;
             }

@@ -474,9 +474,8 @@ class Report extends XFCP_Report
 
     /**
      * @param \XF\Entity\Report $report
-     * @return ArrayCollection
-     * @throws \Exception
-     * @noinspection PhpMissingParentCallCommonInspection
+     * @return ArrayCollection<ModeratorEntity>
+     * @noinspection PhpDocMissingThrowsInspection
      */
     public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
     {
@@ -506,7 +505,7 @@ class Report extends XFCP_Report
 
         $fakeMod = function (int $userId): ModeratorEntity {
             /** @var ModeratorEntity $moderator */
-            $moderator = $this->em->create('XF:Moderator');
+            $moderator = Helper::createEntity(ModeratorEntity::class);
             $moderator->setTrusted('user_id', $userId);
             $moderator->hydrateRelation('User', $this->em->find('XF:User', $userId));
             $moderator->setReadOnly(true);
@@ -516,13 +515,14 @@ class Report extends XFCP_Report
 
         foreach ($userIds as $userId)
         {
-            $user = $this->em->findCached('XF:User', $userId);
-            if ($user instanceof UserEntity)
+            $user =  Helper::findCached(UserEntity::class, $userId);
+            if ($user !== null)
             {
                 $id = $user->permission_combination_id;
                 $permCombinationIds[$id] = $id;
 
-                $moderator = $this->em->findCached('XF:Moderator', $userId);
+                $moderator = Helper::findCached(ModeratorEntity::class, $userId);
+
                 $moderators[$userId] = $moderator instanceof ModeratorEntity
                     ? $moderator
                     : $fakeMod($userId);
@@ -535,17 +535,18 @@ class Report extends XFCP_Report
 
         if (count($usersToFetch) !== 0)
         {
+            /** @var array<int,UserEntity> $users */
             $users = \XF::finder('XF:User')
                         ->where('user_id', '=', $usersToFetch)
                         ->order('user_id')
                         ->fetch();
             foreach ($users as $userId => $user)
             {
-                assert($user instanceof UserEntity);
+                $moderator = $fakeMod($userId);
+
                 $id = $user->permission_combination_id;
                 $permCombinationIds[$id] = $id;
-
-                $moderators[$userId] = $fakeMod($userId);
+                $moderators[$userId] = $moderator;
             }
         }
 
@@ -598,8 +599,6 @@ class Report extends XFCP_Report
      */
     public function filterViewableReports($reports)
     {
-        $em = $this->app()->em();
-
         // avoid N+1 look up behaviour, just cache all node perms
         \XF::visitor()->cacheNodePermissions();
 
@@ -618,7 +617,7 @@ class Report extends XFCP_Report
 
         foreach ($userIds as $userId => $null)
         {
-            if (!$userId || $em->findCached('XF:User', $userId))
+            if (!$userId || Helper::findCached(UserEntity::class, $userId))
             {
                 unset($userIds[$userId]);
             }
@@ -626,7 +625,7 @@ class Report extends XFCP_Report
 
         if ($userIds)
         {
-            $em->findByIds('XF:User', array_keys($userIds));
+            \XF::em()->findByIds('XF:User', array_keys($userIds));
         }
 
         return $reports;

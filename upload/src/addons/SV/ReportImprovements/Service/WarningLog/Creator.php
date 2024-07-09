@@ -176,7 +176,7 @@ class Creator extends AbstractService
      */
     protected function setupDefaults()
     {
-        $this->warningLog = $this->em()->create('SV\ReportImprovements:WarningLog');
+        $this->warningLog = Helper::createEntity(WarningLog::class);
         $warningLog = $this->warningLog;
         $warningLog->operation_type = $this->operationType;
         $warningLog->warning_edit_date = $this->operationType === WarningType::New ? 0 : \XF::$time;
