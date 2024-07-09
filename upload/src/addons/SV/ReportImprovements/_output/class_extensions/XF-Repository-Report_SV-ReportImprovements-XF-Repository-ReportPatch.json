@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Repository\\Report",
+    "to_class": "SV\\ReportImprovements\\XF\\Repository\\ReportPatch",
+    "execute_order": 2,
+    "active": true
+}

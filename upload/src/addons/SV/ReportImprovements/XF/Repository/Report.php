@@ -474,10 +474,11 @@ class Report extends XFCP_Report
 
     /**
      * @param \XF\Entity\Report $report
+     * @param bool              $notifiableOnly
      * @return ArrayCollection<ModeratorEntity>
      * @noinspection PhpDocMissingThrowsInspection
      */
-    public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report)
+    public function svGetModeratorsWhoCanHandleReport(\XF\Entity\Report $report, bool $notifiableOnly = false)
     {
         /** @var ReportEntity $report */
         $userIds = $this->svGetUsersWhoCanHandleReport($report);
@@ -507,6 +508,10 @@ class Report extends XFCP_Report
             /** @var ModeratorEntity $moderator */
             $moderator = Helper::createEntity(ModeratorEntity::class);
             $moderator->setTrusted('user_id', $userId);
+            if (\XF::$versionId >= 2030000)
+            {
+                $moderator->setTrusted('notify_report', false);
+            }
             $moderator->hydrateRelation('User', $this->em->find('XF:User', $userId));
             $moderator->setReadOnly(true);
 
@@ -522,6 +527,10 @@ class Report extends XFCP_Report
                 $permCombinationIds[$id] = $id;
 
                 $moderator = Helper::findCached(ModeratorEntity::class, $userId);
+                if ($notifiableOnly && !$moderator->notify_report)
+                {
+                    continue;
+                }
 
                 $moderators[$userId] = $moderator instanceof ModeratorEntity
                     ? $moderator
@@ -543,6 +552,10 @@ class Report extends XFCP_Report
             foreach ($users as $userId => $user)
             {
                 $moderator = $fakeMod($userId);
+                if ($notifiableOnly && !$moderator->notify_report)
+                {
+                    continue;
+                }
 
                 $id = $user->permission_combination_id;
                 $permCombinationIds[$id] = $id;

@@ -56,7 +56,7 @@ class Creator extends XFCP_Creator
     {
         parent::sendNotifications();
 
-        if (\XF::$versionId > 2030000)
+        if (\XF::$versionId >= 2030000)
         {
             return;
         }

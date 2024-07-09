@@ -93,6 +93,7 @@ namespace SV\ReportImprovements\XF\Repository
 	class XFCP_ApprovalQueue extends \XF\Repository\ApprovalQueue {}
 	class XFCP_PermissionCombination extends \XF\Repository\PermissionCombination {}
 	class XFCP_Report extends \XF\Repository\Report {}
+	class XFCP_ReportPatch extends \XF\Repository\Report {}
 	class XFCP_ThreadReplyBan extends \XF\Repository\ThreadReplyBan {}
 	class XFCP_Warning extends \XF\Repository\Warning {}
 }
