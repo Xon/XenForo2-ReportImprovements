@@ -2,22 +2,25 @@
 
 namespace SV\ReportImprovements\XF\Repository\XF23;
 
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
 use SV\ReportImprovements\XF\Repository\XFCP_ReportPatch;
+use XF\Entity\Report as ReportEntity;
 use XF\Mvc\Entity\ArrayCollection;
 
 class ReportPatch extends XFCP_ReportPatch
 {
     /**
-     * @param \XF\Entity\Report $report
-     * @param false             $notifiableOnly
+     * @param ReportEntity $report
+     * @param false        $notifiableOnly
      * @return ArrayCollection
-     * @throws \Exception
      * @noinspection PhpMissingParentCallCommonInspection
      * @noinspection PhpMissingReturnTypeInspection
+     * @noinspection PhpSignatureMismatchDuringInheritanceInspection
+     * @noinspection RedundantSuppression
      */
-    public function getModeratorsWhoCanHandleReport(\XF\Entity\Report $report, $notifiableOnly = false)
+    public function getModeratorsWhoCanHandleReport(ReportEntity $report, $notifiableOnly = false)
     {
-        /** @var \SV\ReportImprovements\XF\Repository\Report $this */
+        /** @var ExtendedReportRepo $this */
         return $this->svGetModeratorsWhoCanHandleReport($report, $notifiableOnly);
     }
 }
