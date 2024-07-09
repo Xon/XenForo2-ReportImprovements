@@ -13,6 +13,7 @@ use XF\ControllerPlugin\Editor;
 use XF\ControllerPlugin\Ip;
 use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
 use XF\Entity\ConversationMessage;
+use XF\Entity\ConversationRecipient;
 use XF\Entity\ReportComment;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -444,6 +445,7 @@ class Report extends XFCP_Report
         if ($this->isPost())
         {
             $visitor = \XF::visitor();
+            /** @var ConversationRecipient|null $existingRecipient */
             $existingRecipient = $conversationMessage->Conversation->Recipients[$visitor->user_id] ?? null;
             if ($existingRecipient)
             {
