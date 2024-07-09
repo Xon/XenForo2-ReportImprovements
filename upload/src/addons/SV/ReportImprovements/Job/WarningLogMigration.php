@@ -74,7 +74,7 @@ class WarningLogMigration extends AbstractRebuildJob
                 try
                 {
                     /** @var Creator $warningLogCreator */
-                    $warningLogCreator = Helper::service(\SV\ReportImprovements\Service\WarningLog\Creator::class, $warning, WarningType::New);
+                    $warningLogCreator = Helper::service(Creator::class, $warning, WarningType::New);
                     $warningLogCreator->setAutoResolve(true, false, '');
                     $warningLogCreator->setCanReopenReport(false);
                     $warningLogCreator->setAutoResolveNewReports(true);

@@ -235,7 +235,7 @@ class ReportQueue extends Repository
 
         \XF::asVisitor($reporter, function () use ($reporter, $entity, $type, $resolveReport, $canReopenReport, $alert, $alertComment) {
             /** @var Creator $warningLogCreator */
-            $warningLogCreator = Helper::service(\SV\ReportImprovements\Service\WarningLog\Creator::class, $entity, $type);
+            $warningLogCreator = Helper::service(Creator::class, $entity, $type);
             $warningLogCreator->setAutoResolve($resolveReport, $alert, $alertComment);
             $warningLogCreator->setCanReopenReport($canReopenReport);
             if ($warningLogCreator->validate($errors))

@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\NF\Tickets\Report;
 
+use NF\Tickets\Entity\Ticket;
 use NF\Tickets\Search\Data\Message as MessageSearch;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
@@ -43,7 +44,7 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
         parent::setupReportEntityContent($report, $content);
 
         /** @var \NF\Tickets\Entity\Message $content */
-        /** @var \NF\Tickets\Entity\Ticket $ticket */
+        /** @var Ticket $ticket */
         $ticket = $content->Ticket;
         $contentInfo = $report->content_info;
         $contentInfo['message_date'] = $content->message_date;

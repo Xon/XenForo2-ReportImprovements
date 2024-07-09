@@ -6,6 +6,7 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\Report;
+use XF\Entity\User;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
@@ -51,9 +52,9 @@ class ForumBan extends XFCP_ForumBan implements IReportResolver
     }
 
     /**
-     * @return \XF\Entity\User|null
+     * @return User|null
      */
-    public function getResolveUser(): ?\XF\Entity\User
+    public function getResolveUser(): ?User
     {
         $reporter = null;
         if (!$this->User)

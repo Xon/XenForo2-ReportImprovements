@@ -54,6 +54,7 @@ class Notifier extends XFCP_Notifier
      * */
     public function notify()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         parent::notify();
 
         $this->svNotifyCommenters();

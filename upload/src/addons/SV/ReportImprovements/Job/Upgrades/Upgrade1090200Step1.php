@@ -57,7 +57,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
                 try
                 {
                     /** @var CommentPreparer $commentPreparer */
-                    $commentPreparer = Helper::service(\XF\Service\Report\CommentPreparer::class, $comment);
+                    $commentPreparer = Helper::service(CommentPreparer::class, $comment);
 
                     $commentPreparer->setMessage($comment->message);
 

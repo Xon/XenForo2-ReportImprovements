@@ -9,7 +9,6 @@ use XF\Behavior\Indexable;
 use XF\Behavior\IndexableContainer;
 use XF\Mvc\Entity\Entity;
 use XF\Repository\Ip;
-use XF\Service\AbstractService;
 use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
 use XF\Service\Message\Preparer;
 use function assert;
@@ -218,8 +217,8 @@ class CommentPreparer extends XFCP_CommentPreparer
         }
     }
 
-    protected function getAttachmentPreparerSvc(): \XF\Service\Attachment\Preparer
+    protected function getAttachmentPreparerSvc(): AttachmentPreparerSvc
     {
-        return Helper::service(\XF\Service\Attachment\Preparer::class);
+        return Helper::service(AttachmentPreparerSvc::class);
     }
 }

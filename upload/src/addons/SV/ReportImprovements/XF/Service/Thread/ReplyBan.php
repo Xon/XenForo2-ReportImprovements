@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Service\Thread;
 
+use SV\ReportImprovements\XF\Entity\ThreadReplyBan;
 use XF\Entity\Post;
 
 /**
@@ -9,12 +10,12 @@ use XF\Entity\Post;
  * @extends \XF\Service\Thread\ReplyBan
  *
  * @package SV\ReportImprovements\XF\Service\Thread
- * @property \SV\ReportImprovements\XF\Entity\ThreadReplyBan $replyBan
+ * @property ThreadReplyBan $replyBan
  */
 class ReplyBan extends XFCP_ReplyBan
 {
     /**
-     * @return \SV\ReportImprovements\XF\Entity\ThreadReplyBan
+     * @return ThreadReplyBan
      */
     public function getReplyBan()
     {

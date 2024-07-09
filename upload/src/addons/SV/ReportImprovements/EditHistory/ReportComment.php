@@ -51,7 +51,7 @@ class ReportComment extends AbstractHandler
         /** @var ReportCommentEntity $content */
 
         /** @var CommentEditor $editor */
-        $editor = Helper::service(\SV\ReportImprovements\Service\Report\CommentEditor::class, $content);
+        $editor = Helper::service(CommentEditor::class, $content);
 
         $editor->setLogEdit(false);
         $editor->setMessage($history->old_text, false);

@@ -273,11 +273,11 @@ class Report extends XFCP_Report
     protected function setupReportCommentEdit(ReportComment $reportComment)
     {
         /** @var Editor $editorPlugin */
-        $editorPlugin = Helper::plugin($this, \XF\ControllerPlugin\Editor::class);
+        $editorPlugin = Helper::plugin($this, Editor::class);
         $message = $editorPlugin->fromInput('message');
 
         /** @var CommentEditor $editor */
-        $editor = Helper::service(\SV\ReportImprovements\Service\Report\CommentEditor::class, $reportComment);
+        $editor = Helper::service(CommentEditor::class, $reportComment);
         $editor->setMessage($message);
 
         $report = $reportComment->Report;
@@ -392,7 +392,7 @@ class Report extends XFCP_Report
         $reactionLinkParams = [];
 
         /** @var ReactionControllerPlugin $reactionControllerPlugin */
-        $reactionControllerPlugin = Helper::plugin($this, \XF\ControllerPlugin\Reaction::class);
+        $reactionControllerPlugin = Helper::plugin($this, ReactionControllerPlugin::class);
         return $reactionControllerPlugin->actionReact(
             $reportComment,
             $this->buildLink('reports/comment', $reportComment),
@@ -414,7 +414,7 @@ class Report extends XFCP_Report
         $title = \XF::phrase('sv_members_who_reacted_this_report_comment');
 
         /** @var ReactionControllerPlugin $reactionControllerPlugin */
-        $reactionControllerPlugin = Helper::plugin($this, \XF\ControllerPlugin\Reaction::class);
+        $reactionControllerPlugin = Helper::plugin($this, ReactionControllerPlugin::class);
         return $reactionControllerPlugin->actionReactions(
             $reportComment,
             'reports/comment/reactions',
@@ -455,7 +455,7 @@ class Report extends XFCP_Report
             else
             {
                 /** @var Inviter $service */
-                $service = Helper::service(\XF\Service\Conversation\Inviter::class, $conversationMessage->Conversation, $conversationMessage->Conversation->Starter);
+                $service = Helper::service(Inviter::class, $conversationMessage->Conversation, $conversationMessage->Conversation->Starter);
                 $service->setAutoSendNotifications(false);
                 $service->setRecipientsTrusted($visitor);
                 $service->save();
@@ -502,7 +502,7 @@ class Report extends XFCP_Report
         }
 
         /** @var BbCodePreviewPlugin $bbCodePreview */
-        $bbCodePreview = Helper::plugin($this, \XF\ControllerPlugin\BbCodePreview::class);
+        $bbCodePreview = Helper::plugin($this, BbCodePreviewPlugin::class);
 
         return $bbCodePreview->actionPreview($reportComment->message, 'report_comment', $reportComment->User, $attachments, $report->canViewAttachments());
     }
