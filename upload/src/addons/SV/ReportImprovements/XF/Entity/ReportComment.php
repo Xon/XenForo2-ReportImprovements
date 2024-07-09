@@ -8,9 +8,14 @@ use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
 use SV\StandardLib\Helper;
 use XF\Entity\Attachment;
+use XF\Entity\ContainableInterface;
+use XF\Entity\ContainableTrait;
+use XF\Entity\DatableInterface;
+use XF\Entity\DatableTrait;
 use XF\Entity\ReactionContent;
 use XF\Entity\ReactionTrait;
 use XF\Entity\User as UserEntity;
+use XF\Entity\ViewableInterface;
 use XF\Mvc\Entity\AbstractCollection as AbstractCollection;
 use XF\Mvc\Entity\Structure;
 use XF\Phrase;
@@ -48,9 +53,26 @@ use XF\Phrase;
  * @property-read Report|null                     $Report
  * @property-read User|null                       $User
  */
-class ReportComment extends XFCP_ReportComment
+class ReportComment extends XFCP_ReportComment implements ViewableInterface, DatableInterface, ContainableInterface
 {
     use ReactionTrait;
+    use ContainableTrait;
+    use DatableTrait;
+
+    public function getContentContainerType(): string
+    {
+        return 'report';
+    }
+
+    public function getContentContainerIdColumn(): string
+    {
+        return 'report_id';
+    }
+
+    public function getContentDateColumn(): string
+    {
+        return 'comment_date';
+    }
 
     public function canView()
     {

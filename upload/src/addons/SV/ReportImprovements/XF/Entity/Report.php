@@ -9,6 +9,11 @@ use SV\SearchImprovements\Search\Features\ISearchableDiscussionUser;
 use SV\SearchImprovements\Search\Features\ISearchableReplyCount;
 use XF\Behavior\Indexable;
 use XF\Behavior\IndexableContainer;
+use XF\Entity\ContainableInterface;
+use XF\Entity\ContainableTrait;
+use XF\Entity\DatableInterface;
+use XF\Entity\DatableTrait;
+use XF\Entity\ViewableInterface;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Finder;
@@ -38,8 +43,26 @@ use function is_callable;
  * @property-read User|null     $AssignerUser
  * @property-read ReportComment $LastModified_
  */
-class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDiscussionUser
+class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDiscussionUser, ViewableInterface, DatableInterface, ContainableInterface
 {
+    use ContainableTrait;
+    use DatableTrait;
+
+    public function getContentContainerType(): string
+    {
+        return 'sv_report_queue';
+    }
+
+    public function getContentContainerIdColumn(): string
+    {
+        return 'queue_id';
+    }
+
+    public function getContentDateColumn(): string
+    {
+        return 'first_report_date';
+    }
+
     public function canView()
     {
         /** @var User $visitor */
@@ -577,7 +600,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         $structure->columns['last_modified_id'] = ['type' => self::UINT, 'default' => 0];
 
         $structure->getters['username'] = ['getter' => 'getUsername', 'cache' => true];
-        $structure->getters['content_date'] = ['getter' => 'getContentDate', 'cache' => true];
+        $structure->getters['content_date'] = ['getter' => 'getReportedContentDate', 'cache' => true];
         $structure->getters['message'] = ['getter' => 'getMessage', 'cache' => true];
         $structure->getters['commenter_user_ids'] = ['getter' => 'getCommenterUserIds', 'cache' => true];
         $structure->getters['comment_ids'] = ['getter' => 'getCommentIds', 'cache' => true];
