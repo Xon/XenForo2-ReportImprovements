@@ -8,9 +8,10 @@ use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\ReportImprovements\XF\Service\Report\Commenter;
+use SV\StandardLib\Helper;
 use XF\ControllerPlugin\BbCodePreview as BbCodePreviewPlugin;
 use XF\ControllerPlugin\Editor;
-use XF\ControllerPlugin\Ip;
+use XF\ControllerPlugin\Ip as IpPlugin;
 use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
 use XF\Entity\ConversationMessage;
 use XF\Entity\ConversationRecipient;
@@ -164,8 +165,7 @@ class Report extends XFCP_Report
         $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
         $breadcrumbs = $reportComment->getBreadcrumbs();
 
-        /** @var Ip $ipPlugin */
-        $ipPlugin = $this->plugin('XF:Ip');
+        $ipPlugin = Helper::plugin($this, IpPlugin::class);
         return $ipPlugin->actionIp($reportComment, $breadcrumbs);
     }
 
@@ -273,7 +273,7 @@ class Report extends XFCP_Report
     protected function setupReportCommentEdit(ReportComment $reportComment)
     {
         /** @var Editor $editorPlugin */
-        $editorPlugin = $this->plugin('XF:Editor');
+        $editorPlugin = Helper::plugin($this, \XF\ControllerPlugin\Editor::class);
         $message = $editorPlugin->fromInput('message');
 
         /** @var CommentEditor $editor */
@@ -392,7 +392,7 @@ class Report extends XFCP_Report
         $reactionLinkParams = [];
 
         /** @var ReactionControllerPlugin $reactionControllerPlugin */
-        $reactionControllerPlugin = $this->plugin('XF:Reaction');
+        $reactionControllerPlugin = Helper::plugin($this, \XF\ControllerPlugin\Reaction::class);
         return $reactionControllerPlugin->actionReact(
             $reportComment,
             $this->buildLink('reports/comment', $reportComment),
@@ -414,7 +414,7 @@ class Report extends XFCP_Report
         $title = \XF::phrase('sv_members_who_reacted_this_report_comment');
 
         /** @var ReactionControllerPlugin $reactionControllerPlugin */
-        $reactionControllerPlugin = $this->plugin('XF:Reaction');
+        $reactionControllerPlugin = Helper::plugin($this, \XF\ControllerPlugin\Reaction::class);
         return $reactionControllerPlugin->actionReactions(
             $reportComment,
             'reports/comment/reactions',
@@ -502,7 +502,7 @@ class Report extends XFCP_Report
         }
 
         /** @var BbCodePreviewPlugin $bbCodePreview */
-        $bbCodePreview = $this->plugin('XF:BbCodePreview');
+        $bbCodePreview = Helper::plugin($this, \XF\ControllerPlugin\BbCodePreview::class);
 
         return $bbCodePreview->actionPreview($reportComment->message, 'report_comment', $reportComment->User, $attachments, $report->canViewAttachments());
     }

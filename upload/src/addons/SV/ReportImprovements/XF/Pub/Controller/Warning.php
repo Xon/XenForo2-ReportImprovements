@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
 use SV\ReportImprovements\XF\ControllerPlugin\Warn as WarnPlugin;
+use SV\StandardLib\Helper;
 use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\Exception as ReplyException;
@@ -40,7 +41,7 @@ class Warning extends XFCP_Warning
         $warning = $this->assertViewableWarning($params->warning_id);
 
         /** @var WarnPlugin $warnPlugin */
-        $warnPlugin = $this->plugin('XF:Warn');
+        $warnPlugin = Helper::plugin($this, \XF\ControllerPlugin\Warn::class);
         $warnPlugin->resolveReportFor($warning);
 
         return parent::actionDelete($params);
@@ -58,7 +59,7 @@ class Warning extends XFCP_Warning
         $warning = $this->assertViewableWarning($params->warning_id);
 
         /** @var WarnPlugin $warnPlugin */
-        $warnPlugin = $this->plugin('XF:Warn');
+        $warnPlugin = Helper::plugin($this, \XF\ControllerPlugin\Warn::class);
         $warnPlugin->resolveReportFor($warning);
 
         return parent::actionExpire($params);

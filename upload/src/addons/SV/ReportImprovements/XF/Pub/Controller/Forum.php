@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
 use SV\ReportImprovements\XF\ControllerPlugin\Warn as WarnPlugin;
+use SV\StandardLib\Helper;
 
 /**
  * Class Forum
@@ -32,7 +33,7 @@ class Forum extends XFCP_Forum
         $forumban = $forumBanSvc->getForumBan();
 
         /** @var WarnPlugin $warnPlugin */
-        $warnPlugin = $this->plugin('XF:Warn');
+        $warnPlugin = Helper::plugin($this, \XF\ControllerPlugin\Warn::class);
         $warnPlugin->resolveReportFor($forumban);
 
         return $forumBanSvc;

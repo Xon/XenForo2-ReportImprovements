@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\ControllerPlugin;
 
 use SV\ReportImprovements\XF\Service\Report\Creator;
+use SV\StandardLib\Helper;
 use XF\ControllerPlugin\Editor as EditorPlugin;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\Exception as ReplyException;
@@ -24,7 +25,7 @@ class Report extends XFCP_Report
         if (\XF::options()->svRichTextReport ?? false)
         {
             /** @var EditorPlugin $editorPlugin */
-            $editorPlugin = $this->plugin('XF:Editor');
+            $editorPlugin = Helper::plugin($this, \XF\ControllerPlugin\Editor::class);
             $message = $editorPlugin->fromInput('message');
             // if the editorPlugin is called again, 'message' is used before 'message_html'
             $this->request->set('message', $message);

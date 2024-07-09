@@ -244,7 +244,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $reportableContent = $approvalQueueItem->ReportableContent;
 
         /** @var \XF\ControllerPlugin\Report $reportPlugin */
-        $reportPlugin = $this->plugin('XF:Report');
+        $reportPlugin = Helper::plugin($this, \XF\ControllerPlugin\Report::class);
         return $reportPlugin->actionReport(
             $reportableContent->getEntityContentType(), $reportableContent,
             $this->buildLink('approval-queue/report', null, [

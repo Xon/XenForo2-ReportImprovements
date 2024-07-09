@@ -5,6 +5,7 @@ namespace SV\ReportImprovements\XF\Pub\Controller;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\ControllerPlugin\Warn as WarnPlugin;
 use SV\ReportImprovements\XF\Service\Thread\ReplyBan;
+use SV\StandardLib\Helper;
 use XF\Mvc\ParameterBag;
 
 /**
@@ -42,7 +43,7 @@ class Thread extends XFCP_Thread
         $replyBan = $replyBanSrv->getReplyBan();
 
         /** @var WarnPlugin $warnPlugin */
-        $warnPlugin = $this->plugin('XF:Warn');
+        $warnPlugin = Helper::plugin($this, \XF\ControllerPlugin\Warn::class);
         $warnPlugin->resolveReportFor($replyBan);
 
         return $replyBanSrv;
