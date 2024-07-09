@@ -40,7 +40,7 @@ class ProfilePostComment extends XFCP_ProfilePostComment implements ContentInter
         $report->content_info = $contentInfo;
     }
 
-    public function getContentDate(Report $report): ?int
+    public function getReportedContentDate(Report $report): ?int
     {
         $contentDate = $report->content_info['comment_date'] ?? null;
         if ($contentDate === null)

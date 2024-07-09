@@ -259,7 +259,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         return $breadcrumbs;
     }
 
-    public function getContentDate(): ?int
+    public function getReportedContentDate(): ?int
     {
         $handler = $this->Handler;
 
@@ -268,7 +268,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
             return null;
         }
 
-        return $handler->getContentDate($this);
+        return $handler->getReportedContentDate($this);
     }
 
     public function setContent(Entity $content = null)

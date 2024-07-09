@@ -40,7 +40,7 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
         $report->content_info = $contentInfo;
     }
 
-    public function getContentDate(Report $report): ?int
+    public function getReportedContentDate(Report $report): ?int
     {
         $contentDate = $report->content_info['message_date'] ?? null;
         if ($contentDate === null)

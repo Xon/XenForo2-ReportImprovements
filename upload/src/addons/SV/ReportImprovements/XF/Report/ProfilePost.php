@@ -40,7 +40,7 @@ class ProfilePost extends XFCP_ProfilePost implements ContentInterface
         $report->content_info = $contentInfo;
     }
 
-    public function getContentDate(Report $report): ?int
+    public function getReportedContentDate(Report $report): ?int
     {
         $contentDate = $report->content_info['post_date'] ?? null;
         if ($contentDate === null)
