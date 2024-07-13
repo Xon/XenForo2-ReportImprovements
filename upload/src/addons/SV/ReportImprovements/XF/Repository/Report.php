@@ -593,6 +593,11 @@ class Report extends XFCP_Report
             }
         }
 
+        if (count($moderators) === 0)
+        {
+            return new ArrayCollection([]);
+        }
+
         // sorting string is hard, use mysql to at least be consistent with how XF returns this list
         $db = $this->db();
         $keys = $db->fetchAllColumn('
