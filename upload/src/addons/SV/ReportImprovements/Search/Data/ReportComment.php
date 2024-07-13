@@ -414,7 +414,7 @@ class ReportComment extends AbstractData
             'c.participants', 'discussion_user'
         );
         $repo->applyRangeConstraint($query, $constraints, $urlConstraints,
-            'c.replies.lower', 'c.replies.upper', 'replies',
+            'c.replies.lower', 'c.replies.upper', $this->isUsingElasticSearch ? 'replies' : 'comment_count',
             [$this->getReportQueryTableReference()]
         );
     }
