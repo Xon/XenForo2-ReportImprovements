@@ -30,6 +30,9 @@
 		<xf:contentcheck>
 			<xf:set var="$hasActionBarMenu" value="{{ false }}" />
 			<xf:if is="$comment.canEdit()">
+				<xf:if is="$xf.versionId > 2030000">
+					<xf:js src="xf/action.js" min="1" />
+				</xf:if>
 				<xf:js src="xf/message.js" min="1" />
 				<a href="{{ link('reports/comment/edit', $comment) }}"
 					class="actionBar-action actionBar-action--edit actionBar-action--menuItem"
