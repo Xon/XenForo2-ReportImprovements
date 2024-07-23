@@ -48,7 +48,7 @@ class Warn extends XFCP_Warn
         }
     }
 
-    public function setupReplyBan(bool $sendAlert, string $reason, int $banLengthValue = null, string $banLengthUnit = null)
+    public function setupReplyBan(bool $sendAlert, string $reason, ?int $banLengthValue = null, ?string $banLengthUnit = null)
     {
         if (!$this->content instanceof Post)
         {

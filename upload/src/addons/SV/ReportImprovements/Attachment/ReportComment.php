@@ -59,7 +59,7 @@ class ReportComment extends AbstractHandler
         return ($report && $report->canUploadAndManageAttachments());
     }
 
-    public function onAttachmentDelete(Attachment $attachment, Entity $container = null)
+    public function onAttachmentDelete(Attachment $attachment, ?Entity $container = null)
     {
         if (!$container)
         {
@@ -111,7 +111,7 @@ class ReportComment extends AbstractHandler
         return (int)($context['report_comment_id'] ?? 0);
     }
 
-    public function getContext(Entity $entity = null, array $extraContext = [])
+    public function getContext(?Entity $entity = null, array $extraContext = [])
     {
         if ($entity instanceof \XF\Entity\ReportComment)
         {

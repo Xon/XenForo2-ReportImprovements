@@ -227,7 +227,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
         return $this->_getterCache['Unfurls'] ?? [];
     }
 
-    public function setUnfurls(array $unfurls = null)
+    public function setUnfurls(?array $unfurls = null)
     {
         $this->_getterCache['Unfurls'] = $unfurls;
     }

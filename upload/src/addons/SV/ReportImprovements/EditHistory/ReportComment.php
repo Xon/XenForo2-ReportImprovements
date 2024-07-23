@@ -46,7 +46,7 @@ class ReportComment extends AbstractHandler
         return $content->message;
     }
 
-    public function revertToVersion(Entity $content, EditHistory $history, EditHistory $previous = null)
+    public function revertToVersion(Entity $content, EditHistory $history, ?EditHistory $previous = null)
     {
         /** @var ReportCommentEntity $content */
 
@@ -76,7 +76,7 @@ class ReportComment extends AbstractHandler
      * @param Entity|ReportCommentEntity|null $content
      * @return string
      */
-    public function getHtmlFormattedContent($text, Entity $content = null) : string
+    public function getHtmlFormattedContent($text, ?Entity $content = null) : string
     {
         return \XF::escapeString($text);
     }

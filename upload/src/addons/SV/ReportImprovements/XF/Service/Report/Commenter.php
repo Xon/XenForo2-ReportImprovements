@@ -33,7 +33,7 @@ class Commenter extends XFCP_Commenter
         return $this->commentPreparer->getAttachmentHash();
     }
 
-    public function setAttachmentHash(string $hash = null): self
+    public function setAttachmentHash(?string $hash = null): self
     {
         $this->commentPreparer->setAttachmentHash($hash);
 
@@ -88,7 +88,7 @@ class Commenter extends XFCP_Commenter
      * @param null                 $newState
      * @param User|null $assignedUser
      */
-    public function setReportState($newState = null, User $assignedUser = null)
+    public function setReportState($newState = null, ?User $assignedUser = null)
     {
         if (Globals::$suppressReportStateChange)
         {

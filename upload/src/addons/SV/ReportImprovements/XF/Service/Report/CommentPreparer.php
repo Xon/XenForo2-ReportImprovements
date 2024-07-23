@@ -49,7 +49,7 @@ class CommentPreparer extends XFCP_CommentPreparer
         return $this->attachmentHash;
     }
 
-    public function setAttachmentHash(string $hash = null): self
+    public function setAttachmentHash(?string $hash = null): self
     {
         $this->attachmentHash = $hash;
 

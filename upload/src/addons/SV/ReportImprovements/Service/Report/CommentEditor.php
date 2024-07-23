@@ -83,7 +83,7 @@ class CommentEditor extends AbstractService
         }
     }
 
-    public function setOldMessage(string $oldMessage = null): self
+    public function setOldMessage(?string $oldMessage = null): self
     {
         $this->oldMessage = $oldMessage;
 
@@ -106,7 +106,7 @@ class CommentEditor extends AbstractService
         return $this->commentPreparer->getAttachmentHash();
     }
 
-    public function setAttachmentHash(string $hash = null): self
+    public function setAttachmentHash(?string $hash = null): self
     {
         $this->commentPreparer->setAttachmentHash($hash);
 

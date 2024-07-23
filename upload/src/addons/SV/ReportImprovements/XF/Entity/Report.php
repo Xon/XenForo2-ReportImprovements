@@ -294,7 +294,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         return $handler->getReportedContentDate($this);
     }
 
-    public function setContent(Entity $content = null)
+    public function setContent(?Entity $content = null)
     {
         // XF2.2.9 Adds this function, so we can't depend on it existing all the time
         if (is_callable([parent::class,'setContent']))

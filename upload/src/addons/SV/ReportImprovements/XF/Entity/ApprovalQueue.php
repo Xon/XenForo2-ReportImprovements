@@ -141,7 +141,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     /**
      * @param Entity|null $content
      */
-    public function setContent(Entity $content = null)
+    public function setContent(?Entity $content = null)
     {
         parent::setContent($content);
 
