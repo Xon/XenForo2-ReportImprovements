@@ -43,7 +43,7 @@ class ReportQueuePermissions extends FlatContentPermissions
     public function rebuildCombination(PermissionCombination $combination, array $basePerms)
     {
         // being notified on permission changes is surprisingly challenging
-        $reportQueueRepo = \XF::repository('SV\ReportImprovements:ReportQueue');
+        $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
         assert($reportQueueRepo instanceof ReportQueueRepo);
         $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
 

@@ -33,7 +33,7 @@ class ForumBan extends XFCP_ForumBan implements IReportResolver
             return $this->_relations['Report'];
         }
 
-        return $this->finder('XF:Report')
+        return \SV\StandardLib\Helper::finder(\XF\Finder\Report::class)
                     ->where('content_type', 'user')
                     ->where('content_id', $this->user_id)
                     ->fetchOne();

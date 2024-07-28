@@ -76,7 +76,7 @@ class ReportComment extends AbstractHandler
     public function getConstraints(array $context)
     {
         /** @var \XF\Repository\Attachment $attachRepo */
-        $attachRepo = \XF::repository('XF:Attachment');
+        $attachRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Attachment::class);
 
         $constraints = $attachRepo->getDefaultAttachmentConstraints();
 
@@ -140,7 +140,7 @@ class ReportComment extends AbstractHandler
         if ($reportCommentId)
         {
             /** @var ReportCommentEntity $reportComment */
-            $reportComment = $em->find('XF:ReportComment', $reportCommentId, $this->getContainerWith());
+            $reportComment = \SV\StandardLib\Helper::find(\XF\Entity\ReportComment::class, $reportCommentId, $this->getContainerWith());
             if (!$reportComment || !$reportComment->canView() || !$reportComment->canEdit())
             {
                 return null;
@@ -153,7 +153,7 @@ class ReportComment extends AbstractHandler
         if ($reportId)
         {
             /** @var ReportEntity|null $report */
-            $report = $em->find('XF:Report', $reportId, $this->getReportWith());
+            $report = \SV\StandardLib\Helper::find(\XF\Entity\Report::class, $reportId, $this->getReportWith());
             if ($report === null || !$report->canView() || !$report->canComment())
             {
                 return null;

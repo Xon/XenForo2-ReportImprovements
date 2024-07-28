@@ -33,8 +33,8 @@ trait SearchDataSetupTrait
         /** @noinspection PhpMultipleClassDeclarationsInspection */
         parent::__construct($contentType, $searcher);
 
-        $this->reportRepo = \XF::repository('XF:Report');
-        $this->searchRepo = \XF::repository('SV\SearchImprovements:Search');
+        $this->reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
+        $this->searchRepo = \SV\StandardLib\Helper::repository(\SV\SearchImprovements\Repository\Search::class);
         $this->isAddonFullyActive = $this->reportRepo instanceof ReportRepo;
         $this->isUsingElasticSearch = SearchRepo::get()->isUsingElasticSearch();
     }

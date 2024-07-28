@@ -32,7 +32,7 @@ class RebuildWarningLogLatestVersion extends AbstractRebuildJob
      */
     protected function getNextIds($start, $batch)
     {
-        $db = $this->app->db();
+        $db = \XF::app()->db();
 
         return $db->fetchAllColumn($db->limit(
             '
@@ -51,7 +51,7 @@ class RebuildWarningLogLatestVersion extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        $warningLog = \XF::app()->find('SV\ReportImprovements:WarningLog', $id);
+        $warningLog = \SV\StandardLib\Helper::find(\SV\ReportImprovements\Entity\WarningLog::class, $id);
         assert($warningLog instanceof WarningLog);
         $warningLog->rebuildLatestVersionFlag($this->data['reindex']);
     }

@@ -28,15 +28,15 @@ class ResolveInactiveReport extends AbstractRebuildJob
 
     protected function setupData(array $data)
     {
-        $options = $this->app->options();
+        $options = \XF::app()->options();
         $this->daysLimit = (int)($options->svReportImpro_autoExpireDays ?? 0);
         $this->expireAction = (string)($options->svReportImpro_autoExpireAction ?? '');
         $this->expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
 
-        $this->reporter = $this->app->find('XF:User', $this->expireUserId);
+        $this->reporter = \SV\StandardLib\Helper::find(\XF\Entity\User::class, $this->expireUserId);
         if (!$this->reporter)
         {
-            $this->reporter = $this->app->find('XF:User', 1);
+            $this->reporter = \SV\StandardLib\Helper::find(\XF\Entity\User::class, 1);
         }
         if (!$this->reporter)
         {
@@ -60,7 +60,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
             return null;
         }
 
-        $db = $this->app->db();
+        $db = \XF::app()->db();
 
         return $db->fetchAllColumn($db->limit(
             '
@@ -81,7 +81,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
     protected function rebuildById($id)
     {
         /** @var Report $report */
-        $report = $this->app->em()->find('XF:Report', $id);
+        $report = \SV\StandardLib\Helper::find(\XF\Entity\Report::class, $id);
         if ($report === null)
         {
             return;

@@ -10,7 +10,7 @@ class Warnings extends AbstractOption
 {
     protected static function getSelectData(Option $option, array $htmlParams)
     {
-        $finder = \XF::finder('XF:WarningDefinition');
+        $finder = \SV\StandardLib\Helper::finder(\XF\Finder\WarningDefinition::class);
         if (isset($finder->getStructure()->columns['sv_display_order']))
         {
             $finder->with('Category')

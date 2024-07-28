@@ -18,7 +18,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     {
         $joins = [];
         /** @var ApprovalQueueRepo $approvalQueueRepo */
-        $approvalQueueRepo = \XF::repository('XF:ApprovalQueue');
+        $approvalQueueRepo = \SV\StandardLib\Helper::repository(\XF\Repository\ApprovalQueue::class);
         $handlers = $approvalQueueRepo->getApprovalQueueHandlers(false);
         foreach ($handlers as $handler)
         {
@@ -51,7 +51,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             }
             try
             {
-                $structure = $this->em->getEntityStructure($entityName);
+                $structure = \XF::app()->em()->getEntityStructure($entityName);
             }
             catch (\Throwable $e)
             {
@@ -65,7 +65,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
             try
             {
-                $containerStructure = $this->em->getEntityStructure($containerEntityName);
+                $containerStructure = \XF::app()->em()->getEntityStructure($containerEntityName);
             }
             catch (\Throwable $e)
             {

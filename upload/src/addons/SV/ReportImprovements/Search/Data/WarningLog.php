@@ -94,7 +94,7 @@ class WarningLog extends AbstractData
         }
 
         $em = \XF::em();
-        $key = $em->getEntityStructure($entityId)->primaryKey;
+        $key = \SV\StandardLib\Helper::getEntityStructure($entityId)->primaryKey;
         if (is_array($key))
         {
             if (count($key) > 1)
@@ -104,7 +104,7 @@ class WarningLog extends AbstractData
             $key = reset($key);
         }
 
-        $finder = $em->getFinder($entityId)
+        $finder = \SV\StandardLib\Helper::finder($entityId)
                      ->where($key, '>', $lastId)
                      ->with('ReportComment', true)
             //->where('ReportComment.warning_log_id', '<>', null)

@@ -34,7 +34,7 @@ class Search extends XFCP_Search
         // todo simplify this
         if ($key === 'report_state' && is_array($value))
         {
-            $reportRepo = \XF::repository('XF:Report');
+            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
             assert($reportRepo instanceof ReportRepo);
             $states = $reportRepo->getReportStatePairs();
 
@@ -64,7 +64,7 @@ class Search extends XFCP_Search
         }
         else if ($key === 'report_content' && is_array($value))
         {
-            $reportRepo = \XF::repository('XF:Report');
+            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
             assert($reportRepo instanceof ReportRepo);
             $states = $reportRepo->getReportContentTypePhrasePairs(true);
 
@@ -94,7 +94,7 @@ class Search extends XFCP_Search
         }
         else if ($key === 'warning_definition' && is_array($value))
         {
-            $reportRepo = \XF::repository('XF:Report');
+            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
             assert($reportRepo instanceof ReportRepo);
             $states = $reportRepo->getWarningDefinitionsForSearch();
 

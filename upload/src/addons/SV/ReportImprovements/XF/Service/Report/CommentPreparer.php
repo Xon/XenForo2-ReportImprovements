@@ -115,7 +115,7 @@ class CommentPreparer extends XFCP_CommentPreparer
 
         if ($this->logIp)
         {
-            $ip = ($this->logIp === true ? $this->app->request()->getIp() : $this->logIp);
+            $ip = ($this->logIp === true ? \XF::app()->request()->getIp() : $this->logIp);
             $this->writeIpLog($ip);
         }
     }
@@ -209,7 +209,7 @@ class CommentPreparer extends XFCP_CommentPreparer
         $reportComment = $this->getComment();
 
         /** @var IP $ipRepo */
-        $ipRepo = $this->repository('XF:Ip');
+        $ipRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Ip::class);
         $ipEnt = $ipRepo->logIp($reportComment->user_id, $ip, 'report_comment', $reportComment->report_comment_id);
         if ($ipEnt)
         {

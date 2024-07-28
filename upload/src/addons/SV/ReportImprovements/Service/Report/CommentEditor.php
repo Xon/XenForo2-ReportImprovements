@@ -183,7 +183,7 @@ class CommentEditor extends AbstractService
         {
             $reportComment = $this->getComment();
             // suppress the "required" flag which blocks "empty" content being saved to edit history
-            $structure = $this->em()->getEntityStructure('XF:EditHistory');
+            $structure = \SV\StandardLib\Helper::getEntityStructure(\XF\Entity\EditHistory::class);
             $oldMessageRequired = $structure->columns['old_text']['required'] ?? false;
             if ($oldMessageRequired)
             {
@@ -196,7 +196,7 @@ class CommentEditor extends AbstractService
                     $reportComment->getEntityId(),
                     \XF::visitor(),
                     $oldMessage,
-                    $this->app()->request()->getIp()
+                    \XF::app()->request()->getIp()
                 );
             }
             finally
@@ -247,6 +247,6 @@ class CommentEditor extends AbstractService
      */
     protected function getEditHistoryRepo() : EditHistoryRepo
     {
-        return $this->repository('XF:EditHistory');
+        return \SV\StandardLib\Helper::repository(\XF\Repository\EditHistory::class);
     }
 }

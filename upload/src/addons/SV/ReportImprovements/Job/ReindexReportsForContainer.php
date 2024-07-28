@@ -31,7 +31,7 @@ class ReindexReportsForContainer extends AbstractRebuildJob
             return [];
         }
 
-        $db = $this->app->db();
+        $db = \XF::app()->db();
 
         return $db->fetchAllColumn($db->limit('
             SELECT report_id
@@ -44,7 +44,7 @@ class ReindexReportsForContainer extends AbstractRebuildJob
 
     protected function rebuildById($id): void
     {
-        $report = $this->app->find('XF:Report', $id);
+        $report = \SV\StandardLib\Helper::find(\XF\Entity\Report::class, $id);
         if ($report === null)
         {
             return;

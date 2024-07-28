@@ -148,7 +148,7 @@ class Report extends XFCP_Report
             return null;
         }
 
-        $searcher = $this->app()->search();
+        $searcher = \XF::app()->search();
         /** @var string|null $contentType */
         $contentType = $content->getEntityContentType();
         if ($contentType === null  || !$searcher->isValidContentType($contentType))
@@ -299,7 +299,7 @@ class Report extends XFCP_Report
      */
     public function svGetUsersWhoCanHandleReport(\XF\Entity\Report $report, bool $doCache = true): array
     {
-        $reportQueueRepo = $this->repository('SV\ReportImprovements:ReportQueue');
+        $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
         assert($reportQueueRepo instanceof ReportQueueRepo);
         $reportQueueId = (int)($report->queue_id ?? 0);
         $key = $reportQueueRepo->getReportAssignableNonModeratorsCacheKey($reportQueueId);
@@ -326,7 +326,7 @@ class Report extends XFCP_Report
                          'XF:PermissionEntryContent' => ['unset', 'reset', 'content_allow', 'deny', 'use_int'],
                      ] as $entityName => $expected)
             {
-                $structure = $this->app()->em()->getEntityStructure($entityName);
+                $structure = \SV\StandardLib\Helper::getEntityStructure($entityName);
                 $allowedValues = array_values(($structure->columns['permission_value']['allowedValues'] ?? []));
                 sort($allowedValues);
                 sort($expected);
@@ -495,7 +495,7 @@ class Report extends XFCP_Report
 
         // load into memory, but this is non-authoritative
         /** @var Moderator $moderatorRepo */
-        $moderatorRepo = $this->repository('XF:Moderator');
+        $moderatorRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Moderator::class);
         $moderatorRepo->findModeratorsForList()
                       ->fetch();
 
@@ -512,7 +512,7 @@ class Report extends XFCP_Report
             {
                 $moderator->setTrusted('notify_report', false);
             }
-            $moderator->hydrateRelation('User', $this->em->find('XF:User', $userId));
+            $moderator->hydrateRelation('User', \SV\StandardLib\Helper::find(\XF\Entity\User::class, $userId));
             $moderator->setReadOnly(true);
 
             return $moderator;
@@ -545,7 +545,7 @@ class Report extends XFCP_Report
         if (count($usersToFetch) !== 0)
         {
             /** @var array<int,UserEntity> $users */
-            $users = \XF::finder('XF:User')
+            $users = \SV\StandardLib\Helper::finder(\XF\Finder\User::class)
                         ->where('user_id', '=', $usersToFetch)
                         ->order('user_id')
                         ->fetch();
@@ -569,16 +569,16 @@ class Report extends XFCP_Report
             $nodeId = (int)($report->content_info['node_id'] ?? 0);
             if ($nodeId !== 0)
             {
-                $this->em->find('XF:Forum', $nodeId);
+                \SV\StandardLib\Helper::find(\XF\Entity\Forum::class, $nodeId);
             }
             if ($nodeId !== 0)
             {
-                $this->app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'node', $nodeId);
+                \XF::app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'node', $nodeId);
             }
             $reportQueueId = (int)($report->queue_id ?? 0);
             if ($reportQueueId !== 0)
             {
-                $this->app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'report_queue', $reportQueueId);
+                \XF::app()->permissionCache()->cacheMultipleContentPermsForContent($permCombinationIds, 'report_queue', $reportQueueId);
             }
         }
 
@@ -643,7 +643,7 @@ class Report extends XFCP_Report
 
         if ($userIds)
         {
-            \XF::em()->findByIds('XF:User', array_keys($userIds));
+            \SV\StandardLib\Helper::findByIds(\XF\Entity\User::class, array_keys($userIds));
         }
 
         return $reports;
@@ -771,7 +771,7 @@ class Report extends XFCP_Report
     public function rebuildSessionReportCounts(array $registryReportCounts)
     {
         /** @var \XF\Finder\Report $reportFinder */
-        $reportFinder = $this->app()->finder('XF:Report');
+        $reportFinder = \SV\StandardLib\Helper::finder(\XF\Finder\Report::class);
         $reports = $reportFinder->isActive()->fetch();
         $reports = $this->filterViewableReports($reports);
 
@@ -804,7 +804,7 @@ class Report extends XFCP_Report
      */
     public function getReportStates(): array
     {
-        $structure = \XF::app()->em()->getEntityStructure('XF:Report');
+        $structure = \SV\StandardLib\Helper::getEntityStructure(\XF\Entity\Report::class);
         // This list is extended by other add-ons
         $states = $structure->columns['report_state']['allowedValues'] ?? [];
         assert(is_array($states) && count($states) > 0);
@@ -854,7 +854,7 @@ class Report extends XFCP_Report
     public function getReportContentTypePhrasePairs(bool $plural): array
     {
         $contentTypes = [];
-        $app = $this->app();
+        $app = \XF::app();
 
         foreach ($this->getReportHandlers() as $contentType => $handler)
         {
@@ -870,7 +870,7 @@ class Report extends XFCP_Report
     public function getReportHandlers(): array
     {
         $contentTypes = [];
-        $app = $this->app();
+        $app = \XF::app();
 
         foreach ($app->getContentTypeField('report_handler_class') as $contentType => $className)
         {
@@ -892,13 +892,13 @@ class Report extends XFCP_Report
     {
         $phrasePairs = [];
 
-        $warningRepo = $this->repository('XF:Warning');
+        $warningRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Warning::class);
         assert($warningRepo instanceof \XF\Repository\Warning);
         if (Helper::isAddOnActive('SV/WarningImprovements'))
         {
             assert($warningRepo instanceof \SV\WarningImprovements\XF\Repository\Warning);
 
-            $categoryRepo = $this->repository('SV\WarningImprovements:WarningCategory');
+            $categoryRepo = \SV\StandardLib\Helper::repository(\SV\WarningImprovements\Repository\WarningCategory::class);
             assert($categoryRepo instanceof \SV\WarningImprovements\Repository\WarningCategory);
 
             $categories = $categoryRepo->findCategoryList()->fetch();

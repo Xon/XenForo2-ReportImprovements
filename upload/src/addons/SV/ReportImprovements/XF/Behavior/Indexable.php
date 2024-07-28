@@ -59,7 +59,7 @@ class Indexable extends XFCP_Indexable
             return;
         }
 
-        $reportRepo = $this->repository('XF:Report');
+        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
         assert($reportRepo instanceof ReportRepo);
         if ($reportRepo->hasContentVisibilityChanged($this->entity))
         {
@@ -77,7 +77,7 @@ class Indexable extends XFCP_Indexable
     protected function triggerReportReIndex(): void
     {
         $contentType = (string)$this->contentType();
-        $reportRepo = $this->repository('XF:Report');
+        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
         assert($reportRepo instanceof ReportRepo);
         $handler = $reportRepo->getReportHandler($contentType, false);
         if ($handler === null)
@@ -93,8 +93,7 @@ class Indexable extends XFCP_Indexable
         }
         if (!($report instanceof ReportEntity))
         {
-            $report = $this->app()
-                           ->finder('XF:Report')
+            $report = \SV\StandardLib\Helper::finder(\XF\Finder\Report::class)
                            ->where('content_type', $contentType)
                            ->where('content_id', $this->entity->getEntityId())
                            ->fetchOne();

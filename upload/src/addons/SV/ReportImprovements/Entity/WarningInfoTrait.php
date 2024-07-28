@@ -40,7 +40,7 @@ trait WarningInfoTrait
             if (Helper::isAddOnActive('SV/WarningImprovements'))
             {
                 /** @var WarningRepo $warningRepo */
-                $warningRepo = $this->repository('XF:Warning');
+                $warningRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Warning::class);
                 return $warningRepo->getCustomWarningDefinition()->title;
             }
 

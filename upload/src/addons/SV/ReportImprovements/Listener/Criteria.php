@@ -12,7 +12,7 @@ abstract class Criteria
     public static function criteriaUser(string $rule, array $data, User $user, bool &$eventReturnValue): bool
     {
         /** @var Report $reportRepo */
-        $reportRepo = \XF::repository('XF:Report');
+        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
 
         switch ($rule)
         {

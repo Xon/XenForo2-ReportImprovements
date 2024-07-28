@@ -131,7 +131,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
             return false;
         }
 
-        if (!$this->app()->options()->editHistory['enabled'])
+        if (!\XF::app()->options()->editHistory['enabled'])
         {
             return false;
         }
@@ -260,7 +260,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
                 : $this->ViewableUsername;
 
             /** @var \XF\Repository\User $userRepo */
-            $userRepo = $this->repository('XF:User');
+            $userRepo = \SV\StandardLib\Helper::repository(\XF\Repository\User::class);
 
             return $userRepo->getGuestUser($username);
         }
@@ -278,7 +278,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
         }
 
         /** @var \XF\Repository\User $userRepo */
-        $userRepo = $this->repository('XF:User');
+        $userRepo = \SV\StandardLib\Helper::repository(\XF\Repository\User::class);
 
         return $userRepo->getGuestUser($this->ViewableUsername);
     }
@@ -357,7 +357,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
 
         if ($this->isUpdate() && $this->getOption('log_moderator'))
         {
-            $this->app()->logger()->logModeratorChanges('report_comment', $this);
+            \XF::app()->logger()->logModeratorChanges('report_comment', $this);
         }
     }
 
@@ -367,7 +367,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
 
         if ($this->Report)
         {
-            $lastReportCommentFinder = $this->finder('XF:ReportComment');
+            $lastReportCommentFinder = \SV\StandardLib\Helper::finder(\XF\Finder\ReportComment::class);
             $lastReportCommentFinder->where('report_id', $this->report_id);
             $lastReportCommentFinder->order('comment_date', 'DESC');
 

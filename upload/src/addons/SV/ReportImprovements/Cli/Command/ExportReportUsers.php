@@ -32,7 +32,7 @@ class ExportReportUsers extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('report-id');
-        $report = \XF::app()->find('XF:Report', $id);
+        $report = \SV\StandardLib\Helper::find(\XF\Entity\Report::class, $id);
         if ($report === null)
         {
             $output->writeln('<error>Report not found.</error>');
@@ -40,7 +40,7 @@ class ExportReportUsers extends Command
             return 1;
         }
         assert($report instanceof \XF\Entity\Report);
-        $reportRepo = \XF::repository('XF:Report');
+        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
         assert($reportRepo instanceof Report);
 
         $cache = (bool)$input->getOption('cache');

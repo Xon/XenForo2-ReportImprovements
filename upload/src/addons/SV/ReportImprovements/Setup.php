@@ -60,7 +60,7 @@ class Setup extends AbstractSetup
 
     public function upgrade1090100Step1()
     {
-        $this->app->jobManager()->enqueueUnique(
+        \XF::app()->jobManager()->enqueueUnique(
             'svRIUpgrade1090100Step1',
             Upgrade1090100Step1::class
         );
@@ -68,7 +68,7 @@ class Setup extends AbstractSetup
 
     public function upgrade1090200Step1()
     {
-        $this->app->jobManager()->enqueueUnique(
+        \XF::app()->jobManager()->enqueueUnique(
             'svRIUpgrade1090200Step1',
             Upgrade1090200Step1::class
         );
@@ -147,7 +147,7 @@ class Setup extends AbstractSetup
 
     public function upgrade2020700Step1(array $stepParams): ?array
     {
-        $finder = \XF::finder('XF:UserAlert')
+        $finder = \SV\StandardLib\Helper::finder(\XF\Finder\UserAlert::class)
                      ->where('content_type', '=', 'report_comment')
                      ->where('action', '=', 'mention')
                      ->order('alert_id');
@@ -170,7 +170,7 @@ class Setup extends AbstractSetup
             /** @var UserAlert $alert */
             $extraData = $alert->extra_data;
             /** @var ReportComment $comment */
-            $comment = \XF::finder('XF:ReportComment')->whereId($alert->content_id)->fetchOne();
+            $comment = \SV\StandardLib\Helper::finder(\XF\Finder\ReportComment::class)->whereId($alert->content_id)->fetchOne();
             if (!$comment)
             {
                 continue;
@@ -426,7 +426,7 @@ class Setup extends AbstractSetup
             'warning'  => 'warning_log',
             'warnings' => 'warning_logs',
         ];
-        $phrases = $this->app->finder('XF:Phrase')
+        $phrases = \SV\StandardLib\Helper::finder(\XF\Finder\Phrase::class)
                              ->where('language_id', '<>', 0)
                              ->where('title', array_keys($map))
                              ->fetch();
@@ -435,7 +435,7 @@ class Setup extends AbstractSetup
             assert($stockPhrase instanceof Phrase);
             $title = $map[$stockPhrase->title];
 
-            $phrase = $this->app->finder('XF:Phrase')
+            $phrase = \SV\StandardLib\Helper::finder(\XF\Finder\Phrase::class)
                                 ->where('language_id', '<>', 0)
                                 ->where('title', $title)
                                 ->fetchOne();
@@ -543,16 +543,16 @@ class Setup extends AbstractSetup
     protected function cleanupPermissionChecks()
     {
         /** @var PermissionEntry $permEntryRepo */
-        $permEntryRepo = \XF::repository('XF:PermissionEntry');
+        $permEntryRepo = \SV\StandardLib\Helper::repository(\XF\Repository\PermissionEntry::class);
 
         $permEntryRepo->deleteOrphanedGlobalUserPermissionEntries();
         $permEntryRepo->deleteOrphanedContentUserPermissionEntries();
 
         /** @var PermissionCombination $permComboRepo */
-        $permComboRepo = \XF::repository('XF:PermissionCombination');
+        $permComboRepo = \SV\StandardLib\Helper::repository(\XF\Repository\PermissionCombination::class);
         $permComboRepo->deleteUnusedPermissionCombinations();
 
-        $reportQueueRepo = \XF::repository('SV\ReportImprovements:ReportQueue');
+        $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
         assert($reportQueueRepo instanceof ReportQueueRepo);
         $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCache();
     }
@@ -579,9 +579,9 @@ class Setup extends AbstractSetup
         if (!$previousVersion || ($previousVersion <= 1040002) || ($previousVersion >= 2000000 && $previousVersion <= 2011000))
         {
             /** @var PermissionEntry $permissionEntryRepo */
-            $permissionEntryRepo = \XF::repository('XF:PermissionEntry');
+            $permissionEntryRepo = \SV\StandardLib\Helper::repository(\XF\Repository\PermissionEntry::class);
             /** @var \XF\Repository\Moderator $modRepo */
-            $modRepo = \XF::repository('XF:Moderator');
+            $modRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Moderator::class);
 
             $contentModerators = $modRepo->findContentModeratorsForList()->fetch();
             /** @var ModeratorContent $contentModerator */

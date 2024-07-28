@@ -71,7 +71,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $contentType = $content->getEntityContentType();
 
         /** @var ReportRepo $reportRepo */
-        $reportRepo = $this->repository('XF:Report');
+        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
         if ($reportRepo->getReportHandler($contentType, false))
         {
             // has a report handler so get return the content type and content id
@@ -126,7 +126,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         }
 
         /** @var \XF\Finder\Report $reportFinder */
-        $reportFinder = $this->finder('XF:Report');
+        $reportFinder = \SV\StandardLib\Helper::finder(\XF\Finder\Report::class);
         /** @var ReportEntity $report */
         $report = $reportFinder
             ->where('content_type', $content->getEntityContentType())

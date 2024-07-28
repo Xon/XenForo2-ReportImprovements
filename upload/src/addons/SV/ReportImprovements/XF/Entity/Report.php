@@ -224,7 +224,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
             return false;
         }
 
-        $options = $this->app()->options();
+        $options = \XF::app()->options();
 
         if (empty($options->allowVideoUploads['enabled']))
         {
@@ -333,7 +333,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     {
         if ($this->last_modified_id === 0)
         {
-            $reportCommentFinder = $this->finder('XF:ReportComment');
+            $reportCommentFinder = \SV\StandardLib\Helper::finder(\XF\Finder\ReportComment::class);
             $reportCommentFinder->where('report_id', $this->report_id);
             $reportCommentFinder->order('comment_date', 'DESC');
             $reportCommentFinder->with($this->getCommentWith());
@@ -427,7 +427,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     {
         $direction = (\XF::app()->options()->sv_reverse_report_comment_order ?? false) ? 'DESC' : 'ASC';
 
-        $finder = $this->finder('XF:ReportComment')
+        $finder = \SV\StandardLib\Helper::finder(\XF\Finder\ReportComment::class)
                        ->where('report_id', $this->report_id)
                        ->order('comment_date', $direction);
 

@@ -42,7 +42,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
     protected function rebuildById($id)
     {
         /** @var ReportComment $comment */
-        $comment = \XF::app()->find('XF:ReportComment', $id);
+        $comment = \SV\StandardLib\Helper::find(\XF\Entity\ReportComment::class, $id);
         if ($comment)
         {
             $user = $comment->User && $comment->User->user_id ? $comment->User : \XF::visitor();

@@ -168,7 +168,7 @@ class Commenter extends XFCP_Commenter
     public function sendNotifications()
     {
         /** @var Report $reportRepo */
-        $reportRepo = $this->repository('XF:Report');
+        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
         Globals::$notifyReportUserIds = $reportRepo->findUserIdsToAlertForSvReportImprov($this->comment);
         try
         {

@@ -24,7 +24,7 @@ class WarningLogMigration extends AbstractRebuildJob
      */
     protected function getNextIds($start, $batch)
     {
-        $db = $this->app->db();
+        $db = \XF::app()->db();
 
         return $db->fetchAllColumn($db->limit(
             '
@@ -43,7 +43,7 @@ class WarningLogMigration extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        $warning = $this->app->em()->find('XF:Warning', $id, ['User', 'WarnedBy']);
+        $warning = \SV\StandardLib\Helper::find(\XF\Entity\Warning::class, $id, ['User', 'WarnedBy']);
         if ($warning instanceof WarningEntity)
         {
             // On a detached thread, just pretend the post no longer exists
@@ -57,10 +57,10 @@ class WarningLogMigration extends AbstractRebuildJob
             if (!$user)
             {
                 $expireUserId = (int)(\XF::options()->svReportImpro_ExpireUserId ?? 1);
-                $user = \XF::app()->find('XF:User', $expireUserId);
+                $user = \SV\StandardLib\Helper::find(\XF\Entity\User::class, $expireUserId);
                 if (!$user)
                 {
-                    $user = \XF::app()->find('XF:User', 1);
+                    $user = \SV\StandardLib\Helper::find(\XF\Entity\User::class, 1);
                 }
                 if (!$user && $warning->User)
                 {

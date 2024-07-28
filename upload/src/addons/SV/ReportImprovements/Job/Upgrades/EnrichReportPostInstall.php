@@ -15,7 +15,7 @@ class EnrichReportPostInstall extends AbstractRebuildJob
 {
     protected function getNextIds($start, $batch)
     {
-        $db = $this->app->db();
+        $db = \XF::app()->db();
 
         return $db->fetchAllColumn($db->limit(
             '
@@ -29,13 +29,13 @@ class EnrichReportPostInstall extends AbstractRebuildJob
 
     protected function rebuildById($id)
     {
-        $report = $this->app->find('XF:Report', $id);
+        $report = \SV\StandardLib\Helper::find(\XF\Entity\Report::class, $id);
         if (!$report)
         {
             return;
         }
         assert($report instanceof Report);
-        $db = $this->app->db();
+        $db = \XF::app()->db();
 
         if ($report->last_modified_id === 0)
         {
@@ -92,7 +92,7 @@ class EnrichReportPostInstall extends AbstractRebuildJob
         if ($report->assigned_user_id !== 0 && $report->assigned_date === null)
         {
             // Xenforo doesn't accurate track which report comment assigns (or unassigns) a report :(
-            $reportComment = \XF::app()->finder('XF:ReportComment')
+            $reportComment = \SV\StandardLib\Helper::finder(\XF\Finder\ReportComment::class)
                                        ->where('report_id', $report->report_id)
                                        ->where('state_change','assigned')
                                        ->order('comment_date', 'desc')

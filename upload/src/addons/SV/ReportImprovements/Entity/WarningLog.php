@@ -125,7 +125,7 @@ class WarningLog extends Entity
 
     public function getReplyBanLink():? string
     {
-        $router = $this->app()->router('public');
+        $router = \XF::app()->router('public');
 
         if ($this->reply_ban_post_id && $this->ReplyBanPost)
         {
@@ -174,7 +174,7 @@ class WarningLog extends Entity
             return null;
         }
 
-        $router = $this->app()->router('public');
+        $router = \XF::app()->router('public');
 
         if ($this->reply_ban_node_id && $this->ForumBanForum)
         {
@@ -211,7 +211,7 @@ class WarningLog extends Entity
     public function rebuildLatestVersionFlag(bool $doIndexUpdate = true): void
     {
         $db = $this->db();
-        $finder = $this->finder('SV\ReportImprovements:WarningLog');
+        $finder = \SV\StandardLib\Helper::finder(\SV\ReportImprovements\Finder\WarningLog::class);
         assert($finder instanceof WarningLogFinder);
 
         $latestWarningLogId = 0;

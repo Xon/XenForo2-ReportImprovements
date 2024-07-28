@@ -44,7 +44,7 @@ class ReportQueue extends Repository
         }
 
         /** @var ReportQueue $entryRepo */
-        $entryRepo = $this->repository('SV\ReportImprovements:ReportQueue');
+        $entryRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
         /** @var int[] $reportQueueIds */
         $reportQueueIds = $entryRepo->getReportQueueList()->keys();
         $reportQueueIds[] = 0;
@@ -66,7 +66,7 @@ class ReportQueue extends Repository
         if (isset($addOns['SV/ReportCentreEssentials']))
         {
             /** @var \SV\ReportCentreEssentials\Repository\ReportQueue $entryRepo */
-            $entryRepo = $this->repository('SV\ReportCentreEssentials:ReportQueue');
+            $entryRepo = \SV\StandardLib\Helper::repository(\SV\ReportCentreEssentials\Repository\ReportQueue::class);
             return $entryRepo->findReportQueues()->fetch();
         }
 
@@ -110,7 +110,7 @@ class ReportQueue extends Repository
 
         if ($postIds)
         {
-            $posts = $this->app()->finder('XF:Post')
+            $posts = \SV\StandardLib\Helper::finder(\XF\Finder\Post::class)
                           ->where('post_id', '=', \array_keys($postIds))
                           ->fetch();
             foreach ($postIds as $postId => $warningLog)
@@ -126,7 +126,7 @@ class ReportQueue extends Repository
 
         if ($threadIds)
         {
-            $threads = $this->app()->finder('XF:Thread')
+            $threads = \SV\StandardLib\Helper::finder(\XF\Finder\Thread::class)
                             ->with('Forum')
                             ->where('thread_id', '=', \array_keys($threadIds))
                             ->fetch();
@@ -147,7 +147,7 @@ class ReportQueue extends Repository
 
         if ($replyBanThreadIds)
         {
-            $finder = $this->app()->finder('XF:ThreadReplyBan');
+            $finder = \SV\StandardLib\Helper::finder(\XF\Finder\ThreadReplyBan::class);
             $conditions = [];
             foreach ($replyBanThreadIds as $data)
             {
@@ -214,10 +214,10 @@ class ReportQueue extends Repository
         if ($expiringFromCron || !$reporter->user_id)
         {
             $expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
-            $reporter = $this->app()->find('XF:User', $expireUserId);
+            $reporter = \SV\StandardLib\Helper::find(\XF\Entity\User::class, $expireUserId);
             if (!$reporter)
             {
-                $reporter = $this->app()->find('XF:User', 1);
+                $reporter = \SV\StandardLib\Helper::find(\XF\Entity\User::class, 1);
             }
             if (!$reporter)
             {

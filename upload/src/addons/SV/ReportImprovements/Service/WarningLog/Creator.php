@@ -295,7 +295,7 @@ class Creator extends AbstractService
         {
             $this->reportCommenter = Helper::service(\XF\Service\Report\Commenter::class, $report);
         }
-        else if (($this->app->options()->sv_report_new_warnings ?? false) && $warning->Content)
+        else if ((\XF::app()->options()->sv_report_new_warnings ?? false) && $warning->Content)
         {
             $this->reportCreator = Helper::service(\XF\Service\Report\Creator::class, $warning->content_type, $warning->Content);
             $report = $this->reportCreator->getReport();

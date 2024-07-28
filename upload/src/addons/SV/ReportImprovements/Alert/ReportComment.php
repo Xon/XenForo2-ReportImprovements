@@ -57,7 +57,7 @@ class ReportComment extends AbstractHandler
         if ($entities instanceof AbstractCollection)
         {
             /** @var Report $reportRepo */
-            $reportRepo = \XF::repository('XF:Report');
+            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
             $reportRepo->svPreloadReportComments($entities);
         }
 

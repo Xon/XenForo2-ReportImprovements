@@ -168,7 +168,7 @@ class ReportResolver extends Behavior
         $entity = $this->entity;
 
         /** @var ReportQueue $reportQueueRepo */
-        $reportQueueRepo = $this->repository('SV\ReportImprovements:ReportQueue');
+        $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
         $reportQueueRepo->logToReport($this->entity, $operationType,
             (bool)$entity->getOption('svCanReopenReport'),
             (bool)$entity->getOption('svResolveReport'),

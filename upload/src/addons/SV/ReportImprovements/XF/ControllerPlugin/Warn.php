@@ -137,7 +137,7 @@ class Warn extends XFCP_Warn
         if ($response instanceof View)
         {
             /** @var \XF\Entity\Report $contentReport */
-            $contentReport = $this->finder('XF:Report')
+            $contentReport = \SV\StandardLib\Helper::finder(\XF\Finder\Report::class)
                                   ->where('content_type', $contentType)
                                   ->where('content_id', $content->getEntityId())
                                   ->with(['LastModified', 'LastModifiedUser'])

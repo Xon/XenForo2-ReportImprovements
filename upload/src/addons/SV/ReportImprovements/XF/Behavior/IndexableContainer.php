@@ -55,7 +55,7 @@ class IndexableContainer extends XFCP_IndexableContainer
             return;
         }
 
-        $reportRepo = $this->repository('XF:Report');
+        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
         assert($reportRepo instanceof ReportRepo);
         if ($reportRepo->hasContentVisibilityChanged($this->entity))
         {
@@ -81,7 +81,7 @@ class IndexableContainer extends XFCP_IndexableContainer
         }
 
         $contentType = (string)($this->config['childContentType'] ?? '');
-        $reportRepo = $this->repository('XF:Report');
+        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
         assert($reportRepo instanceof ReportRepo);
         $handler = $reportRepo->getReportHandler($contentType, false);
         if ($handler === null)

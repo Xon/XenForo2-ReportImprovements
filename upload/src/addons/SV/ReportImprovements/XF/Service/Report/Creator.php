@@ -68,7 +68,7 @@ class Creator extends XFCP_Creator
         }
 
         /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
-        $reportRepo = $this->repository('XF:Report');
+        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
         $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($this->report);
 
         /** @var Notifier $notifier */

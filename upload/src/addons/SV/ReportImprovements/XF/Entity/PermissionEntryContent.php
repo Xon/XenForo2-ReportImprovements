@@ -36,7 +36,7 @@ class PermissionEntryContent extends XFCP_PermissionEntryContent
     {
         if ($this->shouldInvalidateReportCache())
         {
-            $reportQueueRepo = \XF::repository('SV\ReportImprovements:ReportQueue');
+            $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
             assert($reportQueueRepo instanceof ReportQueueRepo);
             $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
         }

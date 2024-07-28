@@ -30,7 +30,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $numUnapprovedItems = $unapprovedFinder->total();
 
         /** @noinspection PhpUndefinedFieldInspection */
-        if ($numUnapprovedItems != $this->app->unapprovedCounts['total'])
+        if ($numUnapprovedItems != \XF::app()->unapprovedCounts['total'])
         {
             $approvalQueueRepo->rebuildUnapprovedCounts();
         }
@@ -134,7 +134,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         if ($this->isLoadingDefaultFilters($inputDefinitions))
         {
             /** @var \SV\ReportImprovements\XF\Repository\ApprovalQueue $approvalQueueRepo */
-            $approvalQueueRepo = $this->repository('XF:ApprovalQueue');
+            $approvalQueueRepo = \SV\StandardLib\Helper::repository(\XF\Repository\ApprovalQueue::class);
 
             $savedFilters = $approvalQueueRepo->getUserDefaultFilters(\XF::visitor());
             $input = array_replace($input, $savedFilters);
@@ -215,7 +215,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
                 unset($filters['applied_filters']);
 
                 /** @var \SV\ReportImprovements\XF\Repository\ApprovalQueue $approvalQueueRepo */
-                $approvalQueueRepo = $this->repository('XF:ApprovalQueue');
+                $approvalQueueRepo = \SV\StandardLib\Helper::repository(\XF\Repository\ApprovalQueue::class);
                 $approvalQueueRepo->saveUserDefaultFilters(\XF::visitor(), $filters);
             }
         }
@@ -227,7 +227,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     public function actionReport(): AbstractReply
     {
         /** @var \SV\ReportImprovements\XF\Entity\ApprovalQueue $approvalQueueItem */
-        $approvalQueueItem = $this->em()->findOne('XF:ApprovalQueue', [
+        $approvalQueueItem = \SV\StandardLib\Helper::findOne(\XF\Entity\ApprovalQueue::class, [
             'content_type' => $this->filter('content_type', 'str'),
             'content_id' => $this->filter('content_id', 'uint'),
         ]);

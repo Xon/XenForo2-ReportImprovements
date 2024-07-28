@@ -31,7 +31,7 @@ abstract class appStart
         )
         {
             /** @var Report $reportRepo */
-            $reportRepo = $app->repository('XF:Report');
+            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
             $session['reportCounts'] = $reportRepo->rebuildSessionReportCounts($registryReportCounts);
         }
     }
