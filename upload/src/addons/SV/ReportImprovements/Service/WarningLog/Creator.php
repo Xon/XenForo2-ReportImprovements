@@ -526,7 +526,7 @@ class Creator extends AbstractService
      */
     protected function _save(): WarningLog
     {
-        $this->db()->beginTransaction();
+        \XF::db()->beginTransaction();
 
         $this->warningLog->save(true, false);
         $report = null;
@@ -563,7 +563,7 @@ class Creator extends AbstractService
             }
         }
 
-        $this->db()->commit();
+        \XF::db()->commit();
 
         return $this->warningLog;
     }

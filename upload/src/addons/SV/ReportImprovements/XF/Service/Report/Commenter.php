@@ -150,7 +150,7 @@ class Commenter extends XFCP_Commenter
 
     protected function _save() : ReportCommentEntity
     {
-        $db = $this->db();
+        $db = \XF::db();
         $db->beginTransaction();
 
         $content = parent::_save();

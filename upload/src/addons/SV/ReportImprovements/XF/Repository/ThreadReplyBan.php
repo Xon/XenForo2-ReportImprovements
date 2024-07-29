@@ -18,7 +18,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan
 		{
 			$cutOff = time();
 		}
-		$this->db()->delete('xf_thread_reply_ban', 'expiry_date > 0 AND expiry_date < ?', $cutOff);
+		\XF::db()->delete('xf_thread_reply_ban', 'expiry_date > 0 AND expiry_date < ?', $cutOff);
 	}
  */
 }

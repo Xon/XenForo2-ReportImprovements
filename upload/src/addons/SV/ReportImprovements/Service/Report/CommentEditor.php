@@ -223,7 +223,7 @@ class CommentEditor extends AbstractService
 
     protected function _save() : ReportCommentEntity
     {
-        $db = $this->db();
+        $db = \XF::db();
         $db->beginTransaction();
 
         $content = $this->getComment();

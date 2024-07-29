@@ -39,7 +39,7 @@ class CreatorPatch extends XFCP_CreatorPatch
 
     protected function _save()
     {
-        $db = $this->db();
+        $db = \XF::db();
         $db->beginTransaction();
 
         if ($this->threadCreator && (\XF::options()->svLogToReportCentreAndForum ?? false))

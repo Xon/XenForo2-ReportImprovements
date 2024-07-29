@@ -62,7 +62,7 @@ class ExportReportUsers extends Command
 
             return 0;
         }
-        $db = \XF::app()->db();
+        $db = \XF::db();
         $usernames = $db->fetchAllColumn("
             select username 
             from xf_user 

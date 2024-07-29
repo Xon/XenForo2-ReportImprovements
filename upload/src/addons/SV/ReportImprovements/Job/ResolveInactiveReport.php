@@ -60,7 +60,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
             return null;
         }
 
-        $db = \XF::app()->db();
+        $db = \XF::db();
 
         return $db->fetchAllColumn($db->limit(
             '

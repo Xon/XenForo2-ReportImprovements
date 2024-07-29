@@ -19,7 +19,7 @@ class RebuildCommentCount extends AbstractRebuildJob
      */
     protected function getNextIds($start, $batch)
     {
-        $db = \XF::app()->db();
+        $db = \XF::db();
 
         return $db->fetchAllColumn($db->limit(
             '
@@ -38,7 +38,7 @@ class RebuildCommentCount extends AbstractRebuildJob
     protected function rebuildById($id)
     {
         // This should match CommentPreparer::isCountedAsComment()
-        \XF::app()->db()->query("
+        \XF::db()->query("
             UPDATE xf_report
             SET comment_count = (
                 SELECT COUNT(*) 

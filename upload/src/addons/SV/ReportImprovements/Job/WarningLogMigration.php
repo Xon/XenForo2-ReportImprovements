@@ -24,7 +24,7 @@ class WarningLogMigration extends AbstractRebuildJob
      */
     protected function getNextIds($start, $batch)
     {
-        $db = \XF::app()->db();
+        $db = \XF::db();
 
         return $db->fetchAllColumn($db->limit(
             '

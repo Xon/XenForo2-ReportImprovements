@@ -210,7 +210,7 @@ class WarningLog extends Entity
 
     public function rebuildLatestVersionFlag(bool $doIndexUpdate = true): void
     {
-        $db = $this->db();
+        $db = \XF::db();
         $finder = \SV\StandardLib\Helper::finder(\SV\ReportImprovements\Finder\WarningLog::class);
         assert($finder instanceof WarningLogFinder);
 

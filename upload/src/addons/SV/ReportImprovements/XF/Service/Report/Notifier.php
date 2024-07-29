@@ -120,7 +120,7 @@ class Notifier extends XFCP_Notifier
         $addOns = \XF::app()->container('addon.cache');
         if (($addOns['SV/PersistentAlerts'] ?? 0) >= 2030000)
         {
-            $usersWhoHaveAlreadyAlertedOnce = \array_keys($this->db()->fetchAllKeyed('
+            $usersWhoHaveAlreadyAlertedOnce = \array_keys(\XF::db()->fetchAllKeyed('
                 SELECT alerted_user_id
                 FROM xf_user_alert
                 WHERE view_date = 0
@@ -131,7 +131,7 @@ class Notifier extends XFCP_Notifier
         }
         else
         {
-            $usersWhoHaveAlreadyAlertedOnce = \array_keys($this->db()->fetchAllKeyed('
+            $usersWhoHaveAlreadyAlertedOnce = \array_keys(\XF::db()->fetchAllKeyed('
                 SELECT user_alert.alerted_user_id
                 FROM xf_user_alert AS user_alert
                 INNER JOIN xf_report_comment AS report_comment

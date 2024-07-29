@@ -31,7 +31,7 @@ class ReindexReportsForContainer extends AbstractRebuildJob
             return [];
         }
 
-        $db = \XF::app()->db();
+        $db = \XF::db();
 
         return $db->fetchAllColumn($db->limit('
             SELECT report_id

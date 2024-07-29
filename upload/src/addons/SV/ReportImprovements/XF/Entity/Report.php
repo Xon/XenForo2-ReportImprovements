@@ -365,7 +365,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
      */
     public function getCommentIds(): array
     {
-        return $this->db()->fetchAllColumn('
+        return \XF::db()->fetchAllColumn('
 			SELECT report_comment_id
 			FROM xf_report_comment
 			WHERE report_id = ?
@@ -379,7 +379,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     public function getCommenterUserIds(): array
     {
         return
-            $this->db()->fetchAllColumn('
+            \XF::db()->fetchAllColumn('
               SELECT DISTINCT user_id
               FROM xf_report_comment
               WHERE report_id = ?

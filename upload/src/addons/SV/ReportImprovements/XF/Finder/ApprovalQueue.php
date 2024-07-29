@@ -51,7 +51,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             }
             try
             {
-                $structure = \XF::app()->em()->getEntityStructure($entityName);
+                $structure = \XF::em()->getEntityStructure($entityName);
             }
             catch (\Throwable $e)
             {
@@ -65,7 +65,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
             try
             {
-                $containerStructure = \XF::app()->em()->getEntityStructure($containerEntityName);
+                $containerStructure = \XF::em()->getEntityStructure($containerEntityName);
             }
             catch (\Throwable $e)
             {

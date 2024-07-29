@@ -195,7 +195,7 @@ class Report extends XFCP_Report
         }
         $contentId = $content->get($key);
 
-        return (bool)$this->db()->fetchOne('
+        return (bool)\XF::db()->fetchOne('
             select warning_id 
             from xf_warning 
             where content_type = ? and content_id = ?
@@ -599,7 +599,7 @@ class Report extends XFCP_Report
         }
 
         // sorting string is hard, use mysql to at least be consistent with how XF returns this list
-        $db = $this->db();
+        $db = \XF::db();
         $keys = $db->fetchAllColumn('
             select user_id 
             from xf_user 
@@ -682,7 +682,7 @@ class Report extends XFCP_Report
         {
             if ($alertMode !== 'always_alert')
             {
-                $db = $this->db();
+                $db = \XF::db();
                 $userIds = $db->fetchAllColumn('
                     SELECT DISTINCT user_id
                     FROM xf_report_comment
@@ -725,7 +725,7 @@ class Report extends XFCP_Report
 
         if (!isset($this->userReportCountCache[$user->user_id][$daysLimit][$state]))
         {
-            $db = $this->db();
+            $db = \XF::db();
 
             $params = [$user->user_id];
             $additionalWhere = '';

@@ -15,7 +15,7 @@ class EnrichReportPostInstall extends AbstractRebuildJob
 {
     protected function getNextIds($start, $batch)
     {
-        $db = \XF::app()->db();
+        $db = \XF::db();
 
         return $db->fetchAllColumn($db->limit(
             '
@@ -35,7 +35,7 @@ class EnrichReportPostInstall extends AbstractRebuildJob
             return;
         }
         assert($report instanceof Report);
-        $db = \XF::app()->db();
+        $db = \XF::db();
 
         if ($report->last_modified_id === 0)
         {
