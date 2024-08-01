@@ -1,7 +1,11 @@
 _releases
 _data
+_build
+_vendor
 hashes.json
 /.idea/
 .DS_Store
 .phpstorm.meta.php
 _metadata.json
+composer.lock
+.php_cs.cache
