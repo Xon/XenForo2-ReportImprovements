@@ -7,10 +7,7 @@ use XF\Entity\Report;
 use XF\Mvc\Entity\Entity;
 
 /**
- * Class ProfilePost
  * @extends \XF\Report\ProfilePost
- *
- * @package SV\ReportImprovements\XF\Report
  */
 class ProfilePost extends XFCP_ProfilePost implements ContentInterface
 {

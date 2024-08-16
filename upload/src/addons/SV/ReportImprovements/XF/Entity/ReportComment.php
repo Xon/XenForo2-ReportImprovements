@@ -5,7 +5,7 @@ namespace SV\ReportImprovements\XF\Entity;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Globals;
-use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\StandardLib\Helper;
 use XF\Entity\Attachment;
 use XF\Entity\ContainableInterface;
@@ -21,10 +21,8 @@ use XF\Mvc\Entity\Structure;
 use XF\Phrase;
 
 /**
- * Class ReportComment
  * @extends \XF\Entity\ReportComment
  *
- * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
  * @property int                                  $reaction_score
  * @property array                                $reactions_
@@ -260,7 +258,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
                 : $this->ViewableUsername;
 
             /** @var \XF\Repository\User $userRepo */
-            $userRepo = \SV\StandardLib\Helper::repository(\XF\Repository\User::class);
+            $userRepo = Helper::repository(\XF\Repository\User::class);
 
             return $userRepo->getGuestUser($username);
         }
@@ -278,7 +276,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
         }
 
         /** @var \XF\Repository\User $userRepo */
-        $userRepo = \SV\StandardLib\Helper::repository(\XF\Repository\User::class);
+        $userRepo = Helper::repository(\XF\Repository\User::class);
 
         return $userRepo->getGuestUser($this->ViewableUsername);
     }
@@ -336,7 +334,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
 
     public function getBreadcrumbs() : array
     {
-        /** @var ReportCommentEntity $content */
+        /** @var ExtendedReportCommentEntity $content */
         return $this->Report->getBreadcrumbs();
     }
 
@@ -367,7 +365,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
 
         if ($this->Report)
         {
-            $lastReportCommentFinder = \SV\StandardLib\Helper::finder(\XF\Finder\ReportComment::class);
+            $lastReportCommentFinder = Helper::finder(\XF\Finder\ReportComment::class);
             $lastReportCommentFinder->where('report_id', $this->report_id);
             $lastReportCommentFinder->order('comment_date', 'DESC');
 

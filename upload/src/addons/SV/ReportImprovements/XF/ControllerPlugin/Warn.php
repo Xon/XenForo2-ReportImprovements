@@ -3,7 +3,7 @@
 namespace SV\ReportImprovements\XF\ControllerPlugin;
 
 use SV\ReportImprovements\Entity\IReportResolver;
-use SV\ReportImprovements\XF\Entity\Thread;
+use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
 use SV\StandardLib\Helper;
 use SV\WarningImprovements\XF\Entity\WarningDefinition;
 use XF\Entity\Post;
@@ -16,10 +16,7 @@ use XF\Mvc\Reply\View;
 use XF\Warning\AbstractHandler;
 
 /**
- * Class Warn
  * @extends \XF\ControllerPlugin\Warn
- *
- * @package SV\ReportImprovements\XF\ControllerPlugin
  */
 class Warn extends XFCP_Warn
 {
@@ -86,7 +83,7 @@ class Warn extends XFCP_Warn
             $input['ban_length'] !== 'none')
         {
             /** @var Post $content */
-            /** @var Thread $thread */
+            /** @var ExtendedThreadEntity $thread */
             $thread = $content->Thread;
             if (!$thread || !$thread->canReplyBan($error))
             {
@@ -137,11 +134,11 @@ class Warn extends XFCP_Warn
         if ($response instanceof View)
         {
             /** @var \XF\Entity\Report $contentReport */
-            $contentReport = \SV\StandardLib\Helper::finder(\XF\Finder\Report::class)
-                                  ->where('content_type', $contentType)
-                                  ->where('content_id', $content->getEntityId())
-                                  ->with(['LastModified', 'LastModifiedUser'])
-                                  ->fetchOne();
+            $contentReport = Helper::finder(\XF\Finder\Report::class)
+                                   ->where('content_type', $contentType)
+                                   ->where('content_id', $content->getEntityId())
+                                   ->with(['LastModified', 'LastModifiedUser'])
+                                   ->fetchOne();
 
             $user = $response->getParam('user');
             $warning = null;

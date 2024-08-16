@@ -7,6 +7,7 @@ use SV\ReportImprovements\Report\ContentInterface;
 use SV\SearchImprovements\Repository\Search as SearchRepo;
 use SV\SearchImprovements\Search\Features\ISearchableDiscussionUser;
 use SV\SearchImprovements\Search\Features\ISearchableReplyCount;
+use SV\StandardLib\Helper;
 use XF\Behavior\Indexable;
 use XF\Behavior\IndexableContainer;
 use XF\Entity\ContainableInterface;
@@ -24,10 +25,8 @@ use function assert;
 use function is_callable;
 
 /**
- * Class Report
  * @extends \XF\Entity\Report
  *
- * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
  * @property int                $last_modified_id
  * @property int|null           $assigned_date
@@ -333,7 +332,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     {
         if ($this->last_modified_id === 0)
         {
-            $reportCommentFinder = \SV\StandardLib\Helper::finder(\XF\Finder\ReportComment::class);
+            $reportCommentFinder = Helper::finder(\XF\Finder\ReportComment::class);
             $reportCommentFinder->where('report_id', $this->report_id);
             $reportCommentFinder->order('comment_date', 'DESC');
             $reportCommentFinder->with($this->getCommentWith());
@@ -427,7 +426,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     {
         $direction = (\XF::app()->options()->sv_reverse_report_comment_order ?? false) ? 'DESC' : 'ASC';
 
-        $finder = \SV\StandardLib\Helper::finder(\XF\Finder\ReportComment::class)
+        $finder = Helper::finder(\XF\Finder\ReportComment::class)
                        ->where('report_id', $this->report_id)
                        ->order('comment_date', $direction);
 

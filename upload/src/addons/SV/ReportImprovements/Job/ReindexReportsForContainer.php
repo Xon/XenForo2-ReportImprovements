@@ -2,7 +2,9 @@
 
 namespace SV\ReportImprovements\Job;
 
-use SV\ReportImprovements\XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\StandardLib\Helper;
+use XF\Entity\Report;
 use XF\Job\AbstractRebuildJob;
 use function array_merge;
 use function assert;
@@ -44,12 +46,12 @@ class ReindexReportsForContainer extends AbstractRebuildJob
 
     protected function rebuildById($id): void
     {
-        $report = \SV\StandardLib\Helper::find(\XF\Entity\Report::class, $id);
+        $report = Helper::find(Report::class, $id);
         if ($report === null)
         {
             return;
         }
-        assert($report instanceof Report);
+        assert($report instanceof ExtendedReportEntity);
         $report->triggerReindex(true);
     }
 

@@ -6,11 +6,6 @@ use XF\Db\Exception as DbException;
 use XF\Job\AbstractRebuildJob;
 use XF\Phrase;
 
-/**
- * Class Upgrade1090100Step1
- *
- * @package SV\ReportImprovements\Job\Upgrades
- */
 class Upgrade1090100Step1 extends AbstractRebuildJob
 {
     /**

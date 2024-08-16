@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\Option;
 
+use SV\StandardLib\Helper;
 use XF\Entity\Option;
 use XF\Entity\WarningDefinition;
 use XF\Option\AbstractOption;
@@ -10,7 +11,7 @@ class Warnings extends AbstractOption
 {
     protected static function getSelectData(Option $option, array $htmlParams)
     {
-        $finder = \SV\StandardLib\Helper::finder(\XF\Finder\WarningDefinition::class);
+        $finder = Helper::finder(\XF\Finder\WarningDefinition::class);
         if (isset($finder->getStructure()->columns['sv_display_order']))
         {
             $finder->with('Category')

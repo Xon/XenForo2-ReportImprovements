@@ -2,11 +2,6 @@
 
 namespace SV\ReportImprovements;
 
-/**
- * Class Globals
- *
- * @package SV\ReportImprovements
- */
 abstract class Globals
 {
     /** @var bool */

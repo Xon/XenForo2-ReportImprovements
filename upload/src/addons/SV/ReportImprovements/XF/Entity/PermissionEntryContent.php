@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
+use SV\StandardLib\Helper;
 use function assert;
 
 /**
@@ -36,7 +37,7 @@ class PermissionEntryContent extends XFCP_PermissionEntryContent
     {
         if ($this->shouldInvalidateReportCache())
         {
-            $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
+            $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
             assert($reportQueueRepo instanceof ReportQueueRepo);
             $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
         }

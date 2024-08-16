@@ -2,11 +2,11 @@
 
 namespace SV\ReportImprovements\Entity;
 
-use SV\ReportImprovements\XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use XF\Entity\User;
 
 /**
- * @property-read Report|null $Report
+ * @property-read ExtendedReportEntity|null $Report
  */
 interface IReportResolver
 {
@@ -21,7 +21,7 @@ interface IReportResolver
      * @param bool   $resolveReport
      * @param bool   $alert
      * @param string $alertComment
-     * @return Report|null
+     * @return ExtendedReportEntity|null
      */
     public function resolveReportFor(bool $resolveReport, bool $alert, string $alertComment);
 }

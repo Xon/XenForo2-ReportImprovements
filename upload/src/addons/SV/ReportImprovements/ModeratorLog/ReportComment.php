@@ -2,7 +2,7 @@
 
 namespace SV\ReportImprovements\ModeratorLog;
 
-use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use XF\Entity\ModeratorLog;
 use XF\Entity\User;
 use XF\ModeratorLog\AbstractHandler;
@@ -45,7 +45,7 @@ class ReportComment extends AbstractHandler
      */
     protected function setupLogEntityContent(ModeratorLog $log, Entity $content)
     {
-        /** @var ReportCommentEntity $content */
+        /** @var ExtendedReportCommentEntity $content */
         $report = $content->Report;
 
         $log->content_user_id = $content->user_id ?? 0;

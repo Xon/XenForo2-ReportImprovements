@@ -5,18 +5,20 @@
 
 namespace SV\ReportImprovements\Attachment;
 
-use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
-use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use SV\StandardLib\Helper;
 use XF\Attachment\AbstractHandler;
-use XF\Entity\Attachment;
+use XF\Entity\Attachment as AttachmentEntity;
 use XF\Entity\Report;
 use XF\Mvc\Entity\Entity;
+use XF\Repository\Attachment as AttachmentRepo;
 
 class ReportComment extends AbstractHandler
 {
     public function getContainerLink(Entity $container, array $extraParams = [])
     {
-        /** @var ReportCommentEntity $container */
+        /** @var ExtendedReportCommentEntity $container */
         return \XF::app()->router()->buildLink('reports/comment', $container);
     }
 
@@ -39,9 +41,9 @@ class ReportComment extends AbstractHandler
         ];
     }
 
-    public function canView(Attachment $attachment, Entity $container, &$error = null)
+    public function canView(AttachmentEntity $attachment, Entity $container, &$error = null)
     {
-        /** @var ReportCommentEntity $container */
+        /** @var ExtendedReportCommentEntity $container */
         if (!$container->canView())
         {
             return false;
@@ -59,14 +61,14 @@ class ReportComment extends AbstractHandler
         return ($report && $report->canUploadAndManageAttachments());
     }
 
-    public function onAttachmentDelete(Attachment $attachment, ?Entity $container = null)
+    public function onAttachmentDelete(AttachmentEntity $attachment, ?Entity $container = null)
     {
         if (!$container)
         {
             return;
         }
 
-        /** @var ReportCommentEntity $container */
+        /** @var ExtendedReportCommentEntity $container */
         $container->attach_count--;
         $container->save();
 
@@ -75,8 +77,8 @@ class ReportComment extends AbstractHandler
 
     public function getConstraints(array $context)
     {
-        /** @var \XF\Repository\Attachment $attachRepo */
-        $attachRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Attachment::class);
+        /** @var AttachmentRepo $attachRepo */
+        $attachRepo = Helper::repository(AttachmentRepo::class);
 
         $constraints = $attachRepo->getDefaultAttachmentConstraints();
 
@@ -90,7 +92,7 @@ class ReportComment extends AbstractHandler
         return $constraints;
     }
 
-    protected function svUpdateConstraints(array $constraints, ReportEntity $comment): array
+    protected function svUpdateConstraints(array $constraints, ExtendedReportEntity $comment): array
     {
         $size = $comment->hasReportPermission('attach_size');
         if ($size > 0 && $size < $constraints['size'])
@@ -131,16 +133,15 @@ class ReportComment extends AbstractHandler
 
     /**
      * @param array $context
-     * @return ReportEntity|null
+     * @return ExtendedReportEntity|null
      */
     protected function getReportFromContext(array $context)
     {
-        $em = \XF::em();
         $reportCommentId = (int)($context['report_comment_id'] ?? 0);
         if ($reportCommentId)
         {
-            /** @var ReportCommentEntity $reportComment */
-            $reportComment = \SV\StandardLib\Helper::find(\XF\Entity\ReportComment::class, $reportCommentId, $this->getContainerWith());
+            /** @var ExtendedReportCommentEntity $reportComment */
+            $reportComment = Helper::find(\XF\Entity\ReportComment::class, $reportCommentId, $this->getContainerWith());
             if (!$reportComment || !$reportComment->canView() || !$reportComment->canEdit())
             {
                 return null;
@@ -152,8 +153,8 @@ class ReportComment extends AbstractHandler
         $reportId = (int)($context['report_id'] ?? 0);
         if ($reportId)
         {
-            /** @var ReportEntity|null $report */
-            $report = \SV\StandardLib\Helper::find(\XF\Entity\Report::class, $reportId, $this->getReportWith());
+            /** @var ExtendedReportEntity|null $report */
+            $report = Helper::find(Report::class, $reportId, $this->getReportWith());
             if ($report === null || !$report->canView() || !$report->canComment())
             {
                 return null;

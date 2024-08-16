@@ -2,9 +2,12 @@
 
 namespace SV\ReportImprovements\XF\Behavior;
 
-use SV\ReportImprovements\XF\Entity\Report;
-use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
+use SV\StandardLib\Helper;
 use XF\Entity\Report as ReportEntity;
+use XF\Finder\Report as ReportFinder;
+use XF\Repository\Report as ReportRepo;
 use function array_key_exists;
 use function assert;
 
@@ -59,8 +62,8 @@ class Indexable extends XFCP_Indexable
             return;
         }
 
-        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
-        assert($reportRepo instanceof ReportRepo);
+        $reportRepo = Helper::repository(ReportRepo::class);
+        assert($reportRepo instanceof ExtendedReportRepo);
         if ($reportRepo->hasContentVisibilityChanged($this->entity))
         {
             $this->triggerReportReIndex();
@@ -77,8 +80,8 @@ class Indexable extends XFCP_Indexable
     protected function triggerReportReIndex(): void
     {
         $contentType = (string)$this->contentType();
-        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
-        assert($reportRepo instanceof ReportRepo);
+        $reportRepo = Helper::repository(ReportRepo::class);
+        assert($reportRepo instanceof ExtendedReportRepo);
         $handler = $reportRepo->getReportHandler($contentType, false);
         if ($handler === null)
         {
@@ -93,14 +96,14 @@ class Indexable extends XFCP_Indexable
         }
         if (!($report instanceof ReportEntity))
         {
-            $report = \SV\StandardLib\Helper::finder(\XF\Finder\Report::class)
+            $report = Helper::finder(ReportFinder::class)
                            ->where('content_type', $contentType)
                            ->where('content_id', $this->entity->getEntityId())
                            ->fetchOne();
         }
         if ($report !== null)
         {
-            assert($report instanceof Report);
+            assert($report instanceof ExtendedReportEntity);
             $report->triggerReindex(true);
         }
     }

@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Finder;
 
 use SV\ReportImprovements\ApprovalQueue\IContainerToContent;
 use SV\StandardLib\Finder\SqlJoinTrait;
+use SV\StandardLib\Helper;
 use XF\Repository\ApprovalQueue as ApprovalQueueRepo;
 use function array_merge;
 
@@ -18,7 +19,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     {
         $joins = [];
         /** @var ApprovalQueueRepo $approvalQueueRepo */
-        $approvalQueueRepo = \SV\StandardLib\Helper::repository(\XF\Repository\ApprovalQueue::class);
+        $approvalQueueRepo = Helper::repository(ApprovalQueueRepo::class);
         $handlers = $approvalQueueRepo->getApprovalQueueHandlers(false);
         foreach ($handlers as $handler)
         {

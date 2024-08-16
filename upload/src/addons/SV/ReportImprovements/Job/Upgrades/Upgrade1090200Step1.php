@@ -6,13 +6,9 @@ use SV\StandardLib\Helper;
 use XF\Entity\ReportComment;
 use XF\Job\AbstractRebuildJob;
 use XF\Phrase;
-use XF\Service\Report\CommentPreparer;
+use XF\Service\Report\CommentPreparer as ReportCommentPreparerService;
 
-/**
- * Class Upgrade1090200Step1
- *
- * @package SV\ReportImprovements\Job\Upgrades
- */
+
 class Upgrade1090200Step1 extends AbstractRebuildJob
 {
     /**
@@ -42,7 +38,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
     protected function rebuildById($id)
     {
         /** @var ReportComment $comment */
-        $comment = \SV\StandardLib\Helper::find(\XF\Entity\ReportComment::class, $id);
+        $comment = Helper::find(ReportComment::class, $id);
         if ($comment)
         {
             $user = $comment->User && $comment->User->user_id ? $comment->User : \XF::visitor();
@@ -56,8 +52,8 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
                 $options->autoEmbedMedia['embedType'] = 0;
                 try
                 {
-                    /** @var CommentPreparer $commentPreparer */
-                    $commentPreparer = Helper::service(CommentPreparer::class, $comment);
+                    /** @var ReportCommentPreparerService $commentPreparer */
+                    $commentPreparer = Helper::service(ReportCommentPreparerService::class, $comment);
 
                     $commentPreparer->setMessage($comment->message);
 

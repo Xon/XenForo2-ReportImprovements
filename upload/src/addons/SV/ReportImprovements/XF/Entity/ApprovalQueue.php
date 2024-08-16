@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\ApprovalQueue\IContainerToContent;
+use SV\StandardLib\Helper;
 use XF\Entity\Report as ReportEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
@@ -11,10 +12,8 @@ use function array_key_exists;
 use function is_callable;
 
 /**
- * Class ApprovalQueue
  * @extends \XF\Entity\ApprovalQueue
  *
- * @package SV\ReportImprovements\XF\Entity
  * @property-read ?Report $Report
  * @property-read ?Report $Report_
  * @property-read ?Entity $ReportableContent
@@ -71,7 +70,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $contentType = $content->getEntityContentType();
 
         /** @var ReportRepo $reportRepo */
-        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
+        $reportRepo = Helper::repository(ReportRepo::class);
         if ($reportRepo->getReportHandler($contentType, false))
         {
             // has a report handler so get return the content type and content id
@@ -126,7 +125,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         }
 
         /** @var \XF\Finder\Report $reportFinder */
-        $reportFinder = \SV\StandardLib\Helper::finder(\XF\Finder\Report::class);
+        $reportFinder = Helper::finder(\XF\Finder\Report::class);
         /** @var ReportEntity $report */
         $report = $reportFinder
             ->where('content_type', $content->getEntityContentType())

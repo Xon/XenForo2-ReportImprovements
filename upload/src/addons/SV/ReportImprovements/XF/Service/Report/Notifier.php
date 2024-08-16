@@ -8,13 +8,11 @@ use XF\App;
 use XF\Entity\Report;
 use XF\Entity\ReportComment;
 use XF\Entity\User as UserEntity;
-use XF\Repository\UserAlert;
+use XF\Repository\UserAlert as UserAlertRepo;
 
 /**
- * Class Notifier
  * @extends \XF\Service\Report\Notifier
  *
- * @package SV\ReportImprovements\XF\Service\Report
  * @property \SV\ReportImprovements\XF\Entity\Report        $report
  * @property \SV\ReportImprovements\XF\Entity\ReportComment $comment
  */
@@ -66,7 +64,7 @@ class Notifier extends XFCP_Notifier
         parent::notifyCreate();
 
         /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
-        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
+        $reportRepo = Helper::repository(\XF\Repository\Report::class);
         $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($this->report);
         $this->setCommentersUserIds($userIdsToAlert);
 
@@ -172,7 +170,7 @@ class Notifier extends XFCP_Notifier
 
         if ($toLoad)
         {
-            $users = $users + \SV\StandardLib\Helper::findByIds(\XF\Entity\User::class, $toLoad, ['Profile', 'Option', 'PermissionCombination'])->toArray();
+            $users = $users + Helper::findByIds(UserEntity::class, $toLoad, ['Profile', 'Option', 'PermissionCombination'])->toArray();
         }
 
         return $users;
@@ -190,8 +188,8 @@ class Notifier extends XFCP_Notifier
 
         if (empty($this->usersAlerted[$userId]) && ($userId !== $commentUserId))
         {
-            /** @var UserAlert $alertRepo */
-            $alertRepo = \SV\StandardLib\Helper::repository(\XF\Repository\UserAlert::class);
+            /** @var UserAlertRepo $alertRepo */
+            $alertRepo = Helper::repository(UserAlertRepo::class);
             if ($alertRepo->alert($user, $commentUserId, $comment->username, 'report_comment', $comment->report_comment_id, 'insert', [
                 'depends_on_addon_id' => 'SV/ReportImprovements'
             ]))

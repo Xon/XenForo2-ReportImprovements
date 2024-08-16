@@ -5,15 +5,15 @@ namespace SV\ReportImprovements\XF\Service\Report;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
-use SV\ReportImprovements\XF\Repository\Report;
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
+use SV\StandardLib\Helper;
 use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\User;
+use XF\Repository\Report as ReportRepo;
 
 /**
- * Class Commenter
  * @extends \XF\Service\Report\Commenter
  *
- * @package SV\ReportImprovements\XF\Service\Report
  * @property ExtendedReportEntity        $report
  * @property ExtendedReportCommentEntity $comment
  * @property CommentPreparer             $commentPreparer
@@ -167,8 +167,8 @@ class Commenter extends XFCP_Commenter
      */
     public function sendNotifications()
     {
-        /** @var Report $reportRepo */
-        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
+        /** @var ExtendedReportRepo $reportRepo */
+        $reportRepo = Helper::repository(ReportRepo::class);
         Globals::$notifyReportUserIds = $reportRepo->findUserIdsToAlertForSvReportImprov($this->comment);
         try
         {

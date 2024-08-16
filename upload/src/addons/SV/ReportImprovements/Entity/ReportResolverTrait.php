@@ -3,8 +3,9 @@
 namespace SV\ReportImprovements\Entity;
 
 use SV\ReportImprovements\Behavior\ReportResolver;
-use SV\ReportImprovements\XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use XF\Entity\Report;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
@@ -12,7 +13,7 @@ trait ReportResolverTrait
 {
     public function canResolveLinkedReport(): bool
     {
-        /** @var Report|null $report */
+        /** @var ExtendedReportEntity|null $report */
         $report = $this->getRelation('Report');
         if ($report === null)
         {
@@ -29,7 +30,7 @@ trait ReportResolverTrait
      * @param bool   $resolveReport
      * @param bool   $alert
      * @param string $alertComment
-     * @return \XF\Entity\Report|null
+     * @return Report|null
      */
     public function resolveReportFor(bool $resolveReport, bool $alert, string $alertComment)
     {

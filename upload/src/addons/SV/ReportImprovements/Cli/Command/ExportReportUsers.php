@@ -5,12 +5,15 @@
 
 namespace SV\ReportImprovements\Cli\Command;
 
-use SV\ReportImprovements\XF\Repository\Report;
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
+use SV\StandardLib\Helper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use XF\Entity\Report as ReportEntity;
+use XF\Repository\Report as ReportRepo;
 use function count;
 
 class ExportReportUsers extends Command
@@ -32,16 +35,15 @@ class ExportReportUsers extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('report-id');
-        $report = \SV\StandardLib\Helper::find(\XF\Entity\Report::class, $id);
+        $report = Helper::find(ReportEntity::class, $id);
         if ($report === null)
         {
             $output->writeln('<error>Report not found.</error>');
 
             return 1;
         }
-        assert($report instanceof \XF\Entity\Report);
-        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
-        assert($reportRepo instanceof Report);
+        $reportRepo = Helper::repository(ReportRepo::class);
+        assert($reportRepo instanceof ExtendedReportRepo);
 
         $cache = (bool)$input->getOption('cache');
 

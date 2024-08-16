@@ -4,16 +4,13 @@ namespace SV\ReportImprovements\XF\Pub\Controller;
 
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\ControllerPlugin\Warn as WarnPlugin;
-use SV\ReportImprovements\XF\Service\Thread\ReplyBan;
+use SV\ReportImprovements\XF\Service\Thread\ReplyBan as ExtendedReplyBanService;
 use SV\StandardLib\Helper;
 use XF\ControllerPlugin\Warn;
 use XF\Mvc\ParameterBag;
 
 /**
- * Class Thread
  * @extends \XF\Pub\Controller\Thread
- *
- * @package SV\ReportImprovements\XF\Pub\Controller
  */
 class Thread extends XFCP_Thread
 {
@@ -34,7 +31,7 @@ class Thread extends XFCP_Thread
 
     protected function setupThreadReplyBan(\XF\Entity\Thread $thread)
     {
-        /** @var ReplyBan $replyBanSrv */
+        /** @var ExtendedReplyBanService $replyBanSrv */
         $replyBanSrv = parent::setupThreadReplyBan($thread);
         if (!$replyBanSrv)
         {

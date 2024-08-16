@@ -3,7 +3,9 @@
 namespace SV\ReportImprovements\XF\Behavior;
 
 use SV\ReportImprovements\Job\ReindexReportsForContainer;
-use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
+use SV\StandardLib\Helper;
+use XF\Repository\Report as ReportRepo;
 use function array_key_exists;
 use function assert;
 
@@ -55,8 +57,8 @@ class IndexableContainer extends XFCP_IndexableContainer
             return;
         }
 
-        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
-        assert($reportRepo instanceof ReportRepo);
+        $reportRepo = Helper::repository(ReportRepo::class);
+        assert($reportRepo instanceof ExtendedReportRepo);
         if ($reportRepo->hasContentVisibilityChanged($this->entity))
         {
             $this->triggerReportReIndex($this->getChildIds());
@@ -81,8 +83,8 @@ class IndexableContainer extends XFCP_IndexableContainer
         }
 
         $contentType = (string)($this->config['childContentType'] ?? '');
-        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
-        assert($reportRepo instanceof ReportRepo);
+        $reportRepo = Helper::repository(ReportRepo::class);
+        assert($reportRepo instanceof ExtendedReportRepo);
         $handler = $reportRepo->getReportHandler($contentType, false);
         if ($handler === null)
         {

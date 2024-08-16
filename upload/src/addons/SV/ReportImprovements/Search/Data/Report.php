@@ -2,7 +2,7 @@
 
 namespace SV\ReportImprovements\Search\Data;
 
-use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -13,11 +13,6 @@ use XF\Search\MetadataStructure;
 use function assert;
 use function is_array;
 
-/**
- * Class Report
- *
- * @package SV\ReportImprovements\Search\Data
- */
 class Report extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
@@ -27,7 +22,7 @@ class Report extends AbstractData
     /** @noinspection PhpMissingParentCallCommonInspection */
     public function canViewContent(Entity $entity, &$error = null): bool
     {
-        assert($entity instanceof ReportEntity);
+        assert($entity instanceof ExtendedReportEntity);
         return $entity->canView();
     }
 
@@ -94,7 +89,7 @@ class Report extends AbstractData
 
     public function getResultDate(Entity $entity): int
     {
-        assert($entity instanceof ReportEntity);
+        assert($entity instanceof ExtendedReportEntity);
         return $entity->first_report_date;
     }
 
@@ -104,7 +99,7 @@ class Report extends AbstractData
      */
     public function getIndexData(Entity $entity): ?IndexRecord
     {
-        if (!($entity instanceof ReportEntity))
+        if (!($entity instanceof ExtendedReportEntity))
         {
             // This function may be invoked when the add-on is disabled, just return nothing to index
             return null;
@@ -126,7 +121,7 @@ class Report extends AbstractData
         ]);
     }
 
-    protected function getMessage(ReportEntity $entity): string
+    protected function getMessage(ExtendedReportEntity $entity): string
     {
         try
         {
@@ -144,7 +139,7 @@ class Report extends AbstractData
         return $message;
     }
 
-    protected function getMetaData(ReportEntity $report): array
+    protected function getMetaData(ExtendedReportEntity $report): array
     {
         $metaData = $this->reportRepo->getReportSearchMetaData($report);
         $this->populateDiscussionMetaData($report, $metaData);
@@ -154,7 +149,7 @@ class Report extends AbstractData
 
     public function getTemplateData(Entity $entity, array $options = []): array
     {
-        assert($entity instanceof ReportEntity);
+        assert($entity instanceof ExtendedReportEntity);
         return [
             'report'  => $entity,
             'options' => $options,

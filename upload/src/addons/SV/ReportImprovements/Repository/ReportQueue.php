@@ -5,11 +5,14 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Service\WarningLog\Creator;
-use SV\ReportImprovements\XF\Entity\Post;
-use SV\ReportImprovements\XF\Entity\ReportComment;
-use SV\ReportImprovements\XF\Entity\Thread;
+use SV\ReportImprovements\XF\Entity\Post as ExtendedPostEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
 use SV\StandardLib\Helper;
 use XF\Entity\ThreadReplyBan;
+use XF\Entity\User;
+use XF\Finder\Post as PostFinder;
+use XF\Finder\Thread as ThreadFinder;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
@@ -44,7 +47,7 @@ class ReportQueue extends Repository
         }
 
         /** @var ReportQueue $entryRepo */
-        $entryRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
+        $entryRepo = Helper::repository(ReportQueue::class);
         /** @var int[] $reportQueueIds */
         $reportQueueIds = $entryRepo->getReportQueueList()->keys();
         $reportQueueIds[] = 0;
@@ -66,7 +69,7 @@ class ReportQueue extends Repository
         if (isset($addOns['SV/ReportCentreEssentials']))
         {
             /** @var \SV\ReportCentreEssentials\Repository\ReportQueue $entryRepo */
-            $entryRepo = \SV\StandardLib\Helper::repository(\SV\ReportCentreEssentials\Repository\ReportQueue::class);
+            $entryRepo = Helper::repository(\SV\ReportCentreEssentials\Repository\ReportQueue::class);
             return $entryRepo->findReportQueues()->fetch();
         }
 
@@ -79,14 +82,14 @@ class ReportQueue extends Repository
     }
 
     /**
-     * @param AbstractCollection|ReportComment[] $comments
+     * @param AbstractCollection|ExtendedReportCommentEntity[] $comments
      */
     public function addReplyBansToComments($comments)
     {
         $postIds = [];
         $threadIds = [];
         $replyBanThreadIds = [];
-        /** @var ReportComment $comment */
+        /** @var ExtendedReportCommentEntity $comment */
         foreach ($comments as $comment)
         {
             if ($comment->warning_log_id && ($warningLog = $comment->WarningLog))
@@ -110,12 +113,12 @@ class ReportQueue extends Repository
 
         if ($postIds)
         {
-            $posts = \SV\StandardLib\Helper::finder(\XF\Finder\Post::class)
-                          ->where('post_id', '=', \array_keys($postIds))
-                          ->fetch();
+            $posts = Helper::finder(PostFinder::class)
+                           ->where('post_id', '=', \array_keys($postIds))
+                           ->fetch();
             foreach ($postIds as $postId => $warningLog)
             {
-                /** @var Post $post */
+                /** @var ExtendedPostEntity $post */
                 /** @var WarningLog $warningLog */
 
                 $post = $posts[$postId] ?? null;
@@ -126,13 +129,13 @@ class ReportQueue extends Repository
 
         if ($threadIds)
         {
-            $threads = \SV\StandardLib\Helper::finder(\XF\Finder\Thread::class)
-                            ->with('Forum')
-                            ->where('thread_id', '=', \array_keys($threadIds))
-                            ->fetch();
+            $threads = Helper::finder(ThreadFinder::class)
+                             ->with('Forum')
+                             ->where('thread_id', '=', \array_keys($threadIds))
+                             ->fetch();
             foreach ($threadIds as $threadId => $warningLog)
             {
-                /** @var Thread $thread */
+                /** @var ExtendedThreadEntity $thread */
                 /** @var WarningLog $warningLog */
 
                 $thread = $threads[$threadId] ?? null;
@@ -147,7 +150,7 @@ class ReportQueue extends Repository
 
         if ($replyBanThreadIds)
         {
-            $finder = \SV\StandardLib\Helper::finder(\XF\Finder\ThreadReplyBan::class);
+            $finder = Helper::finder(\XF\Finder\ThreadReplyBan::class);
             $conditions = [];
             foreach ($replyBanThreadIds as $data)
             {
@@ -214,10 +217,10 @@ class ReportQueue extends Repository
         if ($expiringFromCron || !$reporter->user_id)
         {
             $expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
-            $reporter = \SV\StandardLib\Helper::find(\XF\Entity\User::class, $expireUserId);
+            $reporter = Helper::find(User::class, $expireUserId);
             if (!$reporter)
             {
-                $reporter = \SV\StandardLib\Helper::find(\XF\Entity\User::class, 1);
+                $reporter = Helper::find(User::class, 1);
             }
             if (!$reporter)
             {

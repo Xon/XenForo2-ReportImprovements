@@ -6,10 +6,7 @@ use SV\ReportImprovements\Globals;
 use XF\Entity\User as UserEntity;
 
 /**
- * Class Warning
  * @extends \XF\Repository\Warning
- *
- * @package SV\ReportImprovements\XF\Repository
  */
 class Warning extends XFCP_Warning
 {

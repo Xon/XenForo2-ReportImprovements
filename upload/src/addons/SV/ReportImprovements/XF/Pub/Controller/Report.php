@@ -2,36 +2,35 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
-use SV\ReportImprovements\Repository\ReportQueue;
+use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use SV\ReportImprovements\Service\Report\CommentEditor;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
-use SV\ReportImprovements\XF\Service\Report\Commenter;
+use SV\ReportImprovements\XF\Service\Report\Commenter as ExtendedReportCommenterService;
 use SV\StandardLib\Helper;
 use XF\ControllerPlugin\BbCodePreview as BbCodePreviewPlugin;
-use XF\ControllerPlugin\Editor;
+use XF\ControllerPlugin\Editor as EditorPlugin;
 use XF\ControllerPlugin\Ip as IpPlugin;
 use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
 use XF\Entity\ConversationMessage;
 use XF\Entity\ConversationRecipient;
 use XF\Entity\ReportComment;
+use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\Exception as ReplyException;
-use XF\Mvc\Reply\View;
 use XF\Mvc\Reply\View as ViewReply;
-use XF\Repository\Attachment;
-use XF\Repository\Unfurl;
-use XF\Service\Conversation\Inviter;
+use XF\Repository\Attachment as AttachmentRepo;
+use XF\Repository\Report as ReportRepo;
+use XF\Repository\Unfurl as UnfurlRepo;
+use XF\Service\Conversation\Inviter as InviterService;
+use XF\Service\Report\Commenter as ReportCommenterService;
 
 /**
- * Class Report
  * @extends \XF\Pub\Controller\Report
- *
- * @package SV\ReportImprovements\XF\Pub\Controller
  */
 class Report extends XFCP_Report
 {
@@ -82,7 +81,7 @@ class Report extends XFCP_Report
 
         $reply = parent::actionIndex($params);
 
-        if ($reply instanceof View)
+        if ($reply instanceof ViewReply)
         {
             $reports = [];
             /** @var \XF\Entity\Report $report */
@@ -106,7 +105,7 @@ class Report extends XFCP_Report
             }
 
             /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
-            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
+            $reportRepo = Helper::repository(ReportRepo::class);
             $reportRepo->filterViewableReports(new ArrayCollection($reports));
         }
 
@@ -124,16 +123,13 @@ class Report extends XFCP_Report
             /** @var ExtendedReportEntity $report */
             /** @var AbstractCollection|array $comments */
 
-            /** @var ReportQueue $reportQueueRepo */
-            $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
+            $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
             $reportQueueRepo->addReplyBansToComments($comments);
 
-            /** @var Attachment $attachmentRepo */
-            $attachmentRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Attachment::class);
+            $attachmentRepo = Helper::repository(AttachmentRepo::class);
             $attachmentRepo->addAttachmentsToContent($comments, 'report_comment');
 
-            /** @var Unfurl $unfurlRepo */
-            $unfurlRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Unfurl::class);
+            $unfurlRepo = Helper::repository(UnfurlRepo::class);
             $unfurlRepo->addUnfurlsToContent($comments, $this->isRobot());
 
             $reply->setParam('attachmentData', $this->getReplyAttachmentData($report));
@@ -189,8 +185,7 @@ class Report extends XFCP_Report
 
             if ($this->filter('_xfWithData', 'bool') && $this->filter('_xfInlineEdit', 'bool'))
             {
-                /** @var Attachment $attachmentRepo */
-                $attachmentRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Attachment::class);
+                $attachmentRepo = Helper::repository(AttachmentRepo::class);
                 $attachmentRepo->addAttachmentsToContent([
                     $reportComment->report_comment_id => $reportComment
                 ], 'conversation_message');
@@ -213,8 +208,7 @@ class Report extends XFCP_Report
         {
             if ($reportComment->Report->canUploadAndManageAttachments())
             {
-                /** @var Attachment $attachmentRepo */
-                $attachmentRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Attachment::class);
+                $attachmentRepo = Helper::repository(AttachmentRepo::class);
                 $attachmentData = $attachmentRepo->getEditorData('report_comment', $reportComment);
             }
             else
@@ -258,8 +252,7 @@ class Report extends XFCP_Report
                 $attachmentHash = $report->draft_comment->attachment_hash;
             }
 
-            /** @var Attachment $attachmentRepo */
-            $attachmentRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Attachment::class);
+            $attachmentRepo = Helper::repository(AttachmentRepo::class);
             return $attachmentRepo->getEditorData('report_comment', $report, $attachmentHash);
         }
 
@@ -272,8 +265,8 @@ class Report extends XFCP_Report
      */
     protected function setupReportCommentEdit(ReportComment $reportComment)
     {
-        /** @var Editor $editorPlugin */
-        $editorPlugin = Helper::plugin($this, Editor::class);
+        /** @var EditorPlugin $editorPlugin */
+        $editorPlugin = Helper::plugin($this, EditorPlugin::class);
         $message = $editorPlugin->fromInput('message');
 
         /** @var CommentEditor $editor */
@@ -292,7 +285,7 @@ class Report extends XFCP_Report
 
     /**
      * @param \XF\Entity\Report|ExtendedReportEntity $report
-     * @return \XF\Service\Report\Commenter
+     * @return ReportCommenterService
      * @throws ReplyException
      */
     protected function setupReportComment(\XF\Entity\Report $report)
@@ -343,7 +336,7 @@ class Report extends XFCP_Report
             );
         }
 
-        /** @var Commenter $editor */
+        /** @var ExtendedReportCommenterService $editor */
         $editor = parent::setupReportComment($report);
 
         $editor->getComment()->setOption('log_moderator', 'true');
@@ -454,8 +447,7 @@ class Report extends XFCP_Report
             }
             else
             {
-                /** @var Inviter $service */
-                $service = Helper::service(Inviter::class, $conversationMessage->Conversation, $conversationMessage->Conversation->Starter);
+                $service = Helper::service(InviterService::class, $conversationMessage->Conversation, $conversationMessage->Conversation->Starter);
                 $service->setAutoSendNotifications(false);
                 $service->setRecipientsTrusted($visitor);
                 $service->save();
@@ -495,8 +487,7 @@ class Report extends XFCP_Report
 
         if ($report->canUploadAndManageAttachments())
         {
-            /** @var Attachment $attachmentRepo */
-            $attachmentRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Attachment::class);
+            $attachmentRepo = Helper::repository(AttachmentRepo::class);
             $attachmentData = $attachmentRepo->getEditorData('report_comment', $reportComment, $tempHash);
             $attachments = $attachmentData['attachments'];
         }
@@ -539,7 +530,7 @@ class Report extends XFCP_Report
         $extraWith[] = 'Report.Permissions|' . $visitor->permission_combination_id;
 
         /** @var ExtendedReportCommentEntity $reportComment */
-        $reportComment = \SV\StandardLib\Helper::find(\XF\Entity\ReportComment::class, $reportCommentId, $extraWith);
+        $reportComment = Helper::find(ReportCommentEntity::class, $reportCommentId, $extraWith);
         if (!$reportComment)
         {
             throw $this->exception($this->noPermission());

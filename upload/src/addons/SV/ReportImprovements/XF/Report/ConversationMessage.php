@@ -7,10 +7,7 @@ use XF\Entity\Report;
 use XF\Mvc\Entity\Entity;
 
 /**
- * Class ConversationMessage
  * @extends \XF\Report\ConversationMessage
- *
- * @package SV\ReportImprovements\XF\Report
  */
 class ConversationMessage extends XFCP_ConversationMessage implements ContentInterface
 {

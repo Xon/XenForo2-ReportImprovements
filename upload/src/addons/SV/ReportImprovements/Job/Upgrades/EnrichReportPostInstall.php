@@ -3,10 +3,14 @@
 namespace SV\ReportImprovements\Job\Upgrades;
 
 use NF\Tickets\Entity\Message;
-use SV\ReportImprovements\XF\Entity\Report;
-use SV\ReportImprovements\XF\Entity\ReportComment;
-use SV\ReportImprovements\XF\Entity\Thread;
+use SV\MultiPrefix\XF\Entity\Thread;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
+use SV\StandardLib\Helper;
 use XF\Entity\Post;
+use XF\Entity\Report;
+use XF\Finder\ReportComment as ReportCommentFinder;
 use XF\Job\AbstractRebuildJob;
 use function array_key_exists;
 use function assert;
@@ -29,12 +33,12 @@ class EnrichReportPostInstall extends AbstractRebuildJob
 
     protected function rebuildById($id)
     {
-        $report = \SV\StandardLib\Helper::find(\XF\Entity\Report::class, $id);
+        $report = Helper::find(Report::class, $id);
         if (!$report)
         {
             return;
         }
-        assert($report instanceof Report);
+        assert($report instanceof ExtendedReportEntity);
         $db = \XF::db();
 
         if ($report->last_modified_id === 0)
@@ -58,7 +62,7 @@ class EnrichReportPostInstall extends AbstractRebuildJob
             }
             if (!array_key_exists('prefix_id', $contentInfo))
             {
-                /** @var Thread|\SV\MultiPrefix\XF\Entity\Thread $thread */
+                /** @var ExtendedThreadEntity|Thread $thread */
                 $thread = $content->Thread;
                 if ($thread !== null)
                 {
@@ -92,14 +96,14 @@ class EnrichReportPostInstall extends AbstractRebuildJob
         if ($report->assigned_user_id !== 0 && $report->assigned_date === null)
         {
             // Xenforo doesn't accurate track which report comment assigns (or unassigns) a report :(
-            $reportComment = \SV\StandardLib\Helper::finder(\XF\Finder\ReportComment::class)
+            $reportComment = Helper::finder(ReportCommentFinder::class)
                                        ->where('report_id', $report->report_id)
                                        ->where('state_change','assigned')
                                        ->order('comment_date', 'desc')
                                        ->fetchOne();
             if ($reportComment !== null)
             {
-                assert($reportComment instanceof ReportComment);
+                assert($reportComment instanceof ExtendedReportCommentEntity);
                 $report->assigned_date = $reportComment->comment_date;
                 $report->assigner_user_id = $reportComment->user_id;
 

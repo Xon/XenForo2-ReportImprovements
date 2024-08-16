@@ -8,9 +8,9 @@ use SV\StandardLib\Helper;
 use XF\Behavior\Indexable;
 use XF\Behavior\IndexableContainer;
 use XF\Mvc\Entity\Entity;
-use XF\Repository\Ip;
+use XF\Repository\Ip as IpRepo;
 use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
-use XF\Service\Message\Preparer;
+use XF\Service\Message\Preparer as MessagePreparerService;
 use function assert;
 use function in_array;
 use function strlen;
@@ -18,13 +18,12 @@ use function strlen;
 /**
  * @extends \XF\Service\Report\CommentPreparer
  *
- * @package SV\ReportImprovements\XF\Service\Report
  * @property ExtendedReportEntity        $report
  * @property ExtendedReportCommentEntity $comment
  */
 class CommentPreparer extends XFCP_CommentPreparer
 {
-    /** @var Preparer */
+    /** @var MessagePreparerService */
     protected $preparer;
 
     /**  @var string|null  */
@@ -92,8 +91,7 @@ class CommentPreparer extends XFCP_CommentPreparer
 
     /**
      * @param bool $format
-     *
-     * @return Preparer
+     * @return MessagePreparerService
      */
     protected function getMessagePreparer($format = true)
     {
@@ -208,8 +206,8 @@ class CommentPreparer extends XFCP_CommentPreparer
         /** @var ExtendedReportCommentEntity $reportComment */
         $reportComment = $this->getComment();
 
-        /** @var IP $ipRepo */
-        $ipRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Ip::class);
+        /** @var IpRepo $ipRepo */
+        $ipRepo = Helper::repository(IpRepo::class);
         $ipEnt = $ipRepo->logIp($reportComment->user_id, $ip, 'report_comment', $reportComment->report_comment_id);
         if ($ipEnt)
         {

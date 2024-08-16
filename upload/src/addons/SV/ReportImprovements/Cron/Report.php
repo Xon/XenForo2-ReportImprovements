@@ -4,11 +4,6 @@ namespace SV\ReportImprovements\Cron;
 
 use SV\ReportImprovements\Job\ResolveInactiveReport;
 
-/**
- * Class Report
- *
- * @package SV\ReportImprovements\Cron
- */
 class Report
 {
     public static function resolveInactiveReports()

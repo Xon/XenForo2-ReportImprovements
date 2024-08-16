@@ -10,10 +10,8 @@ use XF\Mvc\Entity\Structure;
 use function strlen;
 
 /**
- * Class Warning
  * @extends \XF\Entity\Warning
  *
- * @package SV\ReportImprovements\XF\Entity
  * GETTERS
  * @property-read ?string $definition_title
  * RELATIONS

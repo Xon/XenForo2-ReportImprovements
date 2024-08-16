@@ -5,10 +5,8 @@ namespace SV\ReportImprovements\XF\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
- * Class Post
  * @extends \XF\Entity\Post
  *
- * @package SV\ReportImprovements\XF\Entity
  * @property-read Report $Report
  */
 class Post extends XFCP_Post

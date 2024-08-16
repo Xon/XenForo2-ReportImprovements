@@ -2,7 +2,7 @@
 
 namespace SV\ReportImprovements\XF\ControllerPlugin;
 
-use SV\ReportImprovements\XF\Service\Report\Creator;
+use SV\ReportImprovements\XF\Service\Report\Creator as ExtendedReportCreatorService;
 use SV\StandardLib\Helper;
 use XF\ControllerPlugin\Editor as EditorPlugin;
 use XF\Mvc\Entity\Entity;
@@ -16,7 +16,7 @@ class Report extends XFCP_Report
     /**
      * @param string $contentType
      * @param Entity $content
-     * @return Creator
+     * @return ExtendedReportCreatorService
      * @throws ReplyException
      * @noinspection PhpMissingReturnTypeInspection
      */
@@ -31,7 +31,7 @@ class Report extends XFCP_Report
             $this->request->set('message', $message);
         }
 
-        /** @var Creator $creator */
+        /** @var ExtendedReportCreatorService $creator */
         $creator = parent::setupReportCreate($contentType, $content);
 
         $creator->logIp(true);

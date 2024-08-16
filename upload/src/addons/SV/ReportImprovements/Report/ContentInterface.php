@@ -4,11 +4,6 @@ namespace SV\ReportImprovements\Report;
 
 use XF\Entity\Report;
 
-/**
- * Interface ContentInterface
- *
- * @package SV\ReportImprovements\Report
- */
 interface ContentInterface
 {
     /**

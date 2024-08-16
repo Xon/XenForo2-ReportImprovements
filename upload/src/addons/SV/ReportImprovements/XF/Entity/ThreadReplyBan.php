@@ -5,14 +5,13 @@ namespace SV\ReportImprovements\XF\Entity;
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Globals;
+use SV\StandardLib\Helper;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
- * Class ThreadReplyBan
  * @extends \XF\Entity\ThreadReplyBan
  *
- * @package SV\ReportImprovements\XF\Entity
  * COLUMNS
  * @property int|null         $post_id
  * GETTERS
@@ -36,13 +35,13 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
 
         if ($this->post_id !== null)
         {
-            return \SV\StandardLib\Helper::finder(\XF\Finder\Report::class)
+            return Helper::finder(\XF\Finder\Report::class)
                         ->where('content_type', 'post')
                         ->where('content_id', $this->post_id)
                         ->fetchOne();
         }
 
-        return \SV\StandardLib\Helper::finder(\XF\Finder\Report::class)
+        return Helper::finder(\XF\Finder\Report::class)
                     ->where('content_type', 'user')
                     ->where('content_id', $this->user_id)
                     ->fetchOne();

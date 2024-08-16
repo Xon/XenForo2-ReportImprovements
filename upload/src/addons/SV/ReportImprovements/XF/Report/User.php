@@ -5,10 +5,7 @@ namespace SV\ReportImprovements\XF\Report;
 use XF\Entity\Report;
 
 /**
- * Class User
  * @extends \XF\Report\User
- *
- * @package SV\ReportImprovements\XF\Report
  */
 class User extends XFCP_User
 {

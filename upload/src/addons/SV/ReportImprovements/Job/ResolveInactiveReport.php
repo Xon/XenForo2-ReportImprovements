@@ -2,18 +2,15 @@
 
 namespace SV\ReportImprovements\Job;
 
-use SV\ReportImprovements\XF\Entity\Report;
-use SV\ReportImprovements\XF\Service\Report\Commenter;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Service\Report\Commenter as ExtendedReportCommenterService;
 use SV\StandardLib\Helper;
+use XF\Entity\Report;
 use XF\Entity\User;
 use XF\Job\AbstractRebuildJob;
 use XF\Mvc\Entity\AbstractCollection;
+use XF\Service\Report\Commenter as ReportCommenterService;
 
-/**
- * Class ResolveInactiveReport
- *
- * @package SV\ReportImprovements\Job
- */
 class ResolveInactiveReport extends AbstractRebuildJob
 {
     /** @var User|null */
@@ -33,10 +30,10 @@ class ResolveInactiveReport extends AbstractRebuildJob
         $this->expireAction = (string)($options->svReportImpro_autoExpireAction ?? '');
         $this->expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
 
-        $this->reporter = \SV\StandardLib\Helper::find(\XF\Entity\User::class, $this->expireUserId);
+        $this->reporter = Helper::find(User::class, $this->expireUserId);
         if (!$this->reporter)
         {
-            $this->reporter = \SV\StandardLib\Helper::find(\XF\Entity\User::class, 1);
+            $this->reporter = Helper::find(User::class, 1);
         }
         if (!$this->reporter)
         {
@@ -80,16 +77,16 @@ class ResolveInactiveReport extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        /** @var Report $report */
-        $report = \SV\StandardLib\Helper::find(\XF\Entity\Report::class, $id);
+        /** @var ExtendedReportEntity $report */
+        $report = Helper::find(Report::class, $id);
         if ($report === null)
         {
             return;
         }
 
         \XF::asVisitor($this->reporter, function () use ($report) {
-            /** @var Commenter $commenterService */
-            $commenterService = Helper::service(\XF\Service\Report\Commenter::class, $report);
+            /** @var ExtendedReportCommenterService $commenterService */
+            $commenterService = Helper::service(ReportCommenterService::class, $report);
             $commenterService->setReportState($this->expireAction);
             if ($commenterService->validate($errors))
             {

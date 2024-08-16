@@ -8,13 +8,10 @@ use SV\ReportImprovements\Service\WarningLog\Creator;
 use SV\ReportImprovements\XF\Entity\Warning as WarningEntity;
 use SV\StandardLib\Helper;
 use XF\Entity\Post;
+use XF\Entity\User;
+use XF\Entity\Warning;
 use XF\Job\AbstractRebuildJob;
 
-/**
- * Class WarningLogMigration
- *
- * @package SV\ReportImprovements\Job
- */
 class WarningLogMigration extends AbstractRebuildJob
 {
     /**
@@ -43,7 +40,7 @@ class WarningLogMigration extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        $warning = \SV\StandardLib\Helper::find(\XF\Entity\Warning::class, $id, ['User', 'WarnedBy']);
+        $warning = Helper::find(Warning::class, $id, ['User', 'WarnedBy']);
         if ($warning instanceof WarningEntity)
         {
             // On a detached thread, just pretend the post no longer exists
@@ -57,10 +54,10 @@ class WarningLogMigration extends AbstractRebuildJob
             if (!$user)
             {
                 $expireUserId = (int)(\XF::options()->svReportImpro_ExpireUserId ?? 1);
-                $user = \SV\StandardLib\Helper::find(\XF\Entity\User::class, $expireUserId);
+                $user = Helper::find(User::class, $expireUserId);
                 if (!$user)
                 {
-                    $user = \SV\StandardLib\Helper::find(\XF\Entity\User::class, 1);
+                    $user = Helper::find(User::class, 1);
                 }
                 if (!$user && $warning->User)
                 {

@@ -2,9 +2,10 @@
 
 namespace SV\ReportImprovements\XF\Report;
 
+use SV\MultiPrefix\XF\Entity\Thread;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
-use SV\ReportImprovements\XF\Entity\Thread;
+use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
 use XF\Entity\Report;
 use XF\Http\Request;
 use XF\Mvc\Entity\Entity;
@@ -14,10 +15,7 @@ use XF\Search\Query\Query;
 use function assert;
 
 /**
- * Class Post
  * @extends \XF\Report\Post
- *
- * @package SV\ReportImprovements\XF\Report
  */
 class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterface
 {
@@ -60,7 +58,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
 
         $contentInfo = $report->content_info;
         $contentInfo['post_date'] = $content->post_date;
-        /** @var Thread|\SV\MultiPrefix\XF\Entity\Thread $thread */
+        /** @var ExtendedThreadEntity|Thread $thread */
         $thread = $content->Thread;
         $contentInfo['prefix_id'] = $thread->sv_prefix_ids ?? $thread->prefix_id;
         $report->content_info = $contentInfo;

@@ -3,15 +3,11 @@
 namespace SV\ReportImprovements\Job;
 
 use SV\ReportImprovements\Entity\WarningLog;
+use SV\StandardLib\Helper;
 use XF\Job\AbstractRebuildJob;
 use XF\Phrase;
 use function array_merge;
 
-/**
- * Class Upgrade1090200Step1
- *
- * @package SV\ReportImprovements\Job\Upgrades
- */
 class RebuildWarningLogLatestVersion extends AbstractRebuildJob
 {
     protected $optionData = [
@@ -51,7 +47,7 @@ class RebuildWarningLogLatestVersion extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        $warningLog = \SV\StandardLib\Helper::find(\SV\ReportImprovements\Entity\WarningLog::class, $id);
+        $warningLog = Helper::find(WarningLog::class, $id);
         assert($warningLog instanceof WarningLog);
         $warningLog->rebuildLatestVersionFlag($this->data['reindex']);
     }

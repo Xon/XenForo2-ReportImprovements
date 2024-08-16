@@ -2,14 +2,16 @@
 
 namespace SV\ReportImprovements\Service\Report;
 
-use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
-use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\StandardLib\Helper;
 use XF\App;
+use XF\Entity\EditHistory;
 use XF\Mvc\Entity\Repository;
 use XF\Repository\EditHistory as EditHistoryRepo;
 use XF\Service\AbstractService;
-use SV\ReportImprovements\XF\Service\Report\CommentPreparer;
+use SV\ReportImprovements\XF\Service\Report\CommentPreparer as ExtendedCommentPreparerService;
+use XF\Service\Report\CommentPreparer as ReportCommentPreparerService;
 use XF\Service\ValidateAndSavableTrait;
 
 class CommentEditor extends AbstractService
@@ -17,12 +19,12 @@ class CommentEditor extends AbstractService
     use ValidateAndSavableTrait;
 
     /**
-     * @var ReportCommentEntity
+     * @var ExtendedReportCommentEntity
      */
     protected $comment;
 
     /**
-     * @var ReportEntity
+     * @var ExtendedReportEntity
      */
     protected $report;
 
@@ -42,11 +44,11 @@ class CommentEditor extends AbstractService
     protected $oldMessage = null;
 
     /**
-     * @var CommentPreparer
+     * @var ExtendedCommentPreparerService
      */
     protected $commentPreparer;
 
-    public function __construct(App $app, ReportCommentEntity $comment)
+    public function __construct(App $app, ExtendedReportCommentEntity $comment)
     {
         parent::__construct($app);
 
@@ -56,11 +58,11 @@ class CommentEditor extends AbstractService
         {
             throw new \LogicException('Report comment requires a report when editing');
         }
-        $this->commentPreparer = Helper::service(\XF\Service\Report\CommentPreparer::class, $this->comment);
+        $this->commentPreparer = Helper::service(ReportCommentPreparerService::class, $this->comment);
         $this->setCommentDefaults();
     }
 
-    public function getComment(): ReportCommentEntity
+    public function getComment(): ExtendedReportCommentEntity
     {
         return $this->comment;
     }
@@ -70,7 +72,7 @@ class CommentEditor extends AbstractService
         return $this->commentPreparer;
     }
 
-    public function getReport(): ReportEntity
+    public function getReport(): ExtendedReportEntity
     {
         return $this->report;
     }
@@ -183,7 +185,7 @@ class CommentEditor extends AbstractService
         {
             $reportComment = $this->getComment();
             // suppress the "required" flag which blocks "empty" content being saved to edit history
-            $structure = \SV\StandardLib\Helper::getEntityStructure(\XF\Entity\EditHistory::class);
+            $structure = Helper::getEntityStructure(EditHistory::class);
             $oldMessageRequired = $structure->columns['old_text']['required'] ?? false;
             if ($oldMessageRequired)
             {
@@ -221,7 +223,7 @@ class CommentEditor extends AbstractService
         return $content->getErrors();
     }
 
-    protected function _save() : ReportCommentEntity
+    protected function _save() : ExtendedReportCommentEntity
     {
         $db = \XF::db();
         $db->beginTransaction();
@@ -247,6 +249,6 @@ class CommentEditor extends AbstractService
      */
     protected function getEditHistoryRepo() : EditHistoryRepo
     {
-        return \SV\StandardLib\Helper::repository(\XF\Repository\EditHistory::class);
+        return Helper::repository(EditHistoryRepo::class);
     }
 }

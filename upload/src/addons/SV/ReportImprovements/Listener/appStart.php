@@ -2,8 +2,10 @@
 
 namespace SV\ReportImprovements\Listener;
 
-use SV\ReportImprovements\XF\Repository\Report;
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
+use SV\StandardLib\Helper;
 use XF\Pub\App;
+use XF\Repository\Report as ReportRepo;
 
 abstract class appStart
 {
@@ -30,8 +32,8 @@ abstract class appStart
             || ($sessionReportCounts && ($sessionReportCounts['lastBuilt'] < $registryReportCounts['lastModified']))
         )
         {
-            /** @var Report $reportRepo */
-            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
+            /** @var ExtendedReportRepo $reportRepo */
+            $reportRepo = Helper::repository(ReportRepo::class);
             $session['reportCounts'] = $reportRepo->rebuildSessionReportCounts($registryReportCounts);
         }
     }

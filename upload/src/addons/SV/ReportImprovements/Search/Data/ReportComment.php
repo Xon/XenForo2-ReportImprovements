@@ -5,7 +5,7 @@ namespace SV\ReportImprovements\Search\Data;
 use SV\ElasticSearchEssentials\XF\Repository\ImpossibleSearchResultsException;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
-use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
 use SV\SearchImprovements\Util\Arr;
@@ -34,11 +34,6 @@ use function in_array;
 use function is_array;
 use function reset;
 
-/**
- * Class ReportComment
- *
- * @package SV\ReportImprovements\Search\Data
- */
 class ReportComment extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
@@ -47,7 +42,7 @@ class ReportComment extends AbstractData
 
     public function canViewContent(Entity $entity, &$error = null): bool
     {
-        assert($entity instanceof ReportCommentEntity);
+        assert($entity instanceof ExtendedReportCommentEntity);
 
         return $entity->canView();
     }
@@ -111,7 +106,7 @@ class ReportComment extends AbstractData
 
     public function getResultDate(Entity $entity): int
     {
-        assert($entity instanceof ReportCommentEntity);
+        assert($entity instanceof ExtendedReportCommentEntity);
         return $entity->comment_date;
     }
 
@@ -122,7 +117,7 @@ class ReportComment extends AbstractData
             // This function may be invoked when the add-on is disabled, just return nothing to index
             return null;
         }
-        assert($entity instanceof ReportCommentEntity);
+        assert($entity instanceof ExtendedReportCommentEntity);
 
         /** @var \SV\ReportImprovements\XF\Entity\Report $report */
         $report = $entity->Report;
@@ -147,12 +142,12 @@ class ReportComment extends AbstractData
         ]);
     }
 
-    protected function getMessage(ReportCommentEntity $entity): string
+    protected function getMessage(ExtendedReportCommentEntity $entity): string
     {
         return $this->searchRepo->getEntityToMessage($entity);
     }
 
-    protected function getMetaData(ReportCommentEntity $reportComment): array
+    protected function getMetaData(ExtendedReportCommentEntity $reportComment): array
     {
         $report = $reportComment->Report;
         $metaData = $this->reportRepo->getReportSearchMetaData($report);
@@ -166,7 +161,7 @@ class ReportComment extends AbstractData
 
     public function getTemplateData(Entity $entity, array $options = []): array
     {
-        assert($entity instanceof ReportCommentEntity);
+        assert($entity instanceof ExtendedReportCommentEntity);
         return [
             'report'        => $entity->Report,
             'reportComment' => $entity,

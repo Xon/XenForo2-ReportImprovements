@@ -2,16 +2,18 @@
 
 namespace SV\ReportImprovements\XF\Service\Report;
 
-use SV\ReportImprovements\XF\Entity\Report;
-use SV\ReportImprovements\XF\Entity\ReportComment;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use SV\ReportImprovements\XF\Repository\Report;
 use SV\StandardLib\Helper;
+use XF\Entity\ReportComment;
+use XF\Repository\Report as ReportRepo;
 
 /**
  * @extends \XF\Service\Report\Creator
- *
- * @property Report          $report
- * @property ReportComment   $comment
- * @property CommentPreparer $commentPreparer
+ * @property ExtendedReportEntity        $report
+ * @property ExtendedReportCommentEntity $comment
+ * @property CommentPreparer             $commentPreparer
  */
 class Creator extends XFCP_Creator
 {
@@ -42,7 +44,7 @@ class Creator extends XFCP_Creator
     }
 
     /**
-     * @return \XF\Entity\ReportComment
+     * @return ReportComment
      */
     public function getComment()
     {
@@ -67,8 +69,8 @@ class Creator extends XFCP_Creator
             return;
         }
 
-        /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
-        $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
+        /** @var Report $reportRepo */
+        $reportRepo = Helper::repository(ReportRepo::class);
         $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($this->report);
 
         /** @var Notifier $notifier */

@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Service\Report;
 
+use SV\StandardLib\Helper;
 use XF\Entity\Report;
 use XF\Entity\Thread;
 use XF\Mvc\Entity\Entity;
@@ -49,7 +50,7 @@ class CreatorPatch extends XFCP_CreatorPatch
             $thread = $threadCreator->save();
             \XF::asVisitor($this->user, function () use ($thread) {
                 /** @var \XF\Repository\Thread $threadRepo */
-                $threadRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Thread::class);
+                $threadRepo = Helper::repository(\XF\Repository\Thread::class);
                 $threadRepo->markThreadReadByVisitor($thread, $thread->post_date);
             });
 

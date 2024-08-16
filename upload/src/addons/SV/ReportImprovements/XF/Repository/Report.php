@@ -8,22 +8,25 @@ namespace SV\ReportImprovements\XF\Repository;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
-use SV\ReportImprovements\XF\Entity\ReportComment;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\StandardLib\Helper;
 use SV\WarningImprovements\Entity\WarningCategory;
 use XF\Db\Exception as DbException;
-use SV\ReportImprovements\XF\Entity\Report as ReportEntity;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use XF\Entity\Forum;
 use XF\Entity\Moderator as ModeratorEntity;
+use XF\Entity\ReportComment;
 use XF\Entity\User as UserEntity;
 use XF\Entity\WarningDefinition;
+use XF\Finder\User as UserFinder;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Phrase;
 use XF\Report\AbstractHandler;
-use XF\Repository\Moderator;
+use XF\Repository\Moderator as ModeratorRepo;
 use XF\Search\IndexRecord;
 use XF\Search\MetadataStructure;
 use function array_keys;
@@ -59,10 +62,7 @@ if (!function_exists('str_ends_with'))
 }
 
 /**
- * Class Report
  * @extends \XF\Repository\Report
- *
- * @package SV\ReportImprovements\XF\Repository
  */
 class Report extends XFCP_Report
 {
@@ -96,7 +96,7 @@ class Report extends XFCP_Report
         return false;
     }
 
-    public function getReportSearchMetaData(ReportEntity $report): array
+    public function getReportSearchMetaData(ExtendedReportEntity $report): array
     {
         $metaData = [
             'report'              => $report->report_id,
@@ -139,7 +139,7 @@ class Report extends XFCP_Report
         return $metaData;
     }
 
-    protected function getContentIndexRecord(ReportEntity $report): ?IndexRecord
+    protected function getContentIndexRecord(ExtendedReportEntity $report): ?IndexRecord
     {
         /** @var Entity|null $content */
         $content = $report->Content;
@@ -214,7 +214,7 @@ class Report extends XFCP_Report
             {
                 $entity = $entity->ReportComment;
             }
-            if ($entity instanceof ReportComment)
+            if ($entity instanceof ExtendedReportCommentEntity)
             {
                 $reports[$entity->report_id] = $entity->Report;
             }
@@ -226,7 +226,7 @@ class Report extends XFCP_Report
     public function svPreloadReports(AbstractCollection $reports)
     {
         $reportsByContentType = [];
-        /** @var ReportEntity $report */
+        /** @var ExtendedReportEntity $report */
         foreach ($reports as $report)
         {
             if (!$report)
@@ -261,7 +261,7 @@ class Report extends XFCP_Report
             $reportContents = $handler->getContent($contentIds);
             foreach ($reportContents as $contentId => $reportContent)
             {
-                /** @var ReportEntity $report */
+                /** @var ExtendedReportEntity $report */
                 $report = $reports[$contentId] ?? null;
                 if (!$report)
                 {
@@ -299,7 +299,7 @@ class Report extends XFCP_Report
      */
     public function svGetUsersWhoCanHandleReport(\XF\Entity\Report $report, bool $doCache = true): array
     {
-        $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
+        $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
         assert($reportQueueRepo instanceof ReportQueueRepo);
         $reportQueueId = (int)($report->queue_id ?? 0);
         $key = $reportQueueRepo->getReportAssignableNonModeratorsCacheKey($reportQueueId);
@@ -326,7 +326,7 @@ class Report extends XFCP_Report
                          'XF:PermissionEntryContent' => ['unset', 'reset', 'content_allow', 'deny', 'use_int'],
                      ] as $entityName => $expected)
             {
-                $structure = \SV\StandardLib\Helper::getEntityStructure($entityName);
+                $structure = Helper::getEntityStructure($entityName);
                 $allowedValues = array_values(($structure->columns['permission_value']['allowedValues'] ?? []));
                 sort($allowedValues);
                 sort($expected);
@@ -480,7 +480,7 @@ class Report extends XFCP_Report
      */
     public function svGetModeratorsWhoCanHandleReport(\XF\Entity\Report $report, bool $notifiableOnly = false)
     {
-        /** @var ReportEntity $report */
+        /** @var ExtendedReportEntity $report */
         $userIds = $this->svGetUsersWhoCanHandleReport($report);
         if (count($userIds) === 0)
         {
@@ -494,8 +494,8 @@ class Report extends XFCP_Report
         }
 
         // load into memory, but this is non-authoritative
-        /** @var Moderator $moderatorRepo */
-        $moderatorRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Moderator::class);
+        /** @var ModeratorRepo $moderatorRepo */
+        $moderatorRepo = Helper::repository(ModeratorRepo::class);
         $moderatorRepo->findModeratorsForList()
                       ->fetch();
 
@@ -512,7 +512,7 @@ class Report extends XFCP_Report
             {
                 $moderator->setTrusted('notify_report', false);
             }
-            $moderator->hydrateRelation('User', \SV\StandardLib\Helper::find(\XF\Entity\User::class, $userId));
+            $moderator->hydrateRelation('User', Helper::find(UserEntity::class, $userId));
             $moderator->setReadOnly(true);
 
             return $moderator;
@@ -545,10 +545,10 @@ class Report extends XFCP_Report
         if (count($usersToFetch) !== 0)
         {
             /** @var array<int,UserEntity> $users */
-            $users = \SV\StandardLib\Helper::finder(\XF\Finder\User::class)
-                        ->where('user_id', '=', $usersToFetch)
-                        ->order('user_id')
-                        ->fetch();
+            $users = Helper::finder(UserFinder::class)
+                           ->where('user_id', '=', $usersToFetch)
+                           ->order('user_id')
+                           ->fetch();
             foreach ($users as $userId => $user)
             {
                 $moderator = $fakeMod($userId);
@@ -569,7 +569,7 @@ class Report extends XFCP_Report
             $nodeId = (int)($report->content_info['node_id'] ?? 0);
             if ($nodeId !== 0)
             {
-                \SV\StandardLib\Helper::find(\XF\Entity\Forum::class, $nodeId);
+                Helper::find(Forum::class, $nodeId);
             }
             if ($nodeId !== 0)
             {
@@ -624,7 +624,7 @@ class Report extends XFCP_Report
         $reports = $reports->filterViewable();
 
         $userIds = [];
-        /** @var ReportEntity $report */
+        /** @var ExtendedReportEntity $report */
         foreach ($reports as $report)
         {
             $report->title;
@@ -643,14 +643,14 @@ class Report extends XFCP_Report
 
         if ($userIds)
         {
-            \SV\StandardLib\Helper::findByIds(\XF\Entity\User::class, array_keys($userIds));
+            Helper::findByIds(UserEntity::class, array_keys($userIds));
         }
 
         return $reports;
     }
 
     /**
-     * @param Report|ReportComment $entity
+     * @param Report|ExtendedReportCommentEntity $entity
      * @return int[]
      * @noinspection PhpDocMissingThrowsInspection
      */
@@ -678,7 +678,7 @@ class Report extends XFCP_Report
                 }
             }
         }
-        else if ($entity instanceof \XF\Entity\ReportComment)
+        else if ($entity instanceof ReportComment)
         {
             if ($alertMode !== 'always_alert')
             {
@@ -691,7 +691,7 @@ class Report extends XFCP_Report
                 ', [$entity->report_id, $entity->user_id]);
             }
 
-            /** @var ReportEntity $report */
+            /** @var ExtendedReportEntity $report */
             $report = $entity->Report;
             if ($entity->state_change === 'assigned' && $report->assigned_user_id)
             {
@@ -771,7 +771,7 @@ class Report extends XFCP_Report
     public function rebuildSessionReportCounts(array $registryReportCounts)
     {
         /** @var \XF\Finder\Report $reportFinder */
-        $reportFinder = \SV\StandardLib\Helper::finder(\XF\Finder\Report::class);
+        $reportFinder = Helper::finder(\XF\Finder\Report::class);
         $reports = $reportFinder->isActive()->fetch();
         $reports = $this->filterViewableReports($reports);
 
@@ -780,8 +780,8 @@ class Report extends XFCP_Report
         $userId = \XF::visitor()->user_id;
 
         /**
-         * @var int          $reportId
-         * @var ReportEntity $report
+         * @var int                  $reportId
+         * @var ExtendedReportEntity $report
          */
         foreach ($reports AS $report)
         {
@@ -804,7 +804,7 @@ class Report extends XFCP_Report
      */
     public function getReportStates(): array
     {
-        $structure = \SV\StandardLib\Helper::getEntityStructure(\XF\Entity\Report::class);
+        $structure = Helper::getEntityStructure(\XF\Entity\Report::class);
         // This list is extended by other add-ons
         $states = $structure->columns['report_state']['allowedValues'] ?? [];
         assert(is_array($states) && count($states) > 0);
@@ -892,13 +892,13 @@ class Report extends XFCP_Report
     {
         $phrasePairs = [];
 
-        $warningRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Warning::class);
+        $warningRepo = Helper::repository(\XF\Repository\Warning::class);
         assert($warningRepo instanceof \XF\Repository\Warning);
         if (Helper::isAddOnActive('SV/WarningImprovements'))
         {
             assert($warningRepo instanceof \SV\WarningImprovements\XF\Repository\Warning);
 
-            $categoryRepo = \SV\StandardLib\Helper::repository(\SV\WarningImprovements\Repository\WarningCategory::class);
+            $categoryRepo = Helper::repository(\SV\WarningImprovements\Repository\WarningCategory::class);
             assert($categoryRepo instanceof \SV\WarningImprovements\Repository\WarningCategory);
 
             $categories = $categoryRepo->findCategoryList()->fetch();

@@ -3,15 +3,13 @@
 namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
+use SV\StandardLib\Helper;
 use XF\Mvc\Entity\Structure;
 use XF\Phrase;
 use function assert;
 
 /**
- * Class User
  * @extends \XF\Entity\User
- *
- * @package SV\ReportImprovements\XF\Entity
  */
 class User extends XFCP_User
 {
@@ -206,7 +204,7 @@ class User extends XFCP_User
 
             if ($doRebuild)
             {
-                $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
+                $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
                 assert($reportQueueRepo instanceof ReportQueueRepo);
                 $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
             }

@@ -4,7 +4,7 @@ namespace SV\ReportImprovements\Search\Data;
 
 use SV\ElasticSearchEssentials\XF\Repository\ImpossibleSearchResultsException;
 use SV\ReportImprovements\Enums\ReportType;
-use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
 use SV\SearchImprovements\Repository\Search as SearchRepo;
 use SV\SearchImprovements\XF\Search\Query\Constraints\PermissionConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\TypeConstraint;
@@ -15,7 +15,7 @@ use XF\Search\Search;
 
 trait SearchDataSetupTrait
 {
-    /** @var ReportRepo|\XF\Repository\Report */
+    /** @var ExtendedReportRepo|\XF\Repository\Report */
     protected $reportRepo;
     /** @var SearchRepo */
     protected $searchRepo;
@@ -33,9 +33,9 @@ trait SearchDataSetupTrait
         /** @noinspection PhpMultipleClassDeclarationsInspection */
         parent::__construct($contentType, $searcher);
 
-        $this->reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
-        $this->searchRepo = \SV\StandardLib\Helper::repository(\SV\SearchImprovements\Repository\Search::class);
-        $this->isAddonFullyActive = $this->reportRepo instanceof ReportRepo;
+        $this->reportRepo = Helper::repository(\XF\Repository\Report::class);
+        $this->searchRepo = Helper::repository(SearchRepo::class);
+        $this->isAddonFullyActive = $this->reportRepo instanceof ExtendedReportRepo;
         $this->isUsingElasticSearch = SearchRepo::get()->isUsingElasticSearch();
     }
 

@@ -9,10 +9,8 @@ use XF\ControllerPlugin\Warn;
 use XF\Mvc\Reply\Exception;
 
 /**
- * Class Forum
  * @extends  \XF\Pub\Controller\Forum
  *
- * @package SV\ReportImprovements\XF\Pub\Controller
  */
 class Forum extends XFCP_Forum
 {

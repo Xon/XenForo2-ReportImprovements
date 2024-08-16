@@ -8,10 +8,7 @@ use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\View as ViewReply;
 
 /**
- * Class Report
  * @extends \XF\Pub\Controller\Report
- *
- * @package SV\ReportImprovements\XF\Pub\Controller
  */
 class ReportPatch extends XFCP_ReportPatch
 {

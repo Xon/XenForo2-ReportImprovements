@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\Permission;
 
 use SV\ReportCentreEssentials\Entity\ReportQueue as ReportQueueEntity;
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
+use SV\StandardLib\Helper;
 use XF\Entity\Permission;
 use XF\Entity\PermissionCombination;
 use XF\Mvc\Entity\AbstractCollection;
@@ -29,8 +30,8 @@ class ReportQueuePermissions extends FlatContentPermissions
 
     public function getContentList(): AbstractCollection
     {
-        /** @var ReportQueueRepo $entryRepo */
-        $entryRepo = $this->builder->em()->getRepository('SV\ReportImprovements:ReportQueue');
+        $entryRepo = Helper::repository(ReportQueueRepo::class);
+
         return $entryRepo->getReportQueueList();
     }
 
@@ -43,7 +44,7 @@ class ReportQueuePermissions extends FlatContentPermissions
     public function rebuildCombination(PermissionCombination $combination, array $basePerms)
     {
         // being notified on permission changes is surprisingly challenging
-        $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
+        $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
         assert($reportQueueRepo instanceof ReportQueueRepo);
         $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
 

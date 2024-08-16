@@ -8,8 +8,10 @@ namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Enums\WarningType;
-use SV\ReportImprovements\XF\Repository\Report as ReportRepo;
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
+use SV\StandardLib\Helper;
 use XF\Phrase;
+use XF\Repository\Report as ReportRepo;
 use function assert;
 use function is_array;
 
@@ -34,8 +36,8 @@ class Search extends XFCP_Search
         // todo simplify this
         if ($key === 'report_state' && is_array($value))
         {
-            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
-            assert($reportRepo instanceof ReportRepo);
+            $reportRepo = Helper::repository(ReportRepo::class);
+            assert($reportRepo instanceof ExtendedReportRepo);
             $states = $reportRepo->getReportStatePairs();
 
             foreach ($value as $subKey => $id)
@@ -64,8 +66,8 @@ class Search extends XFCP_Search
         }
         else if ($key === 'report_content' && is_array($value))
         {
-            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
-            assert($reportRepo instanceof ReportRepo);
+            $reportRepo = Helper::repository(ReportRepo::class);
+            assert($reportRepo instanceof ExtendedReportRepo);
             $states = $reportRepo->getReportContentTypePhrasePairs(true);
 
             foreach ($value as $subKey => $id)
@@ -94,8 +96,8 @@ class Search extends XFCP_Search
         }
         else if ($key === 'warning_definition' && is_array($value))
         {
-            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
-            assert($reportRepo instanceof ReportRepo);
+            $reportRepo = Helper::repository(ReportRepo::class);
+            assert($reportRepo instanceof ExtendedReportRepo);
             $states = $reportRepo->getWarningDefinitionsForSearch();
 
             foreach ($value as $subKey => $id)

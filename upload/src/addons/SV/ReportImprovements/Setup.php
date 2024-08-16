@@ -27,8 +27,8 @@ use XF\Entity\UserAlert;
 use XF\Job\Atomic as AtomicJob;
 use XF\Job\PermissionRebuild;
 use XF\Job\PermissionRebuildPartial;
-use XF\Repository\PermissionCombination;
-use XF\Repository\PermissionEntry;
+use XF\Repository\PermissionCombination as PermissionCombinationRepo;
+use XF\Repository\PermissionEntry as PermissionEntryRepo;
 use XF\Service\UpdatePermissions as UpdatePermissionsService;
 use function array_keys;
 use function array_values;
@@ -36,11 +36,6 @@ use function assert;
 use function count;
 use function sort;
 
-/**
- * Class Setup
- *
- * @package SV\ReportImprovements
- */
 class Setup extends AbstractSetup
 {
     use InstallerHelper;
@@ -542,13 +537,13 @@ class Setup extends AbstractSetup
 
     protected function cleanupPermissionChecks()
     {
-        /** @var PermissionEntry $permEntryRepo */
+        /** @var PermissionEntryRepo $permEntryRepo */
         $permEntryRepo = \SV\StandardLib\Helper::repository(\XF\Repository\PermissionEntry::class);
 
         $permEntryRepo->deleteOrphanedGlobalUserPermissionEntries();
         $permEntryRepo->deleteOrphanedContentUserPermissionEntries();
 
-        /** @var PermissionCombination $permComboRepo */
+        /** @var PermissionCombinationRepo $permComboRepo */
         $permComboRepo = \SV\StandardLib\Helper::repository(\XF\Repository\PermissionCombination::class);
         $permComboRepo->deleteUnusedPermissionCombinations();
 
@@ -578,7 +573,7 @@ class Setup extends AbstractSetup
         // content/global moderators before bulk update
         if (!$previousVersion || ($previousVersion <= 1040002) || ($previousVersion >= 2000000 && $previousVersion <= 2011000))
         {
-            /** @var PermissionEntry $permissionEntryRepo */
+            /** @var PermissionEntryRepo $permissionEntryRepo */
             $permissionEntryRepo = \SV\StandardLib\Helper::repository(\XF\Repository\PermissionEntry::class);
             /** @var \XF\Repository\Moderator $modRepo */
             $modRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Moderator::class);

@@ -32,11 +32,6 @@ use function is_array;
 use function is_string;
 use function reset;
 
-/**
- * Class Warning
- *
- * @package SV\ReportImprovements\Search\Data
- */
 class WarningLog extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
@@ -93,8 +88,7 @@ class WarningLog extends AbstractData
             throw new \LogicException("Content type {$this->contentType} must define an 'entity' value");
         }
 
-        $em = \XF::em();
-        $key = \SV\StandardLib\Helper::getEntityStructure($entityId)->primaryKey;
+        $key = Helper::getEntityStructure($entityId)->primaryKey;
         if (is_array($key))
         {
             if (count($key) > 1)
@@ -104,12 +98,12 @@ class WarningLog extends AbstractData
             $key = reset($key);
         }
 
-        $finder = \SV\StandardLib\Helper::finder($entityId)
-                     ->where($key, '>', $lastId)
-                     ->with('ReportComment', true)
+        $finder = Helper::finder($entityId)
+                        ->where($key, '>', $lastId)
+                        ->with('ReportComment', true)
             //->where('ReportComment.warning_log_id', '<>', null)
-                     ->order($key)
-                     ->with($this->getEntityWith($forView));
+                        ->order($key)
+                        ->with($this->getEntityWith($forView));
 
         $contents = $finder->fetch($amount);
 

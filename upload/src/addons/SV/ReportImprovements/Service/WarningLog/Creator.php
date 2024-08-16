@@ -7,7 +7,7 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\WarningLog;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Globals;
-use SV\ReportImprovements\XF\Service\Report\Commenter;
+use SV\ReportImprovements\XF\Service\Report\Commenter as ExtendedReportCommenterService;
 use SV\StandardLib\Helper;
 use XF\App;
 use XF\Entity\Post;
@@ -18,13 +18,9 @@ use XF\Entity\Warning;
 use XF\Phrase;
 use XF\PrintableException;
 use XF\Service\AbstractService;
+use XF\Service\Report\Commenter as ReportCommenterService;
 use XF\Service\ValidateAndSavableTrait;
 
-/**
- * Class Creator
- *
- * @package SV\ReportImprovements\XF\Service\WarningLog
- */
 class Creator extends AbstractService
 {
     use ValidateAndSavableTrait;
@@ -66,7 +62,7 @@ class Creator extends AbstractService
     protected $reportCreator;
 
     /**
-     * @var \XF\Service\Report\Commenter|Commenter
+     * @var ReportCommenterService|ExtendedReportCommenterService
      */
     protected $reportCommenter;
 
@@ -293,7 +289,7 @@ class Creator extends AbstractService
 
         if ($report)
         {
-            $this->reportCommenter = Helper::service(\XF\Service\Report\Commenter::class, $report);
+            $this->reportCommenter = Helper::service(ReportCommenterService::class, $report);
         }
         else if ((\XF::app()->options()->sv_report_new_warnings ?? false) && $warning->Content)
         {
@@ -372,7 +368,7 @@ class Creator extends AbstractService
 
         if ($report)
         {
-            $this->reportCommenter = Helper::service(\XF\Service\Report\Commenter::class, $report);
+            $this->reportCommenter = Helper::service(ReportCommenterService::class, $report);
         }
         else
         {
@@ -428,7 +424,7 @@ class Creator extends AbstractService
 
         if ($report)
         {
-            $this->reportCommenter = Helper::service(\XF\Service\Report\Commenter::class, $report);
+            $this->reportCommenter = Helper::service(ReportCommenterService::class, $report);
         }
         else
         {

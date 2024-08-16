@@ -10,10 +10,7 @@ use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\Exception as ReplyException;
 
 /**
- * Class Warning
  * @extends \XF\Pub\Controller\Warning
- *
- * @package SV\ReportImprovements\XF\Pub\Controller
  */
 class Warning extends XFCP_Warning
 {

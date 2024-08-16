@@ -5,26 +5,26 @@ namespace SV\ReportImprovements\SV\ForumBan\Entity;
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Globals;
-use SV\ReportImprovements\XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\StandardLib\Helper;
 use XF\Entity\User;
+use XF\Finder\Report as ReportFinder;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
  * Class ForumBan
+ *
  * @extends \SV\ForumBan\Entity\ForumBan
- *
- * @package SV\ReportImprovements\SV\ForumBan\Entity
- *
  * GETTERS
- * @property-read Report|null $Report
+ * @property-read ExtendedReportEntity|null $Report
  */
 class ForumBan extends XFCP_ForumBan implements IReportResolver
 {
     use ReportResolverTrait;
 
     /**
-     * @return Report|Entity|null
+     * @return ExtendedReportEntity|Entity|null
      */
     protected function getReport()
     {
@@ -33,7 +33,7 @@ class ForumBan extends XFCP_ForumBan implements IReportResolver
             return $this->_relations['Report'];
         }
 
-        return \SV\StandardLib\Helper::finder(\XF\Finder\Report::class)
+        return Helper::finder(ReportFinder::class)
                     ->where('content_type', 'user')
                     ->where('content_id', $this->user_id)
                     ->fetchOne();

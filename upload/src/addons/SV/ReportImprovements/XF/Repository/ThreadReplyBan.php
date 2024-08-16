@@ -3,10 +3,7 @@
 namespace SV\ReportImprovements\XF\Repository;
 
 /**
- * Class ThreadReplyBan
  * @extends \XF\Repository\ThreadReplyBan
- *
- * @package SV\ReportImprovements\XF\Repository
  */
 class ThreadReplyBan extends XFCP_ThreadReplyBan
 {

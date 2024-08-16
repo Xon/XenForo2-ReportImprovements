@@ -3,7 +3,7 @@
 namespace SV\ReportImprovements\EditHistory;
 
 use SV\ReportImprovements\Service\Report\CommentEditor;
-use SV\ReportImprovements\XF\Entity\ReportComment as ReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\StandardLib\Helper;
 use XF\EditHistory\AbstractHandler;
 use XF\Entity\EditHistory;
@@ -14,19 +14,19 @@ class ReportComment extends AbstractHandler
 {
     public function canViewHistory(Entity $content) : bool
     {
-        /** @var ReportCommentEntity $content */
+        /** @var ExtendedReportCommentEntity $content */
         return $content->canViewHistory();
     }
 
     public function canRevertContent(Entity $content) : bool
     {
-        /** @var ReportCommentEntity $content */
+        /** @var ExtendedReportCommentEntity $content */
         return $content->canEdit();
     }
 
     public function getBreadcrumbs(Entity $content) : array
     {
-        /** @var ReportCommentEntity $content */
+        /** @var ExtendedReportCommentEntity $content */
         return $content->getBreadcrumbs();
     }
 
@@ -42,13 +42,13 @@ class ReportComment extends AbstractHandler
 
     public function getContentText(Entity $content) : string
     {
-        /** @var ReportCommentEntity $content */
+        /** @var ExtendedReportCommentEntity $content */
         return $content->message;
     }
 
     public function revertToVersion(Entity $content, EditHistory $history, ?EditHistory $previous = null)
     {
-        /** @var ReportCommentEntity $content */
+        /** @var ExtendedReportCommentEntity $content */
 
         /** @var CommentEditor $editor */
         $editor = Helper::service(CommentEditor::class, $content);
@@ -72,8 +72,8 @@ class ReportComment extends AbstractHandler
     }
 
     /**
-     * @param string $text
-     * @param Entity|ReportCommentEntity|null $content
+     * @param string                                  $text
+     * @param Entity|ExtendedReportCommentEntity|null $content
      * @return string
      */
     public function getHtmlFormattedContent($text, ?Entity $content = null) : string
@@ -83,7 +83,7 @@ class ReportComment extends AbstractHandler
 
     public function getEditCount(Entity $content) : int
     {
-        /** @var ReportCommentEntity $content */
+        /** @var ExtendedReportCommentEntity $content */
         return $content->edit_count;
     }
 
@@ -95,7 +95,7 @@ class ReportComment extends AbstractHandler
      */
     public function getContentLink(Entity $content) : string
     {
-        /** @var ReportCommentEntity $content */
+        /** @var ExtendedReportCommentEntity $content */
 
         return \XF::app()->router()->buildLink('reports/comment');
     }
@@ -110,7 +110,7 @@ class ReportComment extends AbstractHandler
     public function getContentTitle(Entity $content)
     {
         // not escaping this because XF allows HTML characters in page title
-        /** @var ReportCommentEntity $content */
+        /** @var ExtendedReportCommentEntity $content */
 
         return $content->Report->title;
     }

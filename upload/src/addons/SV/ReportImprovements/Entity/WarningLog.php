@@ -5,7 +5,7 @@ namespace SV\ReportImprovements\Entity;
 use SV\ForumBan\Entity\ForumBan;
 use SV\ForumBan\XF\Entity\Forum as ForumBanForum;
 use SV\ReportImprovements\Enums\WarningType;
-use SV\ReportImprovements\XF\Entity\ReportComment;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\Finder\WarningLog as WarningLogFinder;
 use SV\StandardLib\Helper;
 use XF\Behavior\Indexable;
@@ -54,16 +54,16 @@ use function assert;
  * @property-read ThreadReplyBan|null                   $ReplyBan
  * @property-read WarningDefinition|null                $Definition
  * RELATIONS
- * @property-read ForumBan|null                         $ForumBan_
- * @property-read ThreadReplyBan|null                   $ReplyBan_
- * @property-read Warning|null                          $Warning
-* @property-read WarningDefinition|null                 $Definition_
- * @property-read User|null                             $WarnedBy
- * @property-read User|null                             $User
- * @property-read Forum|ForumBanForum|null              $ForumBanForum
- * @property-read Thread|null                           $ReplyBanThread
- * @property-read Post|null                             $ReplyBanPost
- * @property-read ReportComment|null                    $ReportComment
+ * @property-read ForumBan|null                    $ForumBan_
+ * @property-read ThreadReplyBan|null              $ReplyBan_
+ * @property-read Warning|null                     $Warning
+* @property-read WarningDefinition|null            $Definition_
+ * @property-read User|null                        $WarnedBy
+ * @property-read User|null                        $User
+ * @property-read Forum|ForumBanForum|null         $ForumBanForum
+ * @property-read Thread|null                      $ReplyBanThread
+ * @property-read Post|null                        $ReplyBanPost
+ * @property-read ExtendedReportCommentEntity|null $ReportComment
  */
 class WarningLog extends Entity
 {
@@ -211,7 +211,7 @@ class WarningLog extends Entity
     public function rebuildLatestVersionFlag(bool $doIndexUpdate = true): void
     {
         $db = \XF::db();
-        $finder = \SV\StandardLib\Helper::finder(\SV\ReportImprovements\Finder\WarningLog::class);
+        $finder = Helper::finder(WarningLogFinder::class);
         assert($finder instanceof WarningLogFinder);
 
         $latestWarningLogId = 0;

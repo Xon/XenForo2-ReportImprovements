@@ -3,16 +3,13 @@
 namespace SV\ReportImprovements\Alert;
 
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
-use SV\ReportImprovements\XF\Repository\Report;
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
+use SV\StandardLib\Helper;
 use XF\Alert\AbstractHandler;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
+use XF\Repository\Report as ReportRepo;
 
-/**
- * Class ReportComment
- *
- * @package SV\ReportImprovements\Alert
- */
 class ReportComment extends AbstractHandler
 {
     /**
@@ -56,8 +53,8 @@ class ReportComment extends AbstractHandler
 
         if ($entities instanceof AbstractCollection)
         {
-            /** @var Report $reportRepo */
-            $reportRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Report::class);
+            /** @var ExtendedReportRepo $reportRepo */
+            $reportRepo = Helper::repository(ReportRepo::class);
             $reportRepo->svPreloadReportComments($entities);
         }
 

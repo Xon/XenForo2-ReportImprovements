@@ -5,11 +5,6 @@ namespace SV\ReportImprovements\Job;
 use XF\Job\AbstractRebuildJob;
 use XF\Phrase;
 
-/**
- * Class Upgrade1090200Step1
- *
- * @package SV\ReportImprovements\Job\Upgrades
- */
 class RebuildCommentCount extends AbstractRebuildJob
 {
     /**
