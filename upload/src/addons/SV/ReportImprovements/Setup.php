@@ -476,6 +476,7 @@ class Setup extends AbstractSetup
     public function postInstall(array &$stateChanges)
     {
         parent::postInstall($stateChanges);
+        $this->checkElasticSearchOptimizableState();
 
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
@@ -500,6 +501,7 @@ class Setup extends AbstractSetup
     {
         $previousVersion = (int)$previousVersion;
         parent::postUpgrade($previousVersion, $stateChanges);
+        $this->checkElasticSearchOptimizableState();
 
         $atomicJobs = [];
         $this->cleanupPermissionChecks();
