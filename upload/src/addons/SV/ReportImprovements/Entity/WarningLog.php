@@ -195,7 +195,7 @@ class WarningLog extends Entity
 
     public function isUserOperation(): bool
     {
-        return $this->operation_type == WarningType::Acknowledge;
+        return $this->operation_type === WarningType::Acknowledge;
     }
 
     protected function _preSave()

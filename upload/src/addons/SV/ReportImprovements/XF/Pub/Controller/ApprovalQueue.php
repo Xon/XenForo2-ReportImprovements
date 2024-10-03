@@ -167,7 +167,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
                 $input['direction'] = 'asc';
             }
 
-            if ($input['order'] != 'content_date' || $input['direction'] != 'asc')
+            if ($input['order'] !== 'content_date' || $input['direction'] !== 'asc')
             {
                 $filters['order'] = $input['order'];
                 $filters['direction'] = $input['direction'];

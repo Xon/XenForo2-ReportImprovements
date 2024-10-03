@@ -144,7 +144,7 @@ class Warn extends XFCP_Warn
             $warning = null;
             /** @var AbstractCollection|null $warningDefs */
             $warningDefs = $response->getParam('warnings');
-            if ($user != null && $warningDefs !== null)
+            if ($user !== null && $warningDefs !== null)
             {
                 $addOns = \XF::app()->container('addon.cache');
                 if (isset($addOns['SV/WarningImprovements']))
