@@ -614,6 +614,8 @@ class Report extends XFCP_Report
      * @param AbstractCollection $reports
      * @return AbstractCollection
      * @noinspection PhpMissingParentCallCommonInspection
+     * @noinspection PhpMissingParamTypeInspection
+     * @noinspection RedundantSuppression
      */
     public function filterViewableReports($reports)
     {
