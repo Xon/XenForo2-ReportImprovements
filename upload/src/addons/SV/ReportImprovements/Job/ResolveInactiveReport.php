@@ -5,15 +5,15 @@ namespace SV\ReportImprovements\Job;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Service\Report\Commenter as ExtendedReportCommenterService;
 use SV\StandardLib\Helper;
-use XF\Entity\Report;
-use XF\Entity\User;
+use XF\Entity\Report as ReportEntity;
+use XF\Entity\User as UserEntity;
 use XF\Job\AbstractRebuildJob;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Service\Report\Commenter as ReportCommenterService;
 
 class ResolveInactiveReport extends AbstractRebuildJob
 {
-    /** @var User|null */
+    /** @var UserEntity|null */
     protected $reporter = null;
 
     /**  @var int */
@@ -30,10 +30,10 @@ class ResolveInactiveReport extends AbstractRebuildJob
         $this->expireAction = (string)($options->svReportImpro_autoExpireAction ?? '');
         $this->expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
 
-        $this->reporter = Helper::find(User::class, $this->expireUserId);
+        $this->reporter = Helper::find(UserEntity::class, $this->expireUserId);
         if (!$this->reporter)
         {
-            $this->reporter = Helper::find(User::class, 1);
+            $this->reporter = Helper::find(UserEntity::class, 1);
         }
         if (!$this->reporter)
         {
@@ -78,7 +78,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
     protected function rebuildById($id)
     {
         /** @var ExtendedReportEntity $report */
-        $report = Helper::find(Report::class, $id);
+        $report = Helper::find(ReportEntity::class, $id);
         if ($report === null)
         {
             return;

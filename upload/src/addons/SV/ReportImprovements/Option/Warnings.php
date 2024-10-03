@@ -3,15 +3,16 @@
 namespace SV\ReportImprovements\Option;
 
 use SV\StandardLib\Helper;
-use XF\Entity\Option;
-use XF\Entity\WarningDefinition;
+use XF\Entity\Option as OptionEntity;
+use XF\Entity\WarningDefinition as WarningDefinitionEntity;
+use XF\Finder\WarningDefinition as WarningDefinitionFinder;
 use XF\Option\AbstractOption;
 
 class Warnings extends AbstractOption
 {
-    protected static function getSelectData(Option $option, array $htmlParams)
+    protected static function getSelectData(OptionEntity $option, array $htmlParams)
     {
-        $finder = Helper::finder(\XF\Finder\WarningDefinition::class);
+        $finder = Helper::finder(WarningDefinitionFinder::class);
         if (isset($finder->getStructure()->columns['sv_display_order']))
         {
             $finder->with('Category')
@@ -23,7 +24,7 @@ class Warnings extends AbstractOption
 
         foreach ($warnings as $warningDefinitionId => $warningDefinition)
         {
-            /** @var WarningDefinition $warningDefinition */
+            /** @var WarningDefinitionEntity $warningDefinition */
             $choices[$warningDefinitionId] = [
                 '_type' => 'option',
                 'value' => $warningDefinitionId,
@@ -39,11 +40,11 @@ class Warnings extends AbstractOption
     }
 
     /**
-     * @param Option $option
-     * @param array  $htmlParams
+     * @param OptionEntity $option
+     * @param array        $htmlParams
      * @return string
      */
-    public static function renderOption(Option $option, array $htmlParams)
+    public static function renderOption(OptionEntity $option, array $htmlParams)
     {
         $data = self::getSelectData($option, $htmlParams);
         $data['controlOptions']['multiple'] = true;

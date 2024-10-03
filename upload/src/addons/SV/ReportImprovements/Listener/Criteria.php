@@ -4,14 +4,14 @@ namespace SV\ReportImprovements\Listener;
 
 use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
 use SV\StandardLib\Helper;
-use XF\Entity\User;
+use XF\Entity\User as UserEntity;
 use XF\Repository\Report as ReportRepo;
 
 abstract class Criteria
 {
     private function __construct() { }
 
-    public static function criteriaUser(string $rule, array $data, User $user, bool &$eventReturnValue): bool
+    public static function criteriaUser(string $rule, array $data, UserEntity $user, bool &$eventReturnValue): bool
     {
         /** @var ExtendedReportRepo $reportRepo */
         $reportRepo = Helper::repository(ReportRepo::class);

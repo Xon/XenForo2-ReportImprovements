@@ -14,7 +14,6 @@ class PermissionCombination extends XFCP_PermissionCombination
     public function deleteUnusedPermissionCombinations()
     {
         $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
-        assert($reportQueueRepo instanceof ReportQueueRepo);
         $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
 
         return parent::deleteUnusedPermissionCombinations();

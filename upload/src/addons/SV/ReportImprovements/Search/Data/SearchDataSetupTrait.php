@@ -9,13 +9,14 @@ use SV\SearchImprovements\Repository\Search as SearchRepo;
 use SV\SearchImprovements\XF\Search\Query\Constraints\PermissionConstraint;
 use SV\SearchImprovements\XF\Search\Query\Constraints\TypeConstraint;
 use SV\StandardLib\Helper;
+use XF\Repository\Report as ReportRepo;
 use XF\Search\Query\MetadataConstraint;
 use XF\Search\Query\Query;
 use XF\Search\Search;
 
 trait SearchDataSetupTrait
 {
-    /** @var ExtendedReportRepo|\XF\Repository\Report */
+    /** @var ExtendedReportRepo|ReportRepo */
     protected $reportRepo;
     /** @var SearchRepo */
     protected $searchRepo;
@@ -33,7 +34,7 @@ trait SearchDataSetupTrait
         /** @noinspection PhpMultipleClassDeclarationsInspection */
         parent::__construct($contentType, $searcher);
 
-        $this->reportRepo = Helper::repository(\XF\Repository\Report::class);
+        $this->reportRepo = Helper::repository(ReportRepo::class);
         $this->searchRepo = Helper::repository(SearchRepo::class);
         $this->isAddonFullyActive = $this->reportRepo instanceof ExtendedReportRepo;
         $this->isUsingElasticSearch = SearchRepo::get()->isUsingElasticSearch();

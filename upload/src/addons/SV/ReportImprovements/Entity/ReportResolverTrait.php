@@ -5,7 +5,7 @@ namespace SV\ReportImprovements\Entity;
 use SV\ReportImprovements\Behavior\ReportResolver;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
-use XF\Entity\Report;
+use XF\Entity\Report as ReportEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
@@ -30,7 +30,7 @@ trait ReportResolverTrait
      * @param bool   $resolveReport
      * @param bool   $alert
      * @param string $alertComment
-     * @return Report|null
+     * @return ReportEntity|null
      */
     public function resolveReportFor(bool $resolveReport, bool $alert, string $alertComment)
     {

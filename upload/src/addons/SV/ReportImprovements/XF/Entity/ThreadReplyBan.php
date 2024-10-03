@@ -6,6 +6,7 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Globals;
 use SV\StandardLib\Helper;
+use XF\Finder\Report as ReportFinder;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
@@ -35,13 +36,13 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
 
         if ($this->post_id !== null)
         {
-            return Helper::finder(\XF\Finder\Report::class)
+            return Helper::finder(ReportFinder::class)
                         ->where('content_type', 'post')
                         ->where('content_id', $this->post_id)
                         ->fetchOne();
         }
 
-        return Helper::finder(\XF\Finder\Report::class)
+        return Helper::finder(ReportFinder::class)
                     ->where('content_type', 'user')
                     ->where('content_id', $this->user_id)
                     ->fetchOne();

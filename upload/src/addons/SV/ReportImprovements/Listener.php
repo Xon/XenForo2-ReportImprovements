@@ -2,7 +2,7 @@
 
 namespace SV\ReportImprovements;
 
-use XF\Entity\User;
+use XF\Entity\User as UserEntity;
 use XF\Pub\App;
 
 /**
@@ -15,7 +15,7 @@ class Listener
     /**
      * @noinspection PhpUnusedParameterInspection
      */
-    public static function criteriaUser(string $rule, array $data, User $user, bool &$eventReturnValue): bool
+    public static function criteriaUser(string $rule, array $data, UserEntity $user, bool &$eventReturnValue): bool
     {
         return true;
     }

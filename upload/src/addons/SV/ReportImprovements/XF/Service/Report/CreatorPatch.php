@@ -3,9 +3,10 @@
 namespace SV\ReportImprovements\XF\Service\Report;
 
 use SV\StandardLib\Helper;
-use XF\Entity\Report;
-use XF\Entity\Thread;
+use XF\Entity\Report as ReportEntity;
+use XF\Entity\Thread as ThreadEntity;
 use XF\Mvc\Entity\Entity;
+use XF\Repository\Thread as ThreadRepo;
 
 /**
  * @extends \XF\Service\Report\Creator
@@ -49,18 +50,17 @@ class CreatorPatch extends XFCP_CreatorPatch
 
             $thread = $threadCreator->save();
             \XF::asVisitor($this->user, function () use ($thread) {
-                /** @var \XF\Repository\Thread $threadRepo */
-                $threadRepo = Helper::repository(\XF\Repository\Thread::class);
+                $threadRepo = Helper::repository(ThreadRepo::class);
                 $threadRepo->markThreadReadByVisitor($thread, $thread->post_date);
             });
 
             $this->threadCreator = null;
         }
 
-        /** @var Report|Thread $reportOrThread */
+        /** @var ReportEntity|ThreadEntity $reportOrThread */
         $reportOrThread = parent::_save();
 
-        if ($reportOrThread instanceof Report)
+        if ($reportOrThread instanceof ReportEntity)
         {
             $this->postSaveReport();
         }

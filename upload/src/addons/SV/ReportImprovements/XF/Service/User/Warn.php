@@ -3,23 +3,23 @@
 namespace SV\ReportImprovements\XF\Service\User;
 
 use SV\ReportImprovements\Entity\IReportResolver;
+use SV\ReportImprovements\XF\Entity\Warning as ExtendedWarningEntity;
 use SV\ReportImprovements\XF\Service\Thread\ReplyBan as ExtendedReplyBanService;
 use SV\StandardLib\Helper;
-use XF\Entity\Post;
-use XF\Entity\Warning;
+use XF\Entity\Post as PostEntity;
+use XF\Entity\Warning as WarningEntity;
 use XF\Mvc\Entity\Entity;
 use XF\PrintableException;
 use XF\Service\Thread\ReplyBan as ReplyBanEntity;
 
 /**
  * @extends \XF\Service\User\Warn
- *
- * @property \SV\ReportImprovements\XF\Entity\Warning $warning
+ * @property ExtendedWarningEntity $warning
  */
 class Warn extends XFCP_Warn
 {
     /**
-     * @return \SV\ReportImprovements\XF\Entity\Warning|Warning|null
+     * @return ExtendedWarningEntity|WarningEntity|null
      */
     public function getWarning()
     {
@@ -48,7 +48,7 @@ class Warn extends XFCP_Warn
 
     public function setupReplyBan(bool $sendAlert, string $reason, ?int $banLengthValue = null, ?string $banLengthUnit = null)
     {
-        if (!$this->content instanceof Post)
+        if (!$this->content instanceof PostEntity)
         {
             throw new \LogicException('Content must be instance of post.');
         }
@@ -84,7 +84,7 @@ class Warn extends XFCP_Warn
     }
 
     /**
-     * @return Warning|Entity
+     * @return WarningEntity|Entity
      * @throws PrintableException
      */
     protected function _save()

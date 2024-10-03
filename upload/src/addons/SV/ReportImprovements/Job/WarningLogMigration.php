@@ -5,11 +5,11 @@ namespace SV\ReportImprovements\Job;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Service\WarningLog\Creator;
-use SV\ReportImprovements\XF\Entity\Warning as WarningEntity;
+use SV\ReportImprovements\XF\Entity\Warning as ExtendedWarningEntity;
 use SV\StandardLib\Helper;
-use XF\Entity\Post;
-use XF\Entity\User;
-use XF\Entity\Warning;
+use XF\Entity\Post as PostEntity;
+use XF\Entity\User as UserEntity;
+use XF\Entity\Warning as WarningEntity;
 use XF\Job\AbstractRebuildJob;
 
 class WarningLogMigration extends AbstractRebuildJob
@@ -19,7 +19,7 @@ class WarningLogMigration extends AbstractRebuildJob
      * @param int $batch
      * @return array
      */
-    protected function getNextIds($start, $batch)
+    protected function getNextIds($start, $batch): array
     {
         $db = \XF::db();
 
@@ -40,12 +40,12 @@ class WarningLogMigration extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        $warning = Helper::find(Warning::class, $id, ['User', 'WarnedBy']);
-        if ($warning instanceof WarningEntity)
+        $warning = Helper::find(WarningEntity::class, $id, ['User', 'WarnedBy']);
+        if ($warning instanceof ExtendedWarningEntity)
         {
             // On a detached thread, just pretend the post no longer exists
             $content = $warning->Content ?? null;
-            if ($content instanceof Post && $content->Thread === null)
+            if ($content instanceof PostEntity && $content->Thread === null)
             {
                 $warning->setContent(null);
             }
@@ -54,10 +54,10 @@ class WarningLogMigration extends AbstractRebuildJob
             if (!$user)
             {
                 $expireUserId = (int)(\XF::options()->svReportImpro_ExpireUserId ?? 1);
-                $user = Helper::find(User::class, $expireUserId);
+                $user = Helper::find(UserEntity::class, $expireUserId);
                 if (!$user)
                 {
-                    $user = Helper::find(User::class, 1);
+                    $user = Helper::find(UserEntity::class, 1);
                 }
                 if (!$user && $warning->User)
                 {

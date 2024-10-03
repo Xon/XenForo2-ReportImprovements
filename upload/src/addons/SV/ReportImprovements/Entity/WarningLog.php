@@ -2,20 +2,20 @@
 
 namespace SV\ReportImprovements\Entity;
 
-use SV\ForumBan\Entity\ForumBan;
+use SV\ForumBan\Entity\ForumBan as ForumBanEntity;
 use SV\ForumBan\XF\Entity\Forum as ForumBanForum;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\Finder\WarningLog as WarningLogFinder;
 use SV\StandardLib\Helper;
 use XF\Behavior\Indexable;
-use XF\Entity\Forum;
-use XF\Entity\Post;
-use XF\Entity\Thread;
-use XF\Entity\ThreadReplyBan;
-use XF\Entity\User;
-use XF\Entity\Warning;
-use XF\Entity\WarningDefinition;
+use XF\Entity\Forum as ForumEntity;
+use XF\Entity\Post as PostEntity;
+use XF\Entity\Thread as ThreadEntity;
+use XF\Entity\ThreadReplyBan as ThreadReplyBanEntity;
+use XF\Entity\User as UserEntity;
+use XF\Entity\Warning as WarningEntity;
+use XF\Entity\WarningDefinition as WarningDefinitionEntity;
 use XF\Mvc\Entity\DeferredValue;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
@@ -40,29 +40,29 @@ use function assert;
  * @property string                                     $title
  * @property string                                     $notes
  * @property int                                        $points
- * @property int                                        $expiry_date
- * @property int                                        $is_expired
- * @property string                                     $extra_user_group_ids
- * @property int|null                                   $reply_ban_node_id
- * @property int|null                                   $reply_ban_thread_id
- * @property int|null                                   $reply_ban_post_id
- * @property string|null                                $public_banner_
+ * @property int                                   $expiry_date
+ * @property int                                   $is_expired
+ * @property string                                $extra_user_group_ids
+ * @property int|null                              $reply_ban_node_id
+ * @property int|null                              $reply_ban_thread_id
+ * @property int|null                              $reply_ban_post_id
+ * @property string|null                           $public_banner_
  * GETTERS
- * @property-read string|null                           $definition_title
- * @property string|null                                $public_banner
- * @property-read ForumBan|null                         $ForumBan
- * @property-read ThreadReplyBan|null                   $ReplyBan
- * @property-read WarningDefinition|null                $Definition
+ * @property-read string|null                      $definition_title
+ * @property string|null                           $public_banner
+ * @property-read ForumBanEntity|null              $ForumBan
+ * @property-read ThreadReplyBanEntity|null        $ReplyBan
+ * @property-read WarningDefinitionEntity|null     $Definition
  * RELATIONS
- * @property-read ForumBan|null                    $ForumBan_
- * @property-read ThreadReplyBan|null              $ReplyBan_
- * @property-read Warning|null                     $Warning
-* @property-read WarningDefinition|null            $Definition_
- * @property-read User|null                        $WarnedBy
- * @property-read User|null                        $User
- * @property-read Forum|ForumBanForum|null         $ForumBanForum
- * @property-read Thread|null                      $ReplyBanThread
- * @property-read Post|null                        $ReplyBanPost
+ * @property-read ForumBanEntity|null              $ForumBan_
+ * @property-read ThreadReplyBanEntity|null        $ReplyBan_
+ * @property-read WarningEntity|null               $Warning
+* @property-read WarningDefinitionEntity|null      $Definition_
+ * @property-read UserEntity|null                  $WarnedBy
+ * @property-read UserEntity|null                  $User
+ * @property-read ForumEntity|ForumBanForum|null   $ForumBanForum
+ * @property-read ThreadEntity|null                $ReplyBanThread
+ * @property-read PostEntity|null                  $ReplyBanPost
  * @property-read ExtendedReportCommentEntity|null $ReportComment
  */
 class WarningLog extends Entity
@@ -108,7 +108,7 @@ class WarningLog extends Entity
         ]);
     }
 
-    public function getReplyBan(): ? ThreadReplyBan
+    public function getReplyBan(): ?ThreadReplyBanEntity
     {
         if (\array_key_exists('ReplyBan', $this->_relations))
         {
@@ -147,7 +147,7 @@ class WarningLog extends Entity
         return null;
     }
 
-    public function getForumBan(): ?ForumBan
+    public function getForumBan(): ?ForumBanEntity
     {
         if (!Helper::isAddOnActive('SV/ForumBan'))
         {
@@ -212,7 +212,6 @@ class WarningLog extends Entity
     {
         $db = \XF::db();
         $finder = Helper::finder(WarningLogFinder::class);
-        assert($finder instanceof WarningLogFinder);
 
         $latestWarningLogId = 0;
         if ($this->warning_id !== null)

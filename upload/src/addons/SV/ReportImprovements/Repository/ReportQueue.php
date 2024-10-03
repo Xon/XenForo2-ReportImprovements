@@ -1,18 +1,20 @@
 <?php
 namespace SV\ReportImprovements\Repository;
 
+use SV\ReportCentreEssentials\Repository\ReportQueue as ReportQueueRepo;
 use SV\ReportImprovements\Entity\IReportResolver;
-use SV\ReportImprovements\Entity\WarningLog;
+use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\Service\WarningLog\Creator;
 use SV\ReportImprovements\XF\Entity\Post as ExtendedPostEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
 use SV\StandardLib\Helper;
-use XF\Entity\ThreadReplyBan;
-use XF\Entity\User;
+use XF\Entity\ThreadReplyBan as ThreadReplyBanEntity;
+use XF\Entity\User as UserEntity;
 use XF\Finder\Post as PostFinder;
 use XF\Finder\Thread as ThreadFinder;
+use XF\Finder\ThreadReplyBan as ThreadReplyBanFinder;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
@@ -68,8 +70,7 @@ class ReportQueue extends Repository
         $addOns = \XF::app()->container('addon.cache');
         if (isset($addOns['SV/ReportCentreEssentials']))
         {
-            /** @var \SV\ReportCentreEssentials\Repository\ReportQueue $entryRepo */
-            $entryRepo = Helper::repository(\SV\ReportCentreEssentials\Repository\ReportQueue::class);
+            $entryRepo = Helper::repository(ReportQueueRepo::class);
             return $entryRepo->findReportQueues()->fetch();
         }
 
@@ -119,7 +120,7 @@ class ReportQueue extends Repository
             foreach ($postIds as $postId => $warningLog)
             {
                 /** @var ExtendedPostEntity $post */
-                /** @var WarningLog $warningLog */
+                /** @var WarningLogEntity $warningLog */
 
                 $post = $posts[$postId] ?? null;
 
@@ -136,7 +137,7 @@ class ReportQueue extends Repository
             foreach ($threadIds as $threadId => $warningLog)
             {
                 /** @var ExtendedThreadEntity $thread */
-                /** @var WarningLog $warningLog */
+                /** @var WarningLogEntity $warningLog */
 
                 $thread = $threads[$threadId] ?? null;
 
@@ -150,11 +151,11 @@ class ReportQueue extends Repository
 
         if ($replyBanThreadIds)
         {
-            $finder = Helper::finder(\XF\Finder\ThreadReplyBan::class);
+            $finder = Helper::finder(ThreadReplyBanFinder::class);
             $conditions = [];
             foreach ($replyBanThreadIds as $data)
             {
-                /** @var WarningLog $warningLog */
+                /** @var WarningLogEntity $warningLog */
                 /** @var int $threadId */
                 /** @var int $userId */
                 [$warningLog, $threadId, $userId] = $data;
@@ -170,7 +171,7 @@ class ReportQueue extends Repository
 
             $finder->whereOr($conditions);
 
-            /** @var AbstractCollection|ThreadReplyBan[] $replyBans */
+            /** @var AbstractCollection|ThreadReplyBanEntity[] $replyBans */
             $replyBans = $finder->fetch();
             $byThread = $replyBans->groupBy('thread_id', 'user_id');
 
@@ -187,7 +188,7 @@ class ReportQueue extends Repository
                     $thread->hydrateRelation('ReplyBans', $replyBans);
                 }
 
-                /** @var WarningLog $warningLog */
+                /** @var WarningLogEntity $warningLog */
                 $warningLog = $replyBanThreadIds[$replyBan->thread_id . '-' . $replyBan->user_id][0] ?? null;
                 if ($warningLog)
                 {
@@ -217,10 +218,10 @@ class ReportQueue extends Repository
         if ($expiringFromCron || !$reporter->user_id)
         {
             $expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
-            $reporter = Helper::find(User::class, $expireUserId);
+            $reporter = Helper::find(UserEntity::class, $expireUserId);
             if (!$reporter)
             {
-                $reporter = Helper::find(User::class, 1);
+                $reporter = Helper::find(UserEntity::class, 1);
             }
             if (!$reporter)
             {

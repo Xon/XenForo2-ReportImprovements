@@ -2,7 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Entity;
 
-use SV\ReportImprovements\Entity\WarningLog;
+use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
@@ -16,13 +16,14 @@ use XF\Entity\ReactionContent;
 use XF\Entity\ReactionTrait;
 use XF\Entity\User as UserEntity;
 use XF\Entity\ViewableInterface;
+use XF\Finder\ReportComment as ReportCommentFinder;
 use XF\Mvc\Entity\AbstractCollection as AbstractCollection;
 use XF\Mvc\Entity\Structure;
 use XF\Phrase;
+use XF\Repository\User as UserRepo;
 
 /**
  * @extends \XF\Entity\ReportComment
- *
  * COLUMNS
  * @property int                                  $reaction_score
  * @property array                                $reactions_
@@ -47,7 +48,7 @@ use XF\Phrase;
  * RELATIONS
  * @property-read AbstractCollection|Attachment[] $Attachments
  * @property-read ReactionContent[]               $Reactions
- * @property-read WarningLog|null                 $WarningLog
+ * @property-read WarningLogEntity|null           $WarningLog
  * @property-read Report|null                     $Report
  * @property-read User|null                       $User
  */
@@ -257,8 +258,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
                 ? $this->username
                 : $this->ViewableUsername;
 
-            /** @var \XF\Repository\User $userRepo */
-            $userRepo = Helper::repository(\XF\Repository\User::class);
+            $userRepo = Helper::repository(UserRepo::class);
 
             return $userRepo->getGuestUser($username);
         }
@@ -275,8 +275,8 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
             return $this->User;
         }
 
-        /** @var \XF\Repository\User $userRepo */
-        $userRepo = Helper::repository(\XF\Repository\User::class);
+        /** @var UserRepo $userRepo */
+        $userRepo = Helper::repository(UserRepo::class);
 
         return $userRepo->getGuestUser($this->ViewableUsername);
     }
@@ -365,7 +365,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
 
         if ($this->Report)
         {
-            $lastReportCommentFinder = Helper::finder(\XF\Finder\ReportComment::class);
+            $lastReportCommentFinder = Helper::finder(ReportCommentFinder::class);
             $lastReportCommentFinder->where('report_id', $this->report_id);
             $lastReportCommentFinder->order('comment_date', 'DESC');
 

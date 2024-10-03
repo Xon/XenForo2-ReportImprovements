@@ -6,7 +6,7 @@ use SV\MultiPrefix\XF\Entity\Thread;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
-use XF\Entity\Report;
+use XF\Entity\Report as ReportEntity;
 use XF\Http\Request;
 use XF\Mvc\Entity\Entity;
 use XF\Search\Data\Post as PostSearch;
@@ -37,10 +37,10 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
     }
 
     /**
-     * @param Report $report
+     * @param ReportEntity $report
      * @return bool
      */
-    public function canView(Report $report)
+    public function canView(ReportEntity $report)
     {
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
@@ -49,10 +49,10 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
     }
 
     /**
-     * @param Report                                       $report
+     * @param ReportEntity                                 $report
      * @param Entity|\SV\ReportImprovements\XF\Entity\Post $content
      */
-    public function setupReportEntityContent(Report $report, Entity $content)
+    public function setupReportEntityContent(ReportEntity $report, Entity $content)
     {
         parent::setupReportEntityContent($report, $content);
 
@@ -64,7 +64,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         $report->content_info = $contentInfo;
     }
 
-    public function getReportedContentDate(Report $report): ?int
+    public function getReportedContentDate(ReportEntity $report): ?int
     {
         $contentDate = $report->content_info['post_date'] ?? null;
         if ($contentDate === null)
@@ -84,7 +84,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         return $contentDate;
     }
 
-    public function getContentLink(Report $report)
+    public function getContentLink(ReportEntity $report)
     {
         $reportInfo = $report->content_info;
         if ($reportInfo && !isset($reportInfo['post_id']))
@@ -117,7 +117,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         $this->getSearchHandler()->setupMetadataStructure($structure);
     }
 
-    public function populateMetaData(Report $entity, array &$metaData): void
+    public function populateMetaData(ReportEntity $entity, array &$metaData): void
     {
         // see setupReportEntityContent for attributes cached on the report
         $threadId = $entity->content_info['thread_id'] ?? null;

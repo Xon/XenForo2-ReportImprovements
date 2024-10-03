@@ -10,7 +10,7 @@ use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity
 use SV\StandardLib\Helper;
 use XF\Attachment\AbstractHandler;
 use XF\Entity\Attachment as AttachmentEntity;
-use XF\Entity\Report;
+use XF\Entity\Report as ReportEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Repository\Attachment as AttachmentRepo;
 
@@ -119,7 +119,7 @@ class ReportComment extends AbstractHandler
         {
             $extraContext['report_comment_id'] = $entity->report_comment_id;
         }
-        else if ($entity instanceof Report)
+        else if ($entity instanceof ReportEntity)
         {
             $extraContext['report_id'] = $entity->report_id;
         }
@@ -154,7 +154,7 @@ class ReportComment extends AbstractHandler
         if ($reportId)
         {
             /** @var ExtendedReportEntity|null $report */
-            $report = Helper::find(Report::class, $reportId, $this->getReportWith());
+            $report = Helper::find(ReportEntity::class, $reportId, $this->getReportWith());
             if ($report === null || !$report->canView() || !$report->canComment())
             {
                 return null;

@@ -6,8 +6,9 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
 use SV\StandardLib\Helper;
 use SV\WarningImprovements\XF\Entity\WarningDefinition;
-use XF\Entity\Post;
-use XF\Entity\User;
+use XF\Entity\Post as PostEntity;
+use XF\Entity\User as UserEntity;
+use XF\Finder\Report as ReportFinder;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\AbstractReply;
@@ -64,14 +65,14 @@ class Warn extends XFCP_Warn
 
     /**
      * @param AbstractHandler $warningHandler
-     * @param User             $user
-     * @param string                      $contentType
-     * @param Entity                      $content
-     * @param array                       $input
+     * @param UserEntity      $user
+     * @param string          $contentType
+     * @param Entity          $content
+     * @param array           $input
      * @return \XF\Service\User\Warn
      * @throws ReplyException
      */
-    protected function setupWarnService(AbstractHandler $warningHandler, User $user, $contentType, Entity $content, array $input)
+    protected function setupWarnService(AbstractHandler $warningHandler, UserEntity $user, $contentType, Entity $content, array $input)
     {
         /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
@@ -82,7 +83,7 @@ class Warn extends XFCP_Warn
             $input['ban_length'] !== '' &&
             $input['ban_length'] !== 'none')
         {
-            /** @var Post $content */
+            /** @var PostEntity $content */
             /** @var ExtendedThreadEntity $thread */
             $thread = $content->Thread;
             if (!$thread || !$thread->canReplyBan($error))
@@ -133,8 +134,7 @@ class Warn extends XFCP_Warn
 
         if ($response instanceof View)
         {
-            /** @var \XF\Entity\Report $contentReport */
-            $contentReport = Helper::finder(\XF\Finder\Report::class)
+            $contentReport = Helper::finder(ReportFinder::class)
                                    ->where('content_type', $contentType)
                                    ->where('content_id', $content->getEntityId())
                                    ->with(['LastModified', 'LastModifiedUser'])

@@ -2,7 +2,9 @@
 
 namespace SV\ReportImprovements\XF\Report;
 
-use XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use XF\Entity\Report as ReportEntity;
 
 /**
  * @extends \XF\Report\User
@@ -10,19 +12,19 @@ use XF\Entity\Report;
 class User extends XFCP_User
 {
     /**
-     * @param Report $report
+     * @param ReportEntity $report
      * @return bool
      */
-    public function canView(Report $report)
+    public function canView(ReportEntity $report)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var ExtendedReportEntity $report */
+        /** @var ExtendedUserEntity $visitor */
         $visitor = \XF::visitor();
 
         return $visitor->canViewUserReport($report);
     }
 
-    public function getContentLink(Report $report)
+    public function getContentLink(ReportEntity $report)
     {
         $reportInfo = $report->content_info;
         if ($reportInfo && !isset($reportInfo['user_id']))

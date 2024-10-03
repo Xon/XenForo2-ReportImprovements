@@ -2,13 +2,14 @@
 
 namespace SV\ReportImprovements\Report;
 
-use XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use XF\Entity\Report as ReportEntity;
 
 interface ContentInterface
 {
     /**
-     * @param Report|\SV\ReportImprovements\XF\Entity\Report $report
+     * @param ReportEntity|ExtendedReportEntity $report
      * @return int|null
      */
-    public function getReportedContentDate(Report $report): ?int;
+    public function getReportedContentDate(ReportEntity $report): ?int;
 }

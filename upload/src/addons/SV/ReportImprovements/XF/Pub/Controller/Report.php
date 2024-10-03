@@ -15,7 +15,6 @@ use XF\ControllerPlugin\Ip as IpPlugin;
 use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
 use XF\Entity\ConversationMessage;
 use XF\Entity\ConversationRecipient;
-use XF\Entity\ReportComment;
 use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
@@ -260,10 +259,10 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param ReportComment|ExtendedReportCommentEntity $reportComment
+     * @param ReportCommentEntity|ExtendedReportCommentEntity $reportComment
      * @return CommentEditor
      */
-    protected function setupReportCommentEdit(ReportComment $reportComment)
+    protected function setupReportCommentEdit(ReportCommentEntity $reportComment)
     {
         /** @var EditorPlugin $editorPlugin */
         $editorPlugin = Helper::plugin($this, EditorPlugin::class);

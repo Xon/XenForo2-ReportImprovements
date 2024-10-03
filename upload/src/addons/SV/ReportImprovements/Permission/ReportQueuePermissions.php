@@ -5,8 +5,8 @@ namespace SV\ReportImprovements\Permission;
 use SV\ReportCentreEssentials\Entity\ReportQueue as ReportQueueEntity;
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use SV\StandardLib\Helper;
-use XF\Entity\Permission;
-use XF\Entity\PermissionCombination;
+use XF\Entity\Permission as PermissionEntity;
+use XF\Entity\PermissionCombination as PermissionCombinationEntity;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Permission\FlatContentPermissions;
@@ -41,7 +41,7 @@ class ReportQueuePermissions extends FlatContentPermissions
         return $entity->queue_name;
     }
 
-    public function rebuildCombination(PermissionCombination $combination, array $basePerms)
+    public function rebuildCombination(PermissionCombinationEntity $combination, array $basePerms)
     {
         // being notified on permission changes is surprisingly challenging
         $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
@@ -51,7 +51,7 @@ class ReportQueuePermissions extends FlatContentPermissions
         parent::rebuildCombination($combination, $basePerms);
     }
 
-    public function isValidPermission(Permission $permission): bool
+    public function isValidPermission(PermissionEntity $permission): bool
     {
         return $permission->permission_group_id === 'report_queue' ||
                ($permission->permission_group_id === $this->privatePermissionGroupId && $permission->permission_id === $this->privatePermissionId);

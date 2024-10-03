@@ -6,7 +6,7 @@ use SV\ReportImprovements\Service\Report\CommentEditor;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\StandardLib\Helper;
 use XF\EditHistory\AbstractHandler;
-use XF\Entity\EditHistory;
+use XF\Entity\EditHistory as EditHistoryEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Phrase;
 
@@ -46,7 +46,7 @@ class ReportComment extends AbstractHandler
         return $content->message;
     }
 
-    public function revertToVersion(Entity $content, EditHistory $history, ?EditHistory $previous = null)
+    public function revertToVersion(Entity $content, EditHistoryEntity $history, ?EditHistoryEntity $previous = null)
     {
         /** @var ExtendedReportCommentEntity $content */
 

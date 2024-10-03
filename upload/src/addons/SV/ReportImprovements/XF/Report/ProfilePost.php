@@ -3,7 +3,9 @@
 namespace SV\ReportImprovements\XF\Report;
 
 use SV\ReportImprovements\Report\ContentInterface;
-use XF\Entity\Report;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use XF\Entity\Report as ReportEntity;
 use XF\Mvc\Entity\Entity;
 
 /**
@@ -12,23 +14,23 @@ use XF\Mvc\Entity\Entity;
 class ProfilePost extends XFCP_ProfilePost implements ContentInterface
 {
     /**
-     * @param Report $report
+     * @param ReportEntity $report
      * @return bool
      */
-    public function canView(Report $report)
+    public function canView(ReportEntity $report)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var ExtendedReportEntity $report */
+        /** @var ExtendedUserEntity $visitor */
         $visitor = \XF::visitor();
 
         return $visitor->canViewProfilePostReport($report);
     }
 
     /**
-     * @param Report                        $report
+     * @param ReportEntity                  $report
      * @param Entity|\XF\Entity\ProfilePost $content
      */
-    public function setupReportEntityContent(Report $report, Entity $content)
+    public function setupReportEntityContent(ReportEntity $report, Entity $content)
     {
         parent::setupReportEntityContent($report, $content);
 
@@ -37,7 +39,7 @@ class ProfilePost extends XFCP_ProfilePost implements ContentInterface
         $report->content_info = $contentInfo;
     }
 
-    public function getReportedContentDate(Report $report): ?int
+    public function getReportedContentDate(ReportEntity $report): ?int
     {
         $contentDate = $report->content_info['post_date'] ?? null;
         if ($contentDate === null)

@@ -2,7 +2,7 @@
 
 namespace SV\ReportImprovements\Job;
 
-use SV\ReportImprovements\Entity\WarningLog;
+use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\StandardLib\Helper;
 use XF\Job\AbstractRebuildJob;
 use XF\Phrase;
@@ -47,8 +47,7 @@ class RebuildWarningLogLatestVersion extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        $warningLog = Helper::find(WarningLog::class, $id);
-        assert($warningLog instanceof WarningLog);
+        $warningLog = Helper::find(WarningLogEntity::class, $id);
         $warningLog->rebuildLatestVersionFlag($this->data['reindex']);
     }
 

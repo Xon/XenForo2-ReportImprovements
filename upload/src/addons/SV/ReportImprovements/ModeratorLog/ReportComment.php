@@ -3,8 +3,8 @@
 namespace SV\ReportImprovements\ModeratorLog;
 
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
-use XF\Entity\ModeratorLog;
-use XF\Entity\User;
+use XF\Entity\ModeratorLog as ModeratorLogEntity;
+use XF\Entity\User as UserEntity;
 use XF\ModeratorLog\AbstractHandler;
 use XF\Mvc\Entity\Entity;
 
@@ -15,7 +15,7 @@ use XF\Mvc\Entity\Entity;
  */
 class ReportComment extends AbstractHandler
 {
-    public function isLoggableUser(User $actor)
+    public function isLoggableUser(UserEntity $actor)
     {
         return true;
     }
@@ -40,10 +40,10 @@ class ReportComment extends AbstractHandler
     }
 
     /**
-     * @param ModeratorLog $log
-     * @param Entity       $content
+     * @param ModeratorLogEntity $log
+     * @param Entity             $content
      */
-    protected function setupLogEntityContent(ModeratorLog $log, Entity $content)
+    protected function setupLogEntityContent(ModeratorLogEntity $log, Entity $content)
     {
         /** @var ExtendedReportCommentEntity $content */
         $report = $content->Report;

@@ -2,19 +2,25 @@
 
 namespace SV\ReportImprovements\Service\WarningLog;
 
-use SV\ForumBan\Entity\ForumBan;
+use SV\ForumBan\Entity\ForumBan as ForumBanEntity;
 use SV\ReportImprovements\Entity\IReportResolver;
-use SV\ReportImprovements\Entity\WarningLog;
+use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\Enums\WarningType;
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\SV\ForumBan\Entity\ForumBan as ExtendedForumBanEntity;
+use SV\ReportImprovements\XF\Entity\Post as ExtendedPostEntity;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use SV\ReportImprovements\XF\Entity\ThreadReplyBan as ExtendedThreadReplyBanEntity;
+use SV\ReportImprovements\XF\Entity\Warning as ExtendedWarningEntity;
 use SV\ReportImprovements\XF\Service\Report\Commenter as ExtendedReportCommenterService;
 use SV\StandardLib\Helper;
 use XF\App;
-use XF\Entity\Post;
-use XF\Entity\Report;
-use XF\Entity\ReportComment;
-use XF\Entity\ThreadReplyBan;
-use XF\Entity\Warning;
+use XF\Entity\Post as PostEntity;
+use XF\Entity\Report as ReportEntity;
+use XF\Entity\ReportComment as ReportCommentEntity;
+use XF\Entity\ThreadReplyBan as ThreadReplyBanEntity;
+use XF\Entity\Warning as WarningEntity;
 use XF\Phrase;
 use XF\PrintableException;
 use XF\Service\AbstractService;
@@ -26,17 +32,17 @@ class Creator extends AbstractService
     use ValidateAndSavableTrait;
 
     /**
-     * @var Warning|\SV\ReportImprovements\XF\Entity\Warning
+     * @var WarningEntity|ExtendedWarningEntity
      */
     protected $warning;
 
     /**
-     * @var ThreadReplyBan|\SV\ReportImprovements\XF\Entity\ThreadReplyBan
+     * @var ThreadReplyBanEntity|ExtendedThreadReplyBanEntity
      */
     protected $threadReplyBan;
 
     /**
-     * @var ForumBan|\SV\ReportImprovements\SV\ForumBan\Entity\ForumBan
+     * @var ForumBanEntity|ExtendedForumBanEntity
      */
     protected $forumBan;
 
@@ -46,14 +52,14 @@ class Creator extends AbstractService
     protected $operationType;
 
     /**
-     * @var WarningLog
+     * @var WarningLogEntity
      */
     protected $warningLog;
 
-    /** @var \SV\ReportImprovements\XF\Entity\Report */
+    /** @var ExtendedReportEntity */
     protected $report;
 
-    /** @var \SV\ReportImprovements\XF\Entity\ReportComment */
+    /** @var ExtendedReportCommentEntity */
     protected $reportComment;
 
     /**
@@ -98,15 +104,15 @@ class Creator extends AbstractService
 
     protected function setContent(IReportResolver $content)
     {
-        if ($content instanceof Warning)
+        if ($content instanceof WarningEntity)
         {
             $this->warning = $content;
         }
-        else if ($content instanceof ThreadReplyBan)
+        else if ($content instanceof ThreadReplyBanEntity)
         {
             $this->threadReplyBan = $content;
         }
-        else if ($content instanceof ForumBan)
+        else if ($content instanceof ForumBanEntity)
         {
             $this->forumBan = $content;
         }
@@ -172,7 +178,7 @@ class Creator extends AbstractService
      */
     protected function setupDefaults()
     {
-        $this->warningLog = Helper::createEntity(WarningLog::class);
+        $this->warningLog = Helper::createEntity(WarningLogEntity::class);
         $warningLog = $this->warningLog;
         $warningLog->operation_type = $this->operationType;
         $warningLog->warning_edit_date = $this->operationType === WarningType::New ? 0 : \XF::$time;
@@ -245,10 +251,7 @@ class Creator extends AbstractService
         $this->canReopenReport = $canReopen;
     }
 
-    /**
-     * @return string|null
-     */
-    protected function getWarnedContentPublicBanner()
+    protected function getWarnedContentPublicBanner(): ?string
     {
         /** @var ?string $publicBanner */
         $publicBanner = $this->warning->getOption('svPublicBanner');
@@ -266,7 +269,7 @@ class Creator extends AbstractService
     }
 
     /**
-     * @return \SV\ReportImprovements\XF\Entity\Report|Report|null
+     * @return ExtendedReportEntity|ReportEntity|null
      */
     protected function setupDefaultsForWarning()
     {
@@ -317,9 +320,9 @@ class Creator extends AbstractService
     }
 
     /**
-     * @return \SV\ReportImprovements\XF\Entity\Report|null
+     * @return ExtendedReportEntity|null
      */
-    protected function setupDefaultsForThreadReplyBan()
+    protected function setupDefaultsForThreadReplyBan(): ?ExtendedReportEntity
     {
         $warningLog = $this->warningLog;
         $threadReplyBan = $this->threadReplyBan;
@@ -334,7 +337,7 @@ class Creator extends AbstractService
         $warningLog->hydrateRelation('ReplyBanThread', $threadReplyBan->Thread);
         $warningLog->hydrateRelation('User', $user);
 
-        /** @var \SV\ReportImprovements\XF\Entity\Post $post */
+        /** @var ExtendedPostEntity $post */
         $post = $threadReplyBan->Post;
         if ($post)
         {
@@ -352,7 +355,7 @@ class Creator extends AbstractService
         $warningLog->expiry_date = (int)$threadReplyBan->expiry_date;
         $warningLog->is_expired = $threadReplyBan->expiry_date > \XF::$time;
         $warningLog->reply_ban_thread_id = $threadReplyBan->thread_id;
-        $warningLog->reply_ban_post_id = $content instanceof Post ? $content->getEntityId() : 0;
+        $warningLog->reply_ban_post_id = $content instanceof PostEntity ? $content->getEntityId() : 0;
         $warningLog->user_id = $threadReplyBan->user_id;
         $warningLog->warning_user_id = \XF::visitor()->user_id;
         $warningLog->warning_definition_id = null;
@@ -385,7 +388,7 @@ class Creator extends AbstractService
 
 
     /**
-     * @return \SV\ReportImprovements\XF\Entity\Report|null
+     * @return ExtendedReportEntity|null
      */
     protected function setupDefaultsForForumBan()
     {
@@ -439,14 +442,14 @@ class Creator extends AbstractService
     }
 
     /**
-     * @return WarningLog
+     * @return WarningLogEntity
      */
-    public function getWarningLog(): WarningLog
+    public function getWarningLog(): WarningLogEntity
     {
         return $this->warningLog;
     }
 
-    public function getReport(): \SV\ReportImprovements\XF\Entity\Report
+    public function getReport(): ExtendedReportEntity
     {
         return $this->report;
     }
@@ -516,11 +519,11 @@ class Creator extends AbstractService
     }
 
     /**
-     * @return WarningLog
+     * @return WarningLogEntity
      * @throws PrintableException
      * @throws \Exception
      */
-    protected function _save(): WarningLog
+    protected function _save(): WarningLogEntity
     {
         \XF::db()->beginTransaction();
 
@@ -529,13 +532,13 @@ class Creator extends AbstractService
         if ($this->reportCreator)
         {
             $this->_saveReport();
-            /** @var Report $report */
+            /** @var ReportEntity $report */
             $report = $this->reportCreator->save();
         }
         else if ($this->reportCommenter)
         {
             $this->_saveReportComment();
-            /** @var ReportComment $comment */
+            /** @var ReportCommentEntity $comment */
             $comment = $this->reportCommenter->save();
             $report = $comment ? $comment->Report : null;
         }

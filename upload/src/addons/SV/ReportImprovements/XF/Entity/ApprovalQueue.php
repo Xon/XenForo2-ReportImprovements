@@ -5,6 +5,7 @@ namespace SV\ReportImprovements\XF\Entity;
 use SV\ReportImprovements\ApprovalQueue\IContainerToContent;
 use SV\StandardLib\Helper;
 use XF\Entity\Report as ReportEntity;
+use XF\Finder\Report as ReportFinder;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 use XF\Repository\Report as ReportRepo;
@@ -124,8 +125,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             return null;
         }
 
-        /** @var \XF\Finder\Report $reportFinder */
-        $reportFinder = Helper::finder(\XF\Finder\Report::class);
+        $reportFinder = Helper::finder(ReportFinder::class);
         /** @var ReportEntity $report */
         $report = $reportFinder
             ->where('content_type', $content->getEntityContentType())

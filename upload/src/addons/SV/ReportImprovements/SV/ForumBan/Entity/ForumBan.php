@@ -7,7 +7,7 @@ use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Globals;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\StandardLib\Helper;
-use XF\Entity\User;
+use XF\Entity\User as UserEntity;
 use XF\Finder\Report as ReportFinder;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
@@ -51,10 +51,7 @@ class ForumBan extends XFCP_ForumBan implements IReportResolver
         }
     }
 
-    /**
-     * @return User|null
-     */
-    public function getResolveUser(): ?User
+    public function getResolveUser(): ?UserEntity
     {
         $reporter = null;
         if (!$this->User)

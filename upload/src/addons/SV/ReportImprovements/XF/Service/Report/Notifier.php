@@ -3,22 +3,25 @@
 namespace SV\ReportImprovements\XF\Service\Report;
 
 use SV\ReportImprovements\Globals;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
 use SV\StandardLib\Helper;
 use XF\App;
-use XF\Entity\Report;
-use XF\Entity\ReportComment;
+use XF\Entity\Report as ReportEntity;
+use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\User as UserEntity;
+use XF\Repository\Report as ReportRepo;
 use XF\Repository\UserAlert as UserAlertRepo;
 
 /**
  * @extends \XF\Service\Report\Notifier
- *
- * @property \SV\ReportImprovements\XF\Entity\Report        $report
- * @property \SV\ReportImprovements\XF\Entity\ReportComment $comment
+ * @property ExtendedReportEntity        $report
+ * @property ExtendedReportCommentEntity $comment
  */
 class Notifier extends XFCP_Notifier
 {
-    public function __construct(App $app, Report $report, ReportComment $comment)
+    public function __construct(App $app, ReportEntity $report, ReportCommentEntity $comment)
     {
         parent::__construct($app, $report, $comment);
         if (Globals::$notifyReportUserIds)
@@ -63,8 +66,8 @@ class Notifier extends XFCP_Notifier
     {
         parent::notifyCreate();
 
-        /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
-        $reportRepo = Helper::repository(\XF\Repository\Report::class);
+        /** @var ExtendedReportRepo $reportRepo */
+        $reportRepo = Helper::repository(ReportRepo::class);
         $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($this->report);
         $this->setCommentersUserIds($userIdsToAlert);
 

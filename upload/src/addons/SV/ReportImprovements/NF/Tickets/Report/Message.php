@@ -6,7 +6,7 @@ use NF\Tickets\Entity\Ticket;
 use NF\Tickets\Search\Data\Message as MessageSearch;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
-use XF\Entity\Report;
+use XF\Entity\Report as ReportEntity;
 use XF\Http\Request;
 use XF\Mvc\Entity\Entity;
 use XF\Search\MetadataStructure;
@@ -36,10 +36,10 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
     }
 
     /**
-     * @param Report $report
-     * @param Entity $content
+     * @param ReportEntity $report
+     * @param Entity       $content
      */
-    public function setupReportEntityContent(Report $report, Entity $content)
+    public function setupReportEntityContent(ReportEntity $report, Entity $content)
     {
         parent::setupReportEntityContent($report, $content);
 
@@ -52,7 +52,7 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
         $report->content_info = $contentInfo;
     }
 
-    public function getReportedContentDate(Report $report): ?int
+    public function getReportedContentDate(ReportEntity $report): ?int
     {
         $contentDate = $report->content_info['message_date'] ?? null;
         if ($contentDate === null)
@@ -87,7 +87,7 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
         $this->getSearchHandler()->applyTypeConstraintsFromInput($query, $request, $urlConstraints);
     }
 
-    public function populateMetaData(Report $entity, array &$metaData): void
+    public function populateMetaData(ReportEntity $entity, array &$metaData): void
     {
         // see setupReportEntityContent for attributes cached on the report
         $ticketId = $entity->content_info['ticket_id'] ?? null;

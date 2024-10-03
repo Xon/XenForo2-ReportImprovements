@@ -18,15 +18,19 @@ use XF\AddOn\StepRunnerUninstallTrait;
 use XF\AddOn\StepRunnerUpgradeTrait;
 use XF\Db\Schema\Alter;
 use XF\Db\Schema\Create;
-use XF\Entity\Moderator;
-use XF\Entity\ModeratorContent;
-use XF\Entity\Phrase;
-use XF\Entity\ReportComment;
-use XF\Entity\User;
-use XF\Entity\UserAlert;
+use XF\Entity\Moderator as ModeratorEntity;
+use XF\Entity\ModeratorContent as ModeratorContentEntity;
+use XF\Entity\Phrase as PhraseEntity;
+use XF\Entity\ReportComment as ReportCommentEntity;
+use XF\Entity\User as UserEntity;
+use XF\Entity\UserAlert as UserAlertEntity;
+use XF\Finder\Phrase as PhraseFinder;
+use XF\Finder\ReportComment as ReportCommentFinder;
+use XF\Finder\UserAlert as UserAlertFinder;
 use XF\Job\Atomic as AtomicJob;
 use XF\Job\PermissionRebuild;
 use XF\Job\PermissionRebuildPartial;
+use XF\Repository\Moderator as ModeratorRepo;
 use XF\Repository\PermissionCombination as PermissionCombinationRepo;
 use XF\Repository\PermissionEntry as PermissionEntryRepo;
 use XF\Service\UpdatePermissions as UpdatePermissionsService;
@@ -142,10 +146,10 @@ class Setup extends AbstractSetup
 
     public function upgrade2020700Step1(array $stepParams): ?array
     {
-        $finder = \SV\StandardLib\Helper::finder(\XF\Finder\UserAlert::class)
-                     ->where('content_type', '=', 'report_comment')
-                     ->where('action', '=', 'mention')
-                     ->order('alert_id');
+        $finder = Helper::finder(UserAlertFinder::class)
+                        ->where('content_type', '=', 'report_comment')
+                        ->where('action', '=', 'mention')
+                        ->order('alert_id');
 
         $stepData = $stepParams[2] ?? [];
         if (!isset($stepData['max']))
@@ -162,10 +166,10 @@ class Setup extends AbstractSetup
         foreach ($alerts as $alert)
         {
             $next++;
-            /** @var UserAlert $alert */
+            /** @var UserAlertEntity $alert */
             $extraData = $alert->extra_data;
-            /** @var ReportComment $comment */
-            $comment = \SV\StandardLib\Helper::finder(\XF\Finder\ReportComment::class)->whereId($alert->content_id)->fetchOne();
+            /** @var ReportCommentEntity $comment */
+            $comment = Helper::finder(ReportCommentFinder::class)->whereId($alert->content_id)->fetchOne();
             if (!$comment)
             {
                 continue;
@@ -421,22 +425,21 @@ class Setup extends AbstractSetup
             'warning'  => 'warning_log',
             'warnings' => 'warning_logs',
         ];
-        $phrases = \SV\StandardLib\Helper::finder(\XF\Finder\Phrase::class)
-                             ->where('language_id', '<>', 0)
-                             ->where('title', array_keys($map))
-                             ->fetch();
+        $phrases = Helper::finder(PhraseFinder::class)
+                         ->where('language_id', '<>', 0)
+                         ->where('title', array_keys($map))
+                         ->fetch();
         foreach ($phrases as $stockPhrase)
         {
-            assert($stockPhrase instanceof Phrase);
             $title = $map[$stockPhrase->title];
 
-            $phrase = \SV\StandardLib\Helper::finder(\XF\Finder\Phrase::class)
-                                ->where('language_id', '<>', 0)
-                                ->where('title', $title)
-                                ->fetchOne();
+            $phrase = Helper::finder(PhraseFinder::class)
+                            ->where('language_id', '<>', 0)
+                            ->where('title', $title)
+                            ->fetchOne();
             if ($phrase === null)
             {
-                $phrase = Helper::createEntity(Phrase::class);
+                $phrase = Helper::createEntity(PhraseEntity::class);
                 $phrase->language_id = $stockPhrase->language_id;
                 $phrase->title = $title;
             }
@@ -539,18 +542,15 @@ class Setup extends AbstractSetup
 
     protected function cleanupPermissionChecks()
     {
-        /** @var PermissionEntryRepo $permEntryRepo */
-        $permEntryRepo = \SV\StandardLib\Helper::repository(\XF\Repository\PermissionEntry::class);
+        $permEntryRepo = Helper::repository(PermissionEntryRepo::class);
 
         $permEntryRepo->deleteOrphanedGlobalUserPermissionEntries();
         $permEntryRepo->deleteOrphanedContentUserPermissionEntries();
 
-        /** @var PermissionCombinationRepo $permComboRepo */
-        $permComboRepo = \SV\StandardLib\Helper::repository(\XF\Repository\PermissionCombination::class);
+        $permComboRepo = Helper::repository(PermissionCombinationRepo::class);
         $permComboRepo->deleteUnusedPermissionCombinations();
 
-        $reportQueueRepo = \SV\StandardLib\Helper::repository(\SV\ReportImprovements\Repository\ReportQueue::class);
-        assert($reportQueueRepo instanceof ReportQueueRepo);
+        $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
         $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCache();
     }
 
@@ -570,18 +570,16 @@ class Setup extends AbstractSetup
             'view', 'edit', 'viewAttachment','uploadAttachment', 'uploadVideo',
             'assignReport', 'replyReport', 'replyReportClosed', 'updateReport', 'viewReporterUsername', 'reportReact',
         ];
-        $whiteListedGroups = [User::GROUP_MOD, User::GROUP_ADMIN];
+        $whiteListedGroups = [UserEntity::GROUP_MOD, UserEntity::GROUP_ADMIN];
 
         // content/global moderators before bulk update
         if (!$previousVersion || ($previousVersion <= 1040002) || ($previousVersion >= 2000000 && $previousVersion <= 2011000))
         {
-            /** @var PermissionEntryRepo $permissionEntryRepo */
-            $permissionEntryRepo = \SV\StandardLib\Helper::repository(\XF\Repository\PermissionEntry::class);
-            /** @var \XF\Repository\Moderator $modRepo */
-            $modRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Moderator::class);
+            $permissionEntryRepo = Helper::repository(PermissionEntryRepo::class);
+            $modRepo = Helper::repository(ModeratorRepo::class);
 
             $contentModerators = $modRepo->findContentModeratorsForList()->fetch();
-            /** @var ModeratorContent $contentModerator */
+            /** @var ModeratorContentEntity $contentModerator */
             foreach ($contentModerators as $contentModerator)
             {
                 $user = $contentModerator->User;
@@ -682,7 +680,7 @@ class Setup extends AbstractSetup
             ];
 
             $moderators = $modRepo->findModeratorsForList()->fetch();
-            /** @var Moderator $moderator */
+            /** @var ModeratorEntity $moderator */
             foreach ($moderators as $moderator)
             {
                 if (!$moderator->User)

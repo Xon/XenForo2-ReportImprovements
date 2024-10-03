@@ -8,8 +8,8 @@ use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
 use SV\StandardLib\Helper;
-use XF\Entity\Post;
-use XF\Entity\Report;
+use XF\Entity\Post as PostEntity;
+use XF\Entity\Report as ReportEntity;
 use XF\Finder\ReportComment as ReportCommentFinder;
 use XF\Job\AbstractRebuildJob;
 use function array_key_exists;
@@ -33,7 +33,7 @@ class EnrichReportPostInstall extends AbstractRebuildJob
 
     protected function rebuildById($id)
     {
-        $report = Helper::find(Report::class, $id);
+        $report = Helper::find(ReportEntity::class, $id);
         if (!$report)
         {
             return;
@@ -53,7 +53,7 @@ class EnrichReportPostInstall extends AbstractRebuildJob
         $content = $report->Content;
         $contentInfo = $report->content_info;
         $hasChanges = false;
-        if ($content instanceof Post)
+        if ($content instanceof PostEntity)
         {
             if (!array_key_exists('post_date', $contentInfo))
             {

@@ -3,7 +3,7 @@
 namespace SV\ReportImprovements\Entity;
 
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
-use XF\Entity\User;
+use XF\Entity\User as UserEntity;
 
 /**
  * @property-read ExtendedReportEntity|null $Report
@@ -13,7 +13,7 @@ interface IReportResolver
     public function canResolveLinkedReport(): bool;
 
     /**
-     * @return User|null
+     * @return UserEntity|null
      */
     public function getResolveUser();
 

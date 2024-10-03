@@ -3,7 +3,7 @@
 namespace SV\ReportImprovements\Job\Upgrades;
 
 use SV\StandardLib\Helper;
-use XF\Entity\ReportComment;
+use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Job\AbstractRebuildJob;
 use XF\Phrase;
 use XF\Service\Report\CommentPreparer as ReportCommentPreparerService;
@@ -37,8 +37,8 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
      */
     protected function rebuildById($id)
     {
-        /** @var ReportComment $comment */
-        $comment = Helper::find(ReportComment::class, $id);
+        /** @var ReportCommentEntity $comment */
+        $comment = Helper::find(ReportCommentEntity::class, $id);
         if ($comment)
         {
             $user = $comment->User && $comment->User->user_id ? $comment->User : \XF::visitor();

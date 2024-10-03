@@ -8,7 +8,7 @@ use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity
 use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
 use SV\StandardLib\Helper;
 use XF\Entity\ReportComment as ReportCommentEntity;
-use XF\Entity\User;
+use XF\Entity\User as UserEntity;
 use XF\Repository\Report as ReportRepo;
 
 /**
@@ -85,10 +85,10 @@ class Commenter extends XFCP_Commenter
     }
 
     /**
-     * @param null                 $newState
-     * @param User|null $assignedUser
+     * @param null            $newState
+     * @param UserEntity|null $assignedUser
      */
-    public function setReportState($newState = null, ?User $assignedUser = null)
+    public function setReportState($newState = null, ?UserEntity $assignedUser = null)
     {
         if (Globals::$suppressReportStateChange)
         {

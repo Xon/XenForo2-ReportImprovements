@@ -6,7 +6,7 @@ use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\StandardLib\Helper;
 use XF\App;
-use XF\Entity\EditHistory;
+use XF\Entity\EditHistory as EditHistoryEntity;
 use XF\Mvc\Entity\Repository;
 use XF\Repository\EditHistory as EditHistoryRepo;
 use XF\Service\AbstractService;
@@ -185,7 +185,7 @@ class CommentEditor extends AbstractService
         {
             $reportComment = $this->getComment();
             // suppress the "required" flag which blocks "empty" content being saved to edit history
-            $structure = Helper::getEntityStructure(EditHistory::class);
+            $structure = Helper::getEntityStructure(EditHistoryEntity::class);
             $oldMessageRequired = $structure->columns['old_text']['required'] ?? false;
             if ($oldMessageRequired)
             {
