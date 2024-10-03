@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Lists Past Warnings in Reports",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "<div class=\"block\">\n\t<div class=\"block-container\">\n\t\t<h3 class=\"block-header\">{{ phrase('comments') }}</h3>",
+    "replace": "\t<xf:include template=\"svReportImprov_warning_note_warning_action_history_tab\" />\n$0"
+}
