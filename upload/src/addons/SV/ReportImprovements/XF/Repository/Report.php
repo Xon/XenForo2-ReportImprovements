@@ -507,7 +507,7 @@ class Report extends XFCP_Report
         /** @var array<int,ModeratorEntity> $moderators */
         $moderators = [];
 
-        $fakeMod = function (int $userId): ModeratorEntity {
+        $fakeMod = function (int $userId, UserEntity $user): ModeratorEntity {
             /** @var ModeratorEntity $moderator */
             $moderator = Helper::createEntity(ModeratorEntity::class);
             $moderator->setTrusted('user_id', $userId);
@@ -515,7 +515,7 @@ class Report extends XFCP_Report
             {
                 $moderator->setTrusted('notify_report', false);
             }
-            $moderator->hydrateRelation('User', Helper::find(UserEntity::class, $userId));
+            $moderator->hydrateRelation('User', $user);
             $moderator->setReadOnly(true);
 
             return $moderator;
@@ -523,21 +523,24 @@ class Report extends XFCP_Report
 
         foreach ($userIds as $userId)
         {
-            $user =  Helper::findCached(UserEntity::class, $userId);
+            $user = Helper::findCached(UserEntity::class, $userId);
             if ($user !== null)
             {
                 $id = $user->permission_combination_id;
                 $permCombinationIds[$id] = $id;
 
                 $moderator = Helper::findCached(ModeratorEntity::class, $userId);
-                if ($notifiableOnly && !$moderator->notify_report)
+                if ($moderator === null)
+                {
+                    $moderator = $fakeMod($userId, $user);
+                }
+
+                if ($moderator === null || $moderator->User === null || $notifiableOnly && !$moderator->notify_report)
                 {
                     continue;
                 }
 
-                $moderators[$userId] = $moderator instanceof ModeratorEntity
-                    ? $moderator
-                    : $fakeMod($userId);
+                $moderators[$userId] = $moderator;
             }
             else
             {
@@ -554,7 +557,7 @@ class Report extends XFCP_Report
                            ->fetch();
             foreach ($users as $userId => $user)
             {
-                $moderator = $fakeMod($userId);
+                $moderator = $fakeMod($userId, $user);
                 if ($notifiableOnly && !$moderator->notify_report)
                 {
                     continue;
