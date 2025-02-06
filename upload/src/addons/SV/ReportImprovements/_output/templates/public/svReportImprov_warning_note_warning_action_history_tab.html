@@ -1,4 +1,7 @@
 <xf:set var="$user" value="{$report.User}"/>
+<xf:if is="$user">
+<xf:set var="$hasMemberNotes" value="{{ is_addon_active('z61/MemberNotes') }}"/>
+<xf:set var="$hasWarningImprovements" value="{{ is_addon_active('SV/WarningImprovements') }}"/>
 <h2 class="block-tabHeader block-tabHeader--memberTabs tabs hScroller"
 	data-xf-init="tabs h-scroller"
 	data-panes=".js-memberTabPanes"
@@ -13,12 +16,16 @@
 			   id="warnings"
 			   role="tab">{{ phrase('warnings') }} ({$user.warning_count|number})</a>
 		</xf:if>
+		<xf:if is="$hasMemberNote">
 		<xf:include template="z61_member_notes_tab" />
+		</xf:if>
+		<xf:if is="$hasWarningImprovements">
 		<xf:if is="$xf.visitor.canViewWarningActions() && $user.warning_actions_count">
 			<a href="{{ link('members/warning-actions', $user) }}"
 			   class="tabs-tab"
 			   id="warningsActions"
 			   role="tab">{{ phrase('sv_user_warning_actions', {'count': {$user.warning_actions_count}}) }}</a>
+		</xf:if>
 		</xf:if>
 				
 <!--[XF:tabs:end]-->
@@ -31,7 +38,12 @@
 			<div class="blockMessage">{{ phrase('loading...') }}</div>
 		</li>
 	</xf:if>
+	<xf:if is="$hasMemberNote">
 	<xf:include template="z61_member_notes_tab_content" />
+	</xf:if>
+	<xf:if is="$hasWarningImprovements">
 	<xf:include template="sv_warningimprovements_member_view_warning_actions" />
+	</xf:if>
 <!--[XF:tab_panes:end]-->
 </ul>
+</xf:if>
