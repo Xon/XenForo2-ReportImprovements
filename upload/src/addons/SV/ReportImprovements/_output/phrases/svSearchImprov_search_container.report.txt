@@ -1,1 +1,1 @@
-report
+Search reports only
