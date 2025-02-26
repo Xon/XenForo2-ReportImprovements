@@ -50,7 +50,7 @@
 	<xf:set var="$conversation" value="{$message.Conversation}" />
 	<xf:if is="$conversation">
 		<dl class="pairs pairs--inline" style="display:block;">
-			<dt>{{ phrase('conversation_starter') }}</dt>
+			<dt>{{ $xf.versionId >= 2030000 ? phrase('direct_message_starter') : phrase('conversation_starter') }}</dt>
 			<dd><xf:username user="$conversation.Starter" defaultname="{$conversation.username}" /></dd>
 		</dl>
 		<dl class="pairs pairs--inline" style="display:block;">
@@ -62,7 +62,7 @@
 			<dd>{$conversation.reply_count|number}</dd>
 		</dl>
 		<dl class="pairs pairs--inline" style="display:block;">
-			<dt>{{ phrase('conversation_participants') }}</dt>
+			<dt>{{ $xf.versionId >= 2030000 ? phrase('direct_message_participants') : phrase('conversation_participants') }}</dt>
 			<dd>
 				<ul class="listInline listInline--comma listInline--selfInline"><xf:trim>
 					<xf:foreach loop="$conversation.Recipients" value="$recipient"><xf:trim>
