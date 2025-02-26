@@ -135,7 +135,7 @@ class Report extends XFCP_Report
             $reply->setParam('attachmentData', $this->getReplyAttachmentData($report));
 
             $userId = $report->content_user_id;
-            if ($userId !== 0)
+            if ($userId !== 0 && \XF::visitor()->canViewWarnings())
             {
                 $warningFinder = Helper::finder(WarningFinder::class)
                                        ->where('user_id', $userId);
@@ -144,6 +144,7 @@ class Report extends XFCP_Report
                 $warningFinder->whereOr(['expiry_date', '>', \XF::$time], ['expiry_date', '=', 0]);
                 $activeWarnings = $warningFinder->total();
 
+                $reply->setParam('canViewWarnings', true);
                 $reply->setParam('activeWarnings', $activeWarnings);
                 $reply->setParam('totalWarnings', $totalWarnings);
             }
