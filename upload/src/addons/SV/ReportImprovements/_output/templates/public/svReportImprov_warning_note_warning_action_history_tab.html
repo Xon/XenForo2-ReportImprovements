@@ -19,7 +19,7 @@
 				   id="warnings"
 				   role="tab">{{ phrase('warnings') }} ({$user.warning_count|number})</a>
 			</xf:if>
-			<xf:if is="$hasMemberNote">
+			<xf:if is="$hasMemberNotes">
 				<xf:include template="z61_member_notes_tab" />
 			</xf:if>
 			<xf:if is="$hasWarningImprovements">
@@ -67,7 +67,7 @@
 				<div class="blockMessage">{{ phrase('loading...') }}</div>
 			</li>
 		</xf:if>
-		<xf:if is="$hasMemberNote">
+		<xf:if is="$hasMemberNotes">
 			<xf:include template="z61_member_notes_tab_content" />
 		</xf:if>
 		<xf:if is="$hasWarningImprovements">
