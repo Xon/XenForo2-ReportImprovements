@@ -16,6 +16,7 @@ use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
 use XF\Entity\ConversationMessage;
 use XF\Entity\ConversationRecipient;
 use XF\Entity\ReportComment as ReportCommentEntity;
+use XF\Finder\Warning as WarningFinder;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\ParameterBag;
@@ -132,6 +133,22 @@ class Report extends XFCP_Report
             $unfurlRepo->addUnfurlsToContent($comments, $this->isRobot());
 
             $reply->setParam('attachmentData', $this->getReplyAttachmentData($report));
+
+            $userId = $report->content_user_id;
+            if ($userId !== 0)
+            {
+                $warningFinder = Helper::finder(WarningFinder::class)
+                                       ->where('user_id', $userId);
+                $totalWarnings = $warningFinder->total();
+
+                $warningFinder->where('is_expired', 0)
+                              ->where('expiry_date', '<=', \XF::$time)
+                              ->where('expiry_date', '>', 0);
+                $activeWarnings = $warningFinder->total();
+
+                $reply->setParam('activeWarnings', $activeWarnings);
+                $reply->setParam('totalWarnings', $totalWarnings);
+            }
         }
 
         return $reply;

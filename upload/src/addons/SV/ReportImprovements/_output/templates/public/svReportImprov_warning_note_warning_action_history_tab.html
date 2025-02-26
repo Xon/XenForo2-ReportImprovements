@@ -1,49 +1,76 @@
 <xf:set var="$user" value="{$report.User}"/>
 <xf:if is="$user">
-<xf:set var="$hasMemberNotes" value="{{ is_addon_active('Z61/MemberNotes') }}"/>
-<xf:set var="$hasWarningImprovements" value="{{ is_addon_active('SV/WarningImprovements') }}"/>
-<h2 class="block-tabHeader block-tabHeader--memberTabs tabs hScroller"
-	data-xf-init="tabs h-scroller"
-	data-panes=".js-memberTabPanes"
-	data-state="replace"
-	role="tablist">
-	<span class="hScroller-scroll">
-		<!--[XF:tabs:start]-->
-		<!--[XF:tabs:after_recent_content]-->
-		<xf:if is="$xf.visitor.canViewWarnings() && $user.warning_count">
-			<a href="{{ link('members/warnings', $user) }}"
-			   class="tabs-tab"
-			   id="warnings"
-			   role="tab">{{ phrase('warnings') }} ({$user.warning_count|number})</a>
+	<xf:set var="$hasWarnings" value="{{ $xf.visitor.canViewWarnings() && $user.warning_count }}"/>
+	<xf:set var="$hasMemberNotes" value="{{ is_addon_active('z61/MemberNotes') }}"/>
+	<xf:set var="$hasWarningImprovements" value="{{ is_addon_active('SV/WarningImprovements') }}"/>
+	<h2 class="block-tabHeader block-tabHeader--memberTabs tabs hScroller"
+		data-xf-init="tabs h-scroller"
+		data-panes=".js-memberTabPanes"
+		data-state="replace"
+		role="tablist">
+		<span class="hScroller-scroll">
+			<!--[XF:tabs:start]-->
+			<a class="tabs-tab is-active"
+			   id="user-info"
+			   role="tab">{{ phrase('user_info') }}</a>
+			<xf:if is="$hasWarnings">
+				<a href="{{ link('members/warnings', $user) }}"
+				   class="tabs-tab"
+				   id="warnings"
+				   role="tab">{{ phrase('warnings') }} ({$user.warning_count|number})</a>
+			</xf:if>
+			<xf:if is="$hasMemberNote">
+				<xf:include template="z61_member_notes_tab" />
+			</xf:if>
+			<xf:if is="$hasWarningImprovements">
+				<xf:if is="$xf.visitor.canViewWarningActions() && $user.warning_actions_count">
+					<a href="{{ link('members/warning-actions', $user) }}"
+					   class="tabs-tab"
+					   id="warningsActions"
+					   role="tab">{{ phrase('sv_user_warning_actions', {'count': {$user.warning_actions_count}}) }}</a>
+				</xf:if>
+			</xf:if>
+			<!--[XF:tabs:end]-->
+		</span>
+	</h2>
+
+	<ul class="tabPanes js-memberTabPanes">
+		<!--[XF:tab_panes:start]-->
+		<li  role="tabpanel" aria-labelledby="user-info" class="is-active">
+			<div class="blockMessage">
+				<ul class="listInline listInline--bullet">
+					<li>
+						<dl class="pairs pairs--inline">
+							<dt>{{ phrase('warning_points') }}</dt>
+							<dd>{$user.warning_points|number}</dd>
+						</dl>
+					</li>
+					<li>
+						<dl class="pairs pairs--inline">
+							<dt>{{ phrase('svReportImprovements_active_warnings') }}</dt>
+							<dd>{{ $activeWarnings|number }}</dd>
+						</dl>
+					</li>
+					<li>
+						<dl class="pairs pairs--inline">
+							<dt>{{ phrase('total_warnings') }}</dt>
+							<dd>{{ $totalWarnings|number }}</dd>
+						</dl>
+					</li>
+				</ul>
+			</div>
+		</li>
+		<xf:if is="$hasWarnings">
+			<li data-href="{{ link('members/warnings', $user) }}" role="tabpanel" aria-labelledby="warnings">
+				<div class="blockMessage">{{ phrase('loading...') }}</div>
+			</li>
 		</xf:if>
 		<xf:if is="$hasMemberNote">
-		<xf:include template="z61_member_notes_tab" />
+			<xf:include template="z61_member_notes_tab_content" />
 		</xf:if>
 		<xf:if is="$hasWarningImprovements">
-		<xf:if is="$xf.visitor.canViewWarningActions() && $user.warning_actions_count">
-			<a href="{{ link('members/warning-actions', $user) }}"
-			   class="tabs-tab"
-			   id="warningsActions"
-			   role="tab">{{ phrase('sv_user_warning_actions', {'count': {$user.warning_actions_count}}) }}</a>
+			<xf:include template="sv_warningimprovements_member_view_warning_actions" />
 		</xf:if>
-		</xf:if>
-				
-<!--[XF:tabs:end]-->
-	</span>
-</h2>
-
-<ul class="tabPanes js-memberTabPanes">
-	<xf:if is="$xf.visitor.canViewWarnings() && $user.warning_count">
-		<li data-href="{{ link('members/warnings', $user) }}" role="tabpanel" aria-labelledby="warnings">
-			<div class="blockMessage">{{ phrase('loading...') }}</div>
-		</li>
-	</xf:if>
-	<xf:if is="$hasMemberNote">
-	<xf:include template="z61_member_notes_tab_content" />
-	</xf:if>
-	<xf:if is="$hasWarningImprovements">
-	<xf:include template="sv_warningimprovements_member_view_warning_actions" />
-	</xf:if>
-<!--[XF:tab_panes:end]-->
-</ul>
+		<!--[XF:tab_panes:end]-->
+	</ul>
 </xf:if>
