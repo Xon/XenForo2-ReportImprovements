@@ -141,9 +141,7 @@ class Report extends XFCP_Report
                                        ->where('user_id', $userId);
                 $totalWarnings = $warningFinder->total();
 
-                $warningFinder->where('is_expired', 0)
-                              ->where('expiry_date', '<=', \XF::$time)
-                              ->where('expiry_date', '>', 0);
+                $warningFinder->whereOr(['expiry_date', '>', \XF::$time], ['expiry_date', '=', 0]);
                 $activeWarnings = $warningFinder->total();
 
                 $reply->setParam('activeWarnings', $activeWarnings);
