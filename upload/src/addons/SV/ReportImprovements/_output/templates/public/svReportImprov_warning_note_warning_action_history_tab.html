@@ -1,7 +1,7 @@
 <xf:set var="$user" value="{$report.User}"/>
 <xf:if is="$user">
 	<xf:set var="$hasWarnings" value="{{ $canViewWarnings && $user.warning_count }}"/>
-	<xf:set var="$hasMemberNotes" value="{{ is_addon_active('z61/MemberNotes') }}"/>
+	<xf:set var="$hasMemberNotes" value="{{ is_addon_active('Z61/MemberNotes') }}"/>
 	<xf:set var="$hasWarningImprovements" value="{{ is_addon_active('SV/WarningImprovements') }}"/>
 	<h2 class="block-tabHeader block-tabHeader--memberTabs tabs hScroller"
 		data-xf-init="tabs h-scroller"
