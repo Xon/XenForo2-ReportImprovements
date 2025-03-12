@@ -13,7 +13,7 @@ class Member extends XFCP_Member
     public function actionRecentContent(ParameterBag $params)
     {
         $visitor = \XF::visitor();
-        $visitor->setOption('reportSearch', (bool)(\XF::options()->svReportInAccountPostings ?? false));
+        $visitor->setOption('reportSearch', \XF::options()->svReportInAccountPostings ?? false);
         try
         {
             return parent::actionRecentContent($params);

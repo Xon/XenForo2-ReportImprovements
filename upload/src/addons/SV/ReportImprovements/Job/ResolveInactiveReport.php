@@ -26,9 +26,9 @@ class ResolveInactiveReport extends AbstractRebuildJob
     protected function setupData(array $data)
     {
         $options = \XF::app()->options();
-        $this->daysLimit = (int)($options->svReportImpro_autoExpireDays ?? 0);
-        $this->expireAction = (string)($options->svReportImpro_autoExpireAction ?? '');
-        $this->expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
+        $this->daysLimit = $options->svReportImpro_autoExpireDays ?? 0;
+        $this->expireAction = $options->svReportImpro_autoExpireAction ?? '';
+        $this->expireUserId = $options->svReportImpro_expireUserId ?? 1;
 
         $this->reporter = Helper::find(UserEntity::class, $this->expireUserId);
         if (!$this->reporter)

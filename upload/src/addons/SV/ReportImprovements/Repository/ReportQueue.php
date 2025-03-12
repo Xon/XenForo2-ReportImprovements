@@ -217,7 +217,7 @@ class ReportQueue extends Repository
         $canReopenReport = !$expiringFromCron && $canReopenReport;
         if ($expiringFromCron || !$reporter->user_id)
         {
-            $expireUserId = (int)($options->svReportImpro_expireUserId ?? 1);
+            $expireUserId = $options->svReportImpro_expireUserId ?? 1;
             $reporter = Helper::find(UserEntity::class, $expireUserId);
             if (!$reporter)
             {
