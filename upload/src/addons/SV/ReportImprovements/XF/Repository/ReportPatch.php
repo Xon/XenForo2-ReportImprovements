@@ -1,7 +1,6 @@
 <?php
 /**
  * @noinspection PhpFullyQualifiedNameUsageInspection
- * @noinspection PhpUnnecessaryFullyQualifiedNameInspection
  */
 
 namespace SV\ReportImprovements\XF\Repository;
