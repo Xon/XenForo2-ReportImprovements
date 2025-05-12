@@ -9,6 +9,24 @@
 	</xf:if>
 </xf:macro>
 
+<xf:macro name="viewAttachmentsInReport"
+		  arg-report="!"
+>
+	<xf:set var="$content" value="{$report.Content}"/>
+	<xf:if is="$content && $content.isValidKey('attach_count') && $content.isValidRelation('Attachments') && $content.attach_count">
+		<xf:if contentcheck="true">
+			<div class="block-row block-row--separated">
+				<xf:contentcheck>
+					<xf:macro name="message_macros::attachments"
+							  arg-attachments="{$content.Attachments}"
+							  arg-message="{$content}"
+							  arg-canView="{{ true }}" />
+				</xf:contentcheck>
+			</div>
+		</xf:if>
+	</xf:if>
+</xf:macro>
+
 <xf:macro name="resolve_report"
 		  arg-report="!"
 		  arg-name="resolve_report"

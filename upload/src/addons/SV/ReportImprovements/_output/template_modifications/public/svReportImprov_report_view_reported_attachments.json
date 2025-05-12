@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Display non-embedded attachments for a post",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "{$handler.render($report)|raw}",
+    "replace": "$0\n\n<xf:macro name=\"svReportImprov_report_macros::viewAttachmentsInReport\"\n\t\t  arg-report=\"{$report}\"/>"
+}
