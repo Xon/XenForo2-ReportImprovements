@@ -1,8 +1,12 @@
 <?php
+/**
+ * @noinspection PhpMultipleClassDeclarationsInspection
+ */
 
 namespace SV\ReportImprovements\XF\Service\User;
 
 use SV\ReportImprovements\Entity\IReportResolver;
+use SV\ReportImprovements\SV\ForumBan\Entity\ForumBan as ExtendedForumBanEntity;
 use SV\ReportImprovements\XF\Entity\Warning as ExtendedWarningEntity;
 use SV\ReportImprovements\XF\Service\Thread\ReplyBan as ExtendedReplyBanService;
 use SV\StandardLib\Helper;
@@ -11,6 +15,7 @@ use XF\Entity\Warning as WarningEntity;
 use XF\Mvc\Entity\Entity;
 use XF\PrintableException;
 use XF\Service\Thread\ReplyBan as ReplyBanEntity;
+use function count;
 
 /**
  * @extends \XF\Service\User\Warn
@@ -64,6 +69,32 @@ class Warn extends XFCP_Warn
         $this->replyBanSvc->setPost($post);
         $this->replyBanSvc->setSendAlert($sendAlert);
         $this->replyBanSvc->setReason($reason);
+        // prevent the warning from re-opening a resolved report
+        $this->warning->setOption('svCanReopenReport', false);
+    }
+
+    public function setSvForumBanFromInput(array $input)
+    {
+        parent::setSvForumBanFromInput($input);
+
+        if (count($this->svForumBanServices) === 0)
+        {
+            return;
+        }
+
+        $postId = $this->content instanceof PostEntity ? $this->content->post_id : null;
+        if ($postId === null)
+        {
+            return;
+        }
+
+        foreach ($this->svForumBanServices as $forumBanService)
+        {
+            /** @var ExtendedForumBanEntity $forumBan */
+            $forumBan = $forumBanService->getForumBan();
+            $forumBan->post_id = $postId;
+            $forumBan->setOption('svCanReopenReport', false);
+        }
         // prevent the warning from re-opening a resolved report
         $this->warning->setOption('svCanReopenReport', false);
     }

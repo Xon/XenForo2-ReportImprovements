@@ -25,7 +25,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
     use ReportResolverTrait;
 
     /**
-     * @return Report|Entity|null
+     * @return Report|null
      */
     protected function getReport()
     {
