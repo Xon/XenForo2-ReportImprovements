@@ -6,6 +6,7 @@ use SV\ReportImprovements\Behavior\ReportResolver;
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Entity\WarningInfoTrait;
+use SV\ReportImprovements\SV\ForumBan\Entity\ForumBan as ExtendedForumBanEntity;
 use XF\Mvc\Entity\Structure;
 use function strlen;
 
@@ -50,15 +51,41 @@ class Warning extends XFCP_Warning implements IReportResolver
         $this->svReplyBan = $svReplyBan;
     }
 
+    /** @var array<ExtendedForumBanEntity> */
+    protected $svForumBans = [];
+
+
+    public function setSvForumBans(array $svForumBans)
+    {
+        $this->svForumBans = $svForumBans;
+    }
+
     /**
      * @throws \Exception
      */
     protected function _postSave()
     {
+        $report = null;
         if ($this->svReplyBan)
         {
             $this->svReplyBan->saveIfChanged();
-            $this->hydrateRelation('Report', $this->svReplyBan->Report);
+            $report = $this->svReplyBan->Report;
+            $this->hydrateRelation('Report', $report);
+        }
+
+        foreach ($this->svForumBans as $forumBan)
+        {
+            if ($report !== null)
+            {
+                $forumBan->hydrateRelation('Report', $report);
+            }
+            $forumBan->saveIfChanged();
+
+            if ($report === null)
+            {
+                $report = $forumBan->Report;
+                $this->hydrateRelation('Report', $report);
+            }
         }
 
         $report = $this->Report;

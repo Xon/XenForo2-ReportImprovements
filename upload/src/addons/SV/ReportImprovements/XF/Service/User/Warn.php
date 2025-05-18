@@ -16,6 +16,7 @@ use XF\Mvc\Entity\Entity;
 use XF\PrintableException;
 use XF\Service\Thread\ReplyBan as ReplyBanEntity;
 use function count;
+use function property_exists;
 
 /**
  * @extends \XF\Service\User\Warn
@@ -93,6 +94,7 @@ class Warn extends XFCP_Warn
             /** @var ExtendedForumBanEntity $forumBan */
             $forumBan = $forumBanService->getForumBan();
             $forumBan->post_id = $postId;
+            // prevent the forum-ban from re-opening a resolved report
             $forumBan->setOption('svCanReopenReport', false);
         }
         // prevent the warning from re-opening a resolved report
@@ -127,8 +129,19 @@ class Warn extends XFCP_Warn
 
         if ($this->replyBanSvc)
         {
-            // ensure the reply-ban is saved transactionally
+            // ensure the reply-ban is saved transactionally and *before*
             $this->warning->setSvReplyBan($this->replyBanSvc->getReplyBan());
+        }
+
+        if (property_exists($this, 'svForumBanServices'))
+        {
+            // ensure the forum-ban is saved transactionally
+            $forumBans = [];
+            foreach ($this->svForumBanServices as $forumBanService)
+            {
+                $forumBans[] = $forumBanService->getForumBan();
+            }
+            $this->warning->setSvForumBans($forumBans);
         }
 
         $warning = parent::_save();
