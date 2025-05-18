@@ -11,6 +11,22 @@ use XF\Mvc\Entity\Structure;
  */
 class Post extends XFCP_Post
 {
+    public function canViewReportBanner(): bool
+    {
+        if (!(\XF::options()->svReportedPostBanner ?? false))
+        {
+            return false;
+        }
+
+        $report = $this->Report;
+        if ($report === null || !$report->canView())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * @param Structure $structure
      * @return Structure
