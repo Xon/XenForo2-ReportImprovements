@@ -112,16 +112,6 @@ class Setup extends AbstractSetup
         ');
     }
 
-    public function upgrade2000002Step6()
-    {
-        /** @noinspection SqlResolve */
-        $this->db()->query('
-          UPDATE xf_sv_warning_log
-          SET reply_ban_post_id = NULL
-          WHERE reply_ban_post_id = 0
-        ');
-    }
-
     public function upgrade2010400Step1()
     {
         /** @noinspection SqlResolve */
@@ -388,6 +378,17 @@ class Setup extends AbstractSetup
     public function upgrade1697196794Step1(): void
     {
         $this->renameOption('svNonModeratorReportHandlingLimit', 'svReportHandlingLimit');
+    }
+
+    // 2.21.0+
+    public function upgrade1741702031Step6(): void
+    {
+        /** @noinspection SqlResolve */
+        $this->db()->query('
+          UPDATE xf_sv_warning_log
+          SET reply_ban_post_id = NULL
+          WHERE reply_ban_post_id = 0
+        ');
     }
 
     /**

@@ -355,7 +355,7 @@ class Creator extends AbstractService
         $warningLog->expiry_date = (int)$threadReplyBan->expiry_date;
         $warningLog->is_expired = $threadReplyBan->expiry_date > \XF::$time;
         $warningLog->reply_ban_thread_id = $threadReplyBan->thread_id;
-        $warningLog->reply_ban_post_id = $content instanceof PostEntity ? $content->getEntityId() : 0;
+        $warningLog->reply_ban_post_id = $content instanceof PostEntity ? $content->getEntityId() : null;
         $warningLog->user_id = $threadReplyBan->user_id;
         $warningLog->warning_user_id = \XF::visitor()->user_id;
         $warningLog->warning_definition_id = null;
