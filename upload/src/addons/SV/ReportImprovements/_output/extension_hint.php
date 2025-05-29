@@ -106,6 +106,7 @@ namespace SV\ReportImprovements\XF\Repository
 
 namespace SV\ReportImprovements\XF\Service\Report
 {
+	class XFCP_ClosureNotifier extends \XF\Service\Report\ClosureNotifier {}
 	class XFCP_Commenter extends \XF\Service\Report\Commenter {}
 	class XFCP_CommentPreparer extends \XF\Service\Report\CommentPreparer {}
 	class XFCP_Creator extends \XF\Service\Report\Creator {}
