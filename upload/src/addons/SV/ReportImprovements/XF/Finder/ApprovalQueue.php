@@ -15,6 +15,19 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 {
     use SqlJoinTrait;
 
+    public function svUndoSimpleReportJoin(): void
+    {
+        $condition = $this->columnSqlName('Report.content_type', false) . ' = ' . $this->columnSqlName('content_type', false)
+                     . ' AND '
+                     . $this->columnSqlName('Report.content_id', false) . ' = ' . $this->columnSqlName('content_id', false);
+
+        $join = $this->joins['Report'];
+        if (!$join['fundamental'] && $join['condition'] ===  $condition)
+        {
+            unset($this->joins['Report']);
+        }
+    }
+
     public function getContainerToContentJoins(): array
     {
         $joins = [];

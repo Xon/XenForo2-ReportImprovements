@@ -18,10 +18,4 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     {
         $user->Option->fastUpdate('sv_reportimprov_approval_filters', $filters ?: null);
     }
-
-    public function findUnapprovedContent()
-    {
-        return parent::findUnapprovedContent()
-            ->with('Report');
-    }
 }
