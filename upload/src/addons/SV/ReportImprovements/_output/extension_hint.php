@@ -95,6 +95,7 @@ namespace SV\ReportImprovements\XF\Report
 namespace SV\ReportImprovements\XF\Repository
 {
 	class XFCP_ApprovalQueue extends \XF\Repository\ApprovalQueue {}
+	class XFCP_ApprovalQueuePatch extends \XF\Repository\ApprovalQueue {}
 	class XFCP_PermissionCombination extends \XF\Repository\PermissionCombination {}
 	class XFCP_Post extends \XF\Repository\Post {}
 	class XFCP_Report extends \XF\Repository\Report {}

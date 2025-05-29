@@ -2,6 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
+use SV\ReportImprovements\XF\Repository\ApprovalQueue as ExtendedApprovalQueueRepo;
 use SV\ReportImprovements\XF\Finder\ApprovalQueue as ApprovalQueueFinder;
 use SV\StandardLib\Helper;
 use XF\Mvc\Entity\ArrayCollection;
@@ -19,8 +20,10 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     /** @noinspection PhpMissingParentCallCommonInspection */
     public function actionIndex()
     {
-        $approvalQueueRepo = $this->getApprovalQueueRepo();
+        /** @var ExtendedApprovalQueueRepo $approvalQueueRepo */
+        $approvalQueueRepo = Helper::repository(ApprovalQueueRepo::class);
 
+        /** @var ApprovalQueueFinder $unapprovedFinder */
         $unapprovedFinder = $approvalQueueRepo->findUnapprovedContent();
 
         $filters = $this->getQueueFilterInput();
@@ -31,7 +34,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $numUnapprovedItems = $unapprovedFinder->total();
 
         /** @noinspection PhpUndefinedFieldInspection */
-        if ($numUnapprovedItems != \XF::app()->unapprovedCounts['total'])
+        if (count($filters) === 0 && $numUnapprovedItems !== \XF::app()->unapprovedCounts['total'])
         {
             $approvalQueueRepo->rebuildUnapprovedCounts();
         }
@@ -40,6 +43,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $approvalQueueRepo->cleanUpInvalidRecords($unapprovedItems);
         $unapprovedItems = $approvalQueueRepo->filterViewableUnapprovedItems($unapprovedItems);
         $unapprovedItemsSliced = $unapprovedItems->slice(0, 50);
+        $approvalQueueRepo->addReportsToUnapprovedItems($unapprovedItems);
 
         $viewParams = [
             'filters' => $filters,
@@ -55,8 +59,10 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     /** @noinspection PhpUnusedParameterInspection */
     public function actionLoadMore(ParameterBag $params): AbstractReply
     {
-        $approvalQueueRepo = $this->getApprovalQueueRepo();
+        /** @var ExtendedApprovalQueueRepo $approvalQueueRepo */
+        $approvalQueueRepo = Helper::repository(ApprovalQueueRepo::class);
 
+        /** @var ApprovalQueueFinder $unapprovedFinder */
         $unapprovedFinder = $approvalQueueRepo->findUnapprovedContent();
         $unapprovedFinder->where('content_date', '>', $this->filter('last_date', 'uint'));
 
@@ -72,6 +78,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
         $unapprovedItems = $approvalQueueRepo->filterViewableUnapprovedItems($unapprovedItems);
         $unapprovedItemsSliced = $unapprovedItems->slice(0, 50);
+        $approvalQueueRepo->addReportsToUnapprovedItems($unapprovedItems);
 
         $viewParams = [
             'filters' => $filters,
@@ -134,7 +141,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
         if ($this->isLoadingDefaultFilters($inputDefinitions))
         {
-            /** @var \SV\ReportImprovements\XF\Repository\ApprovalQueue $approvalQueueRepo */
+            /** @var ExtendedApprovalQueueRepo $approvalQueueRepo */
             $approvalQueueRepo = Helper::repository(ApprovalQueueRepo::class);
 
             $savedFilters = $approvalQueueRepo->getUserDefaultFilters(\XF::visitor());
@@ -215,7 +222,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
                 $filters = $this->getQueueFilterInput();
                 unset($filters['applied_filters']);
 
-                /** @var \SV\ReportImprovements\XF\Repository\ApprovalQueue $approvalQueueRepo */
+                /** @var ExtendedApprovalQueueRepo $approvalQueueRepo */
                 $approvalQueueRepo = Helper::repository(ApprovalQueueRepo::class);
                 $approvalQueueRepo->saveUserDefaultFilters(\XF::visitor(), $filters);
             }
