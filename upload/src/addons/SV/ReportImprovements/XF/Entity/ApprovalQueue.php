@@ -138,21 +138,6 @@ class ApprovalQueue extends XFCP_ApprovalQueue
     }
 
     /**
-     * @param Entity|null $content
-     */
-    public function setContent(?Entity $content = null)
-    {
-        parent::setContent($content);
-
-        unset($this->_relations['Report']);
-        $report = $this->Report;
-        if ($report !== null && $content !== null)
-        {
-            $report->setContent($this->ReportableContent);
-        }
-    }
-
-    /**
      * @param Structure $structure
      * @return Structure
      */
