@@ -53,7 +53,10 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             // check the simple case
             if ($reportRepo->getReportHandler($contentType, false) !== null)
             {
-                $reportsToFetch[$contentType] = array_merge($reportsToFetch[$contentType] ?? [], $items);
+                foreach ($items as $item)
+                {
+                    $reportsToFetch[$contentType][$item->content_id] = $item;
+                }
                 continue;
             }
 
