@@ -34,7 +34,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $numUnapprovedItems = $unapprovedFinder->total();
 
         /** @noinspection PhpUndefinedFieldInspection */
-        if (count($filters) === 0 && $numUnapprovedItems !== \XF::app()->unapprovedCounts['total'])
+        if (count($unapprovedFinder->getConditions()) === 0 && $numUnapprovedItems !== \XF::app()->unapprovedCounts['total'])
         {
             $approvalQueueRepo->rebuildUnapprovedCounts();
         }
