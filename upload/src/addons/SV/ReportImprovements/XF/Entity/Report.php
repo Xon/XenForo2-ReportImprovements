@@ -11,8 +11,8 @@ use SV\SearchImprovements\Repository\Search as SearchRepo;
 use SV\SearchImprovements\Search\Features\ISearchableDiscussionUser;
 use SV\SearchImprovements\Search\Features\ISearchableReplyCount;
 use SV\StandardLib\Helper;
-use XF\Behavior\Indexable;
-use XF\Behavior\IndexableContainer;
+use XF\Behavior\Indexable as IndexableBehavior;
+use XF\Behavior\IndexableContainer as IndexableContainerBehavior;
 use XF\Entity\ContainableInterface;
 use XF\Entity\ContainableTrait;
 use XF\Entity\DatableInterface;
@@ -524,16 +524,16 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     public function triggerReindex(bool $reindexComments): void
     {
         $this->getBehaviors();
-        /** @var ?Indexable $indexable */
-        $indexable = $this->_behaviors['XF:Indexable'] ?? null;
+        /** @var ?IndexableBehavior $indexable */
+        $indexable = $this->_behaviors['XF:Indexable'] ?? $this->_behaviors[IndexableBehavior::class] ?? null;
         if ($indexable !== null)
         {
             $indexable->triggerReindex();
         }
         if ($reindexComments)
         {
-            /** @var ?IndexableContainer $indexable */
-            $indexable = $this->_behaviors['XF:IndexableContainer'] ?? null;
+            /** @var ?IndexableContainerBehavior $indexable */
+            $indexable = $this->_behaviors['XF:IndexableContainer'] ?? $this->_behaviors[IndexableContainerBehavior::class] ?? null;
             if ($indexable !== null)
             {
                 $indexable->triggerReindex();
@@ -544,21 +544,16 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     public function svDisableIndexing(): void
     {
         $this->getBehaviors();
-        if (array_key_exists('XF:IndexableContainer', $this->_behaviors))
-        {
-            unset($this->_behaviors['XF:IndexableContainer']);
-        }
+        unset($this->_behaviors['XF:IndexableContainer'], $this->_behaviors[IndexableContainerBehavior::class]);
     }
 
     public function svEnableIndexing(): void
     {
         $this->getBehaviors();
-        if (!array_key_exists('XF:IndexableContainer', $this->_behaviors))
+        if (!array_key_exists('XF:IndexableContainer', $this->_behaviors) &&
+            !array_key_exists(IndexableContainerBehavior::class, $this->_behaviors))
         {
-            $class = \XF::extendClass(IndexableContainer::class);
-
-            /** @var ?IndexableContainer $behavior */
-            $behavior = new $class($this, $this->structure()->behaviors['XF:IndexableContainer']);
+            $behavior = Helper::newExtendedClass(IndexableContainerBehavior::class, $this, $this->structure()->behaviors['XF:IndexableContainer']);
             $behavior->onSetup();
 
             $this->_behaviors['XF:IndexableContainer'] = $behavior;
