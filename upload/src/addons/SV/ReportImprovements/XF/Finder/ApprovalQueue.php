@@ -7,6 +7,7 @@ use SV\StandardLib\Finder\SqlJoinTrait;
 use SV\StandardLib\Helper;
 use XF\Repository\ApprovalQueue as ApprovalQueueRepo;
 use function array_merge;
+use function count;
 
 /**
  * @extends \XF\Finder\ApprovalQueue
@@ -124,5 +125,10 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         );
 
         return $this;
+    }
+
+    public function isBasicQuery(): bool
+    {
+        return count($this->conditions) === 0 && count($this->joins) === 0;
     }
 }
