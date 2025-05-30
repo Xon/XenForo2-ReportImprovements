@@ -524,18 +524,18 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     public function triggerReindex(bool $reindexComments): void
     {
         $this->getBehaviors();
+        /** @var ?Indexable $indexable */
         $indexable = $this->_behaviors['XF:Indexable'] ?? null;
         if ($indexable !== null)
         {
-            assert($indexable instanceof Indexable);
             $indexable->triggerReindex();
         }
         if ($reindexComments)
         {
+            /** @var ?IndexableContainer $indexable */
             $indexable = $this->_behaviors['XF:IndexableContainer'] ?? null;
             if ($indexable !== null)
             {
-                assert($indexable instanceof IndexableContainer);
                 $indexable->triggerReindex();
             }
         }
@@ -557,8 +557,8 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         {
             $class = \XF::extendClass(IndexableContainer::class);
 
+            /** @var ?IndexableContainer $behavior */
             $behavior = new $class($this, $this->structure()->behaviors['XF:IndexableContainer']);
-            assert($behavior instanceof IndexableContainer);
             $behavior->onSetup();
 
             $this->_behaviors['XF:IndexableContainer'] = $behavior;

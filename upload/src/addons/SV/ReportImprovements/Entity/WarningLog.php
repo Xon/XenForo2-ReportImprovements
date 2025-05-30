@@ -267,7 +267,6 @@ class WarningLog extends Entity
             $warningLogs = $finder->where('is_latest_version', true)->fetch();
             foreach ($warningLogs as $warningLog)
             {
-                assert($warningLog instanceof WarningLog);
                 // use fastUpdate() otherwise save() will trigger a loop
                 $warningLog->fastUpdate('is_latest_version', false);
                 $this->triggerReindex();
@@ -290,10 +289,10 @@ class WarningLog extends Entity
 
     protected function triggerReindex(): void
     {
+        /** @var Indexable|null $indexable */
         $indexable = $this->getBehavior('XF:Indexable');
         if ($indexable !== null)
         {
-            assert($indexable instanceof Indexable);
             $indexable->triggerReindex();
         }
     }

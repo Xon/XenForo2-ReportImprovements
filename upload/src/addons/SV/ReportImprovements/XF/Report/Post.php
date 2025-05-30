@@ -30,8 +30,8 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
     {
         if ($this->searchHandler === null)
         {
+            /** @var PostSearch $handler */
             $handler = \XF::app()->search()->handler($this->contentType);
-            assert($handler instanceof PostSearch);
             $this->searchHandler = $handler;
         }
 

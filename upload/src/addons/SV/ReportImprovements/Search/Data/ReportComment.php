@@ -1,4 +1,7 @@
 <?php
+/**
+ * @noinspection PhpMissingParentCallCommonInspection
+ */
 
 namespace SV\ReportImprovements\Search\Data;
 
@@ -38,6 +41,9 @@ use function is_array;
 use function is_string;
 use function reset;
 
+/**
+ * @extends AbstractData<ExtendedReportCommentEntity>
+ */
 class ReportComment extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
@@ -46,8 +52,6 @@ class ReportComment extends AbstractData
 
     public function canViewContent(Entity $entity, &$error = null): bool
     {
-        assert($entity instanceof ExtendedReportCommentEntity);
-
         return $entity->canView();
     }
 
@@ -110,7 +114,6 @@ class ReportComment extends AbstractData
 
     public function getResultDate(Entity $entity): int
     {
-        assert($entity instanceof ExtendedReportCommentEntity);
         return $entity->comment_date;
     }
 
@@ -121,7 +124,6 @@ class ReportComment extends AbstractData
             // This function may be invoked when the add-on is disabled, just return nothing to index
             return null;
         }
-        assert($entity instanceof ExtendedReportCommentEntity);
 
         /** @var ExtendedReportEntity $report */
         $report = $entity->Report;
@@ -165,7 +167,6 @@ class ReportComment extends AbstractData
 
     public function getTemplateData(Entity $entity, array $options = []): array
     {
-        assert($entity instanceof ExtendedReportCommentEntity);
         return [
             'report'        => $entity->Report,
             'reportComment' => $entity,
@@ -224,7 +225,12 @@ class ReportComment extends AbstractData
 
     public function getSearchFormData(): array
     {
-        assert($this->isAddonFullyActive);
+        if (!$this->isAddonFullyActive)
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing to index
+            return [];
+        }
+
         $form = parent::getSearchFormData();
 
         $handlers = $this->reportRepo->getReportHandlers();
@@ -262,8 +268,7 @@ class ReportComment extends AbstractData
         ]);
 
         $rawReportTypes = $constraints['c.report.type'];
-        assert(is_array($rawReportTypes));
-        if (count($rawReportTypes) !== 0)
+        if (is_array($rawReportTypes) && count($rawReportTypes) !== 0)
         {
             $reportTypes = [];
             $types = ReportType::get();
@@ -301,8 +306,7 @@ class ReportComment extends AbstractData
         }
 
         $reportStates = $constraints['c.report.state'];
-        assert(is_array($reportStates));
-        if (count($reportStates) !== 0 && !in_array('0', $reportStates, true))
+        if (is_array($reportStates) && count($reportStates) !== 0 && !in_array('0', $reportStates, true))
         {
             $reportStates = array_values(array_unique($reportStates));
 
@@ -330,8 +334,7 @@ class ReportComment extends AbstractData
         }
 
         $reportContentTypes = $constraints['c.report.content'];
-        assert(is_array($reportContentTypes));
-        if (count($reportContentTypes) !== 0)
+        if (is_array($reportContentTypes) && count($reportContentTypes) !== 0)
         {
             // MySQL backend doesn't support composing multiple queries atm
             if (!$this->isUsingElasticSearch && count($reportContentTypes) > 1)
@@ -420,8 +423,7 @@ class ReportComment extends AbstractData
 
     protected function applyTriStateFlag(Query $query, $constraints, array $urlConstraints, string $constraintField, string $searchField): void
     {
-        $action = $constraints[$constraintField] ?? '';
-        assert(is_string($action));
+        $action = (string)($constraints[$constraintField] ?? '');
         switch ($action)
         {
             case 'exclude':

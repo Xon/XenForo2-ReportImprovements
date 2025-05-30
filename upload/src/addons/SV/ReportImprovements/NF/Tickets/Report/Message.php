@@ -28,8 +28,8 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
     {
         if ($this->searchHandler === null)
         {
+            /** @var MessageSearch $handler */
             $handler = \XF::app()->search()->handler($this->contentType);
-            assert($handler instanceof MessageSearch);
             $this->searchHandler = $handler;
         }
 

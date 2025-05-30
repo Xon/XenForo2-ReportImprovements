@@ -62,8 +62,8 @@ class Indexable extends XFCP_Indexable
             return;
         }
 
+        /** @var ExtendedReportRepo $reportRepo */
         $reportRepo = Helper::repository(ReportRepo::class);
-        assert($reportRepo instanceof ExtendedReportRepo);
         if ($reportRepo->hasContentVisibilityChanged($this->entity))
         {
             $this->triggerReportReIndex();
@@ -80,8 +80,8 @@ class Indexable extends XFCP_Indexable
     protected function triggerReportReIndex(): void
     {
         $contentType = (string)$this->contentType();
+        /** @var ExtendedReportRepo $reportRepo */
         $reportRepo = Helper::repository(ReportRepo::class);
-        assert($reportRepo instanceof ExtendedReportRepo);
         $handler = $reportRepo->getReportHandler($contentType, false);
         if ($handler === null)
         {
@@ -103,7 +103,7 @@ class Indexable extends XFCP_Indexable
         }
         if ($report !== null)
         {
-            assert($report instanceof ExtendedReportEntity);
+            /** @var ExtendedReportEntity $report */
             $report->triggerReindex(true);
         }
     }

@@ -33,12 +33,12 @@ class EnrichReportPostInstall extends AbstractRebuildJob
 
     protected function rebuildById($id)
     {
+        /** @var ?ExtendedReportEntity $report */
         $report = Helper::find(ReportEntity::class, $id);
-        if (!$report)
+        if ($report === null)
         {
             return;
         }
-        assert($report instanceof ExtendedReportEntity);
         $db = \XF::db();
 
         if ($report->last_modified_id === 0)
@@ -96,6 +96,7 @@ class EnrichReportPostInstall extends AbstractRebuildJob
         if ($report->assigned_user_id !== 0 && $report->assigned_date === null)
         {
             // Xenforo doesn't accurate track which report comment assigns (or unassigns) a report :(
+            /** @var ?ExtendedReportCommentEntity $reportComment */
             $reportComment = Helper::finder(ReportCommentFinder::class)
                                        ->where('report_id', $report->report_id)
                                        ->where('state_change','assigned')
@@ -103,7 +104,6 @@ class EnrichReportPostInstall extends AbstractRebuildJob
                                        ->fetchOne();
             if ($reportComment !== null)
             {
-                assert($reportComment instanceof ExtendedReportCommentEntity);
                 $report->assigned_date = $reportComment->comment_date;
                 $report->assigner_user_id = $reportComment->user_id;
 

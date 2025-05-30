@@ -46,12 +46,12 @@ class ReindexReportsForContainer extends AbstractRebuildJob
 
     protected function rebuildById($id): void
     {
+        /** @var ?ExtendedReportEntity $report */
         $report = Helper::find(ReportEntity::class, $id);
         if ($report === null)
         {
             return;
         }
-        assert($report instanceof ExtendedReportEntity);
         $report->triggerReindex(true);
     }
 

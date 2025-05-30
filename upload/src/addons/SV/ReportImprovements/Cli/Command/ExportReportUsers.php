@@ -43,8 +43,8 @@ class ExportReportUsers extends Command
 
             return 1;
         }
+        /** @var ExtendedReportRepo $reportRepo */
         $reportRepo = Helper::repository(ReportRepo::class);
-        assert($reportRepo instanceof ExtendedReportRepo);
 
         $cache = (bool)$input->getOption('cache');
 

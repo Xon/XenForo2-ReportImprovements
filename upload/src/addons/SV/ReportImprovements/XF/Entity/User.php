@@ -205,7 +205,6 @@ class User extends XFCP_User
             if ($doRebuild)
             {
                 $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
-                assert($reportQueueRepo instanceof ReportQueueRepo);
                 $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
             }
         }

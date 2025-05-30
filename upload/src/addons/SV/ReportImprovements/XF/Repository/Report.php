@@ -5,6 +5,7 @@
 
 namespace SV\ReportImprovements\XF\Repository;
 
+use LogicException;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
@@ -12,9 +13,10 @@ use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity
 use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\StandardLib\Helper;
-use SV\WarningImprovements\Entity\WarningCategory;
+use SV\WarningImprovements\Entity\WarningCategory as WarningCategoryEntity;
 use SV\WarningImprovements\Repository\WarningCategory as WarningCategoryRepo;
 use SV\WarningImprovements\XF\Entity\WarningDefinition as ExtendedWarningDefinitionEntity;
+use SV\WarningImprovements\XF\Repository\Warning as ExtendedWarningRepo;
 use XF\Db\Exception as DbException;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use XF\Entity\Forum as ForumEntity;
@@ -463,7 +465,10 @@ class Report extends XFCP_Report
             }
         }
 
-        assert(is_array($userIds));
+        if (!is_array($userIds))
+        {
+            $userIds = [];
+        }
         $count = count($userIds);
         if ($limit && $count > $limit)
         {
@@ -818,7 +823,10 @@ class Report extends XFCP_Report
         $structure = Helper::getEntityStructure(ReportEntity::class);
         // This list is extended by other add-ons
         $states = $structure->columns['report_state']['allowedValues'] ?? [];
-        assert(is_array($states) && count($states) > 0);
+        if (!is_array($states) || count($states) === 0)
+        {
+            throw new LogicException('Expected allowedValues for Report::report_state to have values');
+        }
 
         return $states;
     }
@@ -906,8 +914,7 @@ class Report extends XFCP_Report
         $warningRepo = Helper::repository(WarningRepo::class);
         if (Helper::isAddOnActive('SV/WarningImprovements'))
         {
-            assert($warningRepo instanceof \SV\WarningImprovements\XF\Repository\Warning);
-
+            /** @var ExtendedWarningRepo $warningRepo */
             $categoryRepo = Helper::repository(WarningCategoryRepo::class);
             $categories = $categoryRepo->findCategoryList()->fetch();
             $categoryTree = $categoryRepo->createCategoryTree($categories);
@@ -915,12 +922,12 @@ class Report extends XFCP_Report
 
             foreach ($categoryTree->getFlattened(0) as $treeNode)
             {
+                /** @var WarningCategoryEntity $category */
                 $category = $treeNode['record'];
-                assert($category instanceof WarningCategory);
+                /** @var array<int,ExtendedWarningDefinitionEntity> $warningDefinitions */
                 $warningDefinitions = $warningsByCategory[$category->category_id] ?? [];
                 foreach ($warningDefinitions as $id => $warningDefinition)
                 {
-                    assert($warningDefinition instanceof ExtendedWarningDefinitionEntity);
                     if ($warningDefinition->isUsable())
                     {
                         $phrasePairs[$id] = $warningDefinition->title;
@@ -930,6 +937,7 @@ class Report extends XFCP_Report
         }
         else
         {
+            /** @var array<int,WarningDefinitionEntity> $definitions */
             $definitions = $warningRepo->findWarningDefinitionsForList()->fetch();
 
             $phrasePairs = [
@@ -937,7 +945,6 @@ class Report extends XFCP_Report
             ];
             foreach ($definitions as $id => $warningDefinition)
             {
-                assert($warningDefinition instanceof WarningDefinitionEntity);
                 $phrasePairs[$id] = $warningDefinition->title;
             }
         }

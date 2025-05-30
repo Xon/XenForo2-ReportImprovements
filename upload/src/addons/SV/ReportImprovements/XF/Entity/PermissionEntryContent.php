@@ -38,7 +38,6 @@ class PermissionEntryContent extends XFCP_PermissionEntryContent
         if ($this->shouldInvalidateReportCache())
         {
             $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
-            assert($reportQueueRepo instanceof ReportQueueRepo);
             $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
         }
     }

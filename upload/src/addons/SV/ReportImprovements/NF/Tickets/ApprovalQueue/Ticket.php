@@ -8,6 +8,7 @@ use XF\Mvc\Entity\Entity;
 
 /**
  * @extends \NF\Tickets\ApprovalQueue\Ticket
+ * @extends IContainerToContent<TicketEntity>
  */
 class Ticket extends XFCP_Ticket implements IContainerToContent
 {
@@ -23,7 +24,6 @@ class Ticket extends XFCP_Ticket implements IContainerToContent
 
     public function getReportableContent(Entity $content): ?Entity
     {
-        assert($content instanceof TicketEntity);
         return $content->FirstMessage;
     }
 }

@@ -58,8 +58,8 @@ class IndexableContainer extends XFCP_IndexableContainer
             return;
         }
 
+        /** @var ExtendedReportRepo $reportRepo */
         $reportRepo = Helper::repository(ReportRepo::class);
-        assert($reportRepo instanceof ExtendedReportRepo);
         if ($reportRepo->hasContentVisibilityChanged($this->entity))
         {
             $this->triggerReportReIndex($this->getChildIds());
@@ -84,8 +84,8 @@ class IndexableContainer extends XFCP_IndexableContainer
         }
 
         $contentType = (string)($this->config['childContentType'] ?? '');
+        /** @var ExtendedReportRepo $reportRepo */
         $reportRepo = Helper::repository(ReportRepo::class);
-        assert($reportRepo instanceof ExtendedReportRepo);
         $handler = $reportRepo->getReportHandler($contentType, false);
         if ($handler === null)
         {
