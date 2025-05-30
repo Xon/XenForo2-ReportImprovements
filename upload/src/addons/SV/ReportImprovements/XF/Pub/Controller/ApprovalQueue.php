@@ -13,6 +13,8 @@ use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\Redirect as RedirectReply;
 use XF\Repository\ApprovalQueue as ApprovalQueueRepo;
+use function array_replace;
+use function in_array;
 
 /**
  * @extends \XF\Pub\Controller\ApprovalQueue
@@ -36,7 +38,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $numUnapprovedItems = $unapprovedFinder->total();
 
         /** @noinspection PhpUndefinedFieldInspection */
-        if (count($unapprovedFinder->getConditions()) === 0 && $numUnapprovedItems !== \XF::app()->unapprovedCounts['total'])
+        if ($unapprovedFinder->isBasicQuery() && $numUnapprovedItems !== \XF::app()->unapprovedCounts['total'])
         {
             $approvalQueueRepo->rebuildUnapprovedCounts();
         }
