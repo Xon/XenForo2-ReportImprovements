@@ -2,7 +2,7 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
-use SV\ReportImprovements\XF\Entity\ApprovalQueue as ExtendedApprovalQueue;
+use SV\ReportImprovements\XF\Entity\ApprovalQueue as ExtendedApprovalQueueEntity;
 use SV\ReportImprovements\XF\Repository\ApprovalQueue as ExtendedApprovalQueueRepo;
 use SV\ReportImprovements\XF\Finder\ApprovalQueue as ApprovalQueueFinder;
 use SV\StandardLib\Helper;
@@ -235,16 +235,10 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
     public function actionReport(): AbstractReply
     {
-        /** @var ExtendedApprovalQueue $approvalQueueItem */
-        $approvalQueueItem = Helper::findOne(ApprovalQueueEntity::class, [
-            'content_type' => $this->filter('content_type', 'str'),
-            'content_id' => $this->filter('content_id', 'uint'),
-        ]);
-        if (!$approvalQueueItem)
-        {
-            return $this->notFound();
-        }
-
+        $approvalQueueItem = $this->assertViewableApprovalQueueItem(
+            $this->filter('content_type', 'str'),
+            $this->filter('content_id', 'uint')
+        );
         if (!$approvalQueueItem->canReport($error))
         {
             return $this->noPermission($error);
@@ -262,5 +256,45 @@ class ApprovalQueue extends XFCP_ApprovalQueue
             ]),
             $this->buildLink('approval-queue')
         );
+    }
+
+    /**
+     * @param string|null $contentType
+     * @param int|null    $contentId
+     * @param string[]    $with
+     * @return ApprovalQueueEntity|ExtendedApprovalQueueEntity
+     * @noinspection PhpDocMissingThrowsInspection
+     */
+    protected function assertViewableApprovalQueueItem(?string $contentType, ?int $contentId, array $with = []): ApprovalQueueEntity
+    {
+        /** @var ExtendedApprovalQueueEntity $approvalQueueItem */
+        $approvalQueueItem = Helper::findOne(ApprovalQueueEntity::class, [
+            'content_type' => $contentType,
+            'content_id' => $contentId,
+        ], $with);
+        if ($approvalQueueItem === null)
+        {
+            throw $this->exception($this->notFound());
+        }
+
+        if ($approvalQueueItem->isInvalid())
+        {
+            /** @var ApprovalQueueEntity[] $items */
+            $items = new ArrayCollection([
+                $approvalQueueItem->getIdentifier() => $approvalQueueItem,
+            ]);
+            $approvalQueueRepo = Helper::repository(ApprovalQueueRepo::class);
+            $approvalQueueRepo->cleanUpInvalidRecords($items);
+
+            throw $this->exception($this->notFound());
+        }
+
+        $handler = $approvalQueueItem->getHandler();
+        if ($handler === null || !$handler->canView($approvalQueueItem->Content))
+        {
+            throw $this->exception($this->notFound());
+        }
+
+        return $approvalQueueItem;
     }
 }
