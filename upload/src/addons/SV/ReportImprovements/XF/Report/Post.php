@@ -6,6 +6,8 @@ use SV\MultiPrefix\XF\Entity\Thread;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use XF\Entity\Post as PostEntity;
 use XF\Entity\Report as ReportEntity;
 use XF\Http\Request;
 use XF\Mvc\Entity\Entity;
@@ -42,7 +44,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
      */
     public function canView(ReportEntity $report)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var ExtendedUserEntity $visitor */
         $visitor = \XF::visitor();
 
         return $visitor->canViewPostReport($report->content_info['node_id']);
@@ -69,7 +71,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         $contentDate = $report->content_info['post_date'] ?? null;
         if ($contentDate === null)
         {
-            /** @var \XF\Entity\Post|null $content */
+            /** @var PostEntity|null $content */
             $content = $report->getContent();
             if ($content === null)
             {

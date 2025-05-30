@@ -2,9 +2,11 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
-use SV\ReportImprovements\XF\ControllerPlugin\Warn as WarnPlugin;
+use SV\ReportImprovements\XF\ControllerPlugin\Warn as ExtendedWarnPlugin;
+use SV\ReportImprovements\XF\Entity\Warning as ExtendedWarningEntity;
 use SV\StandardLib\Helper;
-use XF\ControllerPlugin\Warn;
+use XF\ControllerPlugin\Warn as WarnPlugin;
+use XF\Entity\Warning as WarningEntity;
 use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\Exception as ReplyException;
@@ -17,7 +19,7 @@ class Warning extends XFCP_Warning
     /**
      * @param int   $id
      * @param array $extraWith
-     * @return \XF\Entity\Warning
+     * @return WarningEntity
      * @throws ReplyException
      */
     protected function assertViewableWarning($id, array $extraWith = [])
@@ -34,12 +36,12 @@ class Warning extends XFCP_Warning
      */
     public function actionDelete(ParameterBag $params)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
+        /** @var ExtendedWarningEntity $warning */
         /** @noinspection PhpUndefinedFieldInspection */
         $warning = $this->assertViewableWarning($params->warning_id);
 
-        /** @var WarnPlugin $warnPlugin */
-        $warnPlugin = Helper::plugin($this, Warn::class);
+        /** @var ExtendedWarnPlugin $warnPlugin */
+        $warnPlugin = Helper::plugin($this, WarnPlugin::class);
         $warnPlugin->resolveReportFor($warning);
 
         return parent::actionDelete($params);
@@ -52,12 +54,12 @@ class Warning extends XFCP_Warning
      */
     public function actionExpire(ParameterBag $params)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\Warning $warning */
+        /** @var ExtendedWarningEntity $warning */
         /** @noinspection PhpUndefinedFieldInspection */
         $warning = $this->assertViewableWarning($params->warning_id);
 
-        /** @var WarnPlugin $warnPlugin */
-        $warnPlugin = Helper::plugin($this, Warn::class);
+        /** @var ExtendedWarnPlugin $warnPlugin */
+        $warnPlugin = Helper::plugin($this, WarnPlugin::class);
         $warnPlugin->resolveReportFor($warning);
 
         return parent::actionExpire($params);

@@ -8,6 +8,7 @@ use SV\StandardLib\Helper;
 use XF\Repository\Report as ReportRepo;
 use function array_key_exists;
 use function assert;
+use function count;
 
 /**
  * @extends \XF\Behavior\IndexableContainer

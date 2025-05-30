@@ -10,6 +10,10 @@ use XF\Entity\User as UserEntity;
 use XF\Job\AbstractRebuildJob;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Service\Report\Commenter as ReportCommenterService;
+use function is_array;
+use function sprintf;
+use function strlen;
+use function var_export;
 
 class ResolveInactiveReport extends AbstractRebuildJob
 {
@@ -51,7 +55,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
     protected function getNextIds($start, $batch)
     {
         if ($this->daysLimit <= 0 ||
-            \strlen($this->expireAction) === 0 ||
+            strlen($this->expireAction) === 0 ||
             $this->reporter === null)
         {
             return null;
@@ -99,7 +103,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
                 {
                     $errors = $errors->toArray();
                 }
-                else if (!\is_array($errors))
+                else if (!is_array($errors))
                 {
                     $errors = [$errors];
                 }
@@ -109,7 +113,7 @@ class ResolveInactiveReport extends AbstractRebuildJob
                     $string = (string)$string;
                 }
                 /** @var array<string> $errors */
-                \XF::logError('Error resolving inactive report:' . \var_export($errors, true));
+                \XF::logError('Error resolving inactive report:' . var_export($errors, true));
             }
         });
     }

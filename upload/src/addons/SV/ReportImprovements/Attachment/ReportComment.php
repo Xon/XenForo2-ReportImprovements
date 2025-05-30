@@ -1,5 +1,6 @@
 <?php
 /**
+ * @noinspection PhpMissingParentCallCommonInspection
  * @noinspection PhpMissingReturnTypeInspection
  */
 
@@ -11,6 +12,7 @@ use SV\StandardLib\Helper;
 use XF\Attachment\AbstractHandler;
 use XF\Entity\Attachment as AttachmentEntity;
 use XF\Entity\Report as ReportEntity;
+use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Repository\Attachment as AttachmentRepo;
 
@@ -115,7 +117,7 @@ class ReportComment extends AbstractHandler
 
     public function getContext(?Entity $entity = null, array $extraContext = [])
     {
-        if ($entity instanceof \XF\Entity\ReportComment)
+        if ($entity instanceof ReportCommentEntity)
         {
             $extraContext['report_comment_id'] = $entity->report_comment_id;
         }
@@ -141,7 +143,7 @@ class ReportComment extends AbstractHandler
         if ($reportCommentId)
         {
             /** @var ExtendedReportCommentEntity $reportComment */
-            $reportComment = Helper::find(\XF\Entity\ReportComment::class, $reportCommentId, $this->getContainerWith());
+            $reportComment = Helper::find(ReportCommentEntity::class, $reportCommentId, $this->getContainerWith());
             if (!$reportComment || !$reportComment->canView() || !$reportComment->canEdit())
             {
                 return null;

@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\ControllerPlugin;
 
 use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
+use SV\ReportImprovements\XF\Service\User\Warn as ExtendedUserWarnService;
 use SV\StandardLib\Helper;
 use SV\WarningImprovements\XF\Entity\WarningDefinition;
 use XF\Entity\Post as PostEntity;
@@ -14,7 +15,11 @@ use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\Exception as ReplyException;
 use XF\Mvc\Reply\View;
+use XF\Service\User\Warn as UserWarnService;
 use XF\Warning\AbstractHandler;
+use function array_merge;
+use function is_array;
+use function reset;
 
 /**
  * @extends \XF\ControllerPlugin\Warn
@@ -60,7 +65,7 @@ class Warn extends XFCP_Warn
             $inputData['reply_ban_reason'] = 'str';
         }
 
-        return \array_merge($warningSubmitInput, $this->filter($inputData));
+        return array_merge($warningSubmitInput, $this->filter($inputData));
     }
 
     /**
@@ -69,12 +74,12 @@ class Warn extends XFCP_Warn
      * @param string          $contentType
      * @param Entity          $content
      * @param array           $input
-     * @return \XF\Service\User\Warn
+     * @return UserWarnService
      * @throws ReplyException
      */
     protected function setupWarnService(AbstractHandler $warningHandler, UserEntity $user, $contentType, Entity $content, array $input)
     {
-        /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
+        /** @var ExtendedUserWarnService $warnService */
         $warnService = parent::setupWarnService($warningHandler, $user, $contentType, $content, $input);
         $warning = $warnService->getWarning();
 
@@ -159,8 +164,8 @@ class Warn extends XFCP_Warn
                 /** @var WarningDefinition|null $warningDef */
                 if ($warningDef !== null)
                 {
-                    /** @var \SV\ReportImprovements\XF\Service\User\Warn $warnService */
-                    $warnService = Helper::service(\XF\Service\User\Warn::class, $user, $contentType, $content, \XF::visitor());
+                    /** @var ExtendedUserWarnService $warnService */
+                    $warnService = Helper::service(UserWarnService::class, $user, $contentType, $content, \XF::visitor());
                     $warnService->setFromDefinition($warningDef, 0, 0);
                     $warning = $warnService->getWarning();
                 }

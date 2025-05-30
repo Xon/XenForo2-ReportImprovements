@@ -5,6 +5,7 @@ namespace SV\ReportImprovements\Search\Data;
 use SV\ElasticSearchEssentials\XF\Repository\ImpossibleSearchResultsException;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
@@ -28,10 +29,13 @@ use function array_key_exists;
 use function array_keys;
 use function array_merge_recursive;
 use function array_unique;
+use function array_values;
 use function assert;
 use function count;
+use function implode;
 use function in_array;
 use function is_array;
+use function is_string;
 use function reset;
 
 class ReportComment extends AbstractData
@@ -119,7 +123,7 @@ class ReportComment extends AbstractData
         }
         assert($entity instanceof ExtendedReportCommentEntity);
 
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @var ExtendedReportEntity $report */
         $report = $entity->Report;
         if ($report === null)
         {
@@ -153,10 +157,10 @@ class ReportComment extends AbstractData
         $metaData = $this->reportRepo->getReportSearchMetaData($report);
         $this->populateDiscussionMetaData($report, $metaData);
 
-        return [
-            'state_change' => $reportComment->state_change ?: '',
-            'report_type'  => $reportComment->getReportType(),
-        ] + $metaData;
+        $metaData['state_change'] = $reportComment->state_change ?: '';
+        $metaData['report_type'] = $reportComment->getReportType();
+
+        return $metaData;
     }
 
     public function getTemplateData(Entity $entity, array $options = []): array

@@ -19,6 +19,7 @@ use XF\Db\Exception as DbException;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use XF\Entity\Forum as ForumEntity;
 use XF\Entity\Moderator as ModeratorEntity;
+use XF\Entity\Report as ReportEntity;
 use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\User as UserEntity;
 use XF\Entity\WarningDefinition as WarningDefinitionEntity;
@@ -34,12 +35,15 @@ use XF\Repository\Warning as WarningRepo;
 use XF\Search\IndexRecord;
 use XF\Search\MetadataStructure;
 use function array_keys;
+use function array_unique;
+use function array_values;
 use function assert;
 use function count;
 use function function_exists;
 use function get_class;
 use function in_array;
 use function is_array;
+use function max;
 use function sort;
 use function strlen;
 use function substr_compare;
@@ -294,14 +298,14 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param \XF\Entity\Report $report
+     * @param ReportEntity $report
      * @param bool         $doCache
      * @return int[]
      * @throws DbException
      * @noinspection PhpDocMissingThrowsInspection
      * @noinspection SqlResolve
      */
-    public function svGetUsersWhoCanHandleReport(\XF\Entity\Report $report, bool $doCache = true): array
+    public function svGetUsersWhoCanHandleReport(ReportEntity $report, bool $doCache = true): array
     {
         $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
         $reportQueueId = (int)($report->queue_id ?? 0);
@@ -476,12 +480,12 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param \XF\Entity\Report $report
-     * @param bool              $notifiableOnly
+     * @param ReportEntity $report
+     * @param bool         $notifiableOnly
      * @return ArrayCollection<ModeratorEntity>
      * @noinspection PhpDocMissingThrowsInspection
      */
-    public function svGetModeratorsWhoCanHandleReport(\XF\Entity\Report $report, bool $notifiableOnly = false)
+    public function svGetModeratorsWhoCanHandleReport(ReportEntity $report, bool $notifiableOnly = false)
     {
         /** @var ExtendedReportEntity $report */
         $userIds = $this->svGetUsersWhoCanHandleReport($report);
@@ -671,7 +675,7 @@ class Report extends XFCP_Report
             return $userIds;
         }
 
-        if ($entity instanceof \XF\Entity\Report)
+        if ($entity instanceof ReportEntity)
         {
             if ($alertMode !== 'watchers')
             {
@@ -705,7 +709,7 @@ class Report extends XFCP_Report
             {
                 // alerts the assigned user who likely isn't a watcher
                 $userIds[] = $report->assigned_user_id;
-                $userIds = \array_unique($userIds);
+                $userIds = array_unique($userIds);
             }
         }
         else
@@ -811,7 +815,7 @@ class Report extends XFCP_Report
      */
     public function getReportStates(): array
     {
-        $structure = Helper::getEntityStructure(\XF\Entity\Report::class);
+        $structure = Helper::getEntityStructure(ReportEntity::class);
         // This list is extended by other add-ons
         $states = $structure->columns['report_state']['allowedValues'] ?? [];
         assert(is_array($states) && count($states) > 0);

@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpMissingReturnTypeInspection */
+<?php
 
 namespace SV\ReportImprovements\XF\Entity;
 
@@ -9,6 +9,7 @@ use XF\Mvc\Entity\Structure;
  */
 class UserOption extends XFCP_UserOption
 {
+    /** @noinspection PhpMissingReturnTypeInspection */
     public static function getStructure(Structure $structure)
     {
         $structure = parent::getStructure($structure);

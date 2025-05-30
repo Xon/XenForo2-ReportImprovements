@@ -7,6 +7,7 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Entity\WarningInfoTrait;
 use SV\ReportImprovements\SV\ForumBan\Entity\ForumBan as ExtendedForumBanEntity;
+use XF\Entity\User as UserEntity;
 use XF\Mvc\Entity\Structure;
 use function strlen;
 
@@ -109,7 +110,7 @@ class Warning extends XFCP_Warning implements IReportResolver
     }
 
     /**
-     * @return \XF\Entity\User|null
+     * @return UserEntity|null
      */
     public function getResolveUser()
     {

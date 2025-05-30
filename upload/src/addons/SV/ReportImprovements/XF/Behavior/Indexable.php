@@ -97,9 +97,9 @@ class Indexable extends XFCP_Indexable
         if (!($report instanceof ReportEntity))
         {
             $report = Helper::finder(ReportFinder::class)
-                           ->where('content_type', $contentType)
-                           ->where('content_id', $this->entity->getEntityId())
-                           ->fetchOne();
+                            ->where('content_type', $contentType)
+                            ->where('content_id', $this->entity->getEntityId())
+                            ->fetchOne();
         }
         if ($report !== null)
         {

@@ -5,6 +5,7 @@ namespace SV\ReportImprovements\XF\Report;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use XF\Entity\ProfilePost as ProfilePostEntity;
 use XF\Entity\Report as ReportEntity;
 use XF\Mvc\Entity\Entity;
 
@@ -27,8 +28,8 @@ class ProfilePost extends XFCP_ProfilePost implements ContentInterface
     }
 
     /**
-     * @param ReportEntity                  $report
-     * @param Entity|\XF\Entity\ProfilePost $content
+     * @param ReportEntity             $report
+     * @param Entity|ProfilePostEntity $content
      */
     public function setupReportEntityContent(ReportEntity $report, Entity $content)
     {
@@ -44,7 +45,7 @@ class ProfilePost extends XFCP_ProfilePost implements ContentInterface
         $contentDate = $report->content_info['post_date'] ?? null;
         if ($contentDate === null)
         {
-            /** @var \XF\Entity\ProfilePost|null $content */
+            /** @var ProfilePostEntity|null $content */
             $content = $report->getContent();
             if ($content === null)
             {

@@ -3,9 +3,11 @@
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
 use SV\ForumBan\Service\ForumBan;
-use SV\ReportImprovements\XF\ControllerPlugin\Warn as WarnPlugin;
+use SV\ForumBan\XF\Entity\Forum as ExtendedForumEntity;
+use SV\ReportImprovements\XF\ControllerPlugin\Warn as ExtendedWarnPlugin;
 use SV\StandardLib\Helper;
-use XF\ControllerPlugin\Warn;
+use XF\ControllerPlugin\Warn as WarnPlugin;
+use XF\Entity\Forum as ForumEntity;
 use XF\Mvc\Reply\Exception;
 
 /**
@@ -15,13 +17,12 @@ use XF\Mvc\Reply\Exception;
 class Forum extends XFCP_Forum
 {
     /**
-     * @param \SV\ForumBan\XF\Entity\Forum $forum
-     *
+     * @param ExtendedForumEntity $forum
      * @return ForumBan|null
      * @throws Exception
      * @noinspection PhpUndefinedMethodInspection
      */
-    protected function setupSvForumBan(\XF\Entity\Forum $forum): ?ForumBan
+    protected function setupSvForumBan(ForumEntity $forum): ?ForumBan
     {
         /** @var ForumBan|null $forumBanSvc */
         $forumBanSvc = parent::setupSvForumban($forum);
@@ -31,11 +32,11 @@ class Forum extends XFCP_Forum
             return $forumBanSvc;
         }
 
-        $forumban = $forumBanSvc->getForumBan();
+        $forumBan = $forumBanSvc->getForumBan();
 
-        /** @var WarnPlugin $warnPlugin */
-        $warnPlugin = Helper::plugin($this, Warn::class);
-        $warnPlugin->resolveReportFor($forumban);
+        /** @var ExtendedWarnPlugin $warnPlugin */
+        $warnPlugin = Helper::plugin($this, WarnPlugin::class);
+        $warnPlugin->resolveReportFor($forumBan);
 
         return $forumBanSvc;
     }

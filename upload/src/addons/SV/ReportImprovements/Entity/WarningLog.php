@@ -20,7 +20,9 @@ use XF\Mvc\Entity\DeferredValue;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 use XF\Phrase;
+use function array_key_exists;
 use function assert;
+use function floor;
 
 /**
  * COLUMNS
@@ -57,7 +59,7 @@ use function assert;
  * @property-read ForumBanEntity|null              $ForumBan_
  * @property-read ThreadReplyBanEntity|null        $ReplyBan_
  * @property-read WarningEntity|null               $Warning
-* @property-read WarningDefinitionEntity|null      $Definition_
+ * @property-read WarningDefinitionEntity|null      $Definition_
  * @property-read UserEntity|null                  $WarnedBy
  * @property-read UserEntity|null                  $User
  * @property-read ForumEntity|ForumBanForum|null   $ForumBanForum
@@ -110,7 +112,7 @@ class WarningLog extends Entity
 
     public function getReplyBan(): ?ThreadReplyBanEntity
     {
-        if (\array_key_exists('ReplyBan', $this->_relations))
+        if (array_key_exists('ReplyBan', $this->_relations))
         {
             return $this->ReplyBan_;
         }
@@ -154,7 +156,7 @@ class WarningLog extends Entity
             return null;
         }
 
-        if (\array_key_exists('ForumBan', $this->_relations))
+        if (array_key_exists('ForumBan', $this->_relations))
         {
             return $this->ForumBan_;
         }
@@ -236,7 +238,7 @@ class WarningLog extends Entity
                 LIMIT 1
             ', [$this->reply_ban_thread_id, $this->user_id]);
             $finder->where('reply_ban_thread_id', $this->reply_ban_thread_id)
-                ->where('user_id', $this->user_id);
+                   ->where('user_id', $this->user_id);
         }
         else if ($this->reply_ban_node_id !== null)
         {
@@ -248,7 +250,7 @@ class WarningLog extends Entity
                 LIMIT 1
             ', [$this->reply_ban_node_id, $this->user_id]);
             $finder->where('reply_ban_node_id', $this->reply_ban_node_id)
-                ->where('user_id', $this->user_id);
+                   ->where('user_id', $this->user_id);
         }
 
         $isLatestVersion = $this->is_latest_version;

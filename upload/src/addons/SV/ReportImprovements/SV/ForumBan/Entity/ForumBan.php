@@ -12,6 +12,7 @@ use XF\Entity\User as UserEntity;
 use XF\Finder\Report as ReportFinder;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
+use function array_key_exists;
 
 /**
  * Class ForumBan
@@ -33,7 +34,7 @@ class ForumBan extends XFCP_ForumBan implements IReportResolver
      */
     protected function getReport()
     {
-        if (\array_key_exists('Report', $this->_relations))
+        if (array_key_exists('Report', $this->_relations))
         {
             return $this->_relations['Report'];
         }

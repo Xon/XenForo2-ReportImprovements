@@ -5,6 +5,7 @@ namespace SV\ReportImprovements\XF\Report;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use XF\Entity\ConversationMessage as ConversationMessageEntity;
 use XF\Entity\Report as ReportEntity;
 use XF\Mvc\Entity\Entity;
 
@@ -27,8 +28,8 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
     }
 
     /**
-     * @param ReportEntity                          $report
-     * @param Entity|\XF\Entity\ConversationMessage $content
+     * @param ReportEntity                     $report
+     * @param Entity|ConversationMessageEntity $content
      */
     public function setupReportEntityContent(ReportEntity $report, Entity $content)
     {
@@ -44,7 +45,7 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
         $contentDate = $report->content_info['message_date'] ?? null;
         if ($contentDate === null)
         {
-            /** @var \XF\Entity\ConversationMessage|null $content */
+            /** @var ConversationMessageEntity|null $content */
             $content = $report->getContent();
             if ($content === null)
             {
@@ -64,7 +65,7 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
         $url = parent::getContentLink($report);
         if (!$url)
         {
-            /** @var \XF\Entity\ConversationMessage $message */
+            /** @var ConversationMessageEntity $message */
             $message = $report->Content;
             if ($message && $message->canView())
             {

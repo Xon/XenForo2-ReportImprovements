@@ -19,6 +19,7 @@ use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Repository;
+use function array_keys;
 
 class ReportQueue extends Repository
 {
@@ -115,7 +116,7 @@ class ReportQueue extends Repository
         if ($postIds)
         {
             $posts = Helper::finder(PostFinder::class)
-                           ->where('post_id', '=', \array_keys($postIds))
+                           ->where('post_id', '=', array_keys($postIds))
                            ->fetch();
             foreach ($postIds as $postId => $warningLog)
             {
@@ -132,7 +133,7 @@ class ReportQueue extends Repository
         {
             $threads = Helper::finder(ThreadFinder::class)
                              ->with('Forum')
-                             ->where('thread_id', '=', \array_keys($threadIds))
+                             ->where('thread_id', '=', array_keys($threadIds))
                              ->fetch();
             foreach ($threadIds as $threadId => $warningLog)
             {

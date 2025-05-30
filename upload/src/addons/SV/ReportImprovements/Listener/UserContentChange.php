@@ -3,6 +3,7 @@
 namespace SV\ReportImprovements\Listener;
 
 use XF\Service\User\ContentChange;
+use function is_array;
 
 abstract class UserContentChange
 {

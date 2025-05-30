@@ -6,6 +6,7 @@ use SV\ReportImprovements\XF\Entity\ApprovalQueue as ExtendedApprovalQueue;
 use SV\ReportImprovements\XF\Repository\ApprovalQueue as ExtendedApprovalQueueRepo;
 use SV\ReportImprovements\XF\Finder\ApprovalQueue as ApprovalQueueFinder;
 use SV\StandardLib\Helper;
+use XF\ControllerPlugin\Report as ReportPlugin;
 use XF\Entity\ApprovalQueue as ApprovalQueueEntity;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Finder;
@@ -13,6 +14,9 @@ use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\Redirect as RedirectReply;
 use XF\Repository\ApprovalQueue as ApprovalQueueRepo;
+use function array_replace;
+use function count;
+use function in_array;
 
 /**
  * @extends \XF\Pub\Controller\ApprovalQueue
@@ -252,8 +256,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
 
         $reportableContent = $approvalQueueItem->ReportableContent;
 
-        /** @var \XF\ControllerPlugin\Report $reportPlugin */
-        $reportPlugin = Helper::plugin($this, \XF\ControllerPlugin\Report::class);
+        $reportPlugin = Helper::plugin($this, ReportPlugin::class);
         return $reportPlugin->actionReport(
             $reportableContent->getEntityContentType(), $reportableContent,
             $this->buildLink('approval-queue/report', null, [

@@ -27,6 +27,7 @@ use XF\Phrase;
 use function array_key_exists;
 use function assert;
 use function is_callable;
+use function strval;
 
 /**
  * @extends \XF\Entity\Report
@@ -431,8 +432,8 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         $direction = (\XF::app()->options()->sv_reverse_report_comment_order ?? false) ? 'DESC' : 'ASC';
 
         $finder = Helper::finder(ReportCommentFinder::class)
-                       ->where('report_id', $this->report_id)
-                       ->order('comment_date', $direction);
+                        ->where('report_id', $this->report_id)
+                        ->order('comment_date', $direction);
 
         $finder->with($this->getCommentWith());
 
@@ -511,7 +512,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
             return $value->render('raw');
         }
 
-        return \strval($value);
+        return strval($value);
     }
 
     public function getReplyCountForSearch(): int
@@ -545,7 +546,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         $this->getBehaviors();
         if (array_key_exists('XF:IndexableContainer', $this->_behaviors))
         {
-           unset($this->_behaviors['XF:IndexableContainer']);
+            unset($this->_behaviors['XF:IndexableContainer']);
         }
     }
 
