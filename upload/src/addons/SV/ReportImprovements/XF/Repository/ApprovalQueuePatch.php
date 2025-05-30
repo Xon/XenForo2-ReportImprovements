@@ -9,12 +9,11 @@ use SV\ReportImprovements\XF\Finder\ApprovalQueue as ApprovalQueueFinder;
  */
 class ApprovalQueuePatch extends XFCP_ApprovalQueuePatch
 {
-    /** @noinspection PhpMissingReturnTypeInspection */
     public function findUnapprovedContent()
     {
         $finder = parent::findUnapprovedContent();
 
-        /** @var ApprovalQueueFinder $unapprovedFinder */
+        /** @var ApprovalQueueFinder $finder */
         $finder->svUndoSimpleReportJoin();
 
         return $finder;

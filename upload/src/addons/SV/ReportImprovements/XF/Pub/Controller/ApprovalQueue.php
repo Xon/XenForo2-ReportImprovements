@@ -2,9 +2,11 @@
 
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
+use SV\ReportImprovements\XF\Entity\ApprovalQueue as ExtendedApprovalQueue;
 use SV\ReportImprovements\XF\Repository\ApprovalQueue as ExtendedApprovalQueueRepo;
 use SV\ReportImprovements\XF\Finder\ApprovalQueue as ApprovalQueueFinder;
 use SV\StandardLib\Helper;
+use XF\Entity\ApprovalQueue as ApprovalQueueEntity;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Finder;
 use XF\Mvc\ParameterBag;
@@ -29,7 +31,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $filters = $this->getQueueFilterInput();
         $this->applyQueueFilters($unapprovedFinder, $filters);
 
-        /** @var \XF\Entity\ApprovalQueue[]|ArrayCollection $unapprovedItems */
+        /** @var ApprovalQueueEntity[]|ArrayCollection<ApprovalQueueEntity> $unapprovedItems */
         $unapprovedItems = $unapprovedFinder->fetch();
         $numUnapprovedItems = $unapprovedFinder->total();
 
@@ -69,7 +71,7 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         $filters = $this->getQueueFilterInput();
         $this->applyQueueFilters($unapprovedFinder, $filters);
 
-        /** @var \XF\Entity\ApprovalQueue[]|ArrayCollection $unapprovedItems */
+        /** @var ApprovalQueueEntity[]|ArrayCollection<ApprovalQueueEntity> $unapprovedItems */
         $unapprovedItems = $unapprovedFinder->fetch();
         $numUnapprovedItems = $unapprovedItems->count();
 
@@ -231,11 +233,10 @@ class ApprovalQueue extends XFCP_ApprovalQueue
         return $result;
     }
 
-
     public function actionReport(): AbstractReply
     {
-        /** @var \SV\ReportImprovements\XF\Entity\ApprovalQueue $approvalQueueItem */
-        $approvalQueueItem = Helper::findOne(\XF\Entity\ApprovalQueue::class, [
+        /** @var ExtendedApprovalQueue $approvalQueueItem */
+        $approvalQueueItem = Helper::findOne(ApprovalQueueEntity::class, [
             'content_type' => $this->filter('content_type', 'str'),
             'content_id' => $this->filter('content_id', 'uint'),
         ]);
