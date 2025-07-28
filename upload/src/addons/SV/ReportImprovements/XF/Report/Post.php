@@ -2,10 +2,15 @@
 
 namespace SV\ReportImprovements\XF\Report;
 
-use SV\MultiPrefix\XF\Entity\Thread;
+use SV\MultiPrefix\XF\Entity\Thread as ThreadEntity;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
+use SV\ReportImprovements\XF\Entity\Post as ExtendedPostEntity;
 use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use SV\StandardLib\Helper;
+use XF\Entity\Node as NodeEntity;
+use XF\Entity\Post as PostEntity;
 use XF\Entity\Report as ReportEntity;
 use XF\Http\Request;
 use XF\Mvc\Entity\Entity;
@@ -45,12 +50,34 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
         $visitor = \XF::visitor();
 
-        return $visitor->canViewPostReport($report->content_info['node_id']);
+        $nodeId = (int)($report->content_info['node_id'] ?? 0);
+
+        $nodePerms = Helper::perms()->getPerContentPermissions('node', $visitor);
+        if ($nodeId === 0 || !array_key_exists($nodeId, $nodePerms))
+        {
+            /** @var PostEntity|null $content */
+            $content = $report->getContent();
+            $thread = $content !== null ? $content->Thread : null;
+            if ($thread === null)
+            {
+                return false;
+            }
+
+            $newNodeId = $thread->node_id;
+            if ($newNodeId !== $nodeId)
+            {
+                $contentInfo = $report->content_info;
+                $contentInfo['node_id'] = $newNodeId;
+                $report->fastUpdate('content_info', $contentInfo);
+            }
+        }
+
+        return $visitor->canViewPostReport($nodeId);
     }
 
     /**
      * @param ReportEntity                                 $report
-     * @param Entity|\SV\ReportImprovements\XF\Entity\Post $content
+     * @param Entity|ExtendedPostEntity $content
      */
     public function setupReportEntityContent(ReportEntity $report, Entity $content)
     {
@@ -58,9 +85,9 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
 
         $contentInfo = $report->content_info;
         $contentInfo['post_date'] = $content->post_date;
-        /** @var ExtendedThreadEntity|Thread $thread */
+        /** @var ExtendedThreadEntity|ThreadEntity|null $thread */
         $thread = $content->Thread;
-        $contentInfo['prefix_id'] = $thread->sv_prefix_ids ?? $thread->prefix_id;
+        $contentInfo['prefix_id'] = $thread->sv_prefix_ids ?? $thread->prefix_id ?? 0;
         $report->content_info = $contentInfo;
     }
 
