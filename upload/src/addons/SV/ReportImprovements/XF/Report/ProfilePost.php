@@ -45,7 +45,7 @@ class ProfilePost extends XFCP_ProfilePost implements ContentInterface
         if ($contentDate === null)
         {
             /** @var \XF\Entity\ProfilePost|null $content */
-            $content = $report->getContent();
+            $content = $report->Content;
             if ($content === null)
             {
                 return null;

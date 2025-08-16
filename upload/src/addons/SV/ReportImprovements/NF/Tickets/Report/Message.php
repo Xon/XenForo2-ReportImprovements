@@ -58,7 +58,7 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
         if ($contentDate === null)
         {
             /** @var \NF\Tickets\Entity\Message $content */
-            $content = $report->getContent();
+            $content = $report->Content;
             if ($content === null)
             {
                 return null;

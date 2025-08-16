@@ -54,7 +54,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         if ($nodeId === 0 || !array_key_exists($nodeId, $contentPerms))
         {
             /** @var PostEntity|null $content */
-            $content = $report->getContent();
+            $content = $report->Content;
             $thread = $content !== null ? $content->Thread : null;
             if ($thread === null)
             {
@@ -95,7 +95,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         if ($contentDate === null)
         {
             /** @var \XF\Entity\Post|null $content */
-            $content = $report->getContent();
+            $content = $report->Content;
             if ($content === null)
             {
                 return null;
