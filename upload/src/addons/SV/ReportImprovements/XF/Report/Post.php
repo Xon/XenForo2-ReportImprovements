@@ -50,8 +50,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
 
         $nodeId = (int)($report->content_info['node_id'] ?? 0);
 
-        $permissionCombinationId = $visitor->permission_combination_id;
-        $contentPerms = PermissionCacheEx::getOrLoadForContent($permissionCombinationId, 'node', $nodeId);
+        $contentPerms = PermissionCacheEx::getOrLoadForContent($visitor, 'node', $nodeId);
         if ($nodeId === 0 || !array_key_exists($nodeId, $contentPerms))
         {
             /** @var PostEntity|null $content */
