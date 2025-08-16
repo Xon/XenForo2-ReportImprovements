@@ -7,9 +7,7 @@ use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\Post as ExtendedPostEntity;
 use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
-use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
-use SV\StandardLib\Helper;
-use XF\Entity\Node as NodeEntity;
+use SV\ReportImprovements\XF\PermissionCacheEx;
 use XF\Entity\Post as PostEntity;
 use XF\Entity\Report as ReportEntity;
 use XF\Http\Request;
@@ -52,8 +50,9 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
 
         $nodeId = (int)($report->content_info['node_id'] ?? 0);
 
-        $nodePerms = Helper::perms()->getPerContentPermissions('node', $visitor);
-        if ($nodeId === 0 || !array_key_exists($nodeId, $nodePerms))
+        $permissionCombinationId = $visitor->permission_combination_id;
+        $contentPerms = PermissionCacheEx::getOrLoadForContent($permissionCombinationId, 'node', $nodeId);
+        if ($nodeId === 0 || !array_key_exists($nodeId, $contentPerms))
         {
             /** @var PostEntity|null $content */
             $content = $report->getContent();
