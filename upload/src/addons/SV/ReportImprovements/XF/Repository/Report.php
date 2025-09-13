@@ -457,7 +457,12 @@ class Report extends XFCP_Report
                 ");
             }
 
-            $userIds = $db->fetchAllColumn('SELECT user_id FROM xf_sv_non_moderator_report_users where canUpdate = 1 and canView = 1 and user_id <> 0');
+            // note; ReplicationAdapter will revert to using the read connection after the previous queries
+            $userIds = $db->fetchAllColumn('-- XFDB=fromWrite
+                SELECT user_id
+                FROM xf_sv_non_moderator_report_users
+                where canUpdate = 1 and canView = 1 and user_id <> 0
+            ');
 
             if ($cache && $key && $cacheTime)
             {

@@ -46,7 +46,7 @@ class ConversationMessage extends XFCP_ConversationMessage implements ContentInt
         if ($contentDate === null)
         {
             /** @var ConversationMessageEntity|null $content */
-            $content = $report->getContent();
+            $content = $report->Content;
             if ($content === null)
             {
                 return null;

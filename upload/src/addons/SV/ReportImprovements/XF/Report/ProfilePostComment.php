@@ -46,7 +46,7 @@ class ProfilePostComment extends XFCP_ProfilePostComment implements ContentInter
         if ($contentDate === null)
         {
             /** @var ProfilePostCommentEntity|null $content */
-            $content = $report->getContent();
+            $content = $report->Content;
             if ($content === null)
             {
                 return null;
