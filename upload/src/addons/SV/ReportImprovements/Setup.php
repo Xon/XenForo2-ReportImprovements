@@ -112,16 +112,6 @@ class Setup extends AbstractSetup
         ');
     }
 
-    public function upgrade2000002Step6()
-    {
-        /** @noinspection SqlResolve */
-        $this->db()->query('
-          UPDATE xf_sv_warning_log
-          SET reply_ban_post_id = NULL
-          WHERE reply_ban_post_id = 0
-        ');
-    }
-
     public function upgrade2010400Step1()
     {
         /** @noinspection SqlResolve */
@@ -388,6 +378,22 @@ class Setup extends AbstractSetup
     public function upgrade1697196794Step1(): void
     {
         $this->renameOption('svNonModeratorReportHandlingLimit', 'svReportHandlingLimit');
+    }
+
+    // 2.21.0+
+    public function upgrade1747546645Step6(): void
+    {
+        /** @noinspection SqlResolve */
+        $this->db()->query('
+          UPDATE xf_sv_warning_log
+          SET reply_ban_post_id = NULL
+          WHERE reply_ban_post_id = 0
+        ');
+    }
+
+    public function upgrade1747546645Step1(): void
+    {
+        $this->applySchemaUpdates();
     }
 
     /**
@@ -919,6 +925,10 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'post_id', 'int')->nullable(true)->setDefault(null);
         };
 
+        $tables['xf_sv_forum_ban'] = function (Alter $table) {
+            $this->addOrChangeColumn($table, 'post_id', 'int')->nullable(true)->setDefault(null);
+        };
+
         $tables['xf_report'] = function (Alter $table) {
             $this->addOrChangeColumn($table, 'last_modified_id', 'int')->setDefault(0);
             $this->addOrChangeColumn($table, 'assigned_date', 'int')->nullable(true)->setDefault(null);
@@ -963,6 +973,10 @@ class Setup extends AbstractSetup
         $tables = [];
 
         $tables['xf_thread_reply_ban'] = function (Alter $table) {
+            $table->dropColumns(['post_id']);
+        };
+
+        $tables['xf_sv_forum_ban'] = function (Alter $table) {
             $table->dropColumns(['post_id']);
         };
 

@@ -9,6 +9,40 @@
 	</xf:if>
 </xf:macro>
 
+<xf:macro name="viewAttachmentsInReport"
+		  arg-report="!"
+>
+	<xf:set var="$content" value="{$report.Content}"/>
+	<xf:if is="$content && $content.isValidKey('attach_count') && $content.isValidRelation('Attachments') && $content.attach_count">
+		<xf:if contentcheck="true">
+			<div class="block-row block-row--separated">
+				<xf:contentcheck>
+					<xf:macro name="message_macros::attachments"
+							  arg-attachments="{$content.Attachments}"
+							  arg-message="{$content}"
+							  arg-canView="{{ true }}" />
+				</xf:contentcheck>
+			</div>
+		</xf:if>
+	</xf:if>
+</xf:macro>
+
+<xf:macro name="post" arg-post="!">
+	<xf:if is="!$post.warning_id && callable($post, 'canViewReportBanner') && $post.canViewReportBanner()">
+		<xf:set var="$report" value="{$post.Report}" />
+		<xf:if is="!$report.isClosed()">
+			<div class="messageNotice messageNotice--warning messageNotice--reported">
+				<a href="{{ link('reports', $post.Report) }}">{{ phrase('svReportImprovements_post_has_open_report', {
+					'reports': $report.report_count,
+					'comments': $report.comment_count,
+					'first_report': date_dynamic($report.first_report_date),
+					'last_update': date_dynamic($report.last_modified_date)
+				}) }}</a>
+			</div>
+		</xf:if>
+	</xf:if>
+</xf:macro>
+
 <xf:macro name="resolve_report"
 		  arg-report="!"
 		  arg-name="resolve_report"

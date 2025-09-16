@@ -25,8 +25,8 @@ trait WarningInfoTrait
 
         if (Helper::isAddOnActive('SV/WarningImprovements'))
         {
+            /** @var ExtendedWarningDefinitionEntity $definition */
             $definition = $this->Definition;
-            assert($definition instanceof ExtendedWarningDefinitionEntity);
 
             return $definition->isUsable();
         }

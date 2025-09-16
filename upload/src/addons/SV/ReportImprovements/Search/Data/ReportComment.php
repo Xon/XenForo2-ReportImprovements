@@ -1,10 +1,14 @@
 <?php
+/**
+ * @noinspection PhpMissingParentCallCommonInspection
+ */
 
 namespace SV\ReportImprovements\Search\Data;
 
 use SV\ElasticSearchEssentials\XF\Repository\ImpossibleSearchResultsException;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
+use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\SearchImprovements\Search\DiscussionTrait;
@@ -28,12 +32,18 @@ use function array_key_exists;
 use function array_keys;
 use function array_merge_recursive;
 use function array_unique;
+use function array_values;
 use function assert;
 use function count;
+use function implode;
 use function in_array;
 use function is_array;
+use function is_string;
 use function reset;
 
+/**
+ * @extends AbstractData<ExtendedReportCommentEntity>
+ */
 class ReportComment extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
@@ -42,8 +52,6 @@ class ReportComment extends AbstractData
 
     public function canViewContent(Entity $entity, &$error = null): bool
     {
-        assert($entity instanceof ExtendedReportCommentEntity);
-
         return $entity->canView();
     }
 
@@ -106,7 +114,6 @@ class ReportComment extends AbstractData
 
     public function getResultDate(Entity $entity): int
     {
-        assert($entity instanceof ExtendedReportCommentEntity);
         return $entity->comment_date;
     }
 
@@ -117,9 +124,8 @@ class ReportComment extends AbstractData
             // This function may be invoked when the add-on is disabled, just return nothing to index
             return null;
         }
-        assert($entity instanceof ExtendedReportCommentEntity);
 
-        /** @var \SV\ReportImprovements\XF\Entity\Report $report */
+        /** @var ExtendedReportEntity $report */
         $report = $entity->Report;
         if ($report === null)
         {
@@ -153,15 +159,14 @@ class ReportComment extends AbstractData
         $metaData = $this->reportRepo->getReportSearchMetaData($report);
         $this->populateDiscussionMetaData($report, $metaData);
 
-        return [
-            'state_change' => $reportComment->state_change ?: '',
-            'report_type'  => $reportComment->getReportType(),
-        ] + $metaData;
+        $metaData['state_change'] = $reportComment->state_change ?: '';
+        $metaData['report_type'] = $reportComment->getReportType();
+
+        return $metaData;
     }
 
     public function getTemplateData(Entity $entity, array $options = []): array
     {
-        assert($entity instanceof ExtendedReportCommentEntity);
         return [
             'report'        => $entity->Report,
             'reportComment' => $entity,
@@ -220,7 +225,12 @@ class ReportComment extends AbstractData
 
     public function getSearchFormData(): array
     {
-        assert($this->isAddonFullyActive);
+        if (!$this->isAddonFullyActive)
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing to index
+            return [];
+        }
+
         $form = parent::getSearchFormData();
 
         $handlers = $this->reportRepo->getReportHandlers();
@@ -258,8 +268,7 @@ class ReportComment extends AbstractData
         ]);
 
         $rawReportTypes = $constraints['c.report.type'];
-        assert(is_array($rawReportTypes));
-        if (count($rawReportTypes) !== 0)
+        if (is_array($rawReportTypes) && count($rawReportTypes) !== 0)
         {
             $reportTypes = [];
             $types = ReportType::get();
@@ -297,8 +306,7 @@ class ReportComment extends AbstractData
         }
 
         $reportStates = $constraints['c.report.state'];
-        assert(is_array($reportStates));
-        if (count($reportStates) !== 0 && !in_array('0', $reportStates, true))
+        if (is_array($reportStates) && count($reportStates) !== 0 && !in_array('0', $reportStates, true))
         {
             $reportStates = array_values(array_unique($reportStates));
 
@@ -326,8 +334,7 @@ class ReportComment extends AbstractData
         }
 
         $reportContentTypes = $constraints['c.report.content'];
-        assert(is_array($reportContentTypes));
-        if (count($reportContentTypes) !== 0)
+        if (is_array($reportContentTypes) && count($reportContentTypes) !== 0)
         {
             // MySQL backend doesn't support composing multiple queries atm
             if (!$this->isUsingElasticSearch && count($reportContentTypes) > 1)
@@ -416,8 +423,7 @@ class ReportComment extends AbstractData
 
     protected function applyTriStateFlag(Query $query, $constraints, array $urlConstraints, string $constraintField, string $searchField): void
     {
-        $action = $constraints[$constraintField] ?? '';
-        assert(is_string($action));
+        $action = (string)($constraints[$constraintField] ?? '');
         switch ($action)
         {
             case 'exclude':

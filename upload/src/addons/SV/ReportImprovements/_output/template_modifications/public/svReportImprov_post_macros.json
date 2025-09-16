@@ -1,0 +1,9 @@
+{
+    "template": "post_macros",
+    "description": "Inject 'post has open reports' banner",
+    "execution_order": 6905,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#[\\t ]*<xf:if is=\"\\$post\\.warning_message#i",
+    "replace": "<xf:macro name=\"svReportImprov_report_macros::post\" arg-post=\"{$post}\" />\n$0"
+}

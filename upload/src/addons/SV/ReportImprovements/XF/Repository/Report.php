@@ -5,6 +5,7 @@
 
 namespace SV\ReportImprovements\XF\Repository;
 
+use LogicException;
 use SV\ReportImprovements\Enums\ReportType;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
@@ -12,13 +13,15 @@ use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity
 use SV\ReportImprovements\Entity\WarningLog as WarningLogEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\StandardLib\Helper;
-use SV\WarningImprovements\Entity\WarningCategory;
+use SV\WarningImprovements\Entity\WarningCategory as WarningCategoryEntity;
 use SV\WarningImprovements\Repository\WarningCategory as WarningCategoryRepo;
 use SV\WarningImprovements\XF\Entity\WarningDefinition as ExtendedWarningDefinitionEntity;
+use SV\WarningImprovements\XF\Repository\Warning as ExtendedWarningRepo;
 use XF\Db\Exception as DbException;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use XF\Entity\Forum as ForumEntity;
 use XF\Entity\Moderator as ModeratorEntity;
+use XF\Entity\Report as ReportEntity;
 use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Entity\User as UserEntity;
 use XF\Entity\WarningDefinition as WarningDefinitionEntity;
@@ -34,12 +37,15 @@ use XF\Repository\Warning as WarningRepo;
 use XF\Search\IndexRecord;
 use XF\Search\MetadataStructure;
 use function array_keys;
+use function array_unique;
+use function array_values;
 use function assert;
 use function count;
 use function function_exists;
 use function get_class;
 use function in_array;
 use function is_array;
+use function max;
 use function sort;
 use function strlen;
 use function substr_compare;
@@ -294,14 +300,14 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param \XF\Entity\Report $report
+     * @param ReportEntity $report
      * @param bool         $doCache
      * @return int[]
      * @throws DbException
      * @noinspection PhpDocMissingThrowsInspection
      * @noinspection SqlResolve
      */
-    public function svGetUsersWhoCanHandleReport(\XF\Entity\Report $report, bool $doCache = true): array
+    public function svGetUsersWhoCanHandleReport(ReportEntity $report, bool $doCache = true): array
     {
         $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
         $reportQueueId = (int)($report->queue_id ?? 0);
@@ -318,7 +324,7 @@ class Report extends XFCP_Report
 
         // apply sanity check limit <= 0 means no limit. WHY
         $options = \XF::options();
-        $limit = (int)($options->svReportHandlingLimit ?? 100);
+        $limit = $options->svReportHandlingLimit ?? 100;
         $limit = max(0, $limit);
 
         if (!is_array($userIds))
@@ -464,7 +470,10 @@ class Report extends XFCP_Report
             }
         }
 
-        assert(is_array($userIds));
+        if (!is_array($userIds))
+        {
+            $userIds = [];
+        }
         $count = count($userIds);
         if ($limit && $count > $limit)
         {
@@ -481,12 +490,12 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param \XF\Entity\Report $report
-     * @param bool              $notifiableOnly
+     * @param ReportEntity $report
+     * @param bool         $notifiableOnly
      * @return ArrayCollection<ModeratorEntity>
      * @noinspection PhpDocMissingThrowsInspection
      */
-    public function svGetModeratorsWhoCanHandleReport(\XF\Entity\Report $report, bool $notifiableOnly = false)
+    public function svGetModeratorsWhoCanHandleReport(ReportEntity $report, bool $notifiableOnly = false)
     {
         /** @var ExtendedReportEntity $report */
         $userIds = $this->svGetUsersWhoCanHandleReport($report);
@@ -676,7 +685,7 @@ class Report extends XFCP_Report
             return $userIds;
         }
 
-        if ($entity instanceof \XF\Entity\Report)
+        if ($entity instanceof ReportEntity)
         {
             if ($alertMode !== 'watchers')
             {
@@ -710,7 +719,7 @@ class Report extends XFCP_Report
             {
                 // alerts the assigned user who likely isn't a watcher
                 $userIds[] = $report->assigned_user_id;
-                $userIds = \array_unique($userIds);
+                $userIds = array_unique($userIds);
             }
         }
         else
@@ -816,10 +825,13 @@ class Report extends XFCP_Report
      */
     public function getReportStates(): array
     {
-        $structure = Helper::getEntityStructure(\XF\Entity\Report::class);
+        $structure = Helper::getEntityStructure(ReportEntity::class);
         // This list is extended by other add-ons
         $states = $structure->columns['report_state']['allowedValues'] ?? [];
-        assert(is_array($states) && count($states) > 0);
+        if (!is_array($states) || count($states) === 0)
+        {
+            throw new LogicException('Expected allowedValues for Report::report_state to have values');
+        }
 
         return $states;
     }
@@ -907,8 +919,7 @@ class Report extends XFCP_Report
         $warningRepo = Helper::repository(WarningRepo::class);
         if (Helper::isAddOnActive('SV/WarningImprovements'))
         {
-            assert($warningRepo instanceof \SV\WarningImprovements\XF\Repository\Warning);
-
+            /** @var ExtendedWarningRepo $warningRepo */
             $categoryRepo = Helper::repository(WarningCategoryRepo::class);
             $categories = $categoryRepo->findCategoryList()->fetch();
             $categoryTree = $categoryRepo->createCategoryTree($categories);
@@ -916,12 +927,12 @@ class Report extends XFCP_Report
 
             foreach ($categoryTree->getFlattened(0) as $treeNode)
             {
+                /** @var WarningCategoryEntity $category */
                 $category = $treeNode['record'];
-                assert($category instanceof WarningCategory);
+                /** @var array<int,ExtendedWarningDefinitionEntity> $warningDefinitions */
                 $warningDefinitions = $warningsByCategory[$category->category_id] ?? [];
                 foreach ($warningDefinitions as $id => $warningDefinition)
                 {
-                    assert($warningDefinition instanceof ExtendedWarningDefinitionEntity);
                     if ($warningDefinition->isUsable())
                     {
                         $phrasePairs[$id] = $warningDefinition->title;
@@ -931,6 +942,7 @@ class Report extends XFCP_Report
         }
         else
         {
+            /** @var array<int,WarningDefinitionEntity> $definitions */
             $definitions = $warningRepo->findWarningDefinitionsForList()->fetch();
 
             $phrasePairs = [
@@ -938,7 +950,6 @@ class Report extends XFCP_Report
             ];
             foreach ($definitions as $id => $warningDefinition)
             {
-                assert($warningDefinition instanceof WarningDefinitionEntity);
                 $phrasePairs[$id] = $warningDefinition->title;
             }
         }

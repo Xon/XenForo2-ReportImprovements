@@ -1,4 +1,7 @@
 <?php
+/**
+ * @noinspection PhpMultipleClassDeclarationsInspection
+ */
 
 namespace SV\ReportImprovements\XF\Entity;
 
@@ -8,8 +11,8 @@ use SV\SearchImprovements\Repository\Search as SearchRepo;
 use SV\SearchImprovements\Search\Features\ISearchableDiscussionUser;
 use SV\SearchImprovements\Search\Features\ISearchableReplyCount;
 use SV\StandardLib\Helper;
-use XF\Behavior\Indexable;
-use XF\Behavior\IndexableContainer;
+use XF\Behavior\Indexable as IndexableBehavior;
+use XF\Behavior\IndexableContainer as IndexableContainerBehavior;
 use XF\Entity\ContainableInterface;
 use XF\Entity\ContainableTrait;
 use XF\Entity\DatableInterface;
@@ -24,6 +27,7 @@ use XF\Phrase;
 use function array_key_exists;
 use function assert;
 use function is_callable;
+use function strval;
 
 /**
  * @extends \XF\Entity\Report
@@ -428,8 +432,8 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
         $direction = (\XF::app()->options()->sv_reverse_report_comment_order ?? false) ? 'DESC' : 'ASC';
 
         $finder = Helper::finder(ReportCommentFinder::class)
-                       ->where('report_id', $this->report_id)
-                       ->order('comment_date', $direction);
+                        ->where('report_id', $this->report_id)
+                        ->order('comment_date', $direction);
 
         $finder->with($this->getCommentWith());
 
@@ -508,7 +512,7 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
             return $value->render('raw');
         }
 
-        return \strval($value);
+        return strval($value);
     }
 
     public function getReplyCountForSearch(): int
@@ -520,18 +524,18 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     public function triggerReindex(bool $reindexComments): void
     {
         $this->getBehaviors();
-        $indexable = $this->_behaviors['XF:Indexable'] ?? null;
+        /** @var ?IndexableBehavior $indexable */
+        $indexable = $this->_behaviors['XF:Indexable'] ?? $this->_behaviors[IndexableBehavior::class] ?? null;
         if ($indexable !== null)
         {
-            assert($indexable instanceof Indexable);
             $indexable->triggerReindex();
         }
         if ($reindexComments)
         {
-            $indexable = $this->_behaviors['XF:IndexableContainer'] ?? null;
+            /** @var ?IndexableContainerBehavior $indexable */
+            $indexable = $this->_behaviors['XF:IndexableContainer'] ?? $this->_behaviors[IndexableContainerBehavior::class] ?? null;
             if ($indexable !== null)
             {
-                assert($indexable instanceof IndexableContainer);
                 $indexable->triggerReindex();
             }
         }
@@ -540,21 +544,16 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
     public function svDisableIndexing(): void
     {
         $this->getBehaviors();
-        if (array_key_exists('XF:IndexableContainer', $this->_behaviors))
-        {
-           unset($this->_behaviors['XF:IndexableContainer']);
-        }
+        unset($this->_behaviors['XF:IndexableContainer'], $this->_behaviors[IndexableContainerBehavior::class]);
     }
 
     public function svEnableIndexing(): void
     {
         $this->getBehaviors();
-        if (!array_key_exists('XF:IndexableContainer', $this->_behaviors))
+        if (!array_key_exists('XF:IndexableContainer', $this->_behaviors) &&
+            !array_key_exists(IndexableContainerBehavior::class, $this->_behaviors))
         {
-            $class = \XF::extendClass(IndexableContainer::class);
-
-            $behavior = new $class($this, $this->structure()->behaviors['XF:IndexableContainer']);
-            assert($behavior instanceof IndexableContainer);
+            $behavior = Helper::newExtendedClass(IndexableContainerBehavior::class, $this, $this->structure()->behaviors['XF:IndexableContainer']);
             $behavior->onSetup();
 
             $this->_behaviors['XF:IndexableContainer'] = $behavior;

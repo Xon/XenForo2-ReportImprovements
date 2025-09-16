@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Service\\Report\\ClosureNotifier",
+    "to_class": "SV\\ReportImprovements\\XF\\Service\\Report\\ClosureNotifier",
+    "execute_order": 1,
+    "active": true
+}

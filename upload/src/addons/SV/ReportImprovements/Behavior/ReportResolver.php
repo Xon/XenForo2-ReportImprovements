@@ -1,4 +1,7 @@
 <?php
+/**
+ * @noinspection PhpMissingParentCallCommonInspection
+ */
 
 namespace SV\ReportImprovements\Behavior;
 
@@ -10,6 +13,8 @@ use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\StandardLib\Helper;
 use XF\Mvc\Entity\Behavior;
 use XF\Mvc\Entity\Entity;
+use function is_callable;
+use function strlen;
 
 class ReportResolver extends Behavior
 {
@@ -76,7 +81,7 @@ class ReportResolver extends Behavior
     protected function isJustExpired(): bool
     {
         $expiryField = $this->getConfig('expiryField') ?? '';
-        if (\strlen($expiryField) === 0 &&
+        if (strlen($expiryField) === 0 &&
             (!$this->entity->isValidGetter($expiryField) || !$this->entity->isValidColumn($expiryField)))
         {
             return false;
@@ -91,7 +96,7 @@ class ReportResolver extends Behavior
         $isExpired = false;
         $wasExpired = false;
         $isExpiredField = $this->getConfig('isExpiredField') ?? '';
-        if (\strlen($isExpiredField) !== 0 &&
+        if (strlen($isExpiredField) !== 0 &&
             (!$this->entity->isValidGetter($isExpiredField) || !$this->entity->isValidColumn($isExpiredField)))
         {
             $isExpired = (bool)$this->entity->get($isExpiredField);
@@ -113,7 +118,7 @@ class ReportResolver extends Behavior
 
     protected function getSvLogOperationType(): string
     {
-        if (\is_callable([$this->entity,'getSvLogOperationTypeForReportResolve']))
+        if (is_callable([$this->entity,'getSvLogOperationTypeForReportResolve']))
         {
             return (string)$this->entity->getSvLogOperationTypeForReportResolve();
         }
@@ -161,7 +166,7 @@ class ReportResolver extends Behavior
 
     public function logToReport(string $operationType)
     {
-        if (\strlen($operationType) === 0)
+        if (strlen($operationType) === 0)
         {
             return;
         }

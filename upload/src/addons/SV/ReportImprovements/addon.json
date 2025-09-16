@@ -2,8 +2,8 @@
     "legacy_addon_id": "SV_ReportImprovements",
     "title": "Report Improvements",
     "description": "Unifies reports with warnings, reply-bans and more",
-    "version_id": 1757743985,
-    "version_string": "2.20.8",
+    "version_id": 1755309069,
+    "version_string": "2.21.0",
     "dev": "Atelier Aphelion",
     "dev_url": "https://atelieraphelion.com",
     "faq_url": "",
@@ -14,8 +14,8 @@
     },
     "require": {
         "SV/StandardLib": [
-            2001210000,
-            "Standard Library by Xon v1.21.0+"
+            2001220000,
+            "Standard Library by Xon v1.22.0+"
         ],
         "XF": [
             "2.1.0",

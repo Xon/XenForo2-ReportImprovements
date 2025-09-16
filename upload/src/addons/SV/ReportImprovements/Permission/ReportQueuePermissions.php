@@ -45,7 +45,6 @@ class ReportQueuePermissions extends FlatContentPermissions
     {
         // being notified on permission changes is surprisingly challenging
         $reportQueueRepo = Helper::repository(ReportQueueRepo::class);
-        assert($reportQueueRepo instanceof ReportQueueRepo);
         $reportQueueRepo->resetNonModeratorsWhoCanHandleReportCacheLater();
 
         parent::rebuildCombination($combination, $basePerms);

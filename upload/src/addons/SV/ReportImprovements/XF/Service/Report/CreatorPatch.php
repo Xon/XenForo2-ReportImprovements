@@ -7,6 +7,7 @@ use XF\Entity\Report as ReportEntity;
 use XF\Entity\Thread as ThreadEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Repository\Thread as ThreadRepo;
+use function array_merge;
 
 /**
  * @extends \XF\Service\Report\Creator
@@ -33,7 +34,7 @@ class CreatorPatch extends XFCP_CreatorPatch
         if ($this->threadCreator && (\XF::options()->svLogToReportCentreAndForum ?? false))
         {
             $this->report->preSave();
-            $errors = \array_merge($errors, $this->report->getErrors());
+            $errors = array_merge($errors, $this->report->getErrors());
         }
 
         return $errors;

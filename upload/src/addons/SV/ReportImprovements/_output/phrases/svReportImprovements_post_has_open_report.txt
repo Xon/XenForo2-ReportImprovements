@@ -1,0 +1,1 @@
+Post has an open report, with {reports} user reports and {comments} comments on {first_report}

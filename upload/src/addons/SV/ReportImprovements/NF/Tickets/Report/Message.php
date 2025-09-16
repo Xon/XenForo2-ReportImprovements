@@ -2,7 +2,8 @@
 
 namespace SV\ReportImprovements\NF\Tickets\Report;
 
-use NF\Tickets\Entity\Ticket;
+use NF\Tickets\Entity\Message as TicketMessageEntity;
+use NF\Tickets\Entity\Ticket as TicketEntity;
 use NF\Tickets\Search\Data\Message as MessageSearch;
 use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
@@ -27,8 +28,8 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
     {
         if ($this->searchHandler === null)
         {
+            /** @var MessageSearch $handler */
             $handler = \XF::app()->search()->handler($this->contentType);
-            assert($handler instanceof MessageSearch);
             $this->searchHandler = $handler;
         }
 
@@ -43,8 +44,8 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
     {
         parent::setupReportEntityContent($report, $content);
 
-        /** @var \NF\Tickets\Entity\Message $content */
-        /** @var Ticket $ticket */
+        /** @var TicketMessageEntity $content */
+        /** @var TicketEntity $ticket */
         $ticket = $content->Ticket;
         $contentInfo = $report->content_info;
         $contentInfo['message_date'] = $content->message_date;
@@ -57,7 +58,7 @@ class Message extends XFCP_Message implements ContentInterface, ReportSearchForm
         $contentDate = $report->content_info['message_date'] ?? null;
         if ($contentDate === null)
         {
-            /** @var \NF\Tickets\Entity\Message $content */
+            /** @var TicketMessageEntity $content */
             $content = $report->Content;
             if ($content === null)
             {

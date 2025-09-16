@@ -105,7 +105,7 @@ class ReportComment extends AbstractHandler
      *
      * @param Entity $content
      * @return string|Phrase|null
-     * @noinspection PhpReturnDocTypeMismatchInspection
+     * @noinspection PhpMissingParentCallCommonInspection
      */
     public function getContentTitle(Entity $content)
     {

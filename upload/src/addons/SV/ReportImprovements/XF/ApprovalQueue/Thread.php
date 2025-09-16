@@ -5,10 +5,10 @@ namespace SV\ReportImprovements\XF\ApprovalQueue;
 use SV\ReportImprovements\ApprovalQueue\IContainerToContent;
 use XF\Entity\Thread as ThreadEntity;
 use XF\Mvc\Entity\Entity;
-use function assert;
 
 /**
  * @extends \XF\ApprovalQueue\Thread
+ * @extends IContainerToContent<ThreadEntity>
  */
 class Thread extends XFCP_Thread implements IContainerToContent
 {
@@ -24,7 +24,6 @@ class Thread extends XFCP_Thread implements IContainerToContent
 
     public function getReportableContent(Entity $content): ?Entity
     {
-        assert($content instanceof ThreadEntity);
         return $content->FirstPost;
     }
 }

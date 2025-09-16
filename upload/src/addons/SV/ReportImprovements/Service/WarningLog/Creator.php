@@ -14,6 +14,7 @@ use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity
 use SV\ReportImprovements\XF\Entity\ThreadReplyBan as ExtendedThreadReplyBanEntity;
 use SV\ReportImprovements\XF\Entity\Warning as ExtendedWarningEntity;
 use SV\ReportImprovements\XF\Service\Report\Commenter as ExtendedReportCommenterService;
+use SV\ReportImprovements\XF\Service\Report\Creator as ExtendedReportCreatorService;
 use SV\StandardLib\Helper;
 use XF\App;
 use XF\Entity\Post as PostEntity;
@@ -25,7 +26,14 @@ use XF\Phrase;
 use XF\PrintableException;
 use XF\Service\AbstractService;
 use XF\Service\Report\Commenter as ReportCommenterService;
+use XF\Service\Report\Creator as ReportCreatorService;
 use XF\Service\ValidateAndSavableTrait;
+use function array_unshift;
+use function count;
+use function is_callable;
+use function is_numeric;
+use function join;
+use function strlen;
 
 class Creator extends AbstractService
 {
@@ -62,9 +70,7 @@ class Creator extends AbstractService
     /** @var ExtendedReportCommentEntity */
     protected $reportComment;
 
-    /**
-     * @var \XF\Service\Report\Creator|\SV\ReportImprovements\XF\Service\Report\Creator
-     */
+    /** @var ReportCreatorService|ExtendedReportCreatorService */
     protected $reportCreator;
 
     /**
@@ -208,7 +214,7 @@ class Creator extends AbstractService
 
         if ($this->reportCommenter)
         {
-            if (\is_callable([$this->reportCommenter, 'setAutoReport']))
+            if (is_callable([$this->reportCommenter, 'setAutoReport']))
             {
                 $this->reportCommenter->setAutoReport(true);
             }
@@ -217,7 +223,7 @@ class Creator extends AbstractService
         }
         else if ($this->reportCreator)
         {
-            if (\is_callable([$this->reportCreator, 'setAutoReport']))
+            if (is_callable([$this->reportCreator, 'setAutoReport']))
             {
                 $this->reportCreator->setAutoReport(true);
             }
@@ -296,7 +302,7 @@ class Creator extends AbstractService
         }
         else if ((\XF::app()->options()->sv_report_new_warnings ?? false) && $warning->Content)
         {
-            $this->reportCreator = Helper::service(\XF\Service\Report\Creator::class, $warning->content_type, $warning->Content);
+            $this->reportCreator = Helper::service(ReportCreatorService::class, $warning->content_type, $warning->Content);
             $report = $this->reportCreator->getReport();
 
             $warning->clearCache('Report');
@@ -315,7 +321,7 @@ class Creator extends AbstractService
     protected function isLoggingForumBanLinkToReportComment(): bool
     {
         return (Helper::isAddOnActive('SV/ForumBan')
-            && (\XF::config('svIsLoggingForumBanLinkToReportComment') ?? true)
+                && (\XF::config('svIsLoggingForumBanLinkToReportComment') ?? true)
         );
     }
 
@@ -355,7 +361,7 @@ class Creator extends AbstractService
         $warningLog->expiry_date = (int)$threadReplyBan->expiry_date;
         $warningLog->is_expired = $threadReplyBan->expiry_date > \XF::$time;
         $warningLog->reply_ban_thread_id = $threadReplyBan->thread_id;
-        $warningLog->reply_ban_post_id = $content instanceof PostEntity ? $content->getEntityId() : 0;
+        $warningLog->reply_ban_post_id = $content instanceof PostEntity ? $content->getEntityId() : null;
         $warningLog->user_id = $threadReplyBan->user_id;
         $warningLog->warning_user_id = \XF::visitor()->user_id;
         $warningLog->warning_definition_id = null;
@@ -375,7 +381,7 @@ class Creator extends AbstractService
         }
         else
         {
-            $this->reportCreator = Helper::service(\XF\Service\Report\Creator::class, $content->getEntityContentType(), $content);
+            $this->reportCreator = Helper::service(ReportCreatorService::class, $content->getEntityContentType(), $content);
             $report = $this->reportCreator->getReport();
         }
 
@@ -431,7 +437,7 @@ class Creator extends AbstractService
         }
         else
         {
-            $this->reportCreator = Helper::service(\XF\Service\Report\Creator::class, $content->getEntityContentType(), $content);
+            $this->reportCreator = Helper::service(ReportCreatorService::class, $content->getEntityContentType(), $content);
             $report = $this->reportCreator->getReport();
         }
 
@@ -460,7 +466,7 @@ class Creator extends AbstractService
     protected function _validate()
     {
         $showErrorException = function ($errorFor, array $errors, array &$errorOutput) {
-            if (\count($errors))
+            if (count($errors))
             {
                 foreach ($errors as $key => $error)
                 {
@@ -468,7 +474,7 @@ class Creator extends AbstractService
                     {
                         $error = $error->render('raw');
                     }
-                    if (\is_numeric($key))
+                    if (is_numeric($key))
                     {
                         $errorOutput[] = "{$errorFor}: {$error}";
                     }
@@ -510,7 +516,7 @@ class Creator extends AbstractService
         {
             if ($this->warning)
             {
-                \array_unshift($errorOutput, "Warning:{$this->warning->warning_id}");
+                array_unshift($errorOutput, "Warning:{$this->warning->warning_id}");
             }
             throw new \RuntimeException(join(", \n", $errorOutput));
         }
@@ -620,7 +626,7 @@ class Creator extends AbstractService
             'state_change'   => $resolveState,
         ], ['forceSet' => true]);
 
-        if (\strlen($resolveState) !== 0)
+        if (strlen($resolveState) !== 0)
         {
             $report = $this->report;
             $report->set('report_state', $resolveState, ['forceSet' => true]);
@@ -642,7 +648,7 @@ class Creator extends AbstractService
             'state_change'   => $resolveState,
         ], ['forceSet' => true]);
 
-        if (\strlen($resolveState) !== 0)
+        if (strlen($resolveState) !== 0)
         {
             $this->report->set('report_state', $resolveState, ['forceSet' => true]);
             $this->reportComment->addCascadedSave($this->report);

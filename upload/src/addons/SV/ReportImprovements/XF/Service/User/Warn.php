@@ -1,8 +1,12 @@
 <?php
+/**
+ * @noinspection PhpMultipleClassDeclarationsInspection
+ */
 
 namespace SV\ReportImprovements\XF\Service\User;
 
 use SV\ReportImprovements\Entity\IReportResolver;
+use SV\ReportImprovements\SV\ForumBan\Entity\ForumBan as ExtendedForumBanEntity;
 use SV\ReportImprovements\XF\Entity\Warning as ExtendedWarningEntity;
 use SV\ReportImprovements\XF\Service\Thread\ReplyBan as ExtendedReplyBanService;
 use SV\StandardLib\Helper;
@@ -11,6 +15,8 @@ use XF\Entity\Warning as WarningEntity;
 use XF\Mvc\Entity\Entity;
 use XF\PrintableException;
 use XF\Service\Thread\ReplyBan as ReplyBanEntity;
+use function count;
+use function property_exists;
 
 /**
  * @extends \XF\Service\User\Warn
@@ -68,6 +74,33 @@ class Warn extends XFCP_Warn
         $this->warning->setOption('svCanReopenReport', false);
     }
 
+    public function setSvForumBanFromInput(array $input)
+    {
+        parent::setSvForumBanFromInput($input);
+
+        if (count($this->svForumBanServices) === 0)
+        {
+            return;
+        }
+
+        $postId = $this->content instanceof PostEntity ? $this->content->post_id : null;
+        if ($postId === null)
+        {
+            return;
+        }
+
+        foreach ($this->svForumBanServices as $forumBanService)
+        {
+            /** @var ExtendedForumBanEntity $forumBan */
+            $forumBan = $forumBanService->getForumBan();
+            $forumBan->post_id = $postId;
+            // prevent the forum-ban from re-opening a resolved report
+            $forumBan->setOption('svCanReopenReport', false);
+        }
+        // prevent the warning from re-opening a resolved report
+        $this->warning->setOption('svCanReopenReport', false);
+    }
+
     /**
      * @return array
      */
@@ -96,8 +129,19 @@ class Warn extends XFCP_Warn
 
         if ($this->replyBanSvc)
         {
-            // ensure the reply-ban is saved transactionally
+            // ensure the reply-ban is saved transactionally and *before*
             $this->warning->setSvReplyBan($this->replyBanSvc->getReplyBan());
+        }
+
+        if (property_exists($this, 'svForumBanServices'))
+        {
+            // ensure the forum-ban is saved transactionally
+            $forumBans = [];
+            foreach ($this->svForumBanServices as $forumBanService)
+            {
+                $forumBans[] = $forumBanService->getForumBan();
+            }
+            $this->warning->setSvForumBans($forumBans);
         }
 
         $warning = parent::_save();

@@ -6,9 +6,10 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Globals;
 use SV\StandardLib\Helper;
+use XF\Entity\User as UserEntity;
 use XF\Finder\Report as ReportFinder;
-use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
+use function array_key_exists;
 
 /**
  * @extends \XF\Entity\ThreadReplyBan
@@ -25,11 +26,11 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
     use ReportResolverTrait;
 
     /**
-     * @return Report|Entity|null
+     * @return Report|null
      */
     protected function getReport()
     {
-        if (\array_key_exists('Report', $this->_relations))
+        if (array_key_exists('Report', $this->_relations))
         {
             return $this->_relations['Report'];
         }
@@ -37,15 +38,15 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
         if ($this->post_id !== null)
         {
             return Helper::finder(ReportFinder::class)
-                        ->where('content_type', 'post')
-                        ->where('content_id', $this->post_id)
-                        ->fetchOne();
+                         ->where('content_type', 'post')
+                         ->where('content_id', $this->post_id)
+                         ->fetchOne();
         }
 
         return Helper::finder(ReportFinder::class)
-                    ->where('content_type', 'user')
-                    ->where('content_id', $this->user_id)
-                    ->fetchOne();
+                     ->where('content_type', 'user')
+                     ->where('content_id', $this->user_id)
+                     ->fetchOne();
     }
 
     protected function _postDelete()
@@ -61,7 +62,7 @@ class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
     }
 
     /**
-     * @return \XF\Entity\User|null
+     * @return UserEntity|null
      */
     public function getResolveUser()
     {

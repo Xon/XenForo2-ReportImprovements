@@ -24,7 +24,6 @@ class Report extends XFCP_Report
     {
         if (\XF::options()->svRichTextReport ?? false)
         {
-            /** @var EditorPlugin $editorPlugin */
             $editorPlugin = Helper::plugin($this, EditorPlugin::class);
             $message = $editorPlugin->fromInput('message');
             // if the editorPlugin is called again, 'message' is used before 'message_html'

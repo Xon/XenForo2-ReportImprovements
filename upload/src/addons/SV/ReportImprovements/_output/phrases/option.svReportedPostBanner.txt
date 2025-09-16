@@ -1,0 +1,1 @@
+Show 'post has open report' banner on posts for moderators

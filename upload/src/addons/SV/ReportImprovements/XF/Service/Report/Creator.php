@@ -9,6 +9,8 @@ use SV\StandardLib\Helper;
 use XF\Entity\Report as ReportEntity;
 use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Repository\Report as ReportRepo;
+use XF\Service\Report\Notifier as ReportNotifierService;
+use SV\ReportImprovements\XF\Service\Report\Notifier as ExtendedReportNotifierService;
 
 /**
  * @extends \XF\Service\Report\Creator
@@ -74,8 +76,8 @@ class Creator extends XFCP_Creator
         $reportRepo = Helper::repository(ReportRepo::class);
         $userIdsToAlert = $reportRepo->findUserIdsToAlertForSvReportImprov($this->report);
 
-        /** @var Notifier $notifier */
-        $notifier = Helper::service(\XF\Service\Report\Notifier::class, $this->report, $this->comment);
+        /** @var ExtendedReportNotifierService $notifier */
+        $notifier = Helper::service(ReportNotifierService::class, $this->report, $this->comment);
         $notifier->setCommentersUserIds($userIdsToAlert);
         $notifier->notify();
     }

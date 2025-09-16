@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use XF\Entity\Report as ReportEntity;
 use XF\Repository\Report as ReportRepo;
+use function assert;
 use function count;
 
 class ExportReportUsers extends Command
@@ -42,8 +43,8 @@ class ExportReportUsers extends Command
 
             return 1;
         }
+        /** @var ExtendedReportRepo $reportRepo */
         $reportRepo = Helper::repository(ReportRepo::class);
-        assert($reportRepo instanceof ExtendedReportRepo);
 
         $cache = (bool)$input->getOption('cache');
 

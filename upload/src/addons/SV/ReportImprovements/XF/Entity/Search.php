@@ -36,8 +36,8 @@ class Search extends XFCP_Search
         // todo simplify this
         if ($key === 'report_state' && is_array($value))
         {
+            /** @var ExtendedReportRepo $reportRepo */
             $reportRepo = Helper::repository(ReportRepo::class);
-            assert($reportRepo instanceof ExtendedReportRepo);
             $states = $reportRepo->getReportStatePairs();
 
             foreach ($value as $subKey => $id)
@@ -66,8 +66,8 @@ class Search extends XFCP_Search
         }
         else if ($key === 'report_content' && is_array($value))
         {
+            /** @var ExtendedReportRepo $reportRepo */
             $reportRepo = Helper::repository(ReportRepo::class);
-            assert($reportRepo instanceof ExtendedReportRepo);
             $states = $reportRepo->getReportContentTypePhrasePairs(true);
 
             foreach ($value as $subKey => $id)
@@ -96,8 +96,8 @@ class Search extends XFCP_Search
         }
         else if ($key === 'warning_definition' && is_array($value))
         {
+            /** @var ExtendedReportRepo $reportRepo */
             $reportRepo = Helper::repository(ReportRepo::class);
-            assert($reportRepo instanceof ExtendedReportRepo);
             $states = $reportRepo->getWarningDefinitionsForSearch();
 
             foreach ($value as $subKey => $id)

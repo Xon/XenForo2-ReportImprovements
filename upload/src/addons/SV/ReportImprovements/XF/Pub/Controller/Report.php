@@ -7,6 +7,7 @@ use SV\ReportImprovements\Service\Report\CommentEditor;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
 use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
+use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
 use SV\ReportImprovements\XF\Service\Report\Commenter as ExtendedReportCommenterService;
 use SV\StandardLib\Helper;
 use XF\ControllerPlugin\BbCodePreview as BbCodePreviewPlugin;
@@ -15,6 +16,7 @@ use XF\ControllerPlugin\Ip as IpPlugin;
 use XF\ControllerPlugin\Reaction as ReactionControllerPlugin;
 use XF\Entity\ConversationMessage;
 use XF\Entity\ConversationRecipient;
+use XF\Entity\Report as ReportEntity;
 use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Finder\Warning as WarningFinder;
 use XF\Mvc\Entity\AbstractCollection;
@@ -28,6 +30,7 @@ use XF\Repository\Report as ReportRepo;
 use XF\Repository\Unfurl as UnfurlRepo;
 use XF\Service\Conversation\Inviter as InviterService;
 use XF\Service\Report\Commenter as ReportCommenterService;
+use function is_array;
 
 /**
  * @extends \XF\Pub\Controller\Report
@@ -84,13 +87,13 @@ class Report extends XFCP_Report
         if ($reply instanceof ViewReply)
         {
             $reports = [];
-            /** @var \XF\Entity\Report $report */
+            /** @var ReportEntity $report */
             $openReports = $reply->getParam('openReports');
             if ($openReports instanceof AbstractCollection)
             {
                 $openReports = $openReports->toArray();
             }
-            if (\is_array($openReports))
+            if (is_array($openReports))
             {
                 $reports = $reports + $openReports;
             }
@@ -99,12 +102,12 @@ class Report extends XFCP_Report
             {
                 $closedReports = $closedReports->toArray();
             }
-            if (\is_array($closedReports))
+            if (is_array($closedReports))
             {
                 $reports = $reports + $closedReports;
             }
 
-            /** @var \SV\ReportImprovements\XF\Repository\Report $reportRepo */
+            /** @var ExtendedReportRepo $reportRepo */
             $reportRepo = Helper::repository(ReportRepo::class);
             $reportRepo->filterViewableReports(new ArrayCollection($reports));
         }
@@ -280,7 +283,6 @@ class Report extends XFCP_Report
      */
     protected function setupReportCommentEdit(ReportCommentEntity $reportComment)
     {
-        /** @var EditorPlugin $editorPlugin */
         $editorPlugin = Helper::plugin($this, EditorPlugin::class);
         $message = $editorPlugin->fromInput('message');
 
@@ -299,11 +301,11 @@ class Report extends XFCP_Report
     }
 
     /**
-     * @param \XF\Entity\Report|ExtendedReportEntity $report
+     * @param ReportEntity|ExtendedReportEntity $report
      * @return ReportCommenterService
      * @throws ReplyException
      */
-    protected function setupReportComment(\XF\Entity\Report $report)
+    protected function setupReportComment(ReportEntity $report)
     {
         if (!$report->canUpdate($error))
         {
@@ -399,7 +401,6 @@ class Report extends XFCP_Report
 
         $reactionLinkParams = [];
 
-        /** @var ReactionControllerPlugin $reactionControllerPlugin */
         $reactionControllerPlugin = Helper::plugin($this, ReactionControllerPlugin::class);
         return $reactionControllerPlugin->actionReact(
             $reportComment,
@@ -421,7 +422,6 @@ class Report extends XFCP_Report
         $breadcrumbs = $reportComment->getBreadcrumbs();
         $title = \XF::phrase('sv_members_who_reacted_this_report_comment');
 
-        /** @var ReactionControllerPlugin $reactionControllerPlugin */
         $reactionControllerPlugin = Helper::plugin($this, ReactionControllerPlugin::class);
         return $reactionControllerPlugin->actionReactions(
             $reportComment,
@@ -507,7 +507,6 @@ class Report extends XFCP_Report
             $attachments = $attachmentData['attachments'];
         }
 
-        /** @var BbCodePreviewPlugin $bbCodePreview */
         $bbCodePreview = Helper::plugin($this, BbCodePreviewPlugin::class);
 
         return $bbCodePreview->actionPreview($reportComment->message, 'report_comment', $reportComment->User, $attachments, $report->canViewAttachments());
@@ -516,7 +515,7 @@ class Report extends XFCP_Report
     /**
      * @param int   $reportId
      * @param array $extraWith
-     * @return \XF\Entity\Report
+     * @return ReportEntity
      * @throws ReplyException
      */
     protected function assertViewableReport($reportId, array $extraWith = [])

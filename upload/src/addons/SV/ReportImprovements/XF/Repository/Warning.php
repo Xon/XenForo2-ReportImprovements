@@ -4,6 +4,7 @@ namespace SV\ReportImprovements\XF\Repository;
 
 use SV\ReportImprovements\Globals;
 use XF\Entity\User as UserEntity;
+use function in_array;
 
 /**
  * @extends \XF\Repository\Warning
@@ -41,7 +42,7 @@ class Warning extends XFCP_Warning
     {
         $options = \XF::options();
 
-        if (\in_array('' . $warningDefinitionId, $options->svSkipReplyBansForWarning ?? [], true))
+        if (in_array('' . $warningDefinitionId, $options->svSkipReplyBansForWarning ?? [], true))
         {
             return 'none';
         }

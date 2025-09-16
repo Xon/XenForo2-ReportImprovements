@@ -97,6 +97,7 @@ namespace SV\ReportImprovements\XF\Repository
 	class XFCP_ApprovalQueue extends \XF\Repository\ApprovalQueue {}
 	class XFCP_ApprovalQueuePatch extends \XF\Repository\ApprovalQueue {}
 	class XFCP_PermissionCombination extends \XF\Repository\PermissionCombination {}
+	class XFCP_Post extends \XF\Repository\Post {}
 	class XFCP_Report extends \XF\Repository\Report {}
 	class XFCP_ReportPatch extends \XF\Repository\Report {}
 	class XFCP_ThreadReplyBan extends \XF\Repository\ThreadReplyBan {}
@@ -105,6 +106,7 @@ namespace SV\ReportImprovements\XF\Repository
 
 namespace SV\ReportImprovements\XF\Service\Report
 {
+	class XFCP_ClosureNotifier extends \XF\Service\Report\ClosureNotifier {}
 	class XFCP_Commenter extends \XF\Service\Report\Commenter {}
 	class XFCP_CommentPreparer extends \XF\Service\Report\CommentPreparer {}
 	class XFCP_Creator extends \XF\Service\Report\Creator {}

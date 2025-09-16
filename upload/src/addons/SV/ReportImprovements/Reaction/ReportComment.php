@@ -16,8 +16,7 @@ class ReportComment extends AbstractHandler
     /**
      * @param Entity|ExtendedReportCommentEntity $entity
      * @param Phrase|String|null $error
-     *
-     * @return mixed
+     * @return bool
      */
     public function canViewContent(Entity $entity, &$error = null)
     {

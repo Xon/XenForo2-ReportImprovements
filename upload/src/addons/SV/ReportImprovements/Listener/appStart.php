@@ -6,6 +6,7 @@ use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
 use SV\StandardLib\Helper;
 use XF\Pub\App;
 use XF\Repository\Report as ReportRepo;
+use function is_callable;
 
 abstract class appStart
 {
@@ -20,7 +21,7 @@ abstract class appStart
 
         if ($visitor->is_moderator ||
             !$session ||
-            !\is_callable([$visitor,'canViewReports']) || !$visitor->canViewReports())
+            !is_callable([$visitor,'canViewReports']) || !$visitor->canViewReports())
         {
             return;
         }

@@ -1,4 +1,7 @@
 <?php
+/**
+ * @noinspection PhpMissingParentCallCommonInspection
+ */
 
 namespace SV\ReportImprovements\Search\Data;
 
@@ -32,6 +35,9 @@ use function is_array;
 use function is_string;
 use function reset;
 
+/**
+ * @extends AbstractData<WarningLogEntity>
+ */
 class WarningLog extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
@@ -40,8 +46,6 @@ class WarningLog extends AbstractData
 
     public function canViewContent(Entity $entity, &$error = null): bool
     {
-        assert($entity instanceof WarningLogEntity);
-
         return $entity->canView();
     }
 
@@ -127,7 +131,6 @@ class WarningLog extends AbstractData
 
     public function getResultDate(Entity $entity): int
     {
-        assert($entity instanceof WarningLogEntity);
         return $entity->ReportComment->comment_date;
     }
 
@@ -139,7 +142,6 @@ class WarningLog extends AbstractData
             return null;
         }
 
-        assert($entity instanceof WarningLogEntity);
         $reportComment = $entity->ReportComment;
         if ($reportComment === null || $reportComment->Report === null)
         {
@@ -216,7 +218,6 @@ class WarningLog extends AbstractData
 
     public function getTemplateData(Entity $entity, array $options = []): array
     {
-        assert($entity instanceof WarningLogEntity);
         return [
             'warningLog'    => $entity,
             'reportComment' => $entity->ReportComment,
@@ -291,7 +292,12 @@ class WarningLog extends AbstractData
 
     public function getSearchFormData(): array
     {
-        assert($this->isAddonFullyActive);
+        if (!$this->isAddonFullyActive)
+        {
+            // This function may be invoked when the add-on is disabled, just return nothing to index
+            return [];
+        }
+
         $form = parent::getSearchFormData();
 
         $handlers = $this->reportRepo->getReportHandlers();
@@ -352,8 +358,7 @@ class WarningLog extends AbstractData
         }
 
         $rawWarningTypes = $constraints['c.warning.type'];
-        assert(is_array($rawWarningTypes));
-        if (count($rawWarningTypes) !== 0)
+        if (is_array($rawWarningTypes) && count($rawWarningTypes) !== 0)
         {
             $warningTypes = [];
             $types = WarningType::get();
@@ -387,8 +392,7 @@ class WarningLog extends AbstractData
             $this->getWarningLogQueryTableReference(), 'warning_log'
         );
 
-        $expired = $constraints['c.warning.expiry_type'];
-        assert(is_string($expired));
+        $expired = (string)($constraints['c.warning.expiry_type'] ?? '');
         switch ($expired)
         {
             case 'active':
@@ -419,8 +423,7 @@ class WarningLog extends AbstractData
         );
 
         $warningDefinitions = $constraints['c.warning.definition'];
-        assert(is_array($rawWarningTypes));
-        if (count($warningDefinitions) !== 0)
+        if (is_array($rawWarningTypes) && count($warningDefinitions) !== 0)
         {
             $warningDefinitions = array_unique($warningDefinitions);
 

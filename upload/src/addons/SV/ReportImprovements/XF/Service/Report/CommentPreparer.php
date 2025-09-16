@@ -3,10 +3,13 @@
 namespace SV\ReportImprovements\XF\Service\Report;
 
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
+use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\StandardLib\Helper;
 use XF\Behavior\Indexable;
+use XF\Behavior\Indexable as IndexableBehavior;
 use XF\Behavior\IndexableContainer;
+use XF\Behavior\IndexableContainer as IndexableContainerBehavior;
 use XF\Mvc\Entity\Entity;
 use XF\Repository\Ip as IpRepo;
 use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
@@ -121,20 +124,20 @@ class CommentPreparer extends XFCP_CommentPreparer
     protected function triggerReindex(Entity $entity, string $field): void
     {
         $behaviors = $entity->getBehaviors();
-        $behavior = $behaviors['XF:Indexable'] ?? null;
+        /** @var ?IndexableBehavior $behavior */
+        $behavior = $behaviors['XF:Indexable'] ?? $behaviors[IndexableBehavior::class] ?? null;
         if ($behavior !== null)
         {
-            assert($behavior instanceof Indexable);
             $checkForUpdates = $behavior->getConfig('checkForUpdates') ?? [];
             if (in_array($field, $checkForUpdates, true))
             {
                 $behavior->triggerReindex();
             }
         }
-        $behavior = $behaviors['XF:IndexableContainer'] ?? null;
+        /** @var ?IndexableContainerBehavior $behavior */
+        $behavior = $behaviors['XF:IndexableContainer'] ?? $behaviors[IndexableContainerBehavior::class] ?? null;
         if ($behavior !== null)
         {
-            assert($behavior instanceof IndexableContainer);
             $checkForUpdates = $behavior->getConfig('checkForUpdates') ?? [];
             if (in_array($field, $checkForUpdates, true))
             {

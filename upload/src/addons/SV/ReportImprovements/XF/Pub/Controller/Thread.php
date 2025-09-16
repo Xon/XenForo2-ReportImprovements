@@ -3,11 +3,12 @@
 namespace SV\ReportImprovements\XF\Pub\Controller;
 
 use SV\ReportImprovements\Globals;
-use SV\ReportImprovements\XF\ControllerPlugin\Warn as WarnPlugin;
+use SV\ReportImprovements\XF\ControllerPlugin\Warn as ExtendedWarnPlugin;
 use SV\ReportImprovements\XF\Entity\ThreadReplyBan as ExtendedThreadReplyBanEntity;
 use SV\ReportImprovements\XF\Service\Thread\ReplyBan as ExtendedReplyBanService;
 use SV\StandardLib\Helper;
-use XF\ControllerPlugin\Warn;
+use XF\ControllerPlugin\Warn as WarnPlugin;
+use XF\Entity\Thread as ThreadEntity;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\View as ViewReply;
@@ -54,7 +55,7 @@ class Thread extends XFCP_Thread
         return $reply;
     }
 
-    protected function setupThreadReplyBan(\XF\Entity\Thread $thread)
+    protected function setupThreadReplyBan(ThreadEntity $thread)
     {
         /** @var ExtendedReplyBanService $replyBanSrv */
         $replyBanSrv = parent::setupThreadReplyBan($thread);
@@ -65,8 +66,8 @@ class Thread extends XFCP_Thread
 
         $replyBan = $replyBanSrv->getReplyBan();
 
-        /** @var WarnPlugin $warnPlugin */
-        $warnPlugin = Helper::plugin($this, Warn::class);
+        /** @var ExtendedWarnPlugin $warnPlugin */
+        $warnPlugin = Helper::plugin($this, WarnPlugin::class);
         $warnPlugin->resolveReportFor($replyBan);
 
         return $replyBanSrv;

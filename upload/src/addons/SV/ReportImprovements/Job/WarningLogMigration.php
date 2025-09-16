@@ -11,6 +11,8 @@ use XF\Entity\Post as PostEntity;
 use XF\Entity\User as UserEntity;
 use XF\Entity\Warning as WarningEntity;
 use XF\Job\AbstractRebuildJob;
+use function sprintf;
+use function stripos;
 
 class WarningLogMigration extends AbstractRebuildJob
 {
@@ -84,7 +86,7 @@ class WarningLogMigration extends AbstractRebuildJob
                 {
                     // setupReportEntityContent can throw if the child content is detached from the parent
                     // but there is really no sane way to detect this ahead of time
-                    if (\stripos($e->getMessage(), 'Attempt to read property') !== false)
+                    if (stripos($e->getMessage(), 'Attempt to read property') !== false)
                     {
                         \XF::logException($e);
 

@@ -31,8 +31,8 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
     {
         if ($this->searchHandler === null)
         {
+            /** @var PostSearch $handler */
             $handler = \XF::app()->search()->handler($this->contentType);
-            assert($handler instanceof PostSearch);
             $this->searchHandler = $handler;
         }
 
@@ -45,7 +45,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
      */
     public function canView(ReportEntity $report)
     {
-        /** @var \SV\ReportImprovements\XF\Entity\User $visitor */
+        /** @var ExtendedUserEntity $visitor */
         $visitor = \XF::visitor();
 
         $nodeId = (int)($report->content_info['node_id'] ?? 0);
@@ -74,7 +74,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
     }
 
     /**
-     * @param ReportEntity                                 $report
+     * @param ReportEntity              $report
      * @param Entity|ExtendedPostEntity $content
      */
     public function setupReportEntityContent(ReportEntity $report, Entity $content)
@@ -94,7 +94,7 @@ class Post extends XFCP_Post implements ContentInterface, ReportSearchFormInterf
         $contentDate = $report->content_info['post_date'] ?? null;
         if ($contentDate === null)
         {
-            /** @var \XF\Entity\Post|null $content */
+            /** @var PostEntity|null $content */
             $content = $report->Content;
             if ($content === null)
             {

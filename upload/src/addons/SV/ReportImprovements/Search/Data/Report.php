@@ -1,4 +1,7 @@
 <?php
+/**
+ * @noinspection PhpMissingParentCallCommonInspection
+ */
 
 namespace SV\ReportImprovements\Search\Data;
 
@@ -13,6 +16,9 @@ use XF\Search\MetadataStructure;
 use function assert;
 use function is_array;
 
+/**
+ * @extends AbstractData<ExtendedReportEntity>
+ */
 class Report extends AbstractData
 {
     protected static $svDiscussionEntity = \XF\Entity\Report::class;
@@ -22,7 +28,6 @@ class Report extends AbstractData
     /** @noinspection PhpMissingParentCallCommonInspection */
     public function canViewContent(Entity $entity, &$error = null): bool
     {
-        assert($entity instanceof ExtendedReportEntity);
         return $entity->canView();
     }
 
@@ -73,6 +78,7 @@ class Report extends AbstractData
     /**
      * @param bool $forView
      * @return array
+     * @noinspection PhpMissingParentCallCommonInspection
      */
     public function getEntityWith($forView = false): array
     {
@@ -89,7 +95,6 @@ class Report extends AbstractData
 
     public function getResultDate(Entity $entity): int
     {
-        assert($entity instanceof ExtendedReportEntity);
         return $entity->first_report_date;
     }
 
@@ -149,7 +154,6 @@ class Report extends AbstractData
 
     public function getTemplateData(Entity $entity, array $options = []): array
     {
-        assert($entity instanceof ExtendedReportEntity);
         return [
             'report'  => $entity,
             'options' => $options,

@@ -1,4 +1,7 @@
 <?php
+/**
+ * @noinspection PhpMultipleClassDeclarationsInspection
+ */
 
 namespace SV\ReportImprovements\XF\Entity;
 
@@ -240,7 +243,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
     }
 
     /**
-     * @return mixed|string|string[]|null
+     * @return string|null
      */
     public function getViewableUsername()
     {

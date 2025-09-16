@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpMissingReturnTypeInspection */
+<?php
 
 namespace SV\ReportImprovements\XF\Repository;
 
@@ -11,9 +11,10 @@ use XF\Finder\Report as ReportFinder;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Repository\ApprovalQueue as ApprovalQueueRepository;
 use XF\Repository\Report as ReportRepository;
-use function array_merge;
+use function array_keys;
 use function count;
 use function key;
+use function reset;
 
 /**
  * @extends ApprovalQueueRepository

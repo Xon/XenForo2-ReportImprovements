@@ -7,6 +7,8 @@ use XF\Entity\Option as OptionEntity;
 use XF\Entity\WarningDefinition as WarningDefinitionEntity;
 use XF\Finder\WarningDefinition as WarningDefinitionFinder;
 use XF\Option\AbstractOption;
+use function array_map;
+use function array_unique;
 
 class Warnings extends AbstractOption
 {
@@ -61,7 +63,7 @@ class Warnings extends AbstractOption
      */
     public static function verifyOption(array &$choices)
     {
-        $choices = \array_unique(\array_map('intval', $choices));
+        $choices = array_unique(array_map('intval', $choices));
 
         return true;
     }

@@ -21,6 +21,7 @@ namespace XF;
  * @property non-negative-int|null $svReportImpro_expireUserId Comment Reporter
  * @property bool|null $svReportImpro_logNaturalWarningExpiry Log Automatically Expiring Warning to Report
  * @property bool|null $svReportInAccountPostings Show reports in profile 'Postings' list
+ * @property bool|null $svReportedPostBanner Show 'post has open report' banner on posts for moderators
  * @property bool|null $svRichTextReport Rich text user report
  * @property array|null $svSkipReplyBansForWarning Skip reply bans for the given warnings
  * @property bool|null $sv_default_alert_on_resolve_report Resolve report - Alerts
