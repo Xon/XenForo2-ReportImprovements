@@ -128,20 +128,7 @@ class Report extends AbstractData
 
     protected function getMessage(ExtendedReportEntity $entity): string
     {
-        try
-        {
-            $message = $entity->getHandler()->getContentMessage($entity)  ?? '';
-        }
-        catch (\Exception $e)
-        {
-            if (\XF::$debugMode)
-            {
-                \XF::logException($e, false, 'Error accessing reported content for report (' . $entity->report_id . ')');
-            }
-            $message = '';
-        }
-
-        return $message;
+        return $entity->message;
     }
 
     protected function getMetaData(ExtendedReportEntity $report): array
