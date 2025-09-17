@@ -37,6 +37,7 @@ use function strval;
  * @property int|null           $assigned_date
  * @property int|null           $assigner_user_id
  * GETTERS
+ * @property-read string        $message
  * @property-read string        $title_string
  * @property-read string        $username
  * @property-read array         $commenter_user_ids
@@ -313,9 +314,19 @@ class Report extends XFCP_Report implements ISearchableReplyCount, ISearchableDi
 
     public function getMessage(): string
     {
-        $handler = $this->Handler;
+        try
+        {
+            return $this->getHandler()->getContentMessage($this) ?? $this->title_string ?? '';
+        }
+        catch (\Exception $e)
+        {
+            if (\XF::$debugMode)
+            {
+                \XF::logException($e, false, 'Error accessing reported content for report (' . $this->report_id . ')');
+            }
+        }
 
-        return $handler ? $handler->getContentMessage($this) : $this->title;
+        return '';
     }
 
     /**
