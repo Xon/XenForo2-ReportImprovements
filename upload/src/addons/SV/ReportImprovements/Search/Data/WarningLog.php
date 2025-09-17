@@ -129,7 +129,10 @@ class WarningLog extends AbstractData
 
     public function getResultDate(Entity $entity): int
     {
-        return $entity->ReportComment->comment_date;
+        /** @var WarningLogEntity $entity */
+        $reportComment = $entity->ReportComment;
+
+        return $reportComment->comment_date;
     }
 
     public function getIndexData(Entity $entity): ?IndexRecord
@@ -216,10 +219,13 @@ class WarningLog extends AbstractData
 
     public function getTemplateData(Entity $entity, array $options = []): array
     {
+        /** @var WarningLogEntity $entity */
+        $reportComment = $entity->ReportComment;
+
         return [
             'warningLog'    => $entity,
-            'reportComment' => $entity->ReportComment,
-            'report'        => $entity->ReportComment->Report,
+            'reportComment' => $reportComment,
+            'report'        => $reportComment->Report,
             'options'       => $options,
         ];
     }
