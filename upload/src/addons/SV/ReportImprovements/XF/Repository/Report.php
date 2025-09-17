@@ -39,7 +39,6 @@ use XF\Search\MetadataStructure;
 use function array_keys;
 use function array_unique;
 use function array_values;
-use function assert;
 use function count;
 use function function_exists;
 use function get_class;

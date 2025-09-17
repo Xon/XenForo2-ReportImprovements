@@ -12,7 +12,6 @@ use XF\Http\Request;
 use XF\Mvc\Entity\Entity;
 use XF\Search\MetadataStructure;
 use XF\Search\Query\Query;
-use function assert;
 
 /**
  * @extends \NF\Tickets\Report\Message

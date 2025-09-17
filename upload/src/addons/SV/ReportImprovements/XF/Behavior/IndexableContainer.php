@@ -7,7 +7,6 @@ use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
 use SV\StandardLib\Helper;
 use XF\Repository\Report as ReportRepo;
 use function array_key_exists;
-use function assert;
 use function count;
 
 /**

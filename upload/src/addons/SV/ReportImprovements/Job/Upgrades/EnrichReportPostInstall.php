@@ -13,7 +13,6 @@ use XF\Entity\Report as ReportEntity;
 use XF\Finder\ReportComment as ReportCommentFinder;
 use XF\Job\AbstractRebuildJob;
 use function array_key_exists;
-use function assert;
 
 class EnrichReportPostInstall extends AbstractRebuildJob
 {

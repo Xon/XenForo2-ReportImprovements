@@ -7,7 +7,6 @@ use SV\StandardLib\Helper;
 use XF\Entity\Report as ReportEntity;
 use XF\Job\AbstractRebuildJob;
 use function array_merge;
-use function assert;
 
 class ReindexReportsForContainer extends AbstractRebuildJob
 {

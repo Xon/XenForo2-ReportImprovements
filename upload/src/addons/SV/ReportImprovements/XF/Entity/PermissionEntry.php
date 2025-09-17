@@ -4,7 +4,6 @@ namespace SV\ReportImprovements\XF\Entity;
 
 use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use SV\StandardLib\Helper;
-use function assert;
 
 /**
  * @extends \XF\Entity\PermissionEntry

@@ -11,7 +11,6 @@ use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Permission\FlatContentPermissions;
 use XF\Phrase;
-use function assert;
 
 class ReportQueuePermissions extends FlatContentPermissions
 {

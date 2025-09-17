@@ -13,7 +13,6 @@ use XF\Mvc\Entity\Entity;
 use XF\Search\Data\AbstractData;
 use XF\Search\IndexRecord;
 use XF\Search\MetadataStructure;
-use function assert;
 use function is_array;
 
 /**

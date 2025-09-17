@@ -6,7 +6,6 @@ use SV\StandardLib\Helper;
 use SV\WarningImprovements\XF\Entity\WarningDefinition as ExtendedWarningDefinitionEntity;
 use SV\WarningImprovements\XF\Repository\Warning as ExtendedWarningRepo;
 use XF\Repository\Warning as WarningRepo;
-use function assert;
 
 trait WarningInfoTrait
 {

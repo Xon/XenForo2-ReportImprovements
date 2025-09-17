@@ -21,7 +21,6 @@ use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 use XF\Phrase;
 use function array_key_exists;
-use function assert;
 use function floor;
 
 /**

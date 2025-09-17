@@ -12,7 +12,6 @@ use SV\ReportImprovements\XF\Repository\Report as ExtendedReportRepo;
 use SV\StandardLib\Helper;
 use XF\Phrase;
 use XF\Repository\Report as ReportRepo;
-use function assert;
 use function is_array;
 
 /**

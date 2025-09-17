@@ -6,7 +6,6 @@ use SV\ReportImprovements\Repository\ReportQueue as ReportQueueRepo;
 use SV\StandardLib\Helper;
 use XF\Mvc\Entity\Structure;
 use XF\Phrase;
-use function assert;
 
 /**
  * @extends \XF\Entity\User

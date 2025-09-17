@@ -7,6 +7,7 @@ use SV\ReportImprovements\Report\ContentInterface;
 use SV\ReportImprovements\Report\ReportSearchFormInterface;
 use SV\ReportImprovements\XF\Entity\Post as ExtendedPostEntity;
 use SV\ReportImprovements\XF\Entity\Thread as ExtendedThreadEntity;
+use SV\ReportImprovements\XF\Entity\User as ExtendedUserEntity;
 use SV\ReportImprovements\XF\PermissionCacheEx;
 use XF\Entity\Post as PostEntity;
 use XF\Entity\Report as ReportEntity;
@@ -15,7 +16,6 @@ use XF\Mvc\Entity\Entity;
 use XF\Search\Data\Post as PostSearch;
 use XF\Search\MetadataStructure;
 use XF\Search\Query\Query;
-use function assert;
 
 /**
  * @extends \XF\Report\Post

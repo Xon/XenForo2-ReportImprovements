@@ -3,18 +3,14 @@
 namespace SV\ReportImprovements\XF\Service\Report;
 
 use SV\ReportImprovements\XF\Entity\Report as ExtendedReportEntity;
-use SV\ReportImprovements\XF\Entity\ReportComment;
 use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity;
 use SV\StandardLib\Helper;
-use XF\Behavior\Indexable;
 use XF\Behavior\Indexable as IndexableBehavior;
-use XF\Behavior\IndexableContainer;
 use XF\Behavior\IndexableContainer as IndexableContainerBehavior;
 use XF\Mvc\Entity\Entity;
 use XF\Repository\Ip as IpRepo;
 use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
 use XF\Service\Message\Preparer as MessagePreparerService;
-use function assert;
 use function in_array;
 use function strlen;
 

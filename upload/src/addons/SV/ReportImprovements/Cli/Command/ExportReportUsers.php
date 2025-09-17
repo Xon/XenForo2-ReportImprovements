@@ -14,7 +14,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use XF\Entity\Report as ReportEntity;
 use XF\Repository\Report as ReportRepo;
-use function assert;
 use function count;
 
 class ExportReportUsers extends Command

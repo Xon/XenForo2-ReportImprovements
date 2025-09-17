@@ -9,7 +9,6 @@ use XF\Entity\Report as ReportEntity;
 use XF\Finder\Report as ReportFinder;
 use XF\Repository\Report as ReportRepo;
 use function array_key_exists;
-use function assert;
 
 /**
  * @extends \XF\Behavior\Indexable

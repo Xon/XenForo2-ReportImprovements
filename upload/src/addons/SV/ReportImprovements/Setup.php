@@ -36,7 +36,6 @@ use XF\Repository\PermissionEntry as PermissionEntryRepo;
 use XF\Service\UpdatePermissions as UpdatePermissionsService;
 use function array_keys;
 use function array_values;
-use function assert;
 use function count;
 use function sort;
 
