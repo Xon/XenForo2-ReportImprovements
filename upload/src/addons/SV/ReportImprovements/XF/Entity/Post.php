@@ -18,6 +18,13 @@ class Post extends XFCP_Post
             return false;
         }
 
+        $visitor = \XF::visitor();
+        $userId = (int)$visitor->user_id;
+        if ($userId !== 0 && is_callable([$visitor, 'canViewReports']) && $visitor->canViewReports())
+        {
+            return false;
+        }
+
         $report = $this->Report;
         if ($report === null || !$report->canView())
         {
