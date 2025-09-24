@@ -20,7 +20,7 @@ class Post extends XFCP_Post
 
         $visitor = \XF::visitor();
         $userId = (int)$visitor->user_id;
-        if ($userId !== 0 && is_callable([$visitor, 'canViewReports']) && $visitor->canViewReports())
+        if ($userId === 0 || !is_callable([$visitor, 'canViewReports']) || !$visitor->canViewReports())
         {
             return false;
         }
