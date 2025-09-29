@@ -911,6 +911,8 @@ class Setup extends AbstractSetup
 
             $table->addKey(['content_type', 'content_id','warning_edit_date']);
             $table->addKey(['reply_ban_thread_id', 'user_id', 'warning_edit_date']);
+            $table->addKey('user_id');
+            $table->addKey('warning_user_id');
         };
 
         return $tables;
@@ -932,6 +934,7 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'last_modified_id', 'int')->setDefault(0);
             $this->addOrChangeColumn($table, 'assigned_date', 'int')->nullable(true)->setDefault(null);
             $this->addOrChangeColumn($table, 'assigner_user_id', 'int')->nullable(true)->setDefault(null);
+            $table->addKey('assigner_user_id');
         };
 
         $tables['xf_report_comment'] = function (Alter $table) {
@@ -950,6 +953,8 @@ class Setup extends AbstractSetup
             $this->addOrChangeColumn($table, 'edit_count', 'int')->setDefault(0);
             $this->addOrChangeColumn($table, 'ip_id', 'bigint')->nullable()->setDefault(null);
             $table->addKey('warning_log_id', 'warning_log_id');
+            $table->addKey('assigned_user_id');
+            $table->addKey('last_edit_user_id');
         };
 
         $tables['xf_permission_entry'] = function (Alter $table) {
