@@ -366,17 +366,16 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
     {
         parent::_postDelete();
 
-        if ($this->Report)
+        $report = $this->Report;
+        if ($report !== null && $report->last_modified_id === $this->comment_date)
         {
-            $lastReportCommentFinder = Helper::finder(ReportCommentFinder::class);
-            $lastReportCommentFinder->where('report_id', $this->report_id);
-            $lastReportCommentFinder->order('comment_date', 'DESC');
-
-            /** @var ReportComment $lastReportComment */
-            $lastReportComment = $lastReportCommentFinder->fetchOne();
-            if ($lastReportComment)
+            $lastReportComment = Helper::finder(ReportCommentFinder::class)
+                                       ->where('report_id', $this->report_id)
+                                       ->order('comment_date', 'DESC')
+                                       ->fetchOne();
+            if ($lastReportComment !== null)
             {
-                $this->Report->fastUpdate('last_modified_id', $lastReportComment->report_comment_id);
+                $report->fastUpdate('last_modified_id', $lastReportComment->report_comment_id);
             }
         }
     }
