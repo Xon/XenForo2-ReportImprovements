@@ -1,4 +1,7 @@
 <?php
+/**
+ * @noinspection PhpMultipleClassDeclarationsInspection
+ */
 
 namespace SV\ReportImprovements\XF\Entity;
 
@@ -6,6 +9,10 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Globals;
 use SV\StandardLib\Helper;
+use XF\Entity\ContainableInterface;
+use XF\Entity\ContainableTrait;
+use XF\Entity\DatableInterface;
+use XF\Entity\DatableTrait;
 use XF\Entity\User as UserEntity;
 use XF\Finder\Report as ReportFinder;
 use XF\Mvc\Entity\Structure;
@@ -21,9 +28,26 @@ use function array_key_exists;
  * RELATIONS
  * @property-read Post|null   $Post
  */
-class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver
+class ThreadReplyBan extends XFCP_ThreadReplyBan implements IReportResolver, DatableInterface, ContainableInterface
 {
     use ReportResolverTrait;
+    use DatableTrait;
+    use ContainableTrait;
+
+    public function getContentDateColumn(): string
+    {
+        return 'ban_date';
+    }
+
+    public function getContentContainerIdColumn(): string
+    {
+        return 'user_id';
+    }
+
+    public function getContentContainerType(): string
+    {
+        return 'user';
+    }
 
     /**
      * @return Report|null

@@ -1,4 +1,7 @@
 <?php
+/**
+ * @noinspection PhpMultipleClassDeclarationsInspection
+ */
 
 namespace SV\ReportImprovements\XF\Entity;
 
@@ -7,6 +10,10 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Entity\WarningInfoTrait;
 use SV\ReportImprovements\SV\ForumBan\Entity\ForumBan as ExtendedForumBanEntity;
+use XF\Entity\ContainableInterface;
+use XF\Entity\ContainableTrait;
+use XF\Entity\DatableInterface;
+use XF\Entity\DatableTrait;
 use XF\Entity\User as UserEntity;
 use XF\Mvc\Entity\Structure;
 use function strlen;
@@ -19,10 +26,27 @@ use function strlen;
  * RELATIONS
  * @property-read ?Report $Report
  */
-class Warning extends XFCP_Warning implements IReportResolver
+class Warning extends XFCP_Warning implements IReportResolver, DatableInterface, ContainableInterface
 {
     use ReportResolverTrait;
     use WarningInfoTrait;
+    use DatableTrait;
+    use ContainableTrait;
+
+    public function getContentDateColumn(): string
+    {
+        return 'warning_date';
+    }
+
+    public function getContentContainerIdColumn(): string
+    {
+        return 'user_id';
+    }
+
+    public function getContentContainerType(): string
+    {
+        return 'user';
+    }
 
     public function getSvLogOperationTypeForReportResolve(): string
     {
