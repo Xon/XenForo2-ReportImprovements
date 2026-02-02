@@ -10,6 +10,7 @@ use SV\ReportImprovements\Entity\IReportResolver;
 use SV\ReportImprovements\Entity\ReportResolverTrait;
 use SV\ReportImprovements\Entity\WarningInfoTrait;
 use SV\ReportImprovements\SV\ForumBan\Entity\ForumBan as ExtendedForumBanEntity;
+use XF\BbCode\RenderableContentInterface;
 use XF\Entity\ContainableInterface;
 use XF\Entity\ContainableTrait;
 use XF\Entity\DatableInterface;
@@ -26,7 +27,7 @@ use function strlen;
  * RELATIONS
  * @property-read ?Report $Report
  */
-class Warning extends XFCP_Warning implements IReportResolver, DatableInterface, ContainableInterface
+class Warning extends XFCP_Warning implements IReportResolver, RenderableContentInterface, DatableInterface, ContainableInterface
 {
     use ReportResolverTrait;
     use WarningInfoTrait;
@@ -46,6 +47,14 @@ class Warning extends XFCP_Warning implements IReportResolver, DatableInterface,
     public function getContentContainerType(): string
     {
         return 'user';
+    }
+
+    public function getBbCodeRenderOptions($context, $type): array
+    {
+        return [
+            'entity' => $this,
+            'user' => $this->User,
+        ];
     }
 
     public function getSvLogOperationTypeForReportResolve(): string
