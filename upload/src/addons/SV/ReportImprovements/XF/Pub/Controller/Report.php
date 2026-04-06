@@ -206,7 +206,7 @@ class Report extends XFCP_Report
                 $attachmentRepo = Helper::repository(AttachmentRepo::class);
                 $attachmentRepo->addAttachmentsToContent([
                     $reportComment->report_comment_id => $reportComment
-                ], 'conversation_message');
+                ], 'report_comment');
 
                 $viewParams = [
                     'report'  => $report,
