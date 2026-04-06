@@ -15,6 +15,7 @@ use XF\Entity\ContainableInterface;
 use XF\Entity\ContainableTrait;
 use XF\Entity\DatableInterface;
 use XF\Entity\DatableTrait;
+use XF\Entity\LinkableInterface;
 use XF\Entity\ReactionContent;
 use XF\Entity\ReactionTrait;
 use XF\Entity\User as UserEntity;
@@ -55,11 +56,26 @@ use XF\Repository\User as UserRepo;
  * @property-read Report|null                     $Report
  * @property-read User|null                       $User
  */
-class ReportComment extends XFCP_ReportComment implements ViewableInterface, DatableInterface, ContainableInterface
+class ReportComment extends XFCP_ReportComment implements ViewableInterface, DatableInterface, ContainableInterface, LinkableInterface
 {
     use ReactionTrait;
     use ContainableTrait;
     use DatableTrait;
+
+    public function getContentUrl(bool $canonical = false, array $extraParams = [], $hash = null)
+    {
+        return \XF::app()->router('public')->buildLink(($canonical ? 'canonical:' : '') . 'reports/comment', $this);
+    }
+
+    public function getContentPublicRoute()
+    {
+        return 'reports/comment';
+    }
+
+    public function getContentTitle(string $context = '')
+    {
+        return $this->Report->title_string;
+    }
 
     public function getContentContainerType(): string
     {

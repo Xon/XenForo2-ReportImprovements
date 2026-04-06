@@ -26,11 +26,6 @@ use XF\Repository\Attachment as AttachmentRepo;
  */
 class ReportComment extends AbstractHandler
 {
-    public function getContainerLink(Entity $container, array $extraParams = [])
-    {
-        return \XF::app()->router()->buildLink('reports/comment', $container);
-    }
-
     public function getContainerWith()
     {
         $visitor = \XF::visitor();
