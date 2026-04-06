@@ -11,6 +11,7 @@ use SV\ReportImprovements\XF\Entity\ReportComment as ExtendedReportCommentEntity
 use SV\StandardLib\Helper;
 use XF\Attachment\AbstractHandler;
 use XF\Entity\Attachment as AttachmentEntity;
+use XF\Entity\LinkableInterface;
 use XF\Entity\Report as ReportEntity;
 use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Mvc\Entity\Entity;
@@ -26,6 +27,18 @@ use XF\Repository\Attachment as AttachmentRepo;
  */
 class ReportComment extends AbstractHandler
 {
+    /** @noinspection PhpMultipleClassDeclarationsInspection */
+    public function getContainerLink(Entity $container, array $extraParams = [])
+    {
+        // XF2.1.x support
+        if (\XF::$versionId < 2020000)
+        {
+            return $container->getContentUrl(false, $extraParams);
+        }
+
+        return parent::getContainerLink($container, $extraParams);
+    }
+
     public function getContainerWith()
     {
         $visitor = \XF::visitor();
