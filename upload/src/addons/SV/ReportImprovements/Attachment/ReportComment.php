@@ -16,11 +16,18 @@ use XF\Entity\ReportComment as ReportCommentEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Repository\Attachment as AttachmentRepo;
 
+/**
+ * @phpstan-type TContext array{
+ *      report_comment_id?: int|null,
+ *      report_id?: int|null,
+ * }
+ *
+ * @extends AbstractHandler<ExtendedReportCommentEntity, TContext>
+ */
 class ReportComment extends AbstractHandler
 {
     public function getContainerLink(Entity $container, array $extraParams = [])
     {
-        /** @var ExtendedReportCommentEntity $container */
         return \XF::app()->router()->buildLink('reports/comment', $container);
     }
 
@@ -45,7 +52,6 @@ class ReportComment extends AbstractHandler
 
     public function canView(AttachmentEntity $attachment, Entity $container, &$error = null)
     {
-        /** @var ExtendedReportCommentEntity $container */
         if (!$container->canView())
         {
             return false;
@@ -65,12 +71,11 @@ class ReportComment extends AbstractHandler
 
     public function onAttachmentDelete(AttachmentEntity $attachment, ?Entity $container = null)
     {
-        if (!$container)
+        if ($container === null)
         {
             return;
         }
 
-        /** @var ExtendedReportCommentEntity $container */
         $container->attach_count--;
         $container->save();
 
@@ -79,13 +84,12 @@ class ReportComment extends AbstractHandler
 
     public function getConstraints(array $context)
     {
-        /** @var AttachmentRepo $attachRepo */
         $attachRepo = Helper::repository(AttachmentRepo::class);
 
         $constraints = $attachRepo->getDefaultAttachmentConstraints();
 
         $report = $this->getReportFromContext($context);
-        if ($report && $report->canUploadVideos())
+        if ($report !== null && $report->canUploadVideos())
         {
             $constraints = $attachRepo->applyVideoAttachmentConstraints($constraints);
             $constraints = $this->svUpdateConstraints($constraints, $report);
@@ -96,12 +100,12 @@ class ReportComment extends AbstractHandler
 
     protected function svUpdateConstraints(array $constraints, ExtendedReportEntity $comment): array
     {
-        $size = $comment->hasReportPermission('attach_size');
+        $size = (int)$comment->hasReportPermission('attach_size');
         if ($size > 0 && $size < $constraints['size'])
         {
             $constraints['size'] = $size * 1024;
         }
-        $count = $comment->hasReportPermission('attach_count');
+        $count = (int)$comment->hasReportPermission('attach_count');
         if ($count > 0 && $count < $constraints['count'])
         {
             $constraints['count'] = $count;
@@ -133,18 +137,14 @@ class ReportComment extends AbstractHandler
         return $extraContext;
     }
 
-    /**
-     * @param array $context
-     * @return ExtendedReportEntity|null
-     */
     protected function getReportFromContext(array $context)
     {
         $reportCommentId = (int)($context['report_comment_id'] ?? 0);
-        if ($reportCommentId)
+        if ($reportCommentId !== 0)
         {
             /** @var ExtendedReportCommentEntity $reportComment */
             $reportComment = Helper::find(ReportCommentEntity::class, $reportCommentId, $this->getContainerWith());
-            if (!$reportComment || !$reportComment->canView() || !$reportComment->canEdit())
+            if ($reportComment === null || !$reportComment->canView() || !$reportComment->canEdit())
             {
                 return null;
             }
@@ -153,7 +153,7 @@ class ReportComment extends AbstractHandler
         }
 
         $reportId = (int)($context['report_id'] ?? 0);
-        if ($reportId)
+        if ($reportId !== 0)
         {
             /** @var ExtendedReportEntity|null $report */
             $report = Helper::find(ReportEntity::class, $reportId, $this->getReportWith());
