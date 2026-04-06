@@ -1,0 +1,9 @@
+{
+    "template": "report_view",
+    "description": "Show non-embedded attachments in report comments",
+    "execution_order": 8,
+    "enabled": true,
+    "action": "preg_replace",
+    "find": "#<article class=\"message-body.*?</article>.*?</xf:if>#si",
+    "replace": "$0\n<xf:macro name=\"svReportImprov_report_macros::reportCommentAttachments\"\n\t\t  arg-reportComment=\"{$comment}\"\n/>"
+}

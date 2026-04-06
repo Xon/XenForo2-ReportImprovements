@@ -27,6 +27,23 @@
 	</xf:if>
 </xf:macro>
 
+<xf:macro name="reportCommentAttachments"
+		  arg-reportComment="!"
+>
+	<xf:if is="$reportComment.isValidKey('attach_count') && $reportComment.attach_count">
+		<xf:if contentcheck="true">
+			<div class="block-row block-row--separated">
+				<xf:contentcheck>
+					<xf:macro name="message_macros::attachments"
+							  arg-attachments="{$reportComment.Attachments}"
+							  arg-message="{$reportComment}"
+							  arg-canView="{{ $reportComment.Report.canViewAttachments() }}" />
+				</xf:contentcheck>
+			</div>
+		</xf:if>
+	</xf:if>
+</xf:macro>
+
 <xf:macro name="post" arg-post="!">
 	<xf:if is="!$post.warning_id && callable($post, 'canViewReportBanner') && $post.canViewReportBanner()">
 		<xf:set var="$report" value="{$post.Report}" />
