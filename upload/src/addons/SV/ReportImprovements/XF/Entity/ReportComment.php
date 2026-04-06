@@ -220,7 +220,7 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
 
         if ($this->is_report)
         {
-            $options['attachments'] = 0;
+            $options['attachments'] = [];
             $options['viewAttachments'] = false;
             $options['unfurls'] = [];
             if (\XF::options()->svDisableEmbedsInUserReports ?? true)
