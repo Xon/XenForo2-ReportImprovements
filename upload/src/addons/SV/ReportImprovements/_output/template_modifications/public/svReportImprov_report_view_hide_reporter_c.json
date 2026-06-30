@@ -3,7 +3,7 @@
     "description": "Show \"Content reporter\" if the user has no permission to view reporter #3",
     "execution_order": 6905,
     "enabled": true,
-    "action": "str_replace",
-    "find": "<xf:avatar user=\"$comment.User\" size=\"xxs\" />\n\t\t\t\t\t\t\t\t\t\t\t<h4 class=\"attribution\"><xf:username user=\"$comment.User\" rich=\"true\" /></h4>",
-    "replace": "<xf:if is=\"$comment.is_report\">\n\t<xf:avatar user=\"$comment.ViewableUser\" size=\"xxs\" />\n\t<h4 class=\"attribution\"><xf:username user=\"$comment.ViewableUser\" rich=\"true\" /></h4>\n<xf:else />\n\t$0\n</xf:if>"
+    "action": "preg_replace",
+    "find": "#[\\t ]*<xf:avatar\\s+user=\"\\$comment\\.User\"[^>]*/>\\s*<h4 class=\"attribution\">\\s*<xf:username\\s+user=\"\\$comment\\.User\"[^>]*/></h4>#msi",
+    "replace": "<xf:if is=\"$comment.is_report\">\n\t<xf:avatar user=\"$comment.ViewableUser\" size=\"xxs\" />\n\t<h4 class=\"attribution\"><xf:username user=\"$comment.ViewableUser\" rich=\"true\" /></h4>\n<xf:else />\n$0\n</xf:if>"
 }
