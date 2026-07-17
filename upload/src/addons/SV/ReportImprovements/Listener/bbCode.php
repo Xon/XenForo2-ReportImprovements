@@ -9,7 +9,6 @@ abstract class bbCode
     public static $bbCodeToDisable = [
         'img',
         'bimg',
-        'embed',
         'media',
     ];
 
