@@ -10,5 +10,6 @@ namespace SV\ReportImprovements\XF\Repository;
     ReportPatch::class,
     \XF::$versionId < 2030000
         ? \SV\ReportImprovements\XF\Repository\XF22\ReportPatch::class
-        : \SV\ReportImprovements\XF\Repository\XF23\ReportPatch::class
+        : \SV\ReportImprovements\XF\Repository\XF23\ReportPatch::class,
+    \XF\Repository\Report::class
 );
