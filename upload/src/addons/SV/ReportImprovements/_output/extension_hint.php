@@ -18,6 +18,11 @@ namespace SV\ReportImprovements\NF\Tickets\Report
 	class XFCP_Message extends \NF\Tickets\Report\Message {}
 }
 
+namespace SV\ReportImprovements\SV\AdvancedBbCodesPack\BbCode\Tag
+{
+	class XFCP_Bimg extends \SV\AdvancedBbCodesPack\BbCode\Tag\Bimg {}
+}
+
 namespace SV\ReportImprovements\SV\ForumBan\Entity
 {
 	class XFCP_ForumBan extends \SV\ForumBan\Entity\ForumBan {}
