@@ -246,6 +246,38 @@ class Report extends XFCP_Report
         }
     }
 
+    public function actionCommentPreview(ParameterBag $params):AbstractReply
+    {
+        $this->assertPostOnly();
+
+        $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
+        $report = $reportComment->Report;
+        if (!$reportComment->canEdit($error))
+        {
+            return $this->noPermission($error);
+        }
+
+        $editor = $this->setupReportCommentEdit($reportComment);
+        if (!$editor->validate($errors))
+        {
+            return $this->error($errors);
+        }
+
+        $attachments = [];
+        $tempHash = $this->filter('attachment_hash', 'str');
+
+        if ($report->canUploadAndManageAttachments())
+        {
+            $attachmentRepo = Helper::repository(AttachmentRepo::class);
+            $attachmentData = $attachmentRepo->getEditorData('report_comment', $reportComment, $tempHash);
+            $attachments = $attachmentData['attachments'];
+        }
+
+        $bbCodePreview = Helper::plugin($this, BbCodePreviewPlugin::class);
+
+        return $bbCodePreview->actionPreview($reportComment->message, 'report_comment', $reportComment->User, $attachments, $report->canViewAttachments());
+    }
+
     public function actionCommentHistory(ParameterBag $params)
     {
         $reportComment = $this->assertViewableReportComment((int)$params->get('report_comment_id'));
