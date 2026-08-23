@@ -218,23 +218,13 @@ class ReportComment extends XFCP_ReportComment implements ViewableInterface, Dat
     {
         $options = parent::getBbCodeRenderOptions($context, $type);
 
-        if ($this->is_report)
+        $options['attachments'] = $this->attach_count ? $this->Attachments : [];
+        $options['viewAttachments'] = $this->Report && $this->Report->canViewAttachments();
+        $options['unfurls'] = $this->Unfurls ?? [];
+
+        if ($this->is_report && (\XF::options()->svDisableEmbedsInUserReports ?? true))
         {
-            $options['attachments'] = [];
-            $options['viewAttachments'] = false;
-            $options['unfurls'] = [];
-            if (\XF::options()->svDisableEmbedsInUserReports ?? true)
-            {
-                $options['allowUnfurl'] = false;
-                $options['shortenUrl'] = false;
-                $options['svDisableUrlMediaTag'] = true;
-            }
-        }
-        else
-        {
-            $options['attachments'] = $this->attach_count ? $this->Attachments : [];
-            $options['viewAttachments'] = $this->Report && $this->Report->canViewAttachments();
-            $options['unfurls'] = $this->Unfurls ?? [];
+            $options['svDisableUrlMediaTag'] = true;
         }
 
         return $options;

@@ -46,9 +46,7 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
             \XF::asVisitor($user, function () use ($comment) {
 
                 $options = \XF::options();
-                $urlToPageTitle = $options->urlToPageTitle['enabled'];
                 $autoEmbedMedia = $options->autoEmbedMedia;
-                $options->urlToPageTitle['enabled'] = false;
                 $options->autoEmbedMedia['embedType'] = 0;
                 try
                 {
@@ -66,7 +64,6 @@ class Upgrade1090200Step1 extends AbstractRebuildJob
                 }
                 finally
                 {
-                    $options->urlToPageTitle['enabled'] = $urlToPageTitle;
                     $options->autoEmbedMedia = $autoEmbedMedia;
                 }
             });

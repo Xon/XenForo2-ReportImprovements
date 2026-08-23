@@ -60,10 +60,8 @@ class CommentPreparer extends XFCP_CommentPreparer
         $disableEmbedsInUserReports = $this->disableEmbedsInUserReports;
         if ($disableEmbedsInUserReports)
         {
-            $urlToRichPreview = $options->urlToRichPreview;
             $autoEmbedMedia = $options->autoEmbedMedia;
-            $options->urlToPageTitle['enabled'] = false;
-            $options->urlToRichPreview = false;
+            $options->autoEmbedMedia['embedType'] = 0;
         }
         try
         {
@@ -74,7 +72,6 @@ class CommentPreparer extends XFCP_CommentPreparer
             if ($disableEmbedsInUserReports)
             {
                 $options->autoEmbedMedia = $autoEmbedMedia;
-                $options->urlToRichPreview = $urlToRichPreview;
             }
         }
 
